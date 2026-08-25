@@ -1,0 +1,19 @@
+{
+  "name": "krishna-valley-erp",
+  "version": "1.0.0",
+  "description": "Krishna Valley Real Estate ERP System",
+  "private": true,
+  "scripts": {
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "backend": "npm run dev --prefix backend",
+    "frontend": "npm run dev --prefix frontend"
+  },
+  "keywords": [
+    "real-estate",
+    "erp",
+    "krishna-valley"
+  ],
+  "author": "Krishna Valley ERP Team",
+  "license": "ISC"
+}

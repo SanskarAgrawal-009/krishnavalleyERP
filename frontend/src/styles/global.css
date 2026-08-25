@@ -1,0 +1,332 @@
+@import './variables.css';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ======================================================== */
+/* Material 3 / Google Enterprise Cards & Surfaces          */
+/* ======================================================== */
+
+.g-card {
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.08), 0 1px 2px 0 rgba(60, 64, 67, 0.04);
+  padding: 28px 32px;
+  color: var(--on-surface);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.g-card:hover {
+  box-shadow: 0 2px 6px 2px rgba(60, 64, 67, 0.15), 0 4px 12px 3px rgba(60, 64, 67, 0.1);
+}
+
+.g-card-flat {
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.06);
+  padding: 24px 28px;
+  color: var(--on-surface);
+}
+
+.glass-panel {
+  background-color: #ffffff;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  padding: 20px;
+  color: var(--on-surface);
+}
+
+.stat-card {
+  background-color: #ffffff;
+  border: 1px solid #dadce0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.08), 0 1px 2px 0 rgba(60, 64, 67, 0.04);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--on-surface);
+  min-height: 116px;
+  box-sizing: border-box;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(60, 64, 67, 0.1);
+}
+
+/* ======================================================== */
+/* Custom Material Scrollbars                               */
+/* ======================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dadce0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #bdc1c6;
+}
+
+/* ======================================================== */
+/* Typography Hierarchy (Material 3 Scale from DESIGN.md)   */
+/* ======================================================== */
+
+.font-display-lg {
+  font-size: 38px;
+  line-height: 46px;
+  font-weight: 700;
+  color: var(--on-surface);
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 1200px) {
+  .font-display-lg {
+    font-size: 44px;
+    line-height: 52px;
+  }
+}
+
+.font-headline-lg {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
+  color: var(--on-surface);
+  letter-spacing: -0.01em;
+}
+
+.font-headline-md {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.font-headline-sm {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.font-title-lg {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.font-title-md {
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.font-body-lg {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.01em;
+}
+
+.font-body-md {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--on-surface);
+  letter-spacing: 0.01em;
+}
+
+.font-label-lg {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.01em;
+}
+
+.font-label-md {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.02em;
+}
+
+/* ======================================================== */
+/* Interactive Elements, Inputs & Form Controls             */
+/* ======================================================== */
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.btn-primary {
+  background-color: var(--primary-container);
+  color: var(--on-primary-container);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: 0 1px 2px rgba(26, 115, 232, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: #1557d0;
+  box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: var(--on-surface);
+  border: 1px solid #dadce0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #bdc1c6;
+}
+
+/* ======================================================== */
+/* Standard Form Groups & Top-Aligned Labels                */
+/* ======================================================== */
+
+.form-group, .field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label, .form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.01em;
+  margin-bottom: 5px;
+}
+
+input, select, textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  color: var(--on-surface);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary-container);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--outline);
+}
+
+/* ======================================================== */
+/* Tables (Material 3 Comfort Density: 56px min row height) */
+/* ======================================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--on-surface);
+}
+
+th {
+  background-color: #f8f9fa;
+  color: var(--on-surface-variant);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #dadce0;
+  padding: 14px 20px;
+  text-align: left;
+}
+
+td {
+  border-bottom: 1px solid #f1f3f4;
+  padding: 16px 20px;
+  font-size: 0.875rem;
+  color: var(--on-surface);
+  min-height: 56px;
+}
+
+tr:hover td {
+  background-color: #f8f9fa;
+}
+
+/* ======================================================== */
+/* Progress Rings & Visual Helpers                          */
+/* ======================================================== */
+
+.progress-circle {
+  transition: stroke-dashoffset 1s ease-in-out;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
