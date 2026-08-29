@@ -61,8 +61,8 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
     agreementNumber: `RB-${Date.now().toString().slice(-6)}`,
     startDate: new Date().toISOString().slice(0, 10),
     endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
-    monthlyRent: 20000,
-    securityDeposit: 40000,
+    monthlyRent: 0,
+    securityDeposit: 0,
     rentDueDay: 5,
     status: 'active'
   });
@@ -72,17 +72,17 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
     agreementNumber: `TA-${Date.now().toString().slice(-6)}`,
     startDate: new Date().toISOString().slice(0, 10),
     endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
-    monthlyRent: 28000,
+    monthlyRent: 0,
     rentDueDay: 5,
     status: 'active'
   });
 
   // Security Deposit Tracking
-  const [tenantDepositReq, setTenantDepositReq] = useState(56000);
-  const [tenantDepositPaid, setTenantDepositPaid] = useState(56000);
+  const [tenantDepositReq, setTenantDepositReq] = useState(0);
+  const [tenantDepositPaid, setTenantDepositPaid] = useState(0);
 
-  const [ownerDepositReq, setOwnerDepositReq] = useState(40000);
-  const [ownerDepositPaid, setOwnerDepositPaid] = useState(40000);
+  const [ownerDepositReq, setOwnerDepositReq] = useState(0);
+  const [ownerDepositPaid, setOwnerDepositPaid] = useState(0);
 
   // Allocation & Remarks
   const [allocationStatus, setAllocationStatus] = useState('occupied');
@@ -179,13 +179,12 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
         setSelectedTenantId('');
         setFetchedOwnerInfo(null);
         setOwnerFetchStatus('');
-        setRentBackEnabled(true);
         setRentBackForm({
           agreementNumber: `RB-${Date.now().toString().slice(-6)}`,
           startDate: new Date().toISOString().slice(0, 10),
           endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
-          monthlyRent: 20000,
-          securityDeposit: 40000,
+          monthlyRent: 0,
+          securityDeposit: 0,
           rentDueDay: 5,
           status: 'active'
         });
@@ -193,14 +192,14 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
           agreementNumber: `TA-${Date.now().toString().slice(-6)}`,
           startDate: new Date().toISOString().slice(0, 10),
           endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
-          monthlyRent: 28000,
+          monthlyRent: 0,
           rentDueDay: 5,
           status: 'active'
         });
-        setTenantDepositReq(56000);
-        setTenantDepositPaid(56000);
-        setOwnerDepositReq(40000);
-        setOwnerDepositPaid(40000);
+        setTenantDepositReq(0);
+        setTenantDepositPaid(0);
+        setOwnerDepositReq(0);
+        setOwnerDepositPaid(0);
         setAllocationStatus('occupied');
         setRemarks('');
       }
@@ -265,8 +264,12 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
       }
     }
 
+    const expTenantRent = matchedFlat.rentalDetails?.expectedRent || 0;
+    const expRentBack = expTenantRent ? Math.round(expTenantRent * 0.8) : 0;
+    const expDep = matchedFlat.rentalDetails?.securityDeposit || (expTenantRent * 2);
+
     const newUnit = {
-      flatId: fId,
+      flatId: matchedFlat._id,
       flatNumber: matchedFlat.flatNumber,
       projectId: matchedFlat.projectId?._id || matchedFlat.projectId,
       projectName: matchedFlat.projectId?.projectName || 'Project',
@@ -274,9 +277,9 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
       ownerId: ownerObj ? ownerObj._id : '',
       ownerName: ownerObj ? ownerObj.name : 'Unassigned Owner',
       ownerPhone: ownerObj ? ownerObj.mobileNo : '',
-      monthlyRentBack: 20000,
-      monthlyTenantRent: 28000,
-      securityDeposit: 40000
+      monthlyRentBack: expRentBack,
+      monthlyTenantRent: expTenantRent,
+      securityDeposit: expDep
     };
 
     const updated = [...selectedUnits, newUnit];
@@ -326,6 +329,18 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
     if (matchedFlat) {
       setSelectedProjectId(matchedFlat.projectId?._id || matchedFlat.projectId);
       setSelectedBuildingId(matchedFlat.buildingId);
+
+      // Bind to database values if available
+      if (matchedFlat.rentalDetails?.expectedRent) {
+        const expRent = matchedFlat.rentalDetails.expectedRent;
+        const dep = matchedFlat.rentalDetails.securityDeposit || (expRent * 2);
+        setTenantAgreementForm(prev => ({ ...prev, monthlyRent: expRent }));
+        setRentBackForm(prev => ({ ...prev, monthlyRent: Math.round(expRent * 0.8), securityDeposit: dep }));
+        setTenantDepositReq(dep);
+        setTenantDepositPaid(dep);
+        setOwnerDepositReq(dep);
+        setOwnerDepositPaid(dep);
+      }
     }
 
     // 1. Instant check in loaded owners state

@@ -18,7 +18,7 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
   const [fromStoreId, setFromStoreId] = useState('');
   const [toStoreId, setToStoreId] = useState('');
   const [selectedMaterialId, setSelectedMaterialId] = useState('');
-  const [quantity, setQuantity] = useState(10);
+  const [quantity, setQuantity] = useState('');
 
   useEffect(() => {
     if (isOpen) {

@@ -19,11 +19,11 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
   const [employmentType, setEmploymentType] = useState('full_time');
   const [departmentId, setDepartmentId] = useState('');
   const [roleId, setRoleId] = useState('');
-  const [initialSalary, setInitialSalary] = useState(45000);
+  const [initialSalary, setInitialSalary] = useState('');
 
   // Address & Emergency
-  const [city, setCity] = useState('Jaipur');
-  const [state, setState] = useState('Rajasthan');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
   const [emergencyName, setEmergencyName] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
 
@@ -57,6 +57,9 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
       setLastName('');
       setMobileNo('');
       setEmail('');
+      setCity('');
+      setState('');
+      setInitialSalary('');
     }
   }, [isOpen]);
 

@@ -8,8 +8,8 @@ export const NewVendorModal = ({ isOpen, onClose, onSubmit }) => {
   const [contactName, setContactName] = useState('');
   const [mobileNo, setMobileNo] = useState('');
   const [email, setEmail] = useState('');
-  const [city, setCity] = useState('Jaipur');
-  const [state, setState] = useState('Rajasthan');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
   const [gstNumber, setGstNumber] = useState('');
   const [panNumber, setPanNumber] = useState('');
   const [paymentTerms, setPaymentTerms] = useState('Net 30 Days');

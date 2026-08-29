@@ -322,7 +322,14 @@ export const createEmployee = async (req, res) => {
     } = req.body;
 
     const code = employeeCode || `EMP-${Date.now().toString().slice(-4)}`;
-    const phoneNum = mobileNo || phone || '+91 98765 00000';
+    const phoneNum = mobileNo || phone;
+
+    if (!phoneNum) {
+      return res.status(400).json({
+        success: false,
+        message: 'Employee primary mobile phone number is required.'
+      });
+    }
 
     if (emergencyContact?.mobileNo && arePhoneNumbersSame(phoneNum, emergencyContact.mobileNo)) {
       return res.status(400).json({
@@ -333,7 +340,7 @@ export const createEmployee = async (req, res) => {
 
     let selectedDept = master.departments.find((d) => d._id.toString() === departmentId?.toString()) || master.departments[0];
     let selectedRole = master.roles.find((r) => r._id.toString() === roleId?.toString()) || master.roles[0];
-    const basicSal = Number(initialSalary) || 45000;
+    const basicSal = initialSalary !== undefined && initialSalary !== '' ? Number(initialSalary) : (selectedRole?.baseSalary || 0);
 
     const emp = new Employee({
       employeeCode: code,

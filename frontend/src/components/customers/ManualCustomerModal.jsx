@@ -76,8 +76,8 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
   const [rentalFlatId, setRentalFlatId] = useState('');
   const [leaseStartDate, setLeaseStartDate] = useState(new Date().toISOString().slice(0, 10));
   const [leaseEndDate, setLeaseEndDate] = useState(new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10));
-  const [monthlyRent, setMonthlyRent] = useState(25000);
-  const [securityDeposit, setSecurityDeposit] = useState(50000);
+  const [monthlyRent, setMonthlyRent] = useState('');
+  const [securityDeposit, setSecurityDeposit] = useState('');
   const [rentDueDay, setRentDueDay] = useState(5);
   const [rentStatus, setRentStatus] = useState('active');
 
@@ -139,7 +139,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
         setMobileNo('');
         setAlternateMobileNo('');
         setEmail('');
-        setAddress({ addressLine1: '', addressLine2: '', locality: '', city: 'Jaipur', state: 'Rajasthan', pincode: '302001', country: 'India' });
+        setAddress({ addressLine1: '', addressLine2: '', locality: '', city: '', state: '', pincode: '', country: 'India' });
         setSelectedPropertyIds([]);
         setOwnershipType('individual');
         setOwnershipPercentage(100);
@@ -154,13 +154,24 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
         setRegisteredAddress('');
         setContactPerson({ name: '', mobileNo: '', email: '', designation: 'Director' });
         setRentalFlatId('');
-        setMonthlyRent(25000);
-        setSecurityDeposit(50000);
+        setMonthlyRent('');
+        setSecurityDeposit('');
         setRentDueDay(5);
         setRentStatus('active');
       }
     }
   }, [isOpen, customer]);
+
+  const handleFlatSelectionForRental = (fId) => {
+    setRentalFlatId(fId);
+    if (fId && allFlats.length > 0) {
+      const selected = allFlats.find(f => f._id === fId);
+      if (selected?.rentalDetails?.expectedRent) {
+        setMonthlyRent(String(selected.rentalDetails.expectedRent));
+        setSecurityDeposit(String(selected.rentalDetails.securityDeposit || (selected.rentalDetails.expectedRent * 2)));
+      }
+    }
+  };
 
   const isDuplicatePhone = arePhoneNumbersSame(mobileNo, alternateMobileNo);
 
@@ -696,7 +707,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 <select
                   required
                   value={rentalFlatId}
-                  onChange={(e) => setRentalFlatId(e.target.value)}
+                  onChange={(e) => handleFlatSelectionForRental(e.target.value)}
                   style={{ width: '100%', fontSize: '0.85rem' }}
                 >
                   <option value="">-- Choose Rented Flat --</option>
