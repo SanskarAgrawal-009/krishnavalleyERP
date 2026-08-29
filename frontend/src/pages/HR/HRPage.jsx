@@ -25,7 +25,8 @@ import {
   ShieldCheck,
   UserCheck,
   ArrowRight,
-  FileText
+  FileText,
+  Upload
 } from 'lucide-react';
 
 export const HRPage = () => {
@@ -75,6 +76,7 @@ export const HRPage = () => {
   const [isDisburseModalOpen, setIsDisburseModalOpen] = useState(false);
   const [selectedPayrollItem, setSelectedPayrollItem] = useState(null);
   const [slipPreviewUrl, setSlipPreviewUrl] = useState(null);
+  const [selectedSlipItem, setSelectedSlipItem] = useState(null);
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -253,9 +255,32 @@ export const HRPage = () => {
       if (selectedEmployee && selectedEmployee._id === employeeId) {
         refreshActiveEmployee(employeeId);
       }
+      return res;
     } catch (err) {
       alert(err.message || 'Error processing salary disbursement');
       throw err;
+    }
+  };
+
+  const handleReuploadSlip = async (e) => {
+    if (!e.target.files || !e.target.files[0] || !selectedSlipItem) return;
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('paymentProof', file);
+    formData.append('paymentMethod', selectedSlipItem.paymentMethod || 'bank_transfer');
+    formData.append('paymentReference', selectedSlipItem.paymentReference || `SAL-${Date.now().toString().slice(-6)}`);
+    formData.append('remarks', selectedSlipItem.remarks || 'Updated payment receipt slip');
+    try {
+      const res = await hrService.paySalary(selectedSlipItem.employeeId, selectedSlipItem.id || selectedSlipItem._id, formData);
+      alert('✅ Payment slip proof successfully uploaded & permanently stored!');
+      const updatedEmp = res.data;
+      const updatedPay = updatedEmp?.payroll?.find((p) => (p._id || p.id) === (selectedSlipItem.id || selectedSlipItem._id));
+      if (updatedPay?.paymentProof?.fileUrl) {
+        setSlipPreviewUrl(getFileUrl(updatedPay.paymentProof.fileUrl));
+      }
+      loadData();
+    } catch (err) {
+      alert(err.message || 'Failed to upload payment slip');
     }
   };
 
@@ -1170,7 +1195,10 @@ export const HRPage = () => {
                               {(pay.paymentProof?.fileUrl || pay.payslipUrl) && (
                                 <button
                                   type="button"
-                                  onClick={() => setSlipPreviewUrl(getFileUrl(pay.paymentProof?.fileUrl || pay.payslipUrl))}
+                                  onClick={() => {
+                                    setSelectedSlipItem(pay);
+                                    setSlipPreviewUrl(getFileUrl(pay.paymentProof?.fileUrl || pay.payslipUrl));
+                                  }}
                                   style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
@@ -1258,8 +1286,40 @@ export const HRPage = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-              <strong style={{ fontSize: '1rem', color: '#0f172a' }}>Payment Slip & Proof Preview</strong>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div>
+                <strong style={{ fontSize: '1rem', color: '#0f172a', display: 'block' }}>Payment Slip & Proof Preview</strong>
+                {selectedSlipItem && (
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    {selectedSlipItem.employeeName} • Ref: {selectedSlipItem.paymentReference || 'SAL-REF'}
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="file"
+                  id="reuploadSlipInput"
+                  style={{ display: 'none' }}
+                  accept="image/*,application/pdf"
+                  onChange={handleReuploadSlip}
+                />
+                <label
+                  htmlFor="reuploadSlipInput"
+                  style={{
+                    padding: '5px 12px',
+                    backgroundColor: '#0284c7',
+                    color: '#ffffff',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <Upload size={13} /> Re-Upload / Replace Slip
+                </label>
+
                 <a
                   href={slipPreviewUrl}
                   target="_blank"
@@ -1278,11 +1338,14 @@ export const HRPage = () => {
                     gap: '4px'
                   }}
                 >
-                  <ExternalLink size={12} /> Open Full View / Download
+                  <ExternalLink size={12} /> Open Full View
                 </a>
                 <button
                   type="button"
-                  onClick={() => setSlipPreviewUrl(null)}
+                  onClick={() => {
+                    setSlipPreviewUrl(null);
+                    setSelectedSlipItem(null);
+                  }}
                   style={{
                     padding: '5px 12px',
                     backgroundColor: '#f1f5f9',
