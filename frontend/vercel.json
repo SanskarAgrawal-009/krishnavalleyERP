@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/uploads/:match*",
-      "destination": "https://krishnavalley-backend.onrender.com/uploads/:match*"
+      "destination": "https://krishnavalleyerp.onrender.com/uploads/:match*"
     },
     {
       "source": "/api/:match*",
-      "destination": "https://krishnavalley-backend.onrender.com/api/:match*"
+      "destination": "https://krishnavalleyerp.onrender.com/api/:match*"
     },
     {
       "source": "/(.*)",

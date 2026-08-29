@@ -11,7 +11,7 @@ export const BACKEND_URL = RAW_API_URL
   ? RAW_API_URL.replace(/\/api$/, '').replace(/\/$/, '')
   : (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
       ? 'http://localhost:5000'
-      : 'https://krishnavalley-backend.onrender.com');
+      : 'https://krishnavalleyerp.onrender.com');
 
 /**
  * Resolves any file path (S3 or local uploads) to an absolute URL

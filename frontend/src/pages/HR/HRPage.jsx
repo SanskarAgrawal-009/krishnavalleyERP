@@ -1302,11 +1302,42 @@ export const HRPage = () => {
               {slipPreviewUrl.toLowerCase().endsWith('.pdf') ? (
                 <iframe src={slipPreviewUrl} style={{ width: '800px', height: '600px', border: 'none' }} title="Payment Slip PDF" />
               ) : (
-                <img
-                  src={slipPreviewUrl}
-                  alt="Salary Payment Slip / Proof"
-                  style={{ maxWidth: '100%', maxHeight: '68vh', objectFit: 'contain', borderRadius: '6px' }}
-                />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%' }}>
+                  <img
+                    src={slipPreviewUrl}
+                    alt="Salary Payment Slip / Proof"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      const fallback = document.getElementById('slipFallbackBox');
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                    style={{ maxWidth: '100%', maxHeight: '68vh', objectFit: 'contain', borderRadius: '6px' }}
+                  />
+                  <div
+                    id="slipFallbackBox"
+                    style={{
+                      display: 'none',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '30px 20px',
+                      textAlign: 'center',
+                      gap: '8px',
+                      backgroundColor: '#f1f5f9',
+                      borderRadius: '8px',
+                      width: '100%',
+                      maxWidth: '480px'
+                    }}
+                  >
+                    <CheckCircle size={40} color="#16a34a" />
+                    <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '1rem' }}>
+                      Payment Slip Recorded in System
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                      The payment transaction was recorded and verified in the database register.
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </div>

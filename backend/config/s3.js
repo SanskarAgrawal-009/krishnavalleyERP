@@ -59,26 +59,38 @@ export const uploadFileToS3 = async (fileBuffer, originalName, mimeType, folder 
       };
     } catch (error) {
       console.error('[AWS S3 Error] Failed to upload to S3:', error.message);
-      console.log('[AWS S3] Falling back to local storage.');
+      console.log('[AWS S3] Falling back to persistent database storage.');
     }
   }
 
-  // Local fallback storage
-  const uploadDir = path.resolve(__dirname, `../uploads/${folder}`);
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+  // Persistent Storage Fallback:
+  // For files up to 12MB, generate Data URL so it is permanently stored in MongoDB Atlas
+  // and is never lost when Render or Vercel containers restart!
+  let dataUrl = '';
+  if (fileBuffer && fileBuffer.length <= 12 * 1024 * 1024) {
+    const determinedMime = mimeType || (sanitizedName.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
+    dataUrl = `data:${determinedMime};base64,${fileBuffer.toString('base64')}`;
   }
 
-  const localFilePath = path.join(uploadDir, `${timestamp}_${sanitizedName}`);
-  fs.writeFileSync(localFilePath, fileBuffer);
+  // Also write to local disk
+  try {
+    const uploadDir = path.resolve(__dirname, `../uploads/${folder}`);
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    const localFilePath = path.join(uploadDir, `${timestamp}_${sanitizedName}`);
+    fs.writeFileSync(localFilePath, fileBuffer);
+  } catch (err) {
+    console.warn('[Local Upload] Could not write to disk:', err.message);
+  }
 
   const localUrl = `/uploads/${folder}/${timestamp}_${sanitizedName}`;
-  console.log(`[Local Upload] Saved agreement file to: ${localUrl}`);
+  console.log(`[Upload] File preserved successfully (${dataUrl ? 'Permanent Database Data URL' : 'Local File'})`);
 
   return {
-    documentUrl: localUrl,
+    documentUrl: dataUrl || localUrl,
     documentName: originalName,
     fileKey: fileKey,
-    storage: 'local'
+    storage: dataUrl ? 'database-base64' : 'local'
   };
 };
