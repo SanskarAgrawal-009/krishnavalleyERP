@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { arePhoneNumbersSame } from '../../utils/phoneValidator.js';
 
 const EmployeeSchema = new mongoose.Schema(
   {
@@ -29,6 +30,18 @@ const EmployeeSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
+    },
+
+    alternateMobileNo: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function (val) {
+          if (!val) return true;
+          return !arePhoneNumbersSame(this.mobileNo, val);
+        },
+        message: 'Primary mobile number and alternate mobile number cannot be the same.'
+      }
     },
 
     email: {
@@ -374,6 +387,26 @@ const EmployeeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+EmployeeSchema.pre('validate', function (next) {
+  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
+    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+  }
+  if (this.mobileNo && this.emergencyContact?.mobileNo && arePhoneNumbersSame(this.mobileNo, this.emergencyContact.mobileNo)) {
+    return next(new Error('Primary mobile number and emergency contact mobile number cannot be the same.'));
+  }
+  next();
+});
+
+EmployeeSchema.pre('save', function (next) {
+  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
+    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+  }
+  if (this.mobileNo && this.emergencyContact?.mobileNo && arePhoneNumbersSame(this.mobileNo, this.emergencyContact.mobileNo)) {
+    return next(new Error('Primary mobile number and emergency contact mobile number cannot be the same.'));
+  }
+  next();
+});
 
 export const Employee = mongoose.models.Employee || mongoose.model("Employee", EmployeeSchema);
 export default Employee;

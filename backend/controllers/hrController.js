@@ -3,6 +3,7 @@ import Employee from '../models/hr/Employee.js';
 import User from '../models/User.js';
 import Role from '../models/Role.js';
 import { uploadFileToS3 } from '../config/s3.js';
+import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
 import mongoose from 'mongoose';
 
 // Ensure default HR Master (Departments & Roles) exists with full department-to-role mappings
@@ -322,6 +323,13 @@ export const createEmployee = async (req, res) => {
 
     const code = employeeCode || `EMP-${Date.now().toString().slice(-4)}`;
     const phoneNum = mobileNo || phone || '+91 98765 00000';
+
+    if (emergencyContact?.mobileNo && arePhoneNumbersSame(phoneNum, emergencyContact.mobileNo)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Employee primary mobile number and emergency contact mobile number cannot be the same.'
+      });
+    }
 
     let selectedDept = master.departments.find((d) => d._id.toString() === departmentId?.toString()) || master.departments[0];
     let selectedRole = master.roles.find((r) => r._id.toString() === roleId?.toString()) || master.roles[0];

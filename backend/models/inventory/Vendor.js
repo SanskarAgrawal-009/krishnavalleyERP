@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { arePhoneNumbersSame } from '../../utils/phoneValidator.js';
 
 const VendorSchema = new mongoose.Schema(
   {
@@ -63,6 +64,20 @@ const VendorSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+VendorSchema.pre('validate', function (next) {
+  if (this.phone && this.contactPerson?.mobileNo && arePhoneNumbersSame(this.phone, this.contactPerson.mobileNo)) {
+    return next(new Error('Vendor office phone and contact person mobile number cannot be the same.'));
+  }
+  next();
+});
+
+VendorSchema.pre('save', function (next) {
+  if (this.phone && this.contactPerson?.mobileNo && arePhoneNumbersSame(this.phone, this.contactPerson.mobileNo)) {
+    return next(new Error('Vendor office phone and contact person mobile number cannot be the same.'));
+  }
+  next();
+});
 
 export const Vendor = mongoose.models.Vendor || mongoose.model("Vendor", VendorSchema);
 export default Vendor;

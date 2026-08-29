@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { projectService } from '../../services/projectService.js';
+import { arePhoneNumbersSame } from '../../utils/phoneValidator.js';
 import { 
   User, 
   Phone, 
@@ -151,8 +152,15 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
     }
   }, [isOpen, customer]);
 
+  const isDuplicatePhone = arePhoneNumbersSame(mobileNo, alternateMobileNo);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (arePhoneNumbersSame(mobileNo, alternateMobileNo)) {
+      alert('Primary mobile number and alternate mobile number cannot be the same. Please provide a different alternate number or leave it blank.');
+      return;
+    }
 
     const payload = {
       customerType,
@@ -304,7 +312,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
+              <label style={{ fontSize: '0.75rem', color: isDuplicatePhone ? '#dc2626' : '#374151', display: 'block', marginBottom: '3px', fontWeight: isDuplicatePhone ? '700' : 'normal' }}>
                 Alternate Mobile No
               </label>
               <input
@@ -312,8 +320,17 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 placeholder="e.g. +91 94140 54321"
                 value={alternateMobileNo}
                 onChange={(e) => setAlternateMobileNo(e.target.value)}
-                style={{ width: '100%' }}
+                style={{
+                  width: '100%',
+                  borderColor: isDuplicatePhone ? '#dc2626' : undefined,
+                  backgroundColor: isDuplicatePhone ? '#fff5f5' : undefined
+                }}
               />
+              {isDuplicatePhone && (
+                <span style={{ fontSize: '0.72rem', color: '#dc2626', fontWeight: '600', marginTop: '3px', display: 'block' }}>
+                  ⚠️ Alternate mobile number cannot be the same as primary mobile number.
+                </span>
+              )}
             </div>
 
             <div>

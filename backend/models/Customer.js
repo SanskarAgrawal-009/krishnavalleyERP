@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
 
 const CustomerSchema = new mongoose.Schema(
   {
@@ -33,6 +34,13 @@ const CustomerSchema = new mongoose.Schema(
     alternateMobileNo: {
       type: String,
       trim: true,
+      validate: {
+        validator: function (val) {
+          if (!val) return true;
+          return !arePhoneNumbersSame(this.mobileNo, val);
+        },
+        message: 'Primary mobile number and alternate mobile number cannot be the same.'
+      }
     },
 
     email: {
@@ -415,6 +423,20 @@ const CustomerSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+CustomerSchema.pre('validate', function (next) {
+  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
+    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+  }
+  next();
+});
+
+CustomerSchema.pre('save', function (next) {
+  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
+    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+  }
+  next();
+});
 
 export const Customer = mongoose.models.Customer || mongoose.model("Customer", CustomerSchema);
 export default Customer;

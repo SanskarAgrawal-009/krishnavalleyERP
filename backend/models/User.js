@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
 
 const UserSchema = new mongoose.Schema(
   {
@@ -45,6 +46,18 @@ const UserSchema = new mongoose.Schema(
     mobileNo: {
       type: String,
       trim: true,
+    },
+
+    alternateMobileNo: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function (val) {
+          if (!val) return true;
+          return !arePhoneNumbersSame(this.mobileNo, val);
+        },
+        message: 'Primary mobile number and alternate mobile number cannot be the same.'
+      }
     },
 
     // ==========================================
@@ -237,6 +250,20 @@ UserSchema.pre('save', async function () {
     const salt = await bcrypt.genSalt(10);
     this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
   }
+});
+
+UserSchema.pre('validate', function (next) {
+  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
+    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+  }
+  next();
+});
+
+UserSchema.pre('save', function (next) {
+  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
+    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+  }
+  next();
 });
 
 // Compare candidate password with stored hash

@@ -2,6 +2,7 @@ import Customer from '../models/Customer.js';
 import Flat from '../models/Flat.js';
 import { uploadFileToS3 } from '../config/s3.js';
 import { escapeRegex } from '../utils/regexUtil.js';
+import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
 import mongoose from 'mongoose';
 
 // Create a new Customer (Owner or Tenant)
@@ -23,6 +24,13 @@ export const createCustomer = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'customerType, name, and mobileNo are required fields'
+      });
+    }
+
+    if (alternateMobileNo && arePhoneNumbersSame(mobileNo, alternateMobileNo)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Primary mobile number and alternate mobile number cannot be the same.'
       });
     }
 
@@ -71,7 +79,8 @@ export const createCustomer = async (req, res) => {
     return res.status(201).json({ success: true, data: populated });
   } catch (error) {
     console.error('Error creating customer:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    const statusCode = error.name === 'ValidationError' ? 400 : 500;
+    return res.status(statusCode).json({ success: false, message: error.message });
   }
 };
 
@@ -165,6 +174,16 @@ export const updateCustomer = async (req, res) => {
     const customer = await Customer.findById(id);
     if (!customer) return res.status(404).json({ success: false, message: 'Customer record not found' });
 
+    const effectivePrimary = updates.mobileNo || customer.mobileNo;
+    const effectiveAlternate = updates.alternateMobileNo !== undefined ? updates.alternateMobileNo : customer.alternateMobileNo;
+
+    if (effectiveAlternate && arePhoneNumbersSame(effectivePrimary, effectiveAlternate)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Primary mobile number and alternate mobile number cannot be the same.'
+      });
+    }
+
     if (updates.name) customer.name = updates.name;
     if (updates.mobileNo) customer.mobileNo = updates.mobileNo;
     if (updates.alternateMobileNo !== undefined) customer.alternateMobileNo = updates.alternateMobileNo;
@@ -198,7 +217,8 @@ export const updateCustomer = async (req, res) => {
     return res.json({ success: true, data: populated });
   } catch (error) {
     console.error('Error updating customer:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    const statusCode = error.name === 'ValidationError' ? 400 : 500;
+    return res.status(statusCode).json({ success: false, message: error.message });
   }
 };
 
