@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const salesService = {
   convertLead: (data) => request('/sales/convert', {
@@ -31,7 +31,7 @@ export const salesService = {
       fd.append('agreementFile', formDataOrFile);
       body = fd;
     }
-    return fetch(`/api/sales/${id}/agreement/upload`, {
+    return fetch(`${BASE_URL}/sales/${id}/agreement/upload`, {
       method: 'POST',
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})

@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const customerService = {
   createCustomer: (data) => request('/customers', {
@@ -26,7 +26,7 @@ export const customerService = {
       fd.append('documentFile', formDataOrFile);
       body = fd;
     }
-    return fetch(`/api/customers/${id}/documents/upload`, {
+    return fetch(`${BASE_URL}/customers/${id}/documents/upload`, {
       method: 'POST',
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -49,7 +49,7 @@ export const customerService = {
   logCustomerCommunication: (id, formDataOrData) => {
     const token = localStorage.getItem('kv_token');
     if (formDataOrData instanceof FormData) {
-      return fetch(`/api/customers/${id}/communications`, {
+      return fetch(`${BASE_URL}/customers/${id}/communications`, {
         method: 'POST',
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})

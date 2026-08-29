@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const documentService = {
   getVault: () => request('/documents/vault'),
@@ -11,7 +11,7 @@ export const documentService = {
       fd.append('legalFile', formDataOrFile);
       body = fd;
     }
-    return fetch('/api/documents/legal', {
+    return fetch(`${BASE_URL}/documents/legal`, {
       method: 'POST',
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -34,7 +34,7 @@ export const documentService = {
       fd.append('blueprintFile', formDataOrFile);
       body = fd;
     }
-    return fetch(`/api/flats/${flatId}/blueprints`, {
+    return fetch(`${BASE_URL}/flats/${flatId}/blueprints`, {
       method: 'POST',
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})

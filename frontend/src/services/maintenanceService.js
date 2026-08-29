@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const maintenanceService = {
   // 1. Maintenance Bills
@@ -20,7 +20,7 @@ export const maintenanceService = {
   recordBillPayment: (id, formData) => {
     const token = localStorage.getItem('kv_token');
     if (formData instanceof FormData) {
-      return fetch(`/api/maintenance/bills/${id}/pay`, {
+      return fetch(`${BASE_URL}/maintenance/bills/${id}/pay`, {
         method: 'POST',
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -65,7 +65,7 @@ export const maintenanceService = {
 
   uploadServicePhoto: (id, formData) => {
     const token = localStorage.getItem('kv_token');
-    return fetch(`/api/maintenance/service-requests/${id}/photos`, {
+    return fetch(`${BASE_URL}/maintenance/service-requests/${id}/photos`, {
       method: 'POST',
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -84,7 +84,7 @@ export const maintenanceService = {
   levyPenalty: (formDataOrData) => {
     const token = localStorage.getItem('kv_token');
     if (formDataOrData instanceof FormData) {
-      return fetch('/api/maintenance/penalties', {
+      return fetch(`${BASE_URL}/maintenance/penalties`, {
         method: 'POST',
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})

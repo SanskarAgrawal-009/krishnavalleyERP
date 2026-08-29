@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const hrService = {
   getSummary: () => request('/hr/summary'),
@@ -75,7 +75,7 @@ export const hrService = {
       fd.append('documentFile', formDataOrFile);
       body = fd;
     }
-    return fetch(`/api/hr/employees/${id}/documents`, {
+    return fetch(`${BASE_URL}/hr/employees/${id}/documents`, {
       method: 'POST',
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})

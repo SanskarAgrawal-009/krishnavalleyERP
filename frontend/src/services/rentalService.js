@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const rentalService = {
   createRental: (data) => request('/rentals', {
@@ -33,7 +33,7 @@ export const rentalService = {
       fd.append('agreementFile', formDataOrFile);
       body = fd;
     }
-    return fetch(`/api/rentals/${id}/rent-back/upload`, {
+    return fetch(`${BASE_URL}/rentals/${id}/rent-back/upload`, {
       method: 'POST',
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -56,7 +56,7 @@ export const rentalService = {
       fd.append('agreementFile', formDataOrFile);
       body = fd;
     }
-    return fetch(`/api/rentals/${id}/tenant-agreement/upload`, {
+    return fetch(`${BASE_URL}/rentals/${id}/tenant-agreement/upload`, {
       method: 'POST',
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})

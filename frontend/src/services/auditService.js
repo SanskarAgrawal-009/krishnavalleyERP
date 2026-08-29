@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const auditService = {
   // Get filtered audit logs
@@ -35,7 +35,7 @@ export const auditService = {
   // Export URL
   getExportUrl: (format = 'csv', tab = 'all') => {
     const token = localStorage.getItem('kv_token');
-    return `/api/audit-logs/export?format=${format}&tab=${tab}&token=${token || ''}`;
+    return `${BASE_URL}/audit-logs/export?format=${format}&tab=${tab}&token=${token || ''}`;
   },
 };
 

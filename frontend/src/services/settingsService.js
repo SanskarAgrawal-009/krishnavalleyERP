@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const settingsService = {
   // Get all settings
@@ -42,7 +42,7 @@ export const settingsService = {
   // Get Backup Export URL
   getExportUrl: () => {
     const token = localStorage.getItem('kv_token');
-    return `/api/settings/backup/export?token=${token || ''}`;
+    return `${BASE_URL}/settings/backup/export?token=${token || ''}`;
   },
 };
 

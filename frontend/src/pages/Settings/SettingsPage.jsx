@@ -1099,7 +1099,7 @@ export const SettingsPage = () => {
                   </button>
 
                   <a
-                    href="/api/settings/backup/export"
+                    href={settingsService.getExportUrl()}
                     target="_blank"
                     rel="noreferrer"
                     style={{
