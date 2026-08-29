@@ -236,12 +236,16 @@ export const App = () => {
             <Route path="users" element={<Navigate to="/access-control" replace />} />
             <Route path="roles" element={<Navigate to="/access-control?tab=roles" replace />} />
 
-            {/* 14. Global System Settings */}
+            {/* 14. Global System Settings (Frozen for deployment, retained for offline laptop use) */}
             <Route
               path="settings"
               element={
                 <ProtectedRoute permission="settings:view">
-                  <SettingsPage />
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                    <SettingsPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />
@@ -249,17 +253,25 @@ export const App = () => {
               path="settings/:tab"
               element={
                 <ProtectedRoute permission="settings:view">
-                  <SettingsPage />
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                    <SettingsPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />
 
-            {/* 15. Audit Logs Governance */}
+            {/* 15. Audit Logs Governance (Frozen for deployment, retained for offline laptop use) */}
             <Route
               path="audit-logs"
               element={
                 <ProtectedRoute permission="users:view">
-                  <AuditLogsPage />
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                    <AuditLogsPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />
@@ -267,7 +279,11 @@ export const App = () => {
               path="audit-logs/:tab"
               element={
                 <ProtectedRoute permission="users:view">
-                  <AuditLogsPage />
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                    <AuditLogsPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />

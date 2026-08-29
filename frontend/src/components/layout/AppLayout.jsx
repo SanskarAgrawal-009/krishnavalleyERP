@@ -237,6 +237,7 @@ const NAV_ITEMS = [
     label: '14. Settings',
     icon: Settings,
     badge: 'Core',
+    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for laptop]
     permission: 'settings:view',
     subItems: [
       { path: '/settings?tab=company', label: 'Company Profile', icon: Building2 },
@@ -254,6 +255,7 @@ const NAV_ITEMS = [
     label: '15. Audit Logs',
     icon: ShieldCheck,
     badge: 'Sec',
+    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for laptop]
     permission: 'users:view',
     subItems: [
       { path: '/audit-logs?tab=activity', label: 'Activity Logs (CRUD)', icon: FileText },
@@ -1111,25 +1113,27 @@ export const AppLayout = () => {
                 <HelpCircle size={16} /> Help & Documentation
               </NavLink>
 
-              <NavLink
-                to="/settings"
-                onClick={() => isMobile && setMobileMenuOpen(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  padding: '6px 10px',
-                  borderRadius: '6px',
-                  color: 'var(--on-surface-variant)',
-                  textDecoration: 'none',
-                  fontSize: '0.8rem',
-                  fontWeight: '500'
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-              >
-                <Settings size={16} /> System Settings
-              </NavLink>
+              {isOfflineDev && (
+                <NavLink
+                  to="/settings"
+                  onClick={() => isMobile && setMobileMenuOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    color: 'var(--on-surface-variant)',
+                    textDecoration: 'none',
+                    fontSize: '0.8rem',
+                    fontWeight: '500'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <Settings size={16} /> System Settings
+                </NavLink>
+              )}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
@@ -1152,24 +1156,26 @@ export const AppLayout = () => {
                 <HelpCircle size={17} />
               </button>
 
-              <button
-                onClick={() => navigate('/settings')}
-                title="System Settings"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '6px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'var(--on-surface-variant)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-              >
-                <Settings size={17} />
-              </button>
+              {isOfflineDev && (
+                <button
+                  onClick={() => navigate('/settings')}
+                  title="System Settings"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '6px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: 'var(--on-surface-variant)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Settings size={17} />
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -1482,45 +1488,47 @@ export const AppLayout = () => {
                     </button>
                   )}
 
-                  {/* Switch Role Quick Tester */}
-                  <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
-                    <div style={{ fontSize: '0.7rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', marginBottom: '6px' }}>
-                      ⚡ Quick Role Switch (Demo)
+                  {/* Switch Role Quick Tester (Offline development only) */}
+                  {isOfflineDev && (
+                    <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
+                      <div style={{ fontSize: '0.7rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', marginBottom: '6px' }}>
+                        ⚡ Quick Role Switch (Demo)
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                        {[
+                          { label: 'Admin', user: 'admin', pass: 'Admin@12345' },
+                          { label: 'Sales Head', user: 'sales_head', pass: 'Sales@12345' },
+                          { label: 'Site Eng.', user: 'site_eng', pass: 'Site@12345' },
+                          { label: 'HR Head', user: 'hr_manager', pass: 'Hr@12345' },
+                        ].map((demo) => (
+                          <button
+                            key={demo.label}
+                            onClick={async () => {
+                              try {
+                                await login(demo.user, demo.pass);
+                                setProfileDropdownOpen(false);
+                                navigate('/dashboard');
+                              } catch (e) {
+                                alert(e.message);
+                              }
+                            }}
+                            style={{
+                              padding: '4px 6px',
+                              borderRadius: '6px',
+                              border: '1px solid #e5e7eb',
+                              backgroundColor: '#ffffff',
+                              fontSize: '0.72rem',
+                              fontWeight: '600',
+                              color: '#374151',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {demo.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                      {[
-                        { label: 'Admin', user: 'admin', pass: 'Admin@12345' },
-                        { label: 'Sales Head', user: 'sales_head', pass: 'Sales@12345' },
-                        { label: 'Site Eng.', user: 'site_eng', pass: 'Site@12345' },
-                        { label: 'HR Head', user: 'hr_manager', pass: 'Hr@12345' },
-                      ].map((demo) => (
-                        <button
-                          key={demo.label}
-                          onClick={async () => {
-                            try {
-                              await login(demo.user, demo.pass);
-                              setProfileDropdownOpen(false);
-                              navigate('/dashboard');
-                            } catch (e) {
-                              alert(e.message);
-                            }
-                          }}
-                          style={{
-                            padding: '4px 6px',
-                            borderRadius: '6px',
-                            border: '1px solid #e5e7eb',
-                            backgroundColor: '#ffffff',
-                            fontSize: '0.72rem',
-                            fontWeight: '600',
-                            color: '#374151',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {demo.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  )}
 
                   {/* Logout Action */}
                   <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '8px' }}>
