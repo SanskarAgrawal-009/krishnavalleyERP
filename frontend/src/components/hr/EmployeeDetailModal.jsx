@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { StatusBadge } from '../common/StatusBadge.jsx';
+import { DisburseSalaryModal } from './DisburseSalaryModal.jsx';
 import { 
   User, 
   Phone, 
@@ -33,6 +34,10 @@ export const EmployeeDetailModal = ({
   const [docType, setDocType] = useState('aadhaar');
   const [docName, setDocName] = useState('');
   const [uploadingDoc, setUploadingDoc] = useState(false);
+
+  // Disburse Modal State
+  const [isDisburseOpen, setIsDisburseOpen] = useState(false);
+  const [selectedPayroll, setSelectedPayroll] = useState(null);
 
   if (!employee) return null;
 
@@ -275,14 +280,44 @@ export const EmployeeDetailModal = ({
                         </span>
                       </div>
 
-                      {p.status !== 'paid' && (
+                      {p.status !== 'paid' ? (
                         <button
                           type="button"
-                          onClick={() => onPaySalary(employee._id, p._id, { paymentMethod: 'bank_transfer' })}
-                          style={{ padding: '5px 12px', background: '#10b981', color: '#111827', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
+                          onClick={() => {
+                            setSelectedPayroll({
+                              employeeId: employee._id,
+                              payrollId: p._id,
+                              employeeName: `${employee.firstName || ''} ${employee.lastName || ''}`.trim() || 'Staff Member',
+                              employeeCode: employee.employeeCode || '',
+                              departmentName: employee.departmentName,
+                              roleName: employee.designation,
+                              month: p.month,
+                              monthName: `Month ${p.month}`,
+                              year: p.year,
+                              netSalary: p.netSalary
+                            });
+                            setIsDisburseOpen(true);
+                          }}
+                          style={{ padding: '5px 12px', background: '#10b981', color: '#ffffff', border: 'none', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
                         >
                           Disburse Salary
                         </button>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                          <span style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: '700' }}>
+                            ✓ Disbursed ({p.paymentMethod === 'upi' ? 'UPI' : (p.paymentMethod ? p.paymentMethod.replace(/_/g, ' ') : 'Bank Transfer')})
+                          </span>
+                          {(p.paymentProof?.fileUrl || p.payslipUrl) && (
+                            <a
+                              href={p.paymentProof?.fileUrl || p.payslipUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ fontSize: '0.7rem', color: '#3b82f6', textDecoration: 'underline', fontWeight: '600' }}
+                            >
+                              View Slip / Proof
+                            </a>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -378,6 +413,15 @@ export const EmployeeDetailModal = ({
         )}
 
       </div>
+      <DisburseSalaryModal
+        isOpen={isDisburseOpen}
+        onClose={() => {
+          setIsDisburseOpen(false);
+          setSelectedPayroll(null);
+        }}
+        payrollItem={selectedPayroll}
+        onDisburse={onPaySalary}
+      />
     </Modal>
   );
 };

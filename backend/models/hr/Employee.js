@@ -300,13 +300,28 @@ const EmployeeSchema = new mongoose.Schema(
           type: String,
           enum: [
             "bank_transfer",
+            "upi",
             "cash",
             "cheque",
             "other",
           ],
+          default: "bank_transfer",
         },
 
         paymentReference: {
+          type: String,
+        },
+
+        paymentProof: {
+          fileUrl: String,
+          fileName: String,
+          uploadedAt: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+
+        remarks: {
           type: String,
         },
 

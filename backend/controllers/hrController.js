@@ -611,7 +611,7 @@ export const generateMonthlyPayroll = async (req, res) => {
 export const processPayrollPayment = async (req, res) => {
   try {
     const { id, payrollId } = req.params;
-    const { paymentMethod, paymentReference } = req.body;
+    const { paymentMethod, paymentReference, paymentDate, remarks } = req.body;
 
     const employee = await Employee.findById(id);
     if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
@@ -619,13 +619,39 @@ export const processPayrollPayment = async (req, res) => {
     const paySlip = employee.payroll.id(payrollId);
     if (!paySlip) return res.status(404).json({ success: false, message: 'Payroll slip not found' });
 
+    let proofDoc = undefined;
+    if (req.file) {
+      const uploadResult = await uploadFileToS3(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        'salary_payment_proofs'
+      );
+      proofDoc = {
+        fileUrl: uploadResult.documentUrl,
+        fileName: uploadResult.documentName,
+        uploadedAt: new Date()
+      };
+    }
+
     paySlip.status = 'paid';
-    paySlip.paymentDate = new Date();
+    paySlip.paymentDate = paymentDate ? new Date(paymentDate) : new Date();
     paySlip.paymentMethod = paymentMethod || 'bank_transfer';
     paySlip.paymentReference = paymentReference || `SAL-${Date.now().toString().slice(-6)}`;
+    if (proofDoc) {
+      paySlip.paymentProof = proofDoc;
+      paySlip.payslipUrl = proofDoc.fileUrl;
+    }
+    if (remarks) {
+      paySlip.remarks = remarks;
+    }
 
     await employee.save();
-    return res.json({ success: true, message: 'Salary marked as PAID and disbursed', data: employee });
+    return res.json({
+      success: true,
+      message: 'Salary marked as PAID and disbursed successfully with payment slip!',
+      data: employee
+    });
   } catch (error) {
     console.error('Error processing payroll payment:', error);
     return res.status(500).json({ success: false, message: error.message });

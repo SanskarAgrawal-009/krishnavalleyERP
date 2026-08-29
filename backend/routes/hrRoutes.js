@@ -54,7 +54,7 @@ router.put('/employees/:id/leaves/:leaveId', authorizePermission('hr:edit', 'hr:
 
 // 5. Payroll
 router.post('/payroll/generate', authorizePermission('hr:payroll', 'hr:manage'), generateMonthlyPayroll);
-router.post('/employees/:id/payroll/:payrollId/pay', authorizePermission('hr:payroll', 'hr:manage'), processPayrollPayment);
+router.post('/employees/:id/payroll/:payrollId/pay', authorizePermission('hr:payroll', 'hr:manage'), upload.single('paymentProof'), processPayrollPayment);
 
 // 6. Documents Vault
 router.post('/employees/:id/documents', authorizePermission('hr:manage', 'documents:upload'), upload.single('documentFile'), uploadEmployeeDocument);

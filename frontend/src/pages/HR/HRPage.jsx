@@ -6,6 +6,7 @@ import { LogAttendanceModal } from '../../components/hr/LogAttendanceModal.jsx';
 import { ApplyLeaveModal } from '../../components/hr/ApplyLeaveModal.jsx';
 import { GeneratePayrollModal } from '../../components/hr/GeneratePayrollModal.jsx';
 import { EmployeeDetailModal } from '../../components/hr/EmployeeDetailModal.jsx';
+import { DisburseSalaryModal } from '../../components/hr/DisburseSalaryModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 
 import {
@@ -22,7 +23,8 @@ import {
   ExternalLink,
   ShieldCheck,
   UserCheck,
-  ArrowRight
+  ArrowRight,
+  FileText
 } from 'lucide-react';
 
 export const HRPage = () => {
@@ -69,6 +71,8 @@ export const HRPage = () => {
   const [isAttModalOpen, setIsAttModalOpen] = useState(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+  const [isDisburseModalOpen, setIsDisburseModalOpen] = useState(false);
+  const [selectedPayrollItem, setSelectedPayrollItem] = useState(null);
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -241,11 +245,15 @@ export const HRPage = () => {
 
   const handlePaySalary = async (employeeId, payrollId, data) => {
     try {
-      await hrService.paySalary(employeeId, payrollId, data);
-      alert('Salary payment processed!');
-      refreshActiveEmployee(employeeId);
+      const res = await hrService.paySalary(employeeId, payrollId, data);
+      alert(res.message || 'Salary disbursed successfully with payment slip!');
+      loadData();
+      if (selectedEmployee && selectedEmployee._id === employeeId) {
+        refreshActiveEmployee(employeeId);
+      }
     } catch (err) {
-      alert(err.message);
+      alert(err.message || 'Error processing salary disbursement');
+      throw err;
     }
   };
 
@@ -1114,25 +1122,73 @@ export const HRPage = () => {
                           {pay.status !== 'paid' ? (
                             <button
                               type="button"
-                              onClick={() => handlePaySalary(pay.employeeId, pay.id || pay._id, { paymentMethod: 'bank_transfer' })}
+                              onClick={() => {
+                                setSelectedPayrollItem({
+                                  employeeId: pay.employeeId,
+                                  payrollId: pay.id || pay._id,
+                                  employeeName: pay.employeeName || 'Staff Member',
+                                  employeeCode: pay.employeeCode || '',
+                                  departmentName: pay.departmentName,
+                                  roleName: pay.designation,
+                                  month: pay.month,
+                                  monthName: monthNames[pay.month - 1] || `Month ${pay.month}`,
+                                  year: pay.year,
+                                  netSalary: pay.netSalary
+                                });
+                                setIsDisburseModalOpen(true);
+                              }}
                               style={{
-                                padding: '5px 12px',
+                                padding: '6px 14px',
                                 background: '#137333',
                                 color: '#ffffff',
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '5px',
                                 fontSize: '0.75rem',
                                 fontWeight: '700',
                                 cursor: 'pointer',
-                                whiteSpace: 'nowrap'
+                                whiteSpace: 'nowrap',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.08)'
                               }}
                             >
-                              Disburse Salary
+                              <DollarSign size={13} /> Disburse Salary
                             </button>
                           ) : (
-                            <span style={{ color: '#137333', fontWeight: '700', fontSize: '0.75rem' }}>
-                              ✓ Disbursed ({pay.paymentMethod || 'Bank Transfer'})
-                            </span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-start' }}>
+                              <span style={{ color: '#137333', fontWeight: '700', fontSize: '0.75rem' }}>
+                                ✓ Disbursed ({pay.paymentMethod === 'upi' ? 'UPI' : (pay.paymentMethod ? pay.paymentMethod.replace(/_/g, ' ') : 'Bank Transfer')})
+                              </span>
+                              {pay.paymentReference && (
+                                <span style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                                  Ref: {pay.paymentReference}
+                                </span>
+                              )}
+                              {(pay.paymentProof?.fileUrl || pay.payslipUrl) && (
+                                <a
+                                  href={pay.paymentProof?.fileUrl || pay.payslipUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    fontSize: '0.7rem',
+                                    color: '#1d4ed8',
+                                    fontWeight: '700',
+                                    textDecoration: 'none',
+                                    backgroundColor: '#eff6ff',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    border: '1px solid #bfdbfe',
+                                    marginTop: '2px'
+                                  }}
+                                >
+                                  <FileText size={11} /> View Slip / Proof
+                                </a>
+                              )}
+                            </div>
                           )}
                         </td>
                       </tr>
@@ -1158,6 +1214,15 @@ export const HRPage = () => {
         onPaySalary={handlePaySalary}
         onUploadDoc={handleUploadDoc}
         onRefresh={() => refreshActiveEmployee(selectedEmployee?._id)}
+      />
+      <DisburseSalaryModal
+        isOpen={isDisburseModalOpen}
+        onClose={() => {
+          setIsDisburseModalOpen(false);
+          setSelectedPayrollItem(null);
+        }}
+        payrollItem={selectedPayrollItem}
+        onDisburse={handlePaySalary}
       />
 
     </div>

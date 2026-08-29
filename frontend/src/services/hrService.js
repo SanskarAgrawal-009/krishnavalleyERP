@@ -61,10 +61,24 @@ export const hrService = {
     method: 'POST',
     body: JSON.stringify(data)
   }),
-  paySalary: (id, payrollId, data) => request(`/hr/employees/${id}/payroll/${payrollId}/pay`, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
+  paySalary: (id, payrollId, data) => {
+    const token = localStorage.getItem('kv_token');
+    const isFormData = data instanceof FormData;
+    return fetch(`${BASE_URL}/hr/employees/${id}/payroll/${payrollId}/pay`, {
+      method: 'POST',
+      headers: {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' })
+      },
+      body: isFormData ? data : JSON.stringify(data)
+    }).then(async (res) => {
+      const text = await res.text();
+      let resData = {};
+      try { resData = text ? JSON.parse(text) : {}; } catch (_) {}
+      if (!res.ok) throw new Error(resData.message || `Salary disbursement failed (${res.status})`);
+      return resData;
+    });
+  },
 
   // 6. Documents Vault
   uploadDoc: (id, formDataOrFile) => {
