@@ -188,12 +188,16 @@ export const App = () => {
               }
             />
 
-            {/* Notifications Hub */}
+            {/* Notifications Hub (Frozen for deployment, retained for offline laptop use) */}
             <Route
               path="notifications"
               element={
                 <ProtectedRoute permission="notifications:view">
-                  <NotificationManagementPage />
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                    <NotificationManagementPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />
@@ -224,17 +228,21 @@ export const App = () => {
               }
             />
 
-            {/* User & Access Control Governance */}
+            {/* User & Access Control Governance (Frozen for deployment, retained for offline laptop use) */}
             <Route
               path="access-control"
               element={
                 <ProtectedRoute permission="users:view">
-                  <UserManagementPage />
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                    <UserManagementPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />
-            <Route path="users" element={<Navigate to="/access-control" replace />} />
-            <Route path="roles" element={<Navigate to="/access-control?tab=roles" replace />} />
+            <Route path="users" element={<Navigate to="/dashboard" replace />} />
+            <Route path="roles" element={<Navigate to="/dashboard" replace />} />
 
             {/* 14. Global System Settings (Frozen for deployment, retained for offline laptop use) */}
             <Route

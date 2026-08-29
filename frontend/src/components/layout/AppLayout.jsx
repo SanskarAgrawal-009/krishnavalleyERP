@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { ErrorBoundary } from '../common/ErrorBoundary.jsx';
+import { NotificationAlertBox } from './NotificationAlertBox.jsx';
 import {
   LayoutDashboard,
   Building2,
@@ -190,6 +191,7 @@ const NAV_ITEMS = [
     label: 'Notifications Hub',
     icon: Bell,
     badge: 'Hub',
+    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for laptop]
     permission: 'notifications:view',
     subItems: [
       { path: '/notifications?tab=templates', label: 'Reminder Templates', icon: FileText },
@@ -225,6 +227,7 @@ const NAV_ITEMS = [
     icon: ShieldCheck,
     highlight: false,
     badge: 'Admin',
+    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for laptop]
     permission: 'users:view',
     subItems: [
       { path: '/access-control?tab=users', label: 'User Directory', icon: Users },
@@ -276,11 +279,19 @@ export const AppLayout = () => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const profileDropdownRef = useRef(null);
 
-  // Close profile dropdown on outside click
+  // Notification Alert Box dropdown state
+  const [notifBoxOpen, setNotifBoxOpen] = useState(false);
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0);
+  const notifRef = useRef(null);
+
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
         setProfileDropdownOpen(false);
+      }
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifBoxOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -1093,25 +1104,27 @@ export const AppLayout = () => {
           {/* Quick Footer Links */}
           {(!isCollapsed || isMobile) ? (
             <div style={{ display: 'flex', gap: '6px', flexDirection: 'column' }}>
-              <NavLink
-                to="/notifications"
-                onClick={() => isMobile && setMobileMenuOpen(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  padding: '6px 10px',
-                  borderRadius: '6px',
-                  color: 'var(--on-surface-variant)',
-                  textDecoration: 'none',
-                  fontSize: '0.8rem',
-                  fontWeight: '500'
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-              >
-                <HelpCircle size={16} /> Help & Documentation
-              </NavLink>
+              {isOfflineDev && (
+                <NavLink
+                  to="/notifications"
+                  onClick={() => isMobile && setMobileMenuOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    color: 'var(--on-surface-variant)',
+                    textDecoration: 'none',
+                    fontSize: '0.8rem',
+                    fontWeight: '500'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <HelpCircle size={16} /> Help & Documentation
+                </NavLink>
+              )}
 
               {isOfflineDev && (
                 <NavLink
@@ -1137,24 +1150,26 @@ export const AppLayout = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
-              <button
-                onClick={() => navigate('/notifications')}
-                title="Help & Documentation"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '6px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'var(--on-surface-variant)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-              >
-                <HelpCircle size={17} />
-              </button>
+              {isOfflineDev && (
+                <button
+                  onClick={() => navigate('/notifications')}
+                  title="Help & Documentation"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '6px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: 'var(--on-surface-variant)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <HelpCircle size={17} />
+                </button>
+              )}
 
               {isOfflineDev && (
                 <button
@@ -1294,41 +1309,62 @@ export const AppLayout = () => {
 
           {/* Right Action Icons & Avatar Profile */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-            {/* Notification Hub */}
-            <button
-              onClick={() => navigate('/notifications')}
-              title="Notification Center"
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                backgroundColor: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--on-surface-variant)',
-                position: 'relative',
-                cursor: 'pointer',
-                border: 'none',
-                transition: 'background-color 0.15s ease'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f5'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-            >
-              <Bell size={19} />
-              <span
+            {/* Notification Alert Box Dropdown */}
+            <div ref={notifRef} style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setNotifBoxOpen(!notifBoxOpen)}
+                title="Notifications, Reminders & Alerts"
                 style={{
-                  position: 'absolute',
-                  top: '8px',
-                  right: '8px',
-                  width: '7px',
-                  height: '7px',
+                  width: '38px',
+                  height: '38px',
                   borderRadius: '50%',
-                  backgroundColor: '#ba1a1a',
-                  border: '1.5px solid #ffffff'
+                  backgroundColor: notifBoxOpen ? '#e0f2fe' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: notifBoxOpen ? '#0284c7' : 'var(--on-surface-variant)',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  border: 'none',
+                  transition: 'all 0.15s ease'
                 }}
+                onMouseEnter={(e) => { if (!notifBoxOpen) e.currentTarget.style.backgroundColor = '#f3f4f5'; }}
+                onMouseLeave={(e) => { if (!notifBoxOpen) e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                <Bell size={19} />
+                {unreadNotifCount > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '5px',
+                      right: '5px',
+                      minWidth: '16px',
+                      height: '16px',
+                      padding: '0 4px',
+                      borderRadius: '8px',
+                      backgroundColor: '#ef4444',
+                      color: '#ffffff',
+                      fontSize: '0.65rem',
+                      fontWeight: '800',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '1.5px solid #ffffff',
+                      boxShadow: '0 0 0 1px rgba(239, 68, 68, 0.3)'
+                    }}
+                  >
+                    {unreadNotifCount}
+                  </span>
+                )}
+              </button>
+
+              <NotificationAlertBox
+                isOpen={notifBoxOpen}
+                onClose={() => setNotifBoxOpen(false)}
+                onCountChange={(cnt) => setUnreadNotifCount(cnt)}
               />
-            </button>
+            </div>
 
             {/* Reports & Analytics shortcut (Offline development only) */}
             {isOfflineDev && (
@@ -1461,8 +1497,8 @@ export const AppLayout = () => {
                     </span>
                   </div>
 
-                  {/* Access Control shortcut (if authorized) */}
-                  {(isSuperAdmin || hasPermission('users:view')) && (
+                  {/* Access Control shortcut (if authorized & offline dev) */}
+                  {isOfflineDev && (isSuperAdmin || hasPermission('users:view')) && (
                     <button
                       onClick={() => {
                         setProfileDropdownOpen(false);
