@@ -561,7 +561,12 @@ export const createStockTransfer = async (req, res) => {
       fromStoreId,
       toStoreId,
       projectId,
-      items
+      items,
+      gatepassNumber,
+      vehicleNumber,
+      driverName,
+      driverPhone,
+      status
     } = req.body;
 
     if (fromStoreId === toStoreId) {
@@ -569,6 +574,8 @@ export const createStockTransfer = async (req, res) => {
     }
 
     const code = transferNumber || `TRF-${Date.now().toString().slice(-6)}`;
+    const gpNumber = gatepassNumber || `GP-${Date.now().toString().slice(-5)}`;
+    const transferStatus = status || 'in_transit';
 
     // Debit source store & Credit target store
     for (const item of (items || [])) {
@@ -614,8 +621,12 @@ export const createStockTransfer = async (req, res) => {
       toStoreId,
       projectId,
       items,
-      status: 'received',
-      receivedAt: new Date()
+      gatepassNumber: gpNumber,
+      vehicleNumber: vehicleNumber || '',
+      driverName: driverName || '',
+      driverPhone: driverPhone || '',
+      status: transferStatus,
+      receivedAt: transferStatus === 'received' ? new Date() : null
     });
 
     const saved = await transfer.save();
@@ -627,6 +638,40 @@ export const createStockTransfer = async (req, res) => {
     return res.status(201).json({ success: true, message: 'Stock transferred between stores successfully!', data: populated });
   } catch (error) {
     console.error('Error creating stock transfer:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateStockTransfer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, gatepassNumber, vehicleNumber, driverName, driverPhone } = req.body;
+
+    const transfer = await StockTransfer.findById(id);
+    if (!transfer) {
+      return res.status(404).json({ success: false, message: 'Stock transfer record not found' });
+    }
+
+    if (status) {
+      transfer.status = status;
+      if (status === 'received' && !transfer.receivedAt) {
+        transfer.receivedAt = new Date();
+      }
+    }
+    if (gatepassNumber !== undefined) transfer.gatepassNumber = gatepassNumber;
+    if (vehicleNumber !== undefined) transfer.vehicleNumber = vehicleNumber;
+    if (driverName !== undefined) transfer.driverName = driverName;
+    if (driverPhone !== undefined) transfer.driverPhone = driverPhone;
+
+    const saved = await transfer.save();
+    const populated = await StockTransfer.findById(saved._id)
+      .populate('fromStoreId', 'storeName')
+      .populate('toStoreId', 'storeName')
+      .populate('items.materialId', 'materialName unit');
+
+    return res.json({ success: true, message: 'Stock transfer updated successfully!', data: populated });
+  } catch (error) {
+    console.error('Error updating stock transfer:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

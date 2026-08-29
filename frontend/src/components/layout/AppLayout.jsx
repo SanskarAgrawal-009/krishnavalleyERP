@@ -335,27 +335,69 @@ export const AppLayout = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMobile, mobileMenuOpen]);
 
+  // Filter items based on user permissions, role, and search
+  const userRole = (user?.role?.roleCode || user?.roleCode || user?.role || '').toLowerCase();
+  const isAgentUser = userRole === 'agent';
+
+  const visibleNavItems = NAV_ITEMS.filter((item) => {
+    // 1. Agent Portal is exclusively for logged-in Agents
+    if (item.path === '/agent-portal') {
+      return isAgentUser;
+    }
+
+    // 2. Agent Network Directory is exclusively for inhouse staff & management
+    if (item.path === '/agent-network') {
+      return !isAgentUser;
+    }
+
+    if (!item.permission) return true;
+    return hasPermission(item.permission);
+  });
+
+  // Helper to check if a navigation module or one of its child sub-items matches current location
+  const isItemActive = (item) => {
+    if (!item) return false;
+    if (item.path === '/agent-portal' && !isAgentUser) return false;
+    if (item.path === '/agent-network' && isAgentUser) return false;
+
+    if (item.path === '/dashboard') {
+      return location.pathname === '/dashboard' || location.pathname === '/';
+    }
+
+    // 1. Direct match on parent path
+    if (location.pathname === item.path || location.pathname.startsWith(`${item.path}/`)) {
+      return true;
+    }
+
+    // 2. Match on any sub-item path (including distinct sub-routes like /site-visits)
+    if (item.subItems && item.subItems.length > 0) {
+      return item.subItems.some((sub) => {
+        const subBase = sub.path.split('?')[0];
+        return location.pathname === subBase || location.pathname.startsWith(`${subBase}/`);
+      });
+    }
+
+    return false;
+  };
+
   // Auto-expand only the current active module (closing all other lists)
   useEffect(() => {
     let matchedPath = null;
-    NAV_ITEMS.forEach((item) => {
-      if (
-        item.path !== '/dashboard' &&
-        (location.pathname === item.path || location.pathname.startsWith(`${item.path}/`) || location.pathname.startsWith(`${item.path}?`))
-      ) {
+    visibleNavItems.forEach((item) => {
+      if (item.path !== '/dashboard' && isItemActive(item)) {
         matchedPath = item.path;
       }
     });
 
     if (matchedPath) {
       setExpanded({ [matchedPath]: true });
-    } else {
+    } else if (location.pathname === '/dashboard' || location.pathname === '/') {
       setExpanded({});
     }
 
     setMobileMenuOpen(false);
     setHoveredFlyout(null);
-  }, [location.pathname]);
+  }, [location.pathname, isAgentUser]);
 
   const toggleCollapse = () => {
     setIsCollapsed((prev) => {
@@ -388,8 +430,7 @@ export const AppLayout = () => {
       toggleExpand(item.path, e);
 
       // Navigate to the module if not already in it
-      const isAlreadyInModule =
-        location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
+      const isAlreadyInModule = isItemActive(item);
       if (!isAlreadyInModule) {
         navigate(item.path);
       }
@@ -407,25 +448,6 @@ export const AppLayout = () => {
       navigate(`/crm?search=${encodeURIComponent(globalSearch.trim())}`);
     }
   };
-
-  // Filter items based on user permissions, role, and search
-  const userRole = (user?.role?.roleCode || user?.roleCode || user?.role || '').toLowerCase();
-  const isAgentUser = userRole === 'agent';
-
-  const visibleNavItems = NAV_ITEMS.filter((item) => {
-    // 1. Agent Portal is exclusively for logged-in Agents
-    if (item.path === '/agent-portal') {
-      return isAgentUser;
-    }
-
-    // 2. Agent Network Directory is exclusively for inhouse staff & management
-    if (item.path === '/agent-network') {
-      return !isAgentUser;
-    }
-
-    if (!item.permission) return true;
-    return hasPermission(item.permission);
-  });
 
   const filteredNavItems = visibleNavItems.map((item) => {
     if (!navSearch.trim()) return item;
@@ -756,9 +778,7 @@ export const AppLayout = () => {
           {filteredNavItems.map((item) => {
             const IconComp = item.icon;
             const isDashboard = item.path === '/dashboard';
-            const isSelected =
-              (isDashboard && (location.pathname === '/dashboard' || location.pathname === '/')) ||
-              (!isDashboard && (location.pathname === item.path || location.pathname.startsWith(`${item.path}/`)));
+            const isSelected = isItemActive(item);
             const isOpen = item.forceOpen || Boolean(expanded[item.path]);
             const hasSubs = item.subItems && item.subItems.length > 0;
             const showFlyout = hoveredFlyout === item.path && isCollapsed && !isMobile;
@@ -891,9 +911,10 @@ export const AppLayout = () => {
                   >
                     {item.subItems.map((sub) => {
                       const currentFull = `${location.pathname}${location.search}`;
+                      const subBase = sub.path.split('?')[0];
                       const isSubActive =
                         currentFull === sub.path ||
-                        (location.pathname === sub.path && !sub.path.includes('?') && !location.search);
+                        (location.pathname === subBase && (!sub.path.includes('?') || currentFull.startsWith(sub.path)));
 
                       return (
                         <NavLink

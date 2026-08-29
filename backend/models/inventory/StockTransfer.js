@@ -51,6 +51,30 @@ const StockTransferSchema = new mongoose.Schema(
       },
     ],
 
+    gatepassNumber: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
+    vehicleNumber: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
+    driverName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
+    driverPhone: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
     status: {
       type: String,
       enum: [
@@ -61,7 +85,7 @@ const StockTransferSchema = new mongoose.Schema(
         "received",
         "cancelled",
       ],
-      default: "draft",
+      default: "in_transit",
     },
 
     initiatedBy: {

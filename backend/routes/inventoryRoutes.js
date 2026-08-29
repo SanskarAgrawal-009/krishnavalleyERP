@@ -16,6 +16,7 @@ import {
   createMaterialIssue,
   getMaterialIssues,
   createStockTransfer,
+  updateStockTransfer,
   getStockTransfers,
   getInventorySummary
 } from '../controllers/inventoryController.js';
@@ -60,5 +61,6 @@ router.get('/material-issues', authorizePermission('materials:view', 'materials:
 // 7. Stock Transfers
 router.post('/stock-transfers', authorizePermission('materials:issue', 'materials:manage'), createStockTransfer);
 router.get('/stock-transfers', authorizePermission('materials:view', 'materials:issue'), getStockTransfers);
+router.put('/stock-transfers/:id', authorizePermission('materials:issue', 'materials:manage'), updateStockTransfer);
 
 export default router;

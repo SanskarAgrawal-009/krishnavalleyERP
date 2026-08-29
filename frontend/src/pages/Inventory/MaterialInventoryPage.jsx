@@ -233,6 +233,16 @@ export const MaterialInventoryPage = () => {
     }
   };
 
+  const handleUpdateTransferStatus = async (transferId, newStatus) => {
+    try {
+      const res = await inventoryService.updateStockTransfer(transferId, { status: newStatus });
+      alert(res.message || `Transfer marked as ${newStatus}!`);
+      loadData();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
@@ -1712,6 +1722,7 @@ export const MaterialInventoryPage = () => {
                     <th>Items Transferred</th>
                     <th>Vehicle / Gatepass</th>
                     <th>Status</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1721,11 +1732,77 @@ export const MaterialInventoryPage = () => {
                       <td style={{ fontWeight: '700', color: '#111827' }}>{tr.fromStoreId?.storeName || 'Source Store'}</td>
                       <td style={{ fontWeight: '700', color: '#137333' }}>{tr.toStoreId?.storeName || 'Destination Store'}</td>
                       <td style={{ color: '#111827', fontWeight: '700' }}>{tr.items?.length || 1} material items</td>
-                      <td style={{ color: '#4b5563', fontWeight: '600' }}>{tr.vehicleNumber || 'Gatepass Verified'}</td>
                       <td>
-                        <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#e8f0fe', color: '#1a73e8', fontSize: '0.74rem', fontWeight: '700' }}>
-                          {tr.status}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <span style={{ fontWeight: '700', color: '#1e293b', fontSize: '0.8rem' }}>
+                            🎫 {tr.gatepassNumber || 'GP-VERIFIED'}
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            {tr.vehicleNumber ? `🚛 ${tr.vehicleNumber}` : 'Gate Clearance Logged'}
+                            {tr.driverName ? ` • ${tr.driverName}` : ''}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <span style={{
+                          padding: '3px 9px',
+                          borderRadius: '6px',
+                          background: tr.status === 'received' ? '#dcfce7' : (tr.status === 'in_transit' ? '#fef3c7' : '#e8f0fe'),
+                          color: tr.status === 'received' ? '#15803d' : (tr.status === 'in_transit' ? '#b45309' : '#1a73e8'),
+                          fontSize: '0.74rem',
+                          fontWeight: '700',
+                          textTransform: 'capitalize',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}>
+                          <span style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: tr.status === 'received' ? '#15803d' : (tr.status === 'in_transit' ? '#b45309' : '#1a73e8')
+                          }}></span>
+                          {tr.status ? tr.status.replace(/_/g, ' ') : 'Received'}
                         </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        {tr.status === 'in_transit' ? (
+                          <button
+                            onClick={() => handleUpdateTransferStatus(tr._id || tr.id, 'received')}
+                            style={{
+                              background: '#15803d',
+                              color: '#ffffff',
+                              border: 'none',
+                              padding: '5px 12px',
+                              borderRadius: '6px',
+                              fontSize: '0.75rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              boxShadow: '0 1px 3px rgba(21, 128, 61, 0.25)'
+                            }}
+                            title="Confirm delivery arrival and gatepass verification at destination"
+                          >
+                            <CheckCircle size={13} /> Mark Received
+                          </button>
+                        ) : (
+                          <span style={{
+                            fontSize: '0.74rem',
+                            color: '#15803d',
+                            fontWeight: '700',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            background: '#f0fdf4',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            border: '1px solid #bbf7d0'
+                          }}>
+                            <CheckCircle size={12} /> Delivered
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}

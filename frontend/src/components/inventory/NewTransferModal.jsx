@@ -10,6 +10,10 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
   const [fromStocks, setFromStocks] = useState([]);
 
   const [transferNumber, setTransferNumber] = useState(`TRF-${Date.now().toString().slice(-6)}`);
+  const [gatepassNumber, setGatepassNumber] = useState(`GP-${Date.now().toString().slice(-5)}`);
+  const [vehicleNumber, setVehicleNumber] = useState('');
+  const [driverName, setDriverName] = useState('');
+  const [status, setStatus] = useState('in_transit');
   const [projectId, setProjectId] = useState('');
   const [fromStoreId, setFromStoreId] = useState('');
   const [toStoreId, setToStoreId] = useState('');
@@ -35,6 +39,10 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
         }
       });
       setTransferNumber(`TRF-${Date.now().toString().slice(-6)}`);
+      setGatepassNumber(`GP-${Date.now().toString().slice(-5)}`);
+      setVehicleNumber('');
+      setDriverName('');
+      setStatus('in_transit');
     }
   }, [isOpen]);
 
@@ -70,6 +78,10 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
       fromStoreId,
       toStoreId,
       projectId,
+      gatepassNumber,
+      vehicleNumber,
+      driverName,
+      status,
       items: [
         {
           materialId: selectedMaterialId,
@@ -83,21 +95,37 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Inter-Store Stock Transfer"
-      maxWidth="620px"
+      title="Inter-Store Stock Transfer & Gatepass"
+      maxWidth="640px"
     >
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div>
-          <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-            Transfer Code # *
-          </label>
-          <input
-            type="text"
-            required
-            value={transferNumber}
-            onChange={(e) => setTransferNumber(e.target.value)}
-            style={{ width: '100%', fontSize: '0.85rem' }}
-          />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
+              Transfer Code # *
+            </label>
+            <input
+              type="text"
+              required
+              value={transferNumber}
+              onChange={(e) => setTransferNumber(e.target.value)}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
+              Gatepass Number *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. GP-2026-0042"
+              value={gatepassNumber}
+              onChange={(e) => setGatepassNumber(e.target.value)}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            />
+          </div>
         </div>
 
         {/* Source and Destination Stores */}
@@ -139,6 +167,50 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Vehicle & Gatepass Dispatch Details */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
+              Vehicle Number / Dispatch Mode
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. UP-85-T-4521 / Site Tractor"
+              value={vehicleNumber}
+              onChange={(e) => setVehicleNumber(e.target.value)}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
+              Driver / Transporter Name
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Surendra (9876543210)"
+              value={driverName}
+              onChange={(e) => setDriverName(e.target.value)}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            />
+          </div>
+        </div>
+
+        {/* Transfer Status */}
+        <div>
+          <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
+            Dispatch & Delivery Status *
+          </label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            style={{ width: '100%', fontSize: '0.85rem' }}
+          >
+            <option value="in_transit">In-Transit (Dispatched with Gatepass - Pending Store Receipt)</option>
+            <option value="received">Received (Direct Handover / Immediate Delivery)</option>
+          </select>
         </div>
 
         {/* Material & Quantity */}

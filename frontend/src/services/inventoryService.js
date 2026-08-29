@@ -79,6 +79,10 @@ export const inventoryService = {
     method: 'POST',
     body: JSON.stringify(data)
   }),
+  updateStockTransfer: (id, data) => request(`/inventory/stock-transfers/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
   createTransfer: function (data) {
     return this.createStockTransfer(data);
   },
