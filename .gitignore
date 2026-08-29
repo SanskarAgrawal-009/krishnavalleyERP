@@ -38,3 +38,7 @@ Thumbs.db
 # Uploads & Temp files (keep .gitkeep if needed)
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+# Audit & Generated Reports
+KRISHNA_VALLEY_ERP_SYSTEM_AUDIT_REPORT.*
+*.pdf
