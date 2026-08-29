@@ -17,7 +17,13 @@ import {
   Edit,
   Trash2,
   RefreshCw,
-  ArrowRight
+  ArrowRight,
+  Filter,
+  Search,
+  X,
+  RotateCcw,
+  CheckCircle2,
+  Clock
 } from 'lucide-react';
 
 export const PropertyInventoryPage = () => {
@@ -31,6 +37,12 @@ export const PropertyInventoryPage = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [flats, setFlats] = useState([]);
+
+  // Flat Filter States
+  const [availabilityFilter, setAvailabilityFilter] = useState('all'); // 'all' | 'available' | 'sold' | 'hold' | 'rental'
+  const [floorFilter, setFloorFilter] = useState('all');
+  const [bhkFilter, setBhkFilter] = useState('all');
+  const [flatSearchQuery, setFlatSearchQuery] = useState('');
 
   // Modals
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -97,6 +109,47 @@ export const PropertyInventoryPage = () => {
     } catch (error) {
       console.error('Error loading flats:', error);
     }
+  };
+
+  // Reset flat filters when selected building changes
+  useEffect(() => {
+    setAvailabilityFilter('all');
+    setFloorFilter('all');
+    setBhkFilter('all');
+    setFlatSearchQuery('');
+  }, [selectedBuilding]);
+
+  // Flat Availability Counts
+  const availableCount = flats.filter(f => (f.status || '').toLowerCase() === 'available').length;
+  const soldCount = flats.filter(f => (f.status || '').toLowerCase() === 'sold').length;
+  const holdCount = flats.filter(f => ['hold', 'booked', 'on_hold', 'pending'].includes((f.status || '').toLowerCase())).length;
+  const rentalCount = flats.filter(f => f.takenForRental || (f.status || '').toLowerCase() === 'leased').length;
+
+  const uniqueFloors = Array.from(new Set(flats.map(f => f.floor).filter(f => f !== undefined && f !== null))).sort((a, b) => a - b);
+  const uniqueBhkTypes = Array.from(new Set(flats.map(f => f.bhkType).filter(Boolean))).sort();
+
+  // Filtered Flats List
+  const filteredFlats = flats.filter((flat) => {
+    const status = (flat.status || '').toLowerCase();
+    if (availabilityFilter === 'available' && status !== 'available') return false;
+    if (availabilityFilter === 'sold' && status !== 'sold') return false;
+    if (availabilityFilter === 'hold' && !['hold', 'booked', 'on_hold', 'pending'].includes(status)) return false;
+    if (availabilityFilter === 'rental' && !flat.takenForRental && status !== 'leased') return false;
+
+    if (floorFilter !== 'all' && String(flat.floor) !== String(floorFilter)) return false;
+    if (bhkFilter !== 'all' && (flat.bhkType || '').toLowerCase() !== bhkFilter.toLowerCase()) return false;
+    if (flatSearchQuery.trim() && !flat.flatNumber?.toLowerCase().includes(flatSearchQuery.trim().toLowerCase())) return false;
+
+    return true;
+  });
+
+  const hasActiveFilters = availabilityFilter !== 'all' || floorFilter !== 'all' || bhkFilter !== 'all' || flatSearchQuery.trim() !== '';
+
+  const resetFlatFilters = () => {
+    setAvailabilityFilter('all');
+    setFloorFilter('all');
+    setBhkFilter('all');
+    setFlatSearchQuery('');
   };
 
   useEffect(() => {
@@ -750,8 +803,361 @@ export const PropertyInventoryPage = () => {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '14px' }}>
-              {flats.map((flat) => (
+            <div>
+              {/* Flat Filter & Search Controls */}
+              <div className="g-card" style={{
+                padding: '16px 20px',
+                marginBottom: '18px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '14px',
+                background: '#ffffff',
+                border: '1px solid #dadce0',
+                borderRadius: '12px'
+              }}>
+                {/* Availability Status Filter Tabs */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '10px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <div style={{
+                      fontSize: '0.8rem',
+                      fontWeight: '700',
+                      color: '#414754',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      marginRight: '4px'
+                    }}>
+                      <Filter size={15} color="#1a73e8" />
+                      <span>Availability:</span>
+                    </div>
+
+                    {/* All Flats */}
+                    <button
+                      onClick={() => setAvailabilityFilter('all')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: availabilityFilter === 'all' ? '700' : '500',
+                        background: availabilityFilter === 'all' ? '#1a73e8' : '#f1f3f4',
+                        color: availabilityFilter === 'all' ? '#ffffff' : '#3c4043',
+                        border: availabilityFilter === 'all' ? '1px solid #1a73e8' : '1px solid #dadce0',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <span>All</span>
+                      <span style={{
+                        background: availabilityFilter === 'all' ? 'rgba(255,255,255,0.25)' : '#e8eaed',
+                        color: availabilityFilter === 'all' ? '#ffffff' : '#5f6368',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700'
+                      }}>
+                        {flats.length}
+                      </span>
+                    </button>
+
+                    {/* Available */}
+                    <button
+                      onClick={() => setAvailabilityFilter('available')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: availabilityFilter === 'available' ? '700' : '600',
+                        background: availabilityFilter === 'available' ? '#137333' : '#e6f4ea',
+                        color: availabilityFilter === 'available' ? '#ffffff' : '#137333',
+                        border: availabilityFilter === 'available' ? '1px solid #137333' : '1px solid #ceead6',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <CheckCircle2 size={13} />
+                      <span>Available</span>
+                      <span style={{
+                        background: availabilityFilter === 'available' ? 'rgba(255,255,255,0.25)' : '#ceead6',
+                        color: availabilityFilter === 'available' ? '#ffffff' : '#0d652d',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700'
+                      }}>
+                        {availableCount}
+                      </span>
+                    </button>
+
+                    {/* Sold */}
+                    <button
+                      onClick={() => setAvailabilityFilter('sold')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: availabilityFilter === 'sold' ? '700' : '600',
+                        background: availabilityFilter === 'sold' ? '#5f6368' : '#f1f3f4',
+                        color: availabilityFilter === 'sold' ? '#ffffff' : '#5f6368',
+                        border: availabilityFilter === 'sold' ? '1px solid #5f6368' : '1px solid #dadce0',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <span>Sold</span>
+                      <span style={{
+                        background: availabilityFilter === 'sold' ? 'rgba(255,255,255,0.25)' : '#dadce0',
+                        color: availabilityFilter === 'sold' ? '#ffffff' : '#414754',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700'
+                      }}>
+                        {soldCount}
+                      </span>
+                    </button>
+
+                    {/* On Hold / Booked */}
+                    <button
+                      onClick={() => setAvailabilityFilter('hold')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: availabilityFilter === 'hold' ? '700' : '600',
+                        background: availabilityFilter === 'hold' ? '#b06000' : '#fef7e0',
+                        color: availabilityFilter === 'hold' ? '#ffffff' : '#b06000',
+                        border: availabilityFilter === 'hold' ? '1px solid #b06000' : '1px solid #feefc3',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <Clock size={13} />
+                      <span>On Hold / Booked</span>
+                      <span style={{
+                        background: availabilityFilter === 'hold' ? 'rgba(255,255,255,0.25)' : '#feefc3',
+                        color: availabilityFilter === 'hold' ? '#ffffff' : '#8c4800',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700'
+                      }}>
+                        {holdCount}
+                      </span>
+                    </button>
+
+                    {/* Rental Program */}
+                    <button
+                      onClick={() => setAvailabilityFilter('rental')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: availabilityFilter === 'rental' ? '700' : '600',
+                        background: availabilityFilter === 'rental' ? '#7e22ce' : '#f3e8fd',
+                        color: availabilityFilter === 'rental' ? '#ffffff' : '#7e22ce',
+                        border: availabilityFilter === 'rental' ? '1px solid #7e22ce' : '1px solid #e9d5ff',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <span>Rental Program</span>
+                      <span style={{
+                        background: availabilityFilter === 'rental' ? 'rgba(255,255,255,0.25)' : '#e9d5ff',
+                        color: availabilityFilter === 'rental' ? '#ffffff' : '#6b21a8',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700'
+                      }}>
+                        {rentalCount}
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Summary & Clear Button */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '0.82rem', color: '#5f6368', fontWeight: '500' }}>
+                      Showing <strong>{filteredFlats.length}</strong> of <strong>{flats.length}</strong> flats
+                    </span>
+                    {hasActiveFilters && (
+                      <button
+                        onClick={resetFlatFilters}
+                        style={{
+                          background: '#fff0ef',
+                          border: '1px solid #ffcdd2',
+                          color: '#c62828',
+                          padding: '4px 10px',
+                          borderRadius: '6px',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <RotateCcw size={12} /> Clear Filters
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Secondary Search & Floor / BHK Dropdown Row */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  flexWrap: 'wrap',
+                  borderTop: '1px solid #f1f3f4',
+                  paddingTop: '12px'
+                }}>
+                  {/* Search Flat Number */}
+                  <div style={{
+                    position: 'relative',
+                    flex: '1 1 200px',
+                    minWidth: '180px'
+                  }}>
+                    <Search size={14} color="#727785" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="text"
+                      placeholder="Search flat number (e.g. 1003, A237)..."
+                      value={flatSearchQuery}
+                      onChange={(e) => setFlatSearchQuery(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '7px 30px 7px 32px',
+                        borderRadius: '6px',
+                        border: '1px solid #dadce0',
+                        fontSize: '0.82rem',
+                        boxSizing: 'border-box',
+                        outline: 'none'
+                      }}
+                    />
+                    {flatSearchQuery && (
+                      <button
+                        onClick={() => setFlatSearchQuery('')}
+                        style={{
+                          position: 'absolute',
+                          right: '8px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '2px',
+                          color: '#727785'
+                        }}
+                      >
+                        <X size={13} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Floor Dropdown */}
+                  {uniqueFloors.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#5f6368', fontWeight: '500' }}>Floor:</span>
+                      <select
+                        value={floorFilter}
+                        onChange={(e) => setFloorFilter(e.target.value)}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #dadce0',
+                          fontSize: '0.82rem',
+                          background: '#ffffff',
+                          color: '#3c4043',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="all">All Floors ({uniqueFloors.length})</option>
+                        {uniqueFloors.map((floor) => (
+                          <option key={floor} value={floor}>Floor {floor}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {/* BHK Configuration Dropdown */}
+                  {uniqueBhkTypes.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#5f6368', fontWeight: '500' }}>Configuration:</span>
+                      <select
+                        value={bhkFilter}
+                        onChange={(e) => setBhkFilter(e.target.value)}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #dadce0',
+                          fontSize: '0.82rem',
+                          background: '#ffffff',
+                          color: '#3c4043',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="all">All BHKs</option>
+                        {uniqueBhkTypes.map((bhk) => (
+                          <option key={bhk} value={bhk}>{bhk}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Flats Listing / Empty State */}
+              {filteredFlats.length === 0 ? (
+                <div className="g-card" style={{ textAlign: 'center', padding: '50px 20px', background: '#ffffff', borderRadius: '12px', border: '1px solid #dadce0' }}>
+                  <Filter size={40} style={{ opacity: 0.35, margin: '0 auto 12px', color: '#727785' }} />
+                  <h4 style={{ color: '#191c1d', fontWeight: '700', marginBottom: '6px', fontSize: '1.05rem' }}>
+                    No Flats Match Your Filters
+                  </h4>
+                  <p style={{ fontSize: '0.84rem', color: '#5f6368', marginBottom: '16px', maxWidth: '400px', margin: '0 auto 16px' }}>
+                    There are no units matching the selected availability status or search terms in {selectedBuilding.buildingName}.
+                  </p>
+                  <button
+                    onClick={resetFlatFilters}
+                    style={{
+                      background: '#1a73e8',
+                      color: '#ffffff',
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      border: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <RotateCcw size={14} /> Show All Flats ({flats.length})
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '14px' }}>
+                  {filteredFlats.map((flat) => (
                 <div
                   key={flat._id || flat.id}
                   className="g-card"
@@ -834,6 +1240,8 @@ export const PropertyInventoryPage = () => {
                   </div>
                 </div>
               ))}
+                </div>
+              )}
             </div>
           )}
         </div>
