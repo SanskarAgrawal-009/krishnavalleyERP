@@ -32,7 +32,9 @@ import {
   Calendar,
   FileText,
   Clock,
-  Filter
+  Filter,
+  Edit,
+  Trash2
 } from 'lucide-react';
 
 export const MaterialInventoryPage = () => {
@@ -79,6 +81,7 @@ export const MaterialInventoryPage = () => {
   // Modals
   const [isMatModalOpen, setIsMatModalOpen] = useState(false);
   const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
+  const [editingStore, setEditingStore] = useState(null);
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [isPoModalOpen, setIsPoModalOpen] = useState(false);
   const [isGrnModalOpen, setIsGrnModalOpen] = useState(false);
@@ -149,9 +152,26 @@ export const MaterialInventoryPage = () => {
 
   const handleSaveStore = async (data) => {
     try {
-      await inventoryService.createStore(data);
-      alert('Project store warehouse created!');
+      if (editingStore) {
+        await inventoryService.updateStore(editingStore._id || editingStore.id, data);
+        alert('Project store warehouse updated successfully!');
+      } else {
+        await inventoryService.createStore(data);
+        alert('Project store warehouse created successfully!');
+      }
       setIsStoreModalOpen(false);
+      setEditingStore(null);
+      loadData();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleDeleteStore = async (store) => {
+    if (!window.confirm(`Are you sure you want to delete warehouse "${store.storeName}"?`)) return;
+    try {
+      await inventoryService.deleteStore(store._id || store.id);
+      alert('Store deleted successfully!');
       loadData();
     } catch (err) {
       alert(err.message);
@@ -1171,7 +1191,10 @@ export const MaterialInventoryPage = () => {
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Project Site Warehouses & Stores ({stores.length})</h3>
             <button
               type="button"
-              onClick={() => setIsStoreModalOpen(true)}
+              onClick={() => {
+                setEditingStore(null);
+                setIsStoreModalOpen(true);
+              }}
               style={{
                 background: '#1a73e8',
                 color: '#ffffff',
@@ -1206,8 +1229,59 @@ export const MaterialInventoryPage = () => {
                 </div>
                 <div style={{ fontSize: '0.78rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <div>Project: <strong style={{ color: '#111827' }}>{s.projectId?.projectName || 'General Site'}</strong></div>
-                  <div>Storekeeper: <strong style={{ color: '#111827' }}>{s.storeKeeper || 'Unassigned'}</strong></div>
+                  <div>Storekeeper: <strong style={{ color: s.storeKeeper ? '#15803d' : '#b45309' }}>{s.storeKeeper || 'Unassigned'}</strong></div>
                   <div>Location: <strong style={{ color: '#111827' }}>{s.location || 'On-site'}</strong></div>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderTop: '1px solid #f1f3f4',
+                  paddingTop: '10px',
+                  marginTop: '4px'
+                }}>
+                  <button
+                    onClick={() => {
+                      setEditingStore(s);
+                      setIsStoreModalOpen(true);
+                    }}
+                    style={{
+                      background: s.storeKeeper ? '#f8fafc' : '#eff6ff',
+                      border: s.storeKeeper ? '1px solid #cbd5e1' : '1px solid #bfdbfe',
+                      color: s.storeKeeper ? '#334155' : '#1d4ed8',
+                      padding: '5px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Edit size={12} />
+                    {s.storeKeeper ? 'Edit Store' : 'Assign Storekeeper'}
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteStore(s)}
+                    style={{
+                      background: '#fff1f2',
+                      border: '1px solid #fecdd3',
+                      color: '#e11d48',
+                      padding: '5px 8px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    title="Delete Store"
+                  >
+                    <Trash2 size={12} />
+                  </button>
                 </div>
               </div>
             ))}
@@ -1664,7 +1738,15 @@ export const MaterialInventoryPage = () => {
 
       {/* CRUD MODALS */}
       <NewMaterialModal isOpen={isMatModalOpen} onClose={() => setIsMatModalOpen(false)} onSubmit={handleSaveMaterial} />
-      <NewStoreModal isOpen={isStoreModalOpen} onClose={() => setIsStoreModalOpen(false)} onSubmit={handleSaveStore} />
+      <NewStoreModal
+        isOpen={isStoreModalOpen}
+        onClose={() => {
+          setIsStoreModalOpen(false);
+          setEditingStore(null);
+        }}
+        onSubmit={handleSaveStore}
+        store={editingStore}
+      />
       <NewVendorModal isOpen={isVendorModalOpen} onClose={() => setIsVendorModalOpen(false)} onSubmit={handleSaveVendor} />
       <NewPOModal isOpen={isPoModalOpen} onClose={() => setIsPoModalOpen(false)} onSubmit={handleSavePO} materials={materials} vendors={vendors} stores={stores} />
       <NewGRNModal isOpen={isGrnModalOpen} onClose={() => setIsGrnModalOpen(false)} onSubmit={handleSaveGRN} materials={materials} vendors={vendors} stores={stores} pos={pos} />

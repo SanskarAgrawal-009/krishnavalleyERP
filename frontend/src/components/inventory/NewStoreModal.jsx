@@ -3,26 +3,36 @@ import { Modal } from '../common/Modal.jsx';
 import { projectService } from '../../services/projectService.js';
 import { Building2, Home } from 'lucide-react';
 
-export const NewStoreModal = ({ isOpen, onClose, onSubmit }) => {
+export const NewStoreModal = ({ isOpen, onClose, onSubmit, store }) => {
   const [projects, setProjects] = useState([]);
   const [storeCode, setStoreCode] = useState(`STR-${Date.now().toString().slice(-4)}`);
   const [storeName, setStoreName] = useState('');
   const [projectId, setProjectId] = useState('');
   const [location, setLocation] = useState('Ground Floor Site Warehouse');
+  const [storeKeeper, setStoreKeeper] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       projectService.getProjects().then((res) => {
         if (res.data) {
           setProjects(res.data);
-          if (res.data.length > 0) setProjectId(res.data[0]._id);
+          if (res.data.length > 0 && !store) setProjectId(res.data[0]._id);
         }
       });
-      setStoreCode(`STR-${Date.now().toString().slice(-4)}`);
-      setStoreName('');
-      setLocation('Ground Floor Site Warehouse');
+      if (store) {
+        setStoreCode(store.storeCode || '');
+        setStoreName(store.storeName || '');
+        setProjectId(store.projectId?._id || store.projectId || '');
+        setLocation(store.location || 'Ground Floor Site Warehouse');
+        setStoreKeeper(store.storeKeeper || '');
+      } else {
+        setStoreCode(`STR-${Date.now().toString().slice(-4)}`);
+        setStoreName('');
+        setLocation('Ground Floor Site Warehouse');
+        setStoreKeeper('');
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, store]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,7 +45,8 @@ export const NewStoreModal = ({ isOpen, onClose, onSubmit }) => {
       storeName,
       projectId,
       location,
-      status: 'active'
+      storeKeeper,
+      status: store?.status || 'active'
     });
   };
 
@@ -43,7 +54,7 @@ export const NewStoreModal = ({ isOpen, onClose, onSubmit }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Create Project Material Store / Warehouse"
+      title={store ? "Edit Project Material Store / Warehouse" : "Create Project Material Store / Warehouse"}
       maxWidth="540px"
     >
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -108,6 +119,22 @@ export const NewStoreModal = ({ isOpen, onClose, onSubmit }) => {
           />
         </div>
 
+        <div>
+          <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
+            Assigned Storekeeper / In-Charge Name
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Amit Verma (Site Storekeeper)"
+            value={storeKeeper}
+            onChange={(e) => setStoreKeeper(e.target.value)}
+            style={{ width: '100%', fontSize: '0.85rem' }}
+          />
+          <span style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px', display: 'block' }}>
+            Name or designation of the personnel in charge of this warehouse.
+          </span>
+        </div>
+
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
           <button
             type="button"
@@ -137,7 +164,7 @@ export const NewStoreModal = ({ isOpen, onClose, onSubmit }) => {
               boxShadow: '0 2px 6px rgba(19, 115, 51, 0.3)'
             }}
           >
-            Create Store
+            {store ? 'Update Store' : 'Create Store'}
           </button>
         </div>
       </form>

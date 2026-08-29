@@ -18,6 +18,13 @@ export const inventoryService = {
     method: 'POST',
     body: JSON.stringify(data)
   }),
+  updateStore: (id, data) => request(`/inventory/stores/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  deleteStore: (id) => request(`/inventory/stores/${id}`, {
+    method: 'DELETE'
+  }),
   getStores: (params = {}) => {
     const query = new URLSearchParams(params).toString();
     return request(`/inventory/stores${query ? `?${query}` : ''}`);

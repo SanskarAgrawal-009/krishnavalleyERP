@@ -3,6 +3,8 @@ import {
   createMaterial,
   getMaterials,
   createStore,
+  updateStore,
+  deleteStore,
   getStores,
   getStoreStock,
   createVendor,
@@ -35,6 +37,8 @@ router.get('/materials', authorizePermission('materials:view'), getMaterials);
 // 2. Stores & Stock
 router.post('/stores', authorizePermission('materials:manage'), createStore);
 router.get('/stores', authorizePermission('materials:view'), getStores);
+router.put('/stores/:id', authorizePermission('materials:manage'), updateStore);
+router.delete('/stores/:id', authorizePermission('materials:manage'), deleteStore);
 router.get('/stocks', authorizePermission('materials:view'), getStoreStock);
 
 // 3. Vendors

@@ -75,7 +75,7 @@ export const getMaterials = async (req, res) => {
 
 export const createStore = async (req, res) => {
   try {
-    const { storeCode, storeName, projectId, location, status } = req.body;
+    const { storeCode, storeName, projectId, location, storeKeeper, status } = req.body;
 
     const code = storeCode || `STR-${Date.now().toString().slice(-4)}`;
 
@@ -84,6 +84,7 @@ export const createStore = async (req, res) => {
       storeName,
       projectId,
       location,
+      storeKeeper: storeKeeper || '',
       status: status || 'active'
     });
 
@@ -92,6 +93,49 @@ export const createStore = async (req, res) => {
     return res.status(201).json({ success: true, data: populated });
   } catch (error) {
     console.error('Error creating store:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateStore = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { storeCode, storeName, projectId, location, storeKeeper, status } = req.body;
+
+    const updated = await Store.findByIdAndUpdate(
+      id,
+      {
+        ...(storeCode && { storeCode }),
+        ...(storeName && { storeName }),
+        ...(projectId && { projectId }),
+        ...(location !== undefined && { location }),
+        ...(storeKeeper !== undefined && { storeKeeper }),
+        ...(status && { status })
+      },
+      { new: true }
+    ).populate('projectId', 'projectName projectCode');
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Store warehouse not found' });
+    }
+
+    return res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error('Error updating store:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteStore = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Store.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: 'Store not found' });
+    }
+    return res.json({ success: true, message: 'Store deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting store:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

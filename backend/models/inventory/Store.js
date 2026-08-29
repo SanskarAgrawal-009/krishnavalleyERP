@@ -27,6 +27,12 @@ const StoreSchema = new mongoose.Schema(
       trim: true,
     },
 
+    storeKeeper: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
     storeManager: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
