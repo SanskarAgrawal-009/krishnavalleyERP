@@ -101,7 +101,6 @@ const NAV_ITEMS = [
     path: '/agent-network',
     label: 'Agent Network',
     icon: Users,
-    badge: '120+',
     subItems: [
       { path: '/agent-network', label: 'Channel Partner Directory', icon: Users },
       { path: '/site-visits', label: 'Site Visit Approvals', icon: ShieldCheck },
