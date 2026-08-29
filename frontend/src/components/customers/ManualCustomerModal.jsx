@@ -3,6 +3,16 @@ import { Modal } from '../common/Modal.jsx';
 import { projectService } from '../../services/projectService.js';
 import { arePhoneNumbersSame } from '../../utils/phoneValidator.js';
 import { 
+  sanitizeAlphabetsOnly, 
+  sanitizeDigitsOnly, 
+  sanitizePhone, 
+  sanitizePincode, 
+  sanitizeGovtId, 
+  sanitizeGst, 
+  sanitizeEmail, 
+  isValidEmail 
+} from '../../utils/inputValidators.js';
+import { 
   User, 
   Phone, 
   Mail, 
@@ -162,6 +172,42 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
       return;
     }
 
+    if (!name.trim()) {
+      alert('Please enter a valid customer full name.');
+      return;
+    }
+
+    if (!mobileNo.trim() || mobileNo.replace(/\D/g, '').length < 10) {
+      alert('Primary mobile number must contain at least 10 numeric digits.');
+      return;
+    }
+
+    if (alternateMobileNo && alternateMobileNo.replace(/\D/g, '').length < 10) {
+      alert('Alternate mobile number must contain at least 10 numeric digits if provided.');
+      return;
+    }
+
+    if (email && !isValidEmail(email)) {
+      alert('Please enter a valid email address (e.g. name@domain.com).');
+      return;
+    }
+
+    if (address.pincode && address.pincode.length !== 6) {
+      alert('Pincode must be exactly 6 numeric digits.');
+      return;
+    }
+
+    if (customerType === 'tenant' && tenantType === 'individual' && governmentIdNumber) {
+      if (governmentIdType === 'aadhaar' && governmentIdNumber.length !== 12) {
+        alert('Aadhaar Card number must be exactly 12 numeric digits (no alphabets).');
+        return;
+      }
+      if (governmentIdType === 'pan' && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(governmentIdNumber)) {
+        alert('PAN number must follow format ABCDE1234F (5 uppercase letters, 4 numbers, 1 letter).');
+        return;
+      }
+    }
+
     const payload = {
       customerType,
       name,
@@ -283,28 +329,28 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
               <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
-                Full Name / Legal Entity Name *
+                Full Name / Legal Entity Name * (Alphabets only)
               </label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Ramesh Chandra Sharma"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setName(sanitizeAlphabetsOnly(e.target.value))}
                 style={{ width: '100%' }}
               />
             </div>
 
             <div>
               <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
-                Primary Mobile Number *
+                Primary Mobile Number * (Numbers only)
               </label>
               <input
                 type="tel"
                 required
                 placeholder="e.g. +91 98290 12345"
                 value={mobileNo}
-                onChange={(e) => setMobileNo(e.target.value)}
+                onChange={(e) => setMobileNo(sanitizePhone(e.target.value))}
                 style={{ width: '100%' }}
               />
             </div>
@@ -313,13 +359,13 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
               <label style={{ fontSize: '0.75rem', color: isDuplicatePhone ? '#dc2626' : '#374151', display: 'block', marginBottom: '3px', fontWeight: isDuplicatePhone ? '700' : 'normal' }}>
-                Alternate Mobile No
+                Alternate Mobile No (Numbers only)
               </label>
               <input
                 type="tel"
                 placeholder="e.g. +91 94140 54321"
                 value={alternateMobileNo}
-                onChange={(e) => setAlternateMobileNo(e.target.value)}
+                onChange={(e) => setAlternateMobileNo(sanitizePhone(e.target.value))}
                 style={{
                   width: '100%',
                   borderColor: isDuplicatePhone ? '#dc2626' : undefined,
@@ -341,7 +387,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 type="email"
                 placeholder="e.g. customer@domain.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(sanitizeEmail(e.target.value))}
                 style={{ width: '100%' }}
               />
             </div>
@@ -360,22 +406,23 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>City</label>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>City (Alphabets only)</label>
               <input
                 type="text"
                 placeholder="City"
                 value={address.city}
-                onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                onChange={(e) => setAddress({ ...address, city: sanitizeAlphabetsOnly(e.target.value) })}
                 style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Pincode</label>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Pincode (6 digits only)</label>
               <input
                 type="text"
-                placeholder="Pincode"
+                maxLength={6}
+                placeholder="e.g. 302001"
                 value={address.pincode}
-                onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
+                onChange={(e) => setAddress({ ...address, pincode: sanitizePincode(e.target.value) })}
                 style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>
@@ -486,11 +533,12 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div>
-                    <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Father's / Spouse Name</label>
+                    <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Father's / Spouse Name (Alphabets only)</label>
                     <input
                       type="text"
+                      placeholder="e.g. Ramesh Chandra"
                       value={fatherName}
-                      onChange={(e) => setFatherName(e.target.value)}
+                      onChange={(e) => setFatherName(sanitizeAlphabetsOnly(e.target.value))}
                       style={{ width: '100%', fontSize: '0.8rem' }}
                     />
                   </div>
@@ -510,23 +558,35 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                     <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Govt ID Type</label>
                     <select
                       value={governmentIdType}
-                      onChange={(e) => setGovernmentIdType(e.target.value)}
+                      onChange={(e) => {
+                        const newType = e.target.value;
+                        setGovernmentIdType(newType);
+                        setGovernmentIdNumber(sanitizeGovtId(governmentIdNumber, newType));
+                      }}
                       style={{ width: '100%', fontSize: '0.8rem' }}
                     >
-                      <option value="aadhaar">Aadhaar Card</option>
-                      <option value="pan">PAN Card</option>
+                      <option value="aadhaar">Aadhaar Card (12 Digits Only)</option>
+                      <option value="pan">PAN Card (10 Alphanumeric)</option>
                       <option value="passport">Passport</option>
                       <option value="driving_license">Driving License</option>
                       <option value="voter_id">Voter ID</option>
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Govt ID Number *</label>
+                    <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
+                      Govt ID Number * {governmentIdType === 'aadhaar' ? '(12 Numbers Only)' : governmentIdType === 'pan' ? '(10 Chars: ABCDE1234F)' : ''}
+                    </label>
                     <input
                       type="text"
-                      placeholder="e.g. 5432 1098 7654"
+                      placeholder={
+                        governmentIdType === 'aadhaar' 
+                          ? '12-digit Aadhaar Number (Numbers only)' 
+                          : governmentIdType === 'pan' 
+                          ? '10-character PAN (e.g. ABCDE1234F)' 
+                          : 'Govt ID Number'
+                      }
                       value={governmentIdNumber}
-                      onChange={(e) => setGovernmentIdNumber(e.target.value)}
+                      onChange={(e) => setGovernmentIdNumber(sanitizeGovtId(e.target.value, governmentIdType))}
                       style={{ width: '100%', fontSize: '0.8rem' }}
                     />
                   </div>
@@ -558,7 +618,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                       type="text"
                       placeholder="e.g. 08AAACH7409R1ZZ"
                       value={gstNumber}
-                      onChange={(e) => setGstNumber(e.target.value)}
+                      onChange={(e) => setGstNumber(sanitizeGst(e.target.value))}
                       style={{ width: '100%', fontSize: '0.8rem' }}
                     />
                   </div>
@@ -571,7 +631,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                       type="text"
                       placeholder="e.g. AAACH7409R"
                       value={panNumber}
-                      onChange={(e) => setPanNumber(e.target.value)}
+                      onChange={(e) => setPanNumber(sanitizeGovtId(e.target.value, 'pan'))}
                       style={{ width: '100%', fontSize: '0.8rem' }}
                     />
                   </div>
@@ -590,32 +650,32 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 {/* Contact Person */}
                 <div style={{ background: '#f8f9fa', padding: '8px 10px', borderRadius: '4px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
                   <div>
-                    <label style={{ fontSize: '0.68rem', color: '#4b5563' }}>Contact Person</label>
+                    <label style={{ fontSize: '0.68rem', color: '#4b5563' }}>Contact Person (Alphabets only)</label>
                     <input
                       type="text"
                       placeholder="Name"
                       value={contactPerson.name}
-                      onChange={(e) => setContactPerson({ ...contactPerson, name: e.target.value })}
+                      onChange={(e) => setContactPerson({ ...contactPerson, name: sanitizeAlphabetsOnly(e.target.value) })}
                       style={{ width: '100%', fontSize: '0.75rem' }}
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.68rem', color: '#4b5563' }}>Phone</label>
+                    <label style={{ fontSize: '0.68rem', color: '#4b5563' }}>Phone (Numbers only)</label>
                     <input
                       type="tel"
                       placeholder="Phone"
                       value={contactPerson.mobileNo}
-                      onChange={(e) => setContactPerson({ ...contactPerson, mobileNo: e.target.value })}
+                      onChange={(e) => setContactPerson({ ...contactPerson, mobileNo: sanitizePhone(e.target.value) })}
                       style={{ width: '100%', fontSize: '0.75rem' }}
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.68rem', color: '#4b5563' }}>Designation</label>
+                    <label style={{ fontSize: '0.68rem', color: '#4b5563' }}>Designation (Alphabets only)</label>
                     <input
                       type="text"
                       placeholder="e.g. Admin Lead"
                       value={contactPerson.designation}
-                      onChange={(e) => setContactPerson({ ...contactPerson, designation: e.target.value })}
+                      onChange={(e) => setContactPerson({ ...contactPerson, designation: sanitizeAlphabetsOnly(e.target.value) })}
                       style={{ width: '100%', fontSize: '0.75rem' }}
                     />
                   </div>
@@ -679,31 +739,33 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                 <div>
-                  <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Monthly Rent (₹)</label>
+                  <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Monthly Rent (₹, Numbers only)</label>
                   <input
-                    type="number"
+                    type="text"
                     value={monthlyRent}
-                    onChange={(e) => setMonthlyRent(e.target.value)}
+                    onChange={(e) => setMonthlyRent(sanitizeDigitsOnly(e.target.value))}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Deposit (₹)</label>
+                  <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Deposit (₹, Numbers only)</label>
                   <input
-                    type="number"
+                    type="text"
                     value={securityDeposit}
-                    onChange={(e) => setSecurityDeposit(e.target.value)}
+                    onChange={(e) => setSecurityDeposit(sanitizeDigitsOnly(e.target.value))}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Rent Due Day</label>
+                  <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Rent Due Day (1-31)</label>
                   <input
-                    type="number"
-                    min="1"
-                    max="31"
+                    type="text"
+                    maxLength={2}
                     value={rentDueDay}
-                    onChange={(e) => setRentDueDay(e.target.value)}
+                    onChange={(e) => {
+                      const v = sanitizeDigitsOnly(e.target.value, 2);
+                      if (!v || (Number(v) >= 1 && Number(v) <= 31)) setRentDueDay(v);
+                    }}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
                 </div>

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { Truck, Phone, Mail } from 'lucide-react';
+import { sanitizeAlphabetsOnly, sanitizePhone, sanitizeEmail, sanitizeGovtId, sanitizeGst, isValidEmail } from '../../utils/inputValidators.js';
 
 export const NewVendorModal = ({ isOpen, onClose, onSubmit }) => {
   const [vendorCode, setVendorCode] = useState(`VEN-${Date.now().toString().slice(-4)}`);
@@ -16,6 +16,22 @@ export const NewVendorModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!vendorName.trim()) {
+      alert('Please enter Vendor / Company name');
+      return;
+    }
+    if (!mobileNo.trim() || mobileNo.replace(/\D/g, '').length < 10) {
+      alert('Please enter a valid 10-digit mobile phone number');
+      return;
+    }
+    if (email && !isValidEmail(email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+    if (panNumber && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panNumber)) {
+      alert('PAN number must follow format ABCDE1234F');
+      return;
+    }
     onSubmit({
       vendorCode,
       vendorName,
@@ -78,27 +94,27 @@ export const NewVendorModal = ({ isOpen, onClose, onSubmit }) => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
           <div>
             <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              Contact Person
+              Contact Person (Alphabets only)
             </label>
             <input
               type="text"
               placeholder="e.g. Sunil Agarwal"
               value={contactName}
-              onChange={(e) => setContactName(e.target.value)}
+              onChange={(e) => setContactName(sanitizeAlphabetsOnly(e.target.value))}
               style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>
 
           <div>
             <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              Mobile Phone *
+              Mobile Phone * (Numbers only)
             </label>
             <input
               type="tel"
               required
               placeholder="+91 98290 12345"
               value={mobileNo}
-              onChange={(e) => setMobileNo(e.target.value)}
+              onChange={(e) => setMobileNo(sanitizePhone(e.target.value))}
               style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>
@@ -111,7 +127,7 @@ export const NewVendorModal = ({ isOpen, onClose, onSubmit }) => {
               type="email"
               placeholder="sales@vendor.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(sanitizeEmail(e.target.value))}
               style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>
@@ -126,7 +142,7 @@ export const NewVendorModal = ({ isOpen, onClose, onSubmit }) => {
               type="text"
               placeholder="08AAACJ1234F1Z8"
               value={gstNumber}
-              onChange={(e) => setGstNumber(e.target.value)}
+              onChange={(e) => setGstNumber(sanitizeGst(e.target.value))}
               style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>
@@ -139,7 +155,7 @@ export const NewVendorModal = ({ isOpen, onClose, onSubmit }) => {
               type="text"
               placeholder="AAACJ1234F"
               value={panNumber}
-              onChange={(e) => setPanNumber(e.target.value)}
+              onChange={(e) => setPanNumber(sanitizeGovtId(e.target.value, 'pan'))}
               style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>

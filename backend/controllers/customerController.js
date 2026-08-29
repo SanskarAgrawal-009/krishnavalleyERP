@@ -3,6 +3,7 @@ import Flat from '../models/Flat.js';
 import { uploadFileToS3 } from '../config/s3.js';
 import { escapeRegex } from '../utils/regexUtil.js';
 import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
+import { isValidPhone, isValidPincode, isValidEmail, isValidGovtId } from '../utils/inputValidators.js';
 import mongoose from 'mongoose';
 
 // Create a new Customer (Owner or Tenant)
@@ -27,11 +28,50 @@ export const createCustomer = async (req, res) => {
       });
     }
 
+    if (!isValidPhone(mobileNo)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Primary mobile number must contain only numbers (7-13 digits).'
+      });
+    }
+
+    if (alternateMobileNo && !isValidPhone(alternateMobileNo)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Alternate mobile number must contain only numbers.'
+      });
+    }
+
     if (alternateMobileNo && arePhoneNumbersSame(mobileNo, alternateMobileNo)) {
       return res.status(400).json({
         success: false,
         message: 'Primary mobile number and alternate mobile number cannot be the same.'
       });
+    }
+
+    if (email && !isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email address format.'
+      });
+    }
+
+    if (address?.pincode && !isValidPincode(address.pincode)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Pincode must be exactly 6 numeric digits.'
+      });
+    }
+
+    if (customerType === 'tenant' && tenantDetails?.tenantType === 'individual' && tenantDetails?.individual?.governmentIdNumber) {
+      const { governmentIdNumber, governmentIdType } = tenantDetails.individual;
+      if (!isValidGovtId(governmentIdNumber, governmentIdType || 'aadhaar')) {
+        const expected = governmentIdType === 'aadhaar' ? '12 numeric digits' : governmentIdType === 'pan' ? '10 alphanumeric characters (ABCDE1234F)' : 'valid format';
+        return res.status(400).json({
+          success: false,
+          message: `Govt ID Number must be ${expected} for ${governmentIdType || 'aadhaar'}.`
+        });
+      }
     }
 
     const customer = new Customer({
@@ -177,10 +217,38 @@ export const updateCustomer = async (req, res) => {
     const effectivePrimary = updates.mobileNo || customer.mobileNo;
     const effectiveAlternate = updates.alternateMobileNo !== undefined ? updates.alternateMobileNo : customer.alternateMobileNo;
 
+    if (updates.mobileNo && !isValidPhone(updates.mobileNo)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Primary mobile number must contain only numbers.'
+      });
+    }
+
+    if (updates.alternateMobileNo && !isValidPhone(updates.alternateMobileNo)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Alternate mobile number must contain only numbers.'
+      });
+    }
+
     if (effectiveAlternate && arePhoneNumbersSame(effectivePrimary, effectiveAlternate)) {
       return res.status(400).json({
         success: false,
         message: 'Primary mobile number and alternate mobile number cannot be the same.'
+      });
+    }
+
+    if (updates.email && !isValidEmail(updates.email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email address format.'
+      });
+    }
+
+    if (updates.address?.pincode && !isValidPincode(updates.address.pincode)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Pincode must be exactly 6 numeric digits.'
       });
     }
 

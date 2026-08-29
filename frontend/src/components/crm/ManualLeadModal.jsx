@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { User, Phone, Mail, Home, MessageSquare, Plus } from 'lucide-react';
 import { projectService } from '../../services/projectService.js';
+import { sanitizeAlphabetsOnly, sanitizePhone, sanitizeEmail, isValidEmail } from '../../utils/inputValidators.js';
 
 export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
   const [formData, setFormData] = useState({
@@ -68,6 +69,21 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.name.trim()) {
+      alert('Please enter prospect full name');
+      return;
+    }
+
+    if (!formData.mobileNo.trim() || formData.mobileNo.replace(/\D/g, '').length < 10) {
+      alert('Please enter a valid 10-digit mobile number');
+      return;
+    }
+
+    if (formData.email && !isValidEmail(formData.email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
     const payload = {
       name: formData.name.trim(),
       mobileNo: formData.mobileNo.trim(),
@@ -100,14 +116,14 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
         <div>
           <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
             <User size={14} color="#1a73e8" />
-            Prospect Full Name *
+            Prospect Full Name * (Alphabets only)
           </label>
           <input
             type="text"
             required
             placeholder="e.g. Ramesh Chandra Sharma"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, name: sanitizeAlphabetsOnly(e.target.value) })}
             style={{ width: '100%', fontSize: '0.85rem' }}
           />
         </div>
@@ -117,14 +133,14 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
           <div>
             <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
               <Phone size={14} color="#137333" />
-              Mobile Number *
+              Mobile Number * (Numbers only)
             </label>
             <input
               type="tel"
               required
               placeholder="e.g. +91 98765 43210"
               value={formData.mobileNo}
-              onChange={(e) => setFormData({ ...formData, mobileNo: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, mobileNo: sanitizePhone(e.target.value) })}
               style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>
@@ -138,7 +154,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
               type="email"
               placeholder="e.g. ramesh@example.com"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, email: sanitizeEmail(e.target.value) })}
               style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>

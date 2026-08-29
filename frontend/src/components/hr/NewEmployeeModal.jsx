@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { hrService } from '../../services/hrService.js';
 import { User, Phone, Mail, Building2, Briefcase, DollarSign, Calendar } from 'lucide-react';
+import { sanitizeAlphabetsOnly, sanitizePhone, sanitizeEmail, sanitizeDigitsOnly, isValidEmail } from '../../utils/inputValidators.js';
 
 export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
   const [departments, setDepartments] = useState([]);
@@ -80,8 +81,18 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!firstName || !mobileNo) {
+    if (!firstName.trim() || !mobileNo.trim()) {
       alert('Please enter first name and phone number');
+      return;
+    }
+
+    if (mobileNo.replace(/\D/g, '').length < 10) {
+      alert('Mobile number must have at least 10 numeric digits');
+      return;
+    }
+
+    if (email && !isValidEmail(email)) {
+      alert('Please enter a valid email address');
       return;
     }
 
@@ -123,24 +134,24 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
           </div>
 
           <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>First Name *</label>
+            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>First Name * (Alphabets only)</label>
             <input
               type="text"
               required
               placeholder="e.g. Vikram"
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => setFirstName(sanitizeAlphabetsOnly(e.target.value))}
               style={{ width: '100%', fontSize: '0.8rem' }}
             />
           </div>
 
           <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Last Name</label>
+            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Last Name (Alphabets only)</label>
             <input
               type="text"
               placeholder="e.g. Chauhan"
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => setLastName(sanitizeAlphabetsOnly(e.target.value))}
               style={{ width: '100%', fontSize: '0.8rem' }}
             />
           </div>
@@ -148,13 +159,13 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr', gap: '10px' }}>
           <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Mobile Phone *</label>
+            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Mobile Phone * (Numbers only)</label>
             <input
               type="tel"
               required
               placeholder="+91 98765 43210"
               value={mobileNo}
-              onChange={(e) => setMobileNo(e.target.value)}
+              onChange={(e) => setMobileNo(sanitizePhone(e.target.value))}
               style={{ width: '100%', fontSize: '0.8rem' }}
             />
           </div>
@@ -165,7 +176,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
               type="email"
               placeholder="vikram@krishnavalley.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(sanitizeEmail(e.target.value))}
               style={{ width: '100%', fontSize: '0.8rem' }}
             />
           </div>
@@ -254,11 +265,11 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Base Monthly Salary (₹)</label>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Base Monthly Salary (₹, Numbers only)</label>
               <input
-                type="number"
+                type="text"
                 value={initialSalary}
-                onChange={(e) => setInitialSalary(e.target.value)}
+                onChange={(e) => setInitialSalary(sanitizeDigitsOnly(e.target.value))}
                 style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>

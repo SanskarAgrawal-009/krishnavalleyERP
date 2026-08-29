@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { agentService } from '../../services/agentService.js';
 import { projectService } from '../../services/projectService.js';
+import { sanitizeAlphabetsOnly, sanitizePhone, sanitizeEmail, isValidEmail } from '../../utils/inputValidators.js';
 import { 
   Building2, 
   User, 
@@ -86,14 +87,13 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
       const res = await agentService.lookupAgentByCode(code.trim());
       if (res.data) {
         setAgentInfo(res.data);
-        setAgentError('');
       } else {
         setAgentInfo(null);
-        setAgentError('Agent not found for this code');
+        setAgentError('No active registered Channel Partner found with this code');
       }
     } catch (err) {
       setAgentInfo(null);
-      setAgentError(err.message || 'Agent not found with this code');
+      setAgentError(err.response?.data?.message || err.message || 'Agent not found');
     } finally {
       setLookingUpAgent(false);
     }
@@ -121,8 +121,16 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
       alert('Please enter a valid Agent Code and verify the agent first.');
       return;
     }
-    if (!partyName.trim() || !partyMobile.trim()) {
-      alert('Please enter visitor Party Name and Mobile Number.');
+    if (!partyName.trim()) {
+      alert('Please enter visitor Party Full Name (alphabets only).');
+      return;
+    }
+    if (!partyMobile.trim() || partyMobile.replace(/\D/g, '').length < 10) {
+      alert('Please enter a valid 10-digit visitor Mobile Number.');
+      return;
+    }
+    if (partyEmail && !isValidEmail(partyEmail)) {
+      alert('Please enter a valid email address.');
       return;
     }
     if (!selectedProjectId) {
@@ -252,24 +260,24 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700', display: 'block', marginBottom: '3px' }}>Party Full Name *</label>
+              <label style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700', display: 'block', marginBottom: '3px' }}>Party Full Name * (Alphabets only)</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Ramesh Chandra Sharma"
                 value={partyName}
-                onChange={(e) => setPartyName(e.target.value)}
+                onChange={(e) => setPartyName(sanitizeAlphabetsOnly(e.target.value))}
                 style={{ width: '100%' }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700', display: 'block', marginBottom: '3px' }}>Mobile Number *</label>
+              <label style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700', display: 'block', marginBottom: '3px' }}>Mobile Number * (Numbers only)</label>
               <input
                 type="tel"
                 required
                 placeholder="+91 98765 43210"
                 value={partyMobile}
-                onChange={(e) => setPartyMobile(e.target.value)}
+                onChange={(e) => setPartyMobile(sanitizePhone(e.target.value))}
                 style={{ width: '100%' }}
               />
             </div>
@@ -280,7 +288,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
               type="email"
               placeholder="party.customer@example.com"
               value={partyEmail}
-              onChange={(e) => setPartyEmail(e.target.value)}
+              onChange={(e) => setPartyEmail(sanitizeEmail(e.target.value))}
               style={{ width: '100%' }}
             />
           </div>
