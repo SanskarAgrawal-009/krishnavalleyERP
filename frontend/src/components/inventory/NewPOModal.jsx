@@ -21,7 +21,7 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
 
   // Line Items
   const [items, setItems] = useState([
-    { materialId: '', quantity: 100, unitRate: 380, taxRate: 18 }
+    { materialId: '', quantity: '', unitRate: '', taxRate: 18 }
   ]);
 
   useEffect(() => {
@@ -48,7 +48,8 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
         if (res.data) {
           setMaterials(res.data);
           if (res.data.length > 0) {
-            setItems([{ materialId: res.data[0]._id, quantity: 100, unitRate: 380, taxRate: 18 }]);
+            const firstMat = res.data[0];
+            setItems([{ materialId: firstMat._id, quantity: '', unitRate: firstMat.unitPrice || '', taxRate: firstMat.taxRate || 18 }]);
           }
         }
       });
@@ -57,9 +58,10 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
   }, [isOpen]);
 
   const handleAddItem = () => {
+    const firstMat = materials[0];
     setItems([
       ...items,
-      { materialId: materials[0]?._id || '', quantity: 50, unitRate: 100, taxRate: 18 }
+      { materialId: firstMat?._id || '', quantity: '', unitRate: firstMat?.unitPrice || '', taxRate: firstMat?.taxRate || 18 }
     ]);
   };
 
