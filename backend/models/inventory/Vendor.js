@@ -65,18 +65,10 @@ const VendorSchema = new mongoose.Schema(
   }
 );
 
-VendorSchema.pre('validate', function (next) {
+VendorSchema.pre('validate', function () {
   if (this.phone && this.contactPerson?.mobileNo && arePhoneNumbersSame(this.phone, this.contactPerson.mobileNo)) {
-    return next(new Error('Vendor office phone and contact person mobile number cannot be the same.'));
+    throw new Error('Vendor office phone and contact person mobile number cannot be the same.');
   }
-  next();
-});
-
-VendorSchema.pre('save', function (next) {
-  if (this.phone && this.contactPerson?.mobileNo && arePhoneNumbersSame(this.phone, this.contactPerson.mobileNo)) {
-    return next(new Error('Vendor office phone and contact person mobile number cannot be the same.'));
-  }
-  next();
 });
 
 export const Vendor = mongoose.models.Vendor || mongoose.model("Vendor", VendorSchema);

@@ -222,18 +222,10 @@ const LeadSchema = new mongoose.Schema(
   }
 );
 
-LeadSchema.pre('validate', function (next) {
+LeadSchema.pre('validate', function () {
   if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
-    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+    throw new Error('Primary mobile number and alternate mobile number cannot be the same.');
   }
-  next();
-});
-
-LeadSchema.pre('save', function (next) {
-  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
-    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
-  }
-  next();
 });
 
 export const Lead = mongoose.models.Lead || mongoose.model('Lead', LeadSchema);

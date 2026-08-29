@@ -388,24 +388,13 @@ const EmployeeSchema = new mongoose.Schema(
   }
 );
 
-EmployeeSchema.pre('validate', function (next) {
+EmployeeSchema.pre('validate', function () {
   if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
-    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+    throw new Error('Primary mobile number and alternate mobile number cannot be the same.');
   }
   if (this.mobileNo && this.emergencyContact?.mobileNo && arePhoneNumbersSame(this.mobileNo, this.emergencyContact.mobileNo)) {
-    return next(new Error('Primary mobile number and emergency contact mobile number cannot be the same.'));
+    throw new Error('Primary mobile number and emergency contact mobile number cannot be the same.');
   }
-  next();
-});
-
-EmployeeSchema.pre('save', function (next) {
-  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
-    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
-  }
-  if (this.mobileNo && this.emergencyContact?.mobileNo && arePhoneNumbersSame(this.mobileNo, this.emergencyContact.mobileNo)) {
-    return next(new Error('Primary mobile number and emergency contact mobile number cannot be the same.'));
-  }
-  next();
 });
 
 export const Employee = mongoose.models.Employee || mongoose.model("Employee", EmployeeSchema);

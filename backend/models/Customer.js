@@ -424,18 +424,10 @@ const CustomerSchema = new mongoose.Schema(
   }
 );
 
-CustomerSchema.pre('validate', function (next) {
+CustomerSchema.pre('validate', function () {
   if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
-    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+    throw new Error('Primary mobile number and alternate mobile number cannot be the same.');
   }
-  next();
-});
-
-CustomerSchema.pre('save', function (next) {
-  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
-    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
-  }
-  next();
 });
 
 export const Customer = mongoose.models.Customer || mongoose.model("Customer", CustomerSchema);

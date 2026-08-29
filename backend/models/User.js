@@ -252,18 +252,10 @@ UserSchema.pre('save', async function () {
   }
 });
 
-UserSchema.pre('validate', function (next) {
+UserSchema.pre('validate', function () {
   if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
-    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
+    throw new Error('Primary mobile number and alternate mobile number cannot be the same.');
   }
-  next();
-});
-
-UserSchema.pre('save', function (next) {
-  if (this.mobileNo && this.alternateMobileNo && arePhoneNumbersSame(this.mobileNo, this.alternateMobileNo)) {
-    return next(new Error('Primary mobile number and alternate mobile number cannot be the same.'));
-  }
-  next();
 });
 
 // Compare candidate password with stored hash
