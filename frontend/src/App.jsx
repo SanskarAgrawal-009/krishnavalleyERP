@@ -198,12 +198,16 @@ export const App = () => {
               }
             />
 
-            {/* Reports & Analytics */}
+            {/* Reports & Analytics (Frozen for deployment, retained for offline development) */}
             <Route
               path="reports"
               element={
                 <ProtectedRoute permission="reports:view">
-                  <ReportsPage />
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                    <ReportsPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />
@@ -211,7 +215,11 @@ export const App = () => {
               path="reports/:reportType"
               element={
                 <ProtectedRoute permission="reports:view">
-                  <ReportsPage />
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                    <ReportsPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />

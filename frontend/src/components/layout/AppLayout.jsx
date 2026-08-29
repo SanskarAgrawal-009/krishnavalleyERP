@@ -206,6 +206,7 @@ const NAV_ITEMS = [
     icon: BarChart3,
     highlight: true,
     badge: 'BI',
+    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for future updates]
     permission: 'reports:view',
     subItems: [
       { path: '/reports/sales', label: 'Sales Report' },
@@ -337,8 +338,17 @@ export const AppLayout = () => {
   // Filter items based on user permissions, role, and search
   const userRole = (user?.role?.roleCode || user?.roleCode || user?.role || '').toLowerCase();
   const isAgentUser = userRole === 'agent';
+  const isOfflineDev = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
+  );
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
+    // 0. Frozen modules: removed from live production deployment, retained in project offline for future updates
+    if (item.frozen && !isOfflineDev) {
+      return false;
+    }
+
     // 1. Agent Portal is exclusively for logged-in Agents
     if (item.path === '/agent-portal') {
       return isAgentUser;
@@ -1102,7 +1112,7 @@ export const AppLayout = () => {
               </NavLink>
 
               <NavLink
-                to="/reports"
+                to="/settings"
                 onClick={() => isMobile && setMobileMenuOpen(false)}
                 style={{
                   display: 'flex',
@@ -1143,7 +1153,7 @@ export const AppLayout = () => {
               </button>
 
               <button
-                onClick={() => navigate('/reports')}
+                onClick={() => navigate('/settings')}
                 title="System Settings"
                 style={{
                   width: '32px',
@@ -1314,28 +1324,30 @@ export const AppLayout = () => {
               />
             </button>
 
-            {/* Reports & Analytics shortcut */}
-            <button
-              onClick={() => navigate('/reports')}
-              title="Reports & Analytics Hub"
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                backgroundColor: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--on-surface-variant)',
-                cursor: 'pointer',
-                border: 'none',
-                transition: 'background-color 0.15s ease'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f5'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-            >
-              <BarChart3 size={19} />
-            </button>
+            {/* Reports & Analytics shortcut (Offline development only) */}
+            {isOfflineDev && (
+              <button
+                onClick={() => navigate('/reports')}
+                title="Reports & Analytics Hub (Offline Development)"
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  backgroundColor: 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--on-surface-variant)',
+                  cursor: 'pointer',
+                  border: 'none',
+                  transition: 'background-color 0.15s ease'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f5'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                <BarChart3 size={19} />
+              </button>
+            )}
 
             {/* User Identity & Profile Menu Dropdown */}
             <div ref={profileDropdownRef} style={{ position: 'relative', marginLeft: '6px' }}>
