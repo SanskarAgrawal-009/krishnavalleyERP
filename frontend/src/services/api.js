@@ -7,6 +7,29 @@ export const BASE_URL = RAW_API_URL
   ? (RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/$/, '')}/api`)
   : '/api';
 
+export const BACKEND_URL = RAW_API_URL
+  ? RAW_API_URL.replace(/\/api$/, '').replace(/\/$/, '')
+  : (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000'
+      : 'https://krishnavalley-backend.onrender.com');
+
+/**
+ * Resolves any file path (S3 or local uploads) to an absolute URL
+ */
+export const getFileUrl = (filePath) => {
+  if (!filePath) return '';
+  if (
+    filePath.startsWith('http://') ||
+    filePath.startsWith('https://') ||
+    filePath.startsWith('data:') ||
+    filePath.startsWith('blob:')
+  ) {
+    return filePath;
+  }
+  const cleanPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
+  return `${BACKEND_URL}${cleanPath}`;
+};
+
 export const request = async (endpoint, options = {}) => {
   const token = localStorage.getItem('kv_token');
   const isFormData = options.body instanceof FormData;

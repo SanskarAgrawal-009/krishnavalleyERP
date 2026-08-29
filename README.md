@@ -20,10 +20,9 @@
 5. [Database Schema Dictionary (All 28 Collections)](#-database-schema-dictionary-all-28-collections)
 6. [Strict Datatype Validation & Sanitization Engine](#-strict-datatype-validation--sanitization-engine)
 7. [Ghost Box & Default Value Elimination](#-ghost-box--default-value-elimination)
-8. [Core Modules & Features](#-core-modules--features)
-9. [Automated System Health & Verification Suite](#-automated-system-health--verification-suite)
-10. [Cloud Deployment & Production Setup](#-cloud-deployment--production-setup)
-11. [Default Credentials & Access Control](#-default-credentials--access-control)
+8. [Automated System Health & Verification Suite](#-automated-system-health--verification-suite)
+9. [Cloud Deployment & Production Setup](#-cloud-deployment--production-setup)
+10. [Security & Access Control](#-security--access-control)
 
 ---
 
@@ -282,14 +281,9 @@ npm run dev
 
 ---
 
-## 🔑 Default Credentials & Access Control
+## 🔒 Security & Access Control
 
-| Role | Email / Identifier | Password | Access Scope |
-| :--- | :--- | :--- | :--- |
-| **Super Administrator** | `admin@krishnavalley.com` | `Admin@12345` | Complete system-wide administrative access |
-| **Sales Manager** | `sales@krishnavalley.com` | `Sales@12345` | CRM, Leads, Stacking Matrix & Bookings |
-| **Accounts / Billing** | `accounts@krishnavalley.com` | `Accounts@12345` | CLP Milestone Invoicing & CAM Dues |
-| **Channel Partner** | `agent@krishnavalley.com` | `Agent@12345` | Agent Portal, Lead Pipeline & Site Visits |
+Access to Krishna Valley ERP is restricted to authorized company personnel. Role-Based Access Control (RBAC) is strictly enforced with 42 granular permission flags. User onboarding and credential provisioning are managed exclusively by the Organization Super Administrator via the Access Control management module.
 
 ---
 

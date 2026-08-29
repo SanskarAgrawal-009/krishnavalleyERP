@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { hrService } from '../../services/hrService.js';
+import { getFileUrl } from '../../services/api.js';
 import { NewEmployeeModal } from '../../components/hr/NewEmployeeModal.jsx';
 import { LogAttendanceModal } from '../../components/hr/LogAttendanceModal.jsx';
 import { ApplyLeaveModal } from '../../components/hr/ApplyLeaveModal.jsx';
@@ -73,6 +74,7 @@ export const HRPage = () => {
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [isDisburseModalOpen, setIsDisburseModalOpen] = useState(false);
   const [selectedPayrollItem, setSelectedPayrollItem] = useState(null);
+  const [slipPreviewUrl, setSlipPreviewUrl] = useState(null);
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -1166,10 +1168,9 @@ export const HRPage = () => {
                                 </span>
                               )}
                               {(pay.paymentProof?.fileUrl || pay.payslipUrl) && (
-                                <a
-                                  href={pay.paymentProof?.fileUrl || pay.payslipUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  type="button"
+                                  onClick={() => setSlipPreviewUrl(getFileUrl(pay.paymentProof?.fileUrl || pay.payslipUrl))}
                                   style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
@@ -1179,14 +1180,15 @@ export const HRPage = () => {
                                     fontWeight: '700',
                                     textDecoration: 'none',
                                     backgroundColor: '#eff6ff',
-                                    padding: '2px 6px',
+                                    padding: '3px 8px',
                                     borderRadius: '4px',
                                     border: '1px solid #bfdbfe',
-                                    marginTop: '2px'
+                                    marginTop: '2px',
+                                    cursor: 'pointer'
                                   }}
                                 >
                                   <FileText size={11} /> View Slip / Proof
-                                </a>
+                                </button>
                               )}
                             </div>
                           )}
@@ -1224,6 +1226,92 @@ export const HRPage = () => {
         payrollItem={selectedPayrollItem}
         onDisburse={handlePaySalary}
       />
+
+      {/* In-App Slip / Proof Viewer Lightbox Modal */}
+      {slipPreviewUrl && (
+        <div
+          onClick={() => setSlipPreviewUrl(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '12px',
+              padding: '16px',
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+              <strong style={{ fontSize: '1rem', color: '#0f172a' }}>Payment Slip & Proof Preview</strong>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <a
+                  href={slipPreviewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  style={{
+                    padding: '5px 12px',
+                    backgroundColor: '#1a73e8',
+                    color: '#ffffff',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <ExternalLink size={12} /> Open Full View / Download
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setSlipPreviewUrl(null)}
+                  style={{
+                    padding: '5px 12px',
+                    backgroundColor: '#f1f5f9',
+                    color: '#475569',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ✕ Close
+                </button>
+              </div>
+            </div>
+            <div style={{ overflow: 'auto', maxHeight: '72vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8fafc', borderRadius: '8px', padding: '10px' }}>
+              {slipPreviewUrl.toLowerCase().endsWith('.pdf') ? (
+                <iframe src={slipPreviewUrl} style={{ width: '800px', height: '600px', border: 'none' }} title="Payment Slip PDF" />
+              ) : (
+                <img
+                  src={slipPreviewUrl}
+                  alt="Salary Payment Slip / Proof"
+                  style={{ maxWidth: '100%', maxHeight: '68vh', objectFit: 'contain', borderRadius: '6px' }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/uploads/:match*",
+      "destination": "https://krishnavalley-backend.onrender.com/uploads/:match*"
+    },
+    {
+      "source": "/api/:match*",
+      "destination": "https://krishnavalley-backend.onrender.com/api/:match*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
