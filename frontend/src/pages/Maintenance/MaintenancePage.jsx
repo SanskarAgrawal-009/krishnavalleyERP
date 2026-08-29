@@ -799,12 +799,35 @@ export const MaintenancePage = () => {
                 <tbody>
                   {penalties.map((p) => (
                     <tr key={p._id || p.id}>
-                      <td><strong style={{ color: '#ba1a1a' }}>{p.penaltyCode}</strong></td>
+                      <td>
+                        <strong style={{ color: '#ba1a1a', letterSpacing: '0.5px' }}>
+                          {p.penaltyNumber || p.penaltyCode || (p._id ? `PEN-${p._id.slice(-6).toUpperCase()}` : 'PEN-NOTICE')}
+                        </strong>
+                      </td>
                       <td>
                         <div style={{ fontWeight: '700', color: '#111827' }}>Flat {p.flatId?.flatNumber || 'Unit'}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{p.projectId?.projectName}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{p.projectId?.projectName || 'Krishna Valley'}</div>
                       </td>
-                      <td style={{ color: '#374151', fontWeight: '600' }}>{p.reason}</td>
+                      <td>
+                        <div style={{ color: '#1e293b', fontWeight: '600', fontSize: '0.82rem' }}>
+                          {p.description || p.reason || 'Infraction penalty fine levied'}
+                        </div>
+                        {p.violationType && (
+                          <span style={{
+                            display: 'inline-block',
+                            marginTop: '3px',
+                            fontSize: '0.68rem',
+                            fontWeight: '700',
+                            textTransform: 'capitalize',
+                            color: '#b45309',
+                            backgroundColor: '#fef3c7',
+                            padding: '1px 6px',
+                            borderRadius: '4px'
+                          }}>
+                            {p.violationType.replace(/_/g, ' ')}
+                          </span>
+                        )}
+                      </td>
                       <td style={{ color: '#ba1a1a', fontWeight: '800' }}>{formatINR(p.penaltyAmount)}</td>
                       <td>
                         <StatusBadge status={p.paymentStatus} />

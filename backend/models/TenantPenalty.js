@@ -80,8 +80,20 @@ const TenantPenaltySchema = new mongoose.Schema(
     transactionReference: String,
     remarks: String
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
+
+TenantPenaltySchema.virtual('penaltyCode').get(function () {
+  return this.penaltyNumber;
+});
+
+TenantPenaltySchema.virtual('reason').get(function () {
+  return this.description;
+});
 
 export const TenantPenalty = mongoose.models.TenantPenalty || mongoose.model('TenantPenalty', TenantPenaltySchema);
 export default TenantPenalty;

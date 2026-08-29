@@ -640,7 +640,7 @@ export const levyPenalty = async (req, res) => {
       customerId,
       customerType: customerType || 'tenant',
       violationType: violationType || 'late_payment',
-      description: description || 'Infraction penalty levied',
+      description: description || req.body.reason || 'Infraction penalty levied',
       penaltyAmount: Number(penaltyAmount) || 1000,
       incidentDate: new Date(),
       evidenceDocument: evidenceDoc,

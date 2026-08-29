@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { projectService } from '../../services/projectService.js';
 import { customerService } from '../../services/customerService.js';
+import { sanitizeDigitsOnly } from '../../utils/inputValidators.js';
 import { AlertTriangle, Upload, DollarSign, FileText } from 'lucide-react';
 
 export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
@@ -12,7 +13,7 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [customerType, setCustomerType] = useState('tenant');
   const [violationType, setViolationType] = useState('late_payment');
-  const [penaltyAmount, setPenaltyAmount] = useState(1500);
+  const [penaltyAmount, setPenaltyAmount] = useState('');
   const [description, setDescription] = useState('');
   const [evidenceFile, setEvidenceFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -30,7 +31,7 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
       setSelectedCustomerId('');
       setCustomerType('tenant');
       setViolationType('late_payment');
-      setPenaltyAmount(1500);
+      setPenaltyAmount('');
       setDescription('');
       setEvidenceFile(null);
     }
@@ -45,15 +46,16 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
     }
 
     setSubmitting(true);
-    const formData = new FormData();
+    const reasonText = description.trim() || `${violationType.replace(/_/g, ' ')} infraction`;
     formData.append('projectId', matchedFlat.projectId?._id || matchedFlat.projectId);
     formData.append('buildingId', matchedFlat.buildingId);
     formData.append('flatId', selectedFlatId);
     formData.append('customerId', selectedCustomerId);
     formData.append('customerType', customerType);
     formData.append('violationType', violationType);
-    formData.append('penaltyAmount', Number(penaltyAmount));
-    formData.append('description', description || 'Rule violation penalty');
+    formData.append('penaltyAmount', Number(penaltyAmount) || 1000);
+    formData.append('description', reasonText);
+    formData.append('reason', reasonText);
     if (evidenceFile) {
       formData.append('evidenceFile', evidenceFile);
     }
@@ -140,11 +142,12 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
           <div>
             <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Fine Amount (₹) *</label>
             <input
-              type="number"
+              type="text"
               required
+              placeholder="e.g. 1500"
               value={penaltyAmount}
-              onChange={(e) => setPenaltyAmount(e.target.value)}
-              style={{ width: '100%', fontSize: '0.8rem' }}
+              onChange={(e) => setPenaltyAmount(sanitizeDigitsOnly(e.target.value))}
+              style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>
         </div>
