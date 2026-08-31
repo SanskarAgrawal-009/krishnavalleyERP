@@ -36,6 +36,15 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
   // Lease Mode: 'single' (1 Flat) vs 'multi' (Multiple Flats / Corporate Bundle)
   const [leaseMode, setLeaseMode] = useState('single');
 
+  // Multi-Unit Selection
+  const [selectedUnits, setSelectedUnits] = useState([]);
+
+  // Tenant State
+  const [selectedTenantId, setSelectedTenantId] = useState('');
+  const [isAddingNewTenant, setIsAddingNewTenant] = useState(false);
+  const [newTenantName, setNewTenantName] = useState('');
+  const [newTenantPhone, setNewTenantPhone] = useState('');
+
   // Single Flat Selection
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedBuildingId, setSelectedBuildingId] = useState('');
