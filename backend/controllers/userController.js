@@ -198,12 +198,12 @@ export const createUser = async (req, res) => {
     });
 
     // Add user to role.users
-    if (!role.users.includes(savedUser._id)) {
-      role.users.push(savedUser._id);
+    if (!role.users.includes(newUser._id)) {
+      role.users.push(newUser._id);
       await role.save();
     }
 
-    const populatedUser = await User.findById(savedUser._id)
+    const populatedUser = await User.findById(newUser._id)
       .populate({ path: 'roleId', model: 'Role', select: 'roleName roleCode' })
       .populate('branchAccess.branchId', 'branchName branchCode')
       .select('-passwordHash');
@@ -213,13 +213,13 @@ export const createUser = async (req, res) => {
       action: 'CREATE',
       module: role.roleCode === 'agent' ? 'agent' : 'users',
       resourceType: 'User',
-      resourceId: savedUser._id,
-      resourceName: `${savedUser.firstName} ${savedUser.lastName || ''} (@${savedUser.username})`,
+      resourceId: newUser._id,
+      resourceName: `${newUser.firstName} ${newUser.lastName || ''} (@${newUser.username})`,
       req,
-      summary: `Created ${role.roleCode === 'agent' ? 'Channel Partner Agent' : 'User'} account for "${savedUser.firstName} ${savedUser.lastName || ''}" (@${savedUser.username}) with Role "${role.roleName}"`,
+      summary: `Created ${role.roleCode === 'agent' ? 'Channel Partner Agent' : 'User'} account for "${newUser.firstName} ${newUser.lastName || ''}" (@${newUser.username}) with Role "${role.roleName}"`,
       changes: {
         role: role.roleName,
-        agentProfile: savedUser.agentProfile,
+        agentProfile: newUser.agentProfile,
       },
     });
 
