@@ -3,23 +3,50 @@ import Lead from '../models/Lead.js';
 import Project from '../models/Project.js';
 import Flat from '../models/Flat.js';
 import Customer from '../models/Customer.js';
+import RentalManagement from '../models/RentalManagement.js';
 import { uploadFileToS3 } from '../config/s3.js';
 import { autoCreditAgentBookingCommission } from './agentController.js';
 import { escapeRegex } from '../utils/regexUtil.js';
 import mongoose from 'mongoose';
 
-// Convert a CRM Lead into a Sales Lead
+// Convert a CRM Lead into a Sales Lead OR create a direct booking
 export const convertLeadToSales = async (req, res) => {
   try {
-    const { leadId, projectId, buildingId, flatId } = req.body;
+    const {
+      leadId,
+      projectId,
+      buildingId,
+      flatId,
+      name,
+      mobileNo,
+      email,
+      agreedDealPrice,
+      bookingTokenAmount,
+      bookingAmount,
+      paymentPlanType
+    } = req.body;
 
-    if (!leadId) {
-      return res.status(400).json({ success: false, message: 'leadId is required' });
-    }
-
-    const lead = await Lead.findById(leadId).populate('assignedFlat');
-    if (!lead) {
-      return res.status(404).json({ success: false, message: 'CRM Lead not found' });
+    let lead = null;
+    if (leadId) {
+      lead = await Lead.findById(leadId).populate('assignedFlat');
+      if (!lead) {
+        return res.status(404).json({ success: false, message: 'CRM Lead not found' });
+      }
+    } else if (name && mobileNo) {
+      // Find or create lead on-the-fly for direct sales bookings
+      lead = await Lead.findOne({ mobileNo });
+      if (!lead) {
+        lead = await Lead.create({
+          name: name.trim(),
+          mobileNo: mobileNo.trim(),
+          email: email ? email.trim() : '',
+          status: 'converted',
+          source: 'walk_in',
+          notes: 'Direct booking created from Sales Registry'
+        });
+      }
+    } else {
+      return res.status(400).json({ success: false, message: 'Either leadId or buyer Name and Mobile Number are required' });
     }
 
     // Determine target property details
@@ -57,7 +84,13 @@ export const convertLeadToSales = async (req, res) => {
 
     const targetProjectId = projectId || flat.projectId;
     const targetBuildingId = buildingId || flat.buildingId;
-    const dealValue = flat.basePrice || 4500000;
+    const dealValue = (agreedDealPrice !== undefined && agreedDealPrice !== null && Number(agreedDealPrice) > 0)
+      ? Number(agreedDealPrice)
+      : (flat.basePrice || 4500000);
+    const tokenAmount = (bookingTokenAmount !== undefined && bookingTokenAmount !== null)
+      ? Number(bookingTokenAmount)
+      : (bookingAmount !== undefined ? Number(bookingAmount) : 0);
+    const planType = paymentPlanType || 'installment';
 
     const salesLead = new SalesLead({
       leadId: lead._id,
@@ -69,9 +102,10 @@ export const convertLeadToSales = async (req, res) => {
       flatId: targetFlatId,
       salesStatus: 'converted',
       booking: {
-        isBooked: false,
-        bookingAmount: 0,
-        bookingStatus: 'pending'
+        isBooked: tokenAmount > 0,
+        bookingDate: new Date(),
+        bookingAmount: tokenAmount,
+        bookingStatus: tokenAmount > 0 ? 'confirmed' : 'pending'
       },
       agreement: {
         required: true,
@@ -79,10 +113,10 @@ export const convertLeadToSales = async (req, res) => {
         verificationStatus: 'pending'
       },
       paymentPlan: {
-        type: 'installment',
+        type: planType,
         totalAmount: dealValue,
-        bookingAmount: 0,
-        remainingAmount: dealValue,
+        bookingAmount: tokenAmount,
+        remainingAmount: Math.max(0, dealValue - tokenAmount),
         numberOfInstallments: 0
       },
       installments: [],
@@ -527,14 +561,66 @@ export const addSalesFollowUp = async (req, res) => {
   }
 };
 
-// Update Possession Status
+// Update Possession Status with 3-Year Rental Lock-in Enforcement
 export const updatePossession = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, scheduledDate, possessionDate, remarks, possessionLetterUrl } = req.body;
+    const { status, scheduledDate, possessionDate, remarks, possessionLetterUrl, forceOverride } = req.body;
 
     const salesLead = await SalesLead.findById(id);
     if (!salesLead) return res.status(404).json({ success: false, message: 'Sales record not found' });
+
+    // Enforce 3-Year Rental Lock-in Business Rule:
+    // If flat is enrolled in rental program, physical possession is only available after 3 years (36 months).
+    if (salesLead.flatId && (status === 'completed' || status === 'scheduled' || status === 'ready')) {
+      const flat = await Flat.findById(salesLead.flatId);
+      const rental = await RentalManagement.findOne({
+        $or: [
+          { flatId: salesLead.flatId },
+          { flatIds: salesLead.flatId },
+          { 'leasedUnits.flatId': salesLead.flatId }
+        ],
+        status: { $ne: 'terminated' }
+      }).sort({ createdAt: -1 });
+
+      const isUnderRental = flat?.takenForRental || flat?.status === 'leased' || !!rental;
+
+      if (isUnderRental && !forceOverride) {
+        let rentalStartDate = null;
+        if (rental?.rentBack?.startDate) {
+          rentalStartDate = new Date(rental.rentBack.startDate);
+        } else if (rental?.tenantAgreement?.startDate) {
+          rentalStartDate = new Date(rental.tenantAgreement.startDate);
+        } else if (rental?.createdAt) {
+          rentalStartDate = new Date(rental.createdAt);
+        } else if (salesLead.booking?.bookingDate) {
+          rentalStartDate = new Date(salesLead.booking.bookingDate);
+        } else if (flat?.createdAt) {
+          rentalStartDate = new Date(flat.createdAt);
+        }
+
+        if (rentalStartDate) {
+          const lockInEndDate = new Date(rentalStartDate);
+          lockInEndDate.setFullYear(lockInEndDate.getFullYear() + 3);
+          const now = new Date();
+
+          if (now < lockInEndDate) {
+            const diffMs = lockInEndDate.getTime() - now.getTime();
+            const remDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            const remMonths = Math.ceil(remDays / 30.4375);
+
+            return res.status(400).json({
+              success: false,
+              isLockedByRental: true,
+              message: `Possession cannot be handed over. Flat is locked under the mandatory 3-Year Rental Program until ${lockInEndDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (${remMonths} months / ${remDays} days remaining).`,
+              lockInEndDate,
+              remainingMonths: remMonths,
+              remainingDays: remDays
+            });
+          }
+        }
+      }
+    }
 
     salesLead.possession = {
       status: status || 'ready',

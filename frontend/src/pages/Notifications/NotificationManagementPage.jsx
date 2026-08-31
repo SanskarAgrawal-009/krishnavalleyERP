@@ -11,6 +11,10 @@ import {
   MessageSquare,
   Smartphone,
   Mail,
+  Phone,
+  PhoneCall,
+  PhoneForwarded,
+  PhoneOff,
   Send,
   Plus,
   Edit,
@@ -35,6 +39,7 @@ import {
   X,
   History
 } from 'lucide-react';
+import { callingService } from '../../services/callingService.js';
 
 const CATEGORIES = [
   'All Categories',
@@ -99,19 +104,114 @@ export const NotificationManagementPage = () => {
     whatsapp: false,
     sms: false,
     email: false,
-    push: false
+    push: false,
+    telephony: false
   });
+
+  // SMTP Verification & Live Testing State
+  const [smtpVerifying, setSmtpVerifying] = useState(false);
+  const [smtpVerifyResult, setSmtpVerifyResult] = useState(null);
+
+  // Telephony Live Test State
+  const [callTesting, setCallTesting] = useState(false);
+  const [callTestNumber, setCallTestNumber] = useState('+91 98765 43210');
+  const [callTestResult, setCallTestResult] = useState(null);
+
+  // Telephony Call Logs State
+  const [callLogs, setCallLogs] = useState([]);
+  const [callLogsLoading, setCallLogsLoading] = useState(false);
+  const [auditLogType, setAuditLogType] = useState('messages'); // 'messages' | 'calls'
 
   // Load Config
   const loadConfig = async () => {
     setConfigLoading(true);
     try {
       const res = await notificationService.getConfig();
-      if (res.data) setConfig(res.data);
+      if (res.data) {
+        const d = res.data;
+        if (!d.telephony) {
+          d.telephony = {
+            enabled: true,
+            provider: 'browser_dialer',
+            twilioAccountSid: '',
+            twilioAuthToken: '',
+            twilioCallerId: '+91 98765 43210',
+            exotelApiKey: '',
+            exotelApiToken: '',
+            exotelSubdomain: 'api.exotel.com',
+            exotelCallerId: '08088997766',
+            recordCalls: false,
+            environment: 'sandbox'
+          };
+        }
+        setConfig(d);
+      }
     } catch (err) {
       console.error('Failed to load notification config:', err);
     } finally {
       setConfigLoading(false);
+    }
+  };
+
+  const handleVerifySmtp = async () => {
+    setSmtpVerifying(true);
+    setSmtpVerifyResult(null);
+    try {
+      const res = await notificationService.verifyEmailSmtp(config.email);
+      setSmtpVerifyResult(res);
+    } catch (err) {
+      setSmtpVerifyResult({ success: false, message: err.message || 'SMTP verification failed.' });
+    } finally {
+      setSmtpVerifying(false);
+    }
+  };
+
+  const handleTestCall = async () => {
+    if (!callTestNumber) {
+      alert('Please enter a destination phone number to test.');
+      return;
+    }
+    setCallTesting(true);
+    setCallTestResult(null);
+    try {
+      const res = await callingService.initiateCall({
+        leadPhone: callTestNumber,
+        clientName: 'Telephony Test Recipient',
+        notes: 'Test call initiated from Notification & Telephony Hub'
+      });
+      setCallTestResult(res);
+      if (res.data?.callLogId) {
+        try {
+          await callingService.logCall({
+            callLogId: res.data.callLogId,
+            clientPhone: callTestNumber,
+            clientName: 'Telephony Test Recipient',
+            durationSeconds: 15,
+            outcome: 'general_discussion',
+            notes: 'Test call initiated and auto-recorded from Notification Hub',
+            callStatus: 'completed'
+          });
+        } catch (e) {
+          console.warn('Auto-save test call log error:', e);
+        }
+      }
+      loadCallLogs();
+    } catch (err) {
+      setCallTestResult({ success: false, message: err.message || 'Calling API failed to initiate.' });
+    } finally {
+      setCallTesting(false);
+    }
+  };
+
+  const loadCallLogs = async () => {
+    setCallLogsLoading(true);
+    try {
+      const res = await callingService.getCallLogs();
+      if (res.data) setCallLogs(res.data);
+    } catch (err) {
+      console.error('Failed to load call logs:', err);
+    } finally {
+      setCallLogsLoading(false);
     }
   };
 
@@ -156,6 +256,7 @@ export const NotificationManagementPage = () => {
   useEffect(() => {
     loadConfig();
     loadTemplates();
+    loadCallLogs();
   }, []);
 
   useEffect(() => {
@@ -163,8 +264,9 @@ export const NotificationManagementPage = () => {
   }, [selectedCategory, selectedChannelFilter, searchTerm]);
 
   useEffect(() => {
-    if (activeTab === 'logs') {
+    if (activeTab === 'logs' || activeTab === 'calling') {
       loadLogs();
+      loadCallLogs();
     }
   }, [activeTab, logChannelFilter, logStatusFilter, logSearch]);
 
@@ -363,7 +465,7 @@ export const NotificationManagementPage = () => {
       </div>
 
       {/* Channel Status Quick Grid */}
-      <div className="grid-cols-4">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px' }}>
         
         {/* WhatsApp Card */}
         <div style={{
@@ -516,6 +618,44 @@ export const NotificationManagementPage = () => {
             {config.push.enabled ? 'Active' : 'Disabled'}
           </button>
         </div>
+
+        {/* Telephony / Calling API Card */}
+        <div style={{
+          background: '#ffffff',
+          border: config.telephony?.enabled ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-md)',
+          padding: '16px 18px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981' }}>
+              <PhoneCall size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#111827' }}>Calling API</div>
+              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>
+                Mode: <strong style={{ color: '#111827' }}>{(config.telephony?.provider || 'browser').toUpperCase().replace('_', ' ')}</strong>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => setActiveTab('calling')}
+            style={{
+              padding: '4px 10px',
+              borderRadius: '4px',
+              background: config.telephony?.enabled ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.05)',
+              color: config.telephony?.enabled ? '#10b981' : 'var(--text-muted)',
+              fontSize: '0.72rem',
+              fontWeight: '700',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {config.telephony?.enabled ? 'Active' : 'Disabled'}
+          </button>
+        </div>
       </div>
 
       {/* Main Module Tabs Bar */}
@@ -547,6 +687,27 @@ export const NotificationManagementPage = () => {
         >
           <FileText size={15} />
           Reminder Templates ({templates.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('calling')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: activeTab === 'calling' ? 'linear-gradient(135deg, #059669, #10b981)' : 'transparent',
+            color: activeTab === 'calling' ? '#fff' : 'var(--text-secondary)',
+            fontWeight: activeTab === 'calling' ? '700' : '500',
+            fontSize: '0.82rem',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          <PhoneCall size={15} />
+          Telephony &amp; Calling API
         </button>
 
         <button
@@ -1017,6 +1178,415 @@ export const NotificationManagementPage = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* TAB: TELEPHONY & CALLING API CONFIGURATION */}
+      {/* ======================================================== */}
+      {activeTab === 'calling' && (
+        <form onSubmit={handleSaveConfig} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #dadce0',
+            borderRadius: 'var(--radius-lg)',
+            padding: '24px 28px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px'
+          }}>
+            {/* Header & Toggle */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981' }}>
+                  <PhoneCall size={22} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: '#111827', margin: 0 }}>
+                    Telephony &amp; Calling API Gateway
+                  </h3>
+                  <p style={{ fontSize: '0.78rem', color: '#4b5563', margin: '3px 0 0 0' }}>
+                    Configure Twilio Voice, Exotel Cloud Telephony, or In-App Softphone for automated call bridging and CRM lead tracking.
+                  </p>
+                </div>
+              </div>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                <span style={{ fontSize: '0.84rem', color: '#111827', fontWeight: '600' }}>
+                  {config.telephony?.enabled ? 'Channel Enabled' : 'Channel Disabled'}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={config.telephony?.enabled}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    telephony: { ...config.telephony, enabled: e.target.checked }
+                  })}
+                  style={{ width: '18px', height: '18px', accentColor: '#10b981' }}
+                />
+              </label>
+            </div>
+
+            {/* Provider Selection */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: '#374151', marginBottom: '8px', fontWeight: '600' }}>
+                Active Telephony Provider
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                {[
+                  { id: 'browser_dialer', name: 'In-App Softphone', desc: 'Browser & Mobile dialer with disposition logging' },
+                  { id: 'twilio', name: 'Twilio Programmable Voice', desc: 'Global cloud call bridging & TwiML webhook' },
+                  { id: 'exotel', name: 'Exotel Telephony', desc: 'Indian real estate standard virtual number bridge' }
+                ].map((p) => (
+                  <div
+                    key={p.id}
+                    onClick={() => setConfig({
+                      ...config,
+                      telephony: { ...config.telephony, provider: p.id }
+                    })}
+                    style={{
+                      background: config.telephony?.provider === p.id ? 'rgba(16, 185, 129, 0.12)' : '#f8f9fa',
+                      border: config.telephony?.provider === p.id ? '2px solid #10b981' : '1px solid #dadce0',
+                      borderRadius: 'var(--radius-md)',
+                      padding: '12px 14px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ fontSize: '0.86rem', fontWeight: '700', color: config.telephony?.provider === p.id ? '#059669' : '#111827' }}>
+                      {p.name}
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: '#4b5563', marginTop: '3px' }}>
+                      {p.desc}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Credentials for Twilio Voice */}
+            {config.telephony?.provider === 'twilio' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', background: '#f8f9fa', padding: '16px', borderRadius: 'var(--radius-md)' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    Twilio Account SID *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    value={config.telephony?.twilioAccountSid || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      telephony: { ...config.telephony, twilioAccountSid: e.target.value }
+                    })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: '#ffffff',
+                      border: '1px solid #dadce0',
+                      borderRadius: 'var(--radius-sm)',
+                      color: '#111827',
+                      fontSize: '0.82rem',
+                      fontFamily: 'monospace'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    Twilio Auth Token *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showKeys.telephony ? 'text' : 'password'}
+                      placeholder="Auth Token"
+                      value={config.telephony?.twilioAuthToken || ''}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        telephony: { ...config.telephony, twilioAuthToken: e.target.value }
+                      })}
+                      style={{
+                        width: '100%',
+                        padding: '9px 40px 9px 12px',
+                        background: '#ffffff',
+                        border: '1px solid #dadce0',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#111827',
+                        fontSize: '0.82rem'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowKeys({ ...showKeys, telephony: !showKeys.telephony })}
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#4b5563',
+                        cursor: 'pointer',
+                        fontSize: '0.72rem'
+                      }}
+                    >
+                      {showKeys.telephony ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    Twilio Caller ID (Virtual Outbound Number) *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="+12015550123 or +919876543210"
+                    value={config.telephony?.twilioCallerId || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      telephony: { ...config.telephony, twilioCallerId: e.target.value }
+                    })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: '#ffffff',
+                      border: '1px solid #dadce0',
+                      borderRadius: 'var(--radius-sm)',
+                      color: '#111827',
+                      fontSize: '0.82rem'
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Credentials for Exotel */}
+            {config.telephony?.provider === 'exotel' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', background: '#f8f9fa', padding: '16px', borderRadius: 'var(--radius-md)' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    Exotel API Key *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Exotel Key"
+                    value={config.telephony?.exotelApiKey || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      telephony: { ...config.telephony, exotelApiKey: e.target.value }
+                    })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: '#ffffff',
+                      border: '1px solid #dadce0',
+                      borderRadius: 'var(--radius-sm)',
+                      color: '#111827',
+                      fontSize: '0.82rem'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    Exotel API Token *
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Exotel Token"
+                    value={config.telephony?.exotelApiToken || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      telephony: { ...config.telephony, exotelApiToken: e.target.value }
+                    })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: '#ffffff',
+                      border: '1px solid #dadce0',
+                      borderRadius: 'var(--radius-sm)',
+                      color: '#111827',
+                      fontSize: '0.82rem'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    Exotel Virtual Caller ID *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="080xxxxxxxx"
+                    value={config.telephony?.exotelCallerId || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      telephony: { ...config.telephony, exotelCallerId: e.target.value }
+                    })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: '#ffffff',
+                      border: '1px solid #dadce0',
+                      borderRadius: 'var(--radius-sm)',
+                      color: '#111827',
+                      fontSize: '0.82rem'
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* General Telephony Preferences */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                  Gateway Environment
+                </label>
+                <select
+                  value={config.telephony?.environment || 'sandbox'}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    telephony: { ...config.telephony, environment: e.target.value }
+                  })}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    background: '#f8f9fa',
+                    border: '1px solid #dadce0',
+                    borderRadius: 'var(--radius-sm)',
+                    color: '#111827',
+                    fontSize: '0.82rem'
+                  }}
+                >
+                  <option value="sandbox">Sandbox (Simulated Calls / Softphone Audio)</option>
+                  <option value="production">Production (Real Carrier Trunk &amp; Bridging)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                  Call Recording Policy
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px', cursor: 'pointer', fontSize: '0.82rem', color: '#111827' }}>
+                  <input
+                    type="checkbox"
+                    checked={config.telephony?.recordCalls}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      telephony: { ...config.telephony, recordCalls: e.target.checked }
+                    })}
+                    style={{ accentColor: '#10b981', width: '16px', height: '16px' }}
+                  />
+                  Record call audio for RERA compliance and CRM training
+                </label>
+              </div>
+            </div>
+
+            {/* Live Telephony Test Box */}
+            <div style={{
+              background: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              borderRadius: 'var(--radius-md)',
+              padding: '16px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px'
+            }}>
+              <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#166534', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <PhoneCall size={16} />
+                Live Telephony &amp; Click-to-Call Diagnostic
+              </div>
+              <div style={{ fontSize: '0.76rem', color: '#15803d' }}>
+                Enter a test phone number to initiate an outbound call session and verify gateway latency and call bridging.
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  placeholder="+91 98765 43210"
+                  value={callTestNumber}
+                  onChange={(e) => setCallTestNumber(e.target.value)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid #86efac',
+                    background: '#ffffff',
+                    fontSize: '0.82rem',
+                    color: '#0f172a',
+                    fontWeight: '600',
+                    minWidth: '220px'
+                  }}
+                />
+
+                <button
+                  type="button"
+                  onClick={handleTestCall}
+                  disabled={callTesting}
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: 'var(--radius-sm)',
+                    background: '#16a34a',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontSize: '0.8rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  {callTesting ? <RefreshCw size={14} className="spin" /> : <PhoneCall size={14} />}
+                  Place Test Call
+                </button>
+              </div>
+
+              {callTestResult && (
+                <div style={{
+                  background: callTestResult.success ? '#dcfce7' : '#fee2e2',
+                  border: callTestResult.success ? '1px solid #86efac' : '1px solid #fca5a5',
+                  borderRadius: '6px',
+                  padding: '10px 14px',
+                  fontSize: '0.78rem',
+                  color: callTestResult.success ? '#166534' : '#b91c1c'
+                }}>
+                  <strong>{callTestResult.success ? '✓ Call Initiated Successfully' : '✗ Call Dispatch Failed'}</strong>: {callTestResult.message || JSON.stringify(callTestResult)}
+                  {callTestResult.data?.deviceDialUrl && (
+                    <div style={{ marginTop: '4px' }}>
+                      <a href={callTestResult.data.deviceDialUrl} style={{ color: '#15803d', fontWeight: '700' }}>
+                        Launch Native Mobile/Desktop Dialer ({callTestResult.data.deviceDialUrl})
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+              <button
+                type="submit"
+                style={{
+                  padding: '9px 24px',
+                  background: 'linear-gradient(135deg, #059669, #10b981)',
+                  border: 'none',
+                  color: '#ffffff',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Check size={16} /> Save Telephony Settings
+              </button>
+            </div>
+          </div>
+        </form>
       )}
 
       {/* ======================================================== */}
@@ -1858,8 +2428,55 @@ export const NotificationManagementPage = () => {
               </div>
             </div>
 
+            {/* SMTP Verification Diagnostic Banner */}
+            {smtpVerifyResult && (
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: 'var(--radius-sm)',
+                background: smtpVerifyResult.success ? '#ecfdf5' : '#fef2f2',
+                border: smtpVerifyResult.success ? '1px solid #10b981' : '1px solid #ef4444',
+                color: smtpVerifyResult.success ? '#047857' : '#b91c1c',
+                fontSize: '0.82rem',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px'
+              }}>
+                {smtpVerifyResult.success ? <CheckCircle size={16} style={{ marginTop: '2px', flexShrink: 0 }} /> : <AlertTriangle size={16} style={{ marginTop: '2px', flexShrink: 0 }} />}
+                <div>
+                  <div style={{ fontWeight: '700' }}>{smtpVerifyResult.message}</div>
+                  {smtpVerifyResult.details && (
+                    <div style={{ fontSize: '0.74rem', marginTop: '4px', opacity: 0.9 }}>
+                      Host: {smtpVerifyResult.details.host}:{smtpVerifyResult.details.port} • User: {smtpVerifyResult.details.user || 'N/A'} • Latency: {smtpVerifyResult.details.latencyMs}ms
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Actions */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={handleVerifySmtp}
+                disabled={smtpVerifying}
+                style={{
+                  padding: '9px 18px',
+                  background: 'rgba(16, 185, 129, 0.12)',
+                  border: '1px solid #10b981',
+                  color: '#059669',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                {smtpVerifying ? <RefreshCw size={14} className="spin" /> : <ShieldCheck size={14} />}
+                Verify SMTP Connection
+              </button>
+
               <button
                 type="button"
                 onClick={() => openTestModal('email')}
@@ -2297,6 +2914,49 @@ export const NotificationManagementPage = () => {
       {activeTab === 'logs' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
+          {/* Sub-toggle: Message Dispatch Logs vs Voice Call Logs */}
+          <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px' }}>
+            <button
+              type="button"
+              onClick={() => setAuditLogType('messages')}
+              style={{
+                padding: '7px 16px',
+                borderRadius: 'var(--radius-sm)',
+                border: 'none',
+                background: auditLogType === 'messages' ? 'linear-gradient(135deg, var(--primary-600), var(--primary-700))' : '#f1f5f9',
+                color: auditLogType === 'messages' ? '#ffffff' : '#475569',
+                fontWeight: '700',
+                fontSize: '0.82rem',
+                cursor: 'pointer'
+              }}
+            >
+              Message Delivery Logs ({logs.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuditLogType('calls');
+                loadCallLogs();
+              }}
+              style={{
+                padding: '7px 16px',
+                borderRadius: 'var(--radius-sm)',
+                border: 'none',
+                background: auditLogType === 'calls' ? 'linear-gradient(135deg, #059669, #10b981)' : '#f1f5f9',
+                color: auditLogType === 'calls' ? '#ffffff' : '#475569',
+                fontWeight: '700',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <PhoneCall size={13} />
+              Telephony &amp; Voice Call Logs ({callLogs.length})
+            </button>
+          </div>
+
           {/* Metrics summary */}
           <div className="grid-cols-5">
             <div style={{ background: '#ffffff', padding: '14px 16px', borderRadius: 'var(--radius-md)', border: '1px solid #dadce0' }}>
@@ -2425,94 +3085,173 @@ export const NotificationManagementPage = () => {
           </div>
 
           {/* Logs Table */}
-          <div style={{
-            background: '#ffffff',
-            border: '1px solid #dadce0',
-            borderRadius: 'var(--radius-md)',
-            overflow: 'hidden'
-          }}>
-            {logsLoading ? (
-              <div style={{ padding: '40px', textAlign: 'center', color: '#4b5563' }}>
-                <RefreshCw size={20} className="spin" style={{ margin: '0 auto 8px' }} />
-                Loading logs...
-              </div>
-            ) : logs.length === 0 ? (
-              <div style={{ padding: '40px', textAlign: 'center', color: '#4b5563', fontSize: '0.84rem' }}>
-                No communication delivery logs recorded yet.
-              </div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ background: '#f8f9fa', borderBottom: '1px solid var(--border-subtle)', color: '#374151' }}>
-                      <th style={{ padding: '10px 14px' }}>Channel</th>
-                      <th style={{ padding: '10px 14px' }}>Recipient</th>
-                      <th style={{ padding: '10px 14px' }}>Subject / Template</th>
-                      <th style={{ padding: '10px 14px' }}>Content Preview</th>
-                      <th style={{ padding: '10px 14px' }}>Status</th>
-                      <th style={{ padding: '10px 14px' }}>Timestamp</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {logs.map((log) => (
-                      <tr key={log._id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                        <td style={{ padding: '12px 14px' }}>
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            padding: '3px 8px',
-                            borderRadius: '4px',
-                            fontSize: '0.72rem',
-                            fontWeight: '700',
-                            background:
-                              log.channel === 'whatsapp' ? 'rgba(37, 211, 102, 0.12)' :
-                              log.channel === 'sms' ? 'rgba(59, 130, 246, 0.12)' :
-                              log.channel === 'email' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(236, 72, 153, 0.12)',
-                            color:
-                              log.channel === 'whatsapp' ? '#25d366' :
-                              log.channel === 'sms' ? '#60a5fa' :
-                              log.channel === 'email' ? '#fbbf24' : '#f472b6'
-                          }}>
-                            {log.channel.toUpperCase()}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px 14px', color: '#111827', fontWeight: '600' }}>
-                          <div>{log.recipient}</div>
-                          {log.recipientName && (
-                            <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>{log.recipientName}</div>
-                          )}
-                        </td>
-                        <td style={{ padding: '12px 14px', color: '#374151' }}>
-                          <div>{log.subject || log.templateCode}</div>
-                        </td>
-                        <td style={{ padding: '12px 14px', color: '#4b5563', maxWidth: '300px' }}>
-                          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {log.contentPreview}
-                          </div>
-                        </td>
-                        <td style={{ padding: '12px 14px' }}>
-                          <span style={{
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            fontSize: '0.7rem',
-                            fontWeight: '700',
-                            background: log.status === 'delivered' ? 'rgba(16, 185, 129, 0.15)' : log.status === 'failed' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
-                            color: log.status === 'delivered' ? '#10b981' : log.status === 'failed' ? '#ef4444' : '#60a5fa'
-                          }}>
-                            {log.status.toUpperCase()}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px 14px', color: '#4b5563', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-                          {new Date(log.createdAt).toLocaleString()}
-                        </td>
+          {auditLogType === 'messages' ? (
+            <div style={{
+              background: '#ffffff',
+              border: '1px solid #dadce0',
+              borderRadius: 'var(--radius-md)',
+              overflow: 'hidden'
+            }}>
+              {logsLoading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#4b5563' }}>
+                  <RefreshCw size={20} className="spin" style={{ margin: '0 auto 8px' }} />
+                  Loading logs...
+                </div>
+              ) : logs.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#4b5563', fontSize: '0.84rem' }}>
+                  No communication delivery logs recorded yet.
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0', color: '#4b5563' }}>
+                        <th style={{ padding: '12px 14px' }}>Channel</th>
+                        <th style={{ padding: '12px 14px' }}>Recipient</th>
+                        <th style={{ padding: '12px 14px' }}>Subject / Template</th>
+                        <th style={{ padding: '12px 14px' }}>Content Preview</th>
+                        <th style={{ padding: '12px 14px' }}>Status</th>
+                        <th style={{ padding: '12px 14px' }}>Timestamp</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                    </thead>
+                    <tbody>
+                      {logs.map((log) => (
+                        <tr key={log._id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                          <td style={{ padding: '12px 14px' }}>
+                            <span style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              fontSize: '0.72rem',
+                              fontWeight: '700',
+                              background:
+                                log.channel === 'whatsapp' ? 'rgba(37, 211, 102, 0.12)' :
+                                log.channel === 'sms' ? 'rgba(59, 130, 246, 0.12)' :
+                                log.channel === 'email' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(236, 72, 153, 0.12)',
+                              color:
+                                log.channel === 'whatsapp' ? '#25d366' :
+                                log.channel === 'sms' ? '#60a5fa' :
+                                log.channel === 'email' ? '#fbbf24' : '#f472b6'
+                            }}>
+                              {log.channel.toUpperCase()}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 14px', color: '#111827', fontWeight: '600' }}>
+                            <div>{log.recipient}</div>
+                            {log.recipientName && (
+                              <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>{log.recipientName}</div>
+                            )}
+                          </td>
+                          <td style={{ padding: '12px 14px', color: '#374151' }}>
+                            <div>{log.subject || log.templateCode}</div>
+                          </td>
+                          <td style={{ padding: '12px 14px', color: '#4b5563', maxWidth: '300px' }}>
+                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {log.contentPreview}
+                            </div>
+                          </td>
+                          <td style={{ padding: '12px 14px' }}>
+                            <span style={{
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: '0.7rem',
+                              fontWeight: '700',
+                              background: log.status === 'delivered' ? 'rgba(16, 185, 129, 0.15)' : log.status === 'failed' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                              color: log.status === 'delivered' ? '#10b981' : log.status === 'failed' ? '#ef4444' : '#60a5fa'
+                            }}>
+                              {log.status.toUpperCase()}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 14px', color: '#4b5563', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                            {new Date(log.createdAt).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{
+              background: '#ffffff',
+              border: '1px solid #dadce0',
+              borderRadius: 'var(--radius-md)',
+              overflow: 'hidden'
+            }}>
+              {callLogsLoading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#4b5563' }}>
+                  <RefreshCw size={20} className="spin" style={{ margin: '0 auto 8px' }} />
+                  Loading voice call logs...
+                </div>
+              ) : callLogs.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#4b5563', fontSize: '0.84rem' }}>
+                  No voice call records found. Use the In-App Softphone or Calling API to place calls.
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0', color: '#4b5563' }}>
+                        <th style={{ padding: '12px 14px' }}>Client</th>
+                        <th style={{ padding: '12px 14px' }}>Phone</th>
+                        <th style={{ padding: '12px 14px' }}>Provider</th>
+                        <th style={{ padding: '12px 14px' }}>Duration</th>
+                        <th style={{ padding: '12px 14px' }}>Outcome / Notes</th>
+                        <th style={{ padding: '12px 14px' }}>Status</th>
+                        <th style={{ padding: '12px 14px' }}>Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {callLogs.map((c) => (
+                        <tr key={c._id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                          <td style={{ padding: '12px 14px', fontWeight: '700', color: '#111827' }}>
+                            {c.clientName || 'Client'}
+                          </td>
+                          <td style={{ padding: '12px 14px', color: '#059669', fontWeight: '600' }}>
+                            {c.clientPhone}
+                          </td>
+                          <td style={{ padding: '12px 14px', textTransform: 'uppercase', fontSize: '0.72rem', color: '#4b5563' }}>
+                            {c.provider}
+                          </td>
+                          <td style={{ padding: '12px 14px', fontWeight: '600' }}>
+                            {Math.floor((c.durationSeconds || 0) / 60)}m {(c.durationSeconds || 0) % 60}s
+                          </td>
+                          <td style={{ padding: '12px 14px', maxWidth: '280px' }}>
+                            <div style={{ fontWeight: '600', color: '#111827' }}>
+                              {(c.outcome || '').replace(/_/g, ' ').toUpperCase()}
+                            </div>
+                            {c.notes && (
+                              <div style={{ fontSize: '0.72rem', color: '#4b5563', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {c.notes}
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ padding: '12px 14px' }}>
+                            <span style={{
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: '0.7rem',
+                              fontWeight: '700',
+                              background: c.callStatus === 'completed' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                              color: c.callStatus === 'completed' ? '#10b981' : '#ef4444'
+                            }}>
+                              {(c.callStatus || 'COMPLETED').toUpperCase()}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 14px', color: '#4b5563', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                            {new Date(c.createdAt).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

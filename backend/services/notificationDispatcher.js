@@ -1,5 +1,7 @@
 import NotificationConfig from '../models/NotificationConfig.js';
 import NotificationLog from '../models/NotificationLog.js';
+import { sendWhatsApp as dispatchWhatsApp } from './whatsappService.js';
+import { sendEmail as dispatchEmail } from './emailService.js';
 
 /**
  * Replace placeholders like {{client_name}}, {{amount}} in text with variable values
@@ -25,76 +27,31 @@ export const getOrInitConfig = async () => {
 /**
  * Dispatch message via WhatsApp
  */
-export const sendWhatsApp = async ({ to, text, headerText, buttonText, buttonUrl, templateName, variables = {}, isTest = false }) => {
-  const config = await getOrInitConfig();
-  const cfg = config.whatsapp;
-
-  if (!cfg.enabled && !isTest) {
-    throw new Error('WhatsApp messaging is currently disabled in system settings.');
-  }
-
+export const sendWhatsApp = async ({
+  to,
+  text,
+  headerText,
+  buttonText,
+  buttonUrl,
+  templateName,
+  variables = {},
+  isTest = false,
+  customConfig = null
+}) => {
   const messageBody = substituteVariables(text, variables);
   const resolvedHeader = substituteVariables(headerText, variables);
 
-  const logEntry = {
-    channel: 'whatsapp',
-    recipient: to,
-    recipientName: variables.client_name || 'Recipient',
-    templateCode: templateName || 'WHATSAPP_MESSAGE',
-    subject: resolvedHeader || 'WhatsApp Notification',
-    contentPreview: messageBody,
-    provider: cfg.provider,
-    status: 'sent',
-    responseDetails: {
-      messageId: `wamid_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-      provider: cfg.provider,
-      senderNumber: cfg.senderNumber,
-      environment: cfg.environment,
-      timestamp: new Date().toISOString()
-    }
-  };
-
-  try {
-    // In production with valid Meta Cloud API credentials, dispatch HTTP POST:
-    if (cfg.environment === 'production' && cfg.provider === 'meta_cloud' && cfg.apiKey && cfg.phoneNumberId) {
-      // Direct Meta Graph API call
-      /*
-      const res = await fetch(`https://graph.facebook.com/v19.0/${cfg.phoneNumberId}/messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${cfg.apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messaging_product: 'whatsapp',
-          to: to.replace(/[^0-9]/g, ''),
-          type: 'text',
-          text: { body: messageBody }
-        })
-      });
-      const data = await res.json();
-      logEntry.responseDetails = data;
-      */
-    }
-
-    logEntry.status = 'delivered';
-    const savedLog = await NotificationLog.create(logEntry);
-
-    return {
-      success: true,
-      channel: 'whatsapp',
-      messageId: logEntry.responseDetails.messageId,
-      status: 'delivered',
-      recipient: to,
-      preview: messageBody,
-      logId: savedLog._id
-    };
-  } catch (error) {
-    logEntry.status = 'failed';
-    logEntry.errorMessage = error.message;
-    await NotificationLog.create(logEntry);
-    throw error;
-  }
+  return dispatchWhatsApp({
+    to,
+    text: messageBody,
+    headerText: resolvedHeader,
+    buttonText,
+    buttonUrl,
+    templateName,
+    variables,
+    isTest,
+    customConfig
+  });
 };
 
 /**
@@ -151,57 +108,32 @@ export const sendSMS = async ({ to, text, dltTemplateId, variables = {}, isTest 
 };
 
 /**
- * Dispatch message via Email (SMTP / Cloud API)
+ * Dispatch message via Email (SMTP / Cloud Relay)
  */
-export const sendEmail = async ({ to, subject, bodyHtml, variables = {}, isTest = false }) => {
-  const config = await getOrInitConfig();
-  const cfg = config.email;
-
-  if (!cfg.enabled && !isTest) {
-    throw new Error('Email notifications are currently disabled in system settings.');
-  }
-
+export const sendEmail = async ({
+  to,
+  subject,
+  bodyHtml,
+  text,
+  attachments = [],
+  variables = {},
+  isTest = false,
+  customConfig = null
+}) => {
   const resolvedSubject = substituteVariables(subject, variables);
   const resolvedBody = substituteVariables(bodyHtml, variables);
+  const resolvedText = substituteVariables(text, variables);
 
-  const logEntry = {
-    channel: 'email',
-    recipient: to,
-    recipientName: variables.client_name || 'Email Client',
-    templateCode: 'EMAIL_DISPATCH',
+  return dispatchEmail({
+    to,
     subject: resolvedSubject,
-    contentPreview: resolvedBody.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...',
-    provider: cfg.provider,
-    status: 'sent',
-    responseDetails: {
-      messageId: `msg_${Date.now()}@krishnavalley.com`,
-      from: `${cfg.fromName} <${cfg.fromEmail}>`,
-      smtpHost: cfg.smtpHost,
-      environment: cfg.environment,
-      timestamp: new Date().toISOString()
-    }
-  };
-
-  try {
-    logEntry.status = 'delivered';
-    const savedLog = await NotificationLog.create(logEntry);
-
-    return {
-      success: true,
-      channel: 'email',
-      messageId: logEntry.responseDetails.messageId,
-      status: 'delivered',
-      recipient: to,
-      subject: resolvedSubject,
-      preview: resolvedBody,
-      logId: savedLog._id
-    };
-  } catch (error) {
-    logEntry.status = 'failed';
-    logEntry.errorMessage = error.message;
-    await NotificationLog.create(logEntry);
-    throw error;
-  }
+    bodyHtml: resolvedBody,
+    text: resolvedText,
+    attachments,
+    variables,
+    isTest,
+    customConfig
+  });
 };
 
 /**
@@ -255,4 +187,13 @@ export const sendPush = async ({ recipientToken = 'broadcast', title, body, acti
     await NotificationLog.create(logEntry);
     throw error;
   }
+};
+
+export default {
+  substituteVariables,
+  getOrInitConfig,
+  sendWhatsApp,
+  sendSMS,
+  sendEmail,
+  sendPush
 };

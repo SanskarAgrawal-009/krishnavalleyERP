@@ -7,6 +7,8 @@ import { ManualFollowUpModal } from '../../components/crm/ManualFollowUpModal.js
 import { LeadTimelineDrawer } from '../../components/crm/LeadTimelineDrawer.jsx';
 import { ConvertLeadModal } from '../../components/sales/ConvertLeadModal.jsx';
 import { ReviewSiteVisitModal } from '../../components/crm/ReviewSiteVisitModal.jsx';
+import { SoftphoneModal } from '../../components/crm/SoftphoneModal.jsx';
+import { QuickMessageModal } from '../../components/notifications/QuickMessageModal.jsx';
 import {
   Users,
   UserPlus,
@@ -68,6 +70,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
   // Inhouse Review Site Visit Modal
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedLeadForReview, setSelectedLeadForReview] = useState(null);
+
+  // Calling Softphone & Quick Message Modals
+  const [callingLead, setCallingLead] = useState(null);
+  const [messagingLead, setMessagingLead] = useState(null);
 
   // Fetch Leads
   const fetchLeads = async () => {
@@ -696,32 +702,36 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               {isExpanded ? <ChevronUp size={14} color="#1a73e8" /> : <ChevronDown size={14} color="#727785" />}
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px', flexWrap: 'wrap' }}>
-                              <a
-                                href={`tel:${lead.mobileNo}`}
-                                onClick={(e) => e.stopPropagation()}
-                                title="Click to Call"
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCallingLead(lead);
+                                }}
+                                title="In-App Softphone & Voice Call"
                                 style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px',
                                   background: '#e8f0fe',
                                   color: '#1a73e8',
+                                  border: 'none',
                                   padding: '2px 7px',
                                   borderRadius: '4px',
-                                  textDecoration: 'none',
                                   fontSize: '0.74rem',
-                                  fontWeight: '700'
+                                  fontWeight: '700',
+                                  cursor: 'pointer'
                                 }}
                               >
                                 <Phone size={11} /> {lead.mobileNo}
-                              </a>
+                              </button>
 
                               <a
                                 href={`https://wa.me/${cleanPhone}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                title="Message on WhatsApp"
+                                title="Open in WhatsApp Web"
                                 style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
@@ -737,6 +747,30 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               >
                                 <MessageSquare size={11} /> WA
                               </a>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMessagingLead(lead);
+                                }}
+                                title="Send Template Notification (WhatsApp / SMS / Email)"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px',
+                                  background: '#fef3c7',
+                                  color: '#92400e',
+                                  border: 'none',
+                                  padding: '2px 7px',
+                                  borderRadius: '4px',
+                                  fontSize: '0.74rem',
+                                  fontWeight: '700',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <Mail size={11} /> Notify
+                              </button>
 
                               <button
                                 type="button"
@@ -1235,6 +1269,43 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           fetchLeads();
         }}
       />
+
+      {/* IN-APP SOFTPHONE CALL MODAL */}
+      {callingLead && (
+        <SoftphoneModal
+          isOpen={!!callingLead}
+          onClose={() => setCallingLead(null)}
+          lead={callingLead}
+          leadId={callingLead._id}
+          clientPhone={callingLead.mobileNo}
+          clientName={callingLead.name}
+          onCallLogged={() => {
+            fetchLeads();
+          }}
+        />
+      )}
+
+      {/* QUICK MESSAGE NOTIFICATION MODAL */}
+      {messagingLead && (
+        <QuickMessageModal
+          isOpen={!!messagingLead}
+          onClose={() => setMessagingLead(null)}
+          recipient={{
+            name: messagingLead.name,
+            phone: messagingLead.mobileNo,
+            email: messagingLead.email
+          }}
+          contextType="lead"
+          contextData={{
+            leadName: messagingLead.name,
+            unitNo: messagingLead.assignedFlat?.flatNumber || 'Selected Unit',
+            projectName: 'Krishna Valley'
+          }}
+          onDispatched={() => {
+            fetchLeads();
+          }}
+        />
+      )}
     </div>
   );
 };

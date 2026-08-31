@@ -171,13 +171,15 @@ export const CustomersPage = () => {
     const headers = ['Customer Name', 'Type', 'Mobile', 'Email', 'Linked Units', 'Monthly Rent'];
     const rows = displayedCustomers.map((c) => {
       const isOwner = c.customerType === 'owner';
-      const units = isOwner ? (c.ownedFlats?.length || 0) : (c.rentedFlats?.length || 0);
+      const units = isOwner
+        ? (c.ownerDetails?.propertyIds || [])
+        : (c.tenantDetails?.rentalDetails?.flatId ? [c.tenantDetails.rentalDetails.flatId] : []);
       return [
         `"${c.name || ''}"`,
         `"${c.customerType || ''}"`,
         `"${c.mobileNo || ''}"`,
         `"${c.email || ''}"`,
-        units,
+        units.length,
         c.tenantDetails?.monthlyRent || 0
       ];
     });
@@ -537,7 +539,10 @@ export const CustomersPage = () => {
                 const cleanPhone = (cust.mobileNo || '').replace(/[^0-9]/g, '');
                 const isOwner = cust.customerType === 'owner';
                 const isCompany = cust.tenantDetails?.tenantType === 'company';
-                const flatsCount = isOwner ? (cust.ownedFlats?.length || 0) : (cust.rentedFlats?.length || 0);
+                const units = isOwner
+                  ? (cust.ownerDetails?.propertyIds || [])
+                  : (cust.tenantDetails?.rentalDetails?.flatId ? [cust.tenantDetails.rentalDetails.flatId] : []);
+                const flatsCount = units.length;
                 const isExpanded = expandedCustomerId === cust._id;
 
                 return (
@@ -668,23 +673,70 @@ export const CustomersPage = () => {
 
                       {/* Column 3: Linked Properties */}
                       <td style={{ padding: '14px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{
-                            fontSize: '0.76rem',
-                            fontWeight: '700',
-                            color: '#111827',
-                            background: '#f8f9fa',
-                            border: '1px solid #dadce0',
-                            padding: '3px 8px',
-                            borderRadius: '6px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px'
-                          }}>
-                            <Home size={12} color="#1a73e8" />
-                            {flatsCount} {flatsCount === 1 ? 'Unit Linked' : 'Units Linked'}
-                          </span>
-                        </div>
+                        {units.length > 0 ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', alignItems: 'center' }}>
+                              {units.slice(0, 2).map((flat, idx) => {
+                                const fNum = flat.flatNumber || (typeof flat === 'string' ? `Flat ${flat.slice(-3)}` : `Unit ${idx + 1}`);
+                                const flr = flat.floor !== undefined && flat.floor !== null ? `Flr ${flat.floor}` : '';
+                                return (
+                                  <span
+                                    key={flat._id || idx}
+                                    style={{
+                                      fontSize: '0.74rem',
+                                      fontWeight: '700',
+                                      color: isOwner ? '#6b21a8' : '#1e40af',
+                                      background: isOwner ? '#f3e8ff' : '#eff6ff',
+                                      border: isOwner ? '1px solid #d8b4fe' : '1px solid #bfdbfe',
+                                      padding: '2px 7px',
+                                      borderRadius: '5px',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '4px'
+                                    }}
+                                  >
+                                    <Home size={11} color={isOwner ? '#8b5cf6' : '#2563eb'} />
+                                    Flat {fNum} {flr ? `(${flr})` : ''}
+                                  </span>
+                                );
+                              })}
+                              {units.length > 2 && (
+                                <span style={{
+                                  fontSize: '0.7rem',
+                                  fontWeight: '700',
+                                  color: '#4b5563',
+                                  background: '#f3f4f6',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  border: '1px solid #e5e7eb'
+                                }}>
+                                  +{units.length - 2} more
+                                </span>
+                              )}
+                            </div>
+                            <span style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '500' }}>
+                              {units.length} {units.length === 1 ? 'Unit Allocated' : 'Units Portfolio'}
+                            </span>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{
+                              fontSize: '0.74rem',
+                              fontWeight: '600',
+                              color: '#9ca3af',
+                              background: '#f9fafb',
+                              border: '1px dashed #d1d5db',
+                              padding: '2px 8px',
+                              borderRadius: '5px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}>
+                              <Home size={11} color="#9ca3af" />
+                              0 Units Linked
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       {/* Column 4: Rent / Financials */}
@@ -798,13 +850,29 @@ export const CustomersPage = () => {
                                   No property units currently linked to this customer account.
                                 </div>
                               ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '120px', overflowY: 'auto' }}>
-                                  {(isOwner ? cust.ownedFlats : cust.rentedFlats).map((flat, idx) => (
-                                    <div key={idx} style={{ fontSize: '0.78rem', background: '#f8f9fa', padding: '6px 10px', borderRadius: '4px', border: '1px solid #edeef0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                      <span style={{ fontWeight: '700', color: '#111827' }}>Flat {flat.flatNumber || flat}</span>
-                                      <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>Active Registry</span>
-                                    </div>
-                                  ))}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '140px', overflowY: 'auto' }}>
+                                  {units.map((flat, idx) => {
+                                    const fNum = flat.flatNumber || (typeof flat === 'string' ? `Flat ${flat.slice(-3)}` : `Unit ${idx + 1}`);
+                                    const proj = flat.projectId?.projectName || flat.projectId?.projectCode || 'Krishna Valley';
+                                    const flr = flat.floor !== undefined && flat.floor !== null ? `Floor ${flat.floor}` : '';
+                                    const bhk = flat.bhkType || '';
+                                    return (
+                                      <div key={flat._id || idx} style={{ fontSize: '0.78rem', background: '#f8f9fa', padding: '6px 10px', borderRadius: '4px', border: '1px solid #edeef0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                          <Home size={13} color={isOwner ? '#8b5cf6' : '#2563eb'} />
+                                          <span style={{ fontWeight: '700', color: '#111827' }}>Flat {fNum}</span>
+                                          {(flr || bhk) && (
+                                            <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                                              ({[bhk, flr].filter(Boolean).join(', ')})
+                                            </span>
+                                          )}
+                                        </div>
+                                        <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>
+                                          {proj}
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               )}
                             </div>

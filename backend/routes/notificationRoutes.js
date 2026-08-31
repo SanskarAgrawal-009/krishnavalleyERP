@@ -10,22 +10,32 @@ import {
   seedDefaultTemplates,
   sendTemplateNotification,
   getNotificationLogs,
-  clearNotificationLogs
+  clearNotificationLogs,
+  verifyEmailSmtp,
+  verifyWhatsAppWebhook,
+  handleWhatsAppWebhook
 } from '../controllers/notificationController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
 
-// Apply auth to all notification routes
+// ================= PUBLIC WEBHOOK ROUTES =================
+// Meta WhatsApp Cloud API webhooks (Must be public without Bearer token)
+router.get('/whatsapp/webhook', verifyWhatsAppWebhook);
+router.post('/whatsapp/webhook', handleWhatsAppWebhook);
+
+// ================= AUTHENTICATED ROUTES =================
+// Apply auth to all subsequent notification routes
 router.use(authenticateToken);
 
 // Configuration routes
 router.get('/config', authorizePermission('notifications:view'), getNotificationConfig);
 router.put('/config', authorizePermission('notifications:send', 'notifications:manage'), updateNotificationConfig);
 
-// Test channel dispatch
+// Test channel dispatch & live verification
 router.post('/test-channel', authorizePermission('notifications:send'), testChannelDispatch);
+router.post('/email/verify', authorizePermission('notifications:send', 'notifications:manage'), verifyEmailSmtp);
 
 // Direct template dispatch
 router.post('/send-template', authorizePermission('notifications:send'), sendTemplateNotification);

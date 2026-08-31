@@ -16,6 +16,13 @@ export const notificationService = {
       body: JSON.stringify(data)
     }),
 
+  // Verify SMTP Connection Live
+  verifyEmailSmtp: (data) =>
+    request('/notifications/email/verify', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+
   // Reminder Templates CRUD
   getTemplates: (params = {}) => {
     const query = new URLSearchParams();

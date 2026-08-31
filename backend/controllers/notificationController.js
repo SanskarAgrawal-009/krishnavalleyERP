@@ -10,6 +10,8 @@ import {
   sendPush,
   substituteVariables
 } from '../services/notificationDispatcher.js';
+import { verifySmtpConnection } from '../services/emailService.js';
+import { verifyMetaWebhook, handleMetaStatusWebhook } from '../services/whatsappService.js';
 
 // Default professional real estate templates
 const DEFAULT_TEMPLATES = [
@@ -731,4 +733,43 @@ export const clearNotificationLogs = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Verify live SMTP connection
+export const verifyEmailSmtp = async (req, res) => {
+  try {
+    const result = await verifySmtpConnection(req.body);
+    return res.json(result);
+  } catch (error) {
+    console.error('Error verifying SMTP connection:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Meta WhatsApp Webhook Challenge verification (GET)
+export const verifyWhatsAppWebhook = async (req, res) => {
+  try {
+    const config = await getOrInitConfig();
+    const expectedToken = config.whatsapp?.webhookVerifyToken || 'kv_whatsapp_secret_token';
+    const check = verifyMetaWebhook(req.query, expectedToken);
+    if (check.verified) {
+      return res.status(200).send(check.challenge);
+    }
+    return res.status(403).send('Verification token mismatch');
+  } catch (error) {
+    console.error('WhatsApp Webhook verification error:', error);
+    return res.status(500).send(error.message);
+  }
+};
+
+// Meta WhatsApp Webhook Status & Receipt update (POST)
+export const handleWhatsAppWebhook = async (req, res) => {
+  try {
+    await handleMetaStatusWebhook(req.body);
+    return res.status(200).send('EVENT_RECEIVED');
+  } catch (error) {
+    console.error('WhatsApp Webhook processing error:', error);
+    return res.status(500).send(error.message);
+  }
+};
+
 

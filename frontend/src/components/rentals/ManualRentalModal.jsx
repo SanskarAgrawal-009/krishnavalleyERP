@@ -49,29 +49,39 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
 
   // Selected Tenant (Client / Corporate)
   const [selectedTenantId, setSelectedTenantId] = useState('');
+  const [isAddingNewTenant, setIsAddingNewTenant] = useState(false);
+  const [newTenantName, setNewTenantName] = useState('');
+  const [newTenantPhone, setNewTenantPhone] = useState('');
 
   // Auto-Fetch Owner State for Single Mode
   const [isFetchingOwner, setIsFetchingOwner] = useState(false);
   const [fetchedOwnerInfo, setFetchedOwnerInfo] = useState(null);
   const [ownerFetchStatus, setOwnerFetchStatus] = useState(''); // 'found_local' | 'found_api' | 'found_sales' | 'not_found' | 'error'
 
-  // Rent-Back Configuration (Company takes flat from owner)
+  // Helper: default 3-year date (36 months = 1095 days)
+  const default3YearEnd = () => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 3);
+    return d.toISOString().slice(0, 10);
+  };
+
+  // Rent-Back Configuration (Company takes flat from owner - 3 Year Mandatory Policy)
   const [rentBackEnabled, setRentBackEnabled] = useState(false);
   const [rentBackForm, setRentBackForm] = useState({
     agreementNumber: `RB-${Date.now().toString().slice(-6)}`,
     startDate: new Date().toISOString().slice(0, 10),
-    endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
+    endDate: default3YearEnd(),
     monthlyRent: 0,
     securityDeposit: 0,
     rentDueDay: 5,
     status: 'active'
   });
 
-  // Tenant Agreement Configuration (Company leases flat to tenant)
+  // Tenant Agreement Configuration (Company leases flat to tenant - 3 Year Policy)
   const [tenantAgreementForm, setTenantAgreementForm] = useState({
     agreementNumber: `TA-${Date.now().toString().slice(-6)}`,
     startDate: new Date().toISOString().slice(0, 10),
-    endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
+    endDate: default3YearEnd(),
     monthlyRent: 0,
     rentDueDay: 5,
     status: 'active'
@@ -182,7 +192,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
         setRentBackForm({
           agreementNumber: `RB-${Date.now().toString().slice(-6)}`,
           startDate: new Date().toISOString().slice(0, 10),
-          endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
+          endDate: default3YearEnd(),
           monthlyRent: 0,
           securityDeposit: 0,
           rentDueDay: 5,
@@ -191,7 +201,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
         setTenantAgreementForm({
           agreementNumber: `TA-${Date.now().toString().slice(-6)}`,
           startDate: new Date().toISOString().slice(0, 10),
-          endDate: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
+          endDate: default3YearEnd(),
           monthlyRent: 0,
           rentDueDay: 5,
           status: 'active'
@@ -384,11 +394,45 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
     if (matched) setOwnerFetchStatus('manual_selected');
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedTenantId) {
-      alert('Please select a Tenant (Client or Corporate)');
+    let tenantIdToUse = selectedTenantId;
+
+    if (isAddingNewTenant) {
+      if (!newTenantName.trim() || !newTenantPhone.trim()) {
+        alert('Please enter both Tenant Name and Mobile Number');
+        return;
+      }
+      try {
+        const createRes = await customerService.createCustomer({
+          name: newTenantName.trim(),
+          mobileNo: newTenantPhone.trim(),
+          customerType: 'tenant',
+          tenantDetails: {
+            tenantType: 'individual',
+            rentalDetails: {
+              monthlyRent: Number(tenantAgreementForm.monthlyRent) || 0,
+              securityDeposit: Number(tenantDepositReq) || 0,
+              rentDueDay: Number(tenantAgreementForm.rentDueDay) || 5,
+              rentStatus: 'active'
+            }
+          }
+        });
+        if (createRes.data?._id) {
+          tenantIdToUse = createRes.data._id;
+          setSelectedTenantId(tenantIdToUse);
+          setTenants((prev) => [createRes.data, ...prev]);
+        }
+      } catch (err) {
+        console.error('Error creating new tenant:', err);
+        alert(err.message || 'Failed to auto-register new tenant');
+        return;
+      }
+    }
+
+    if (!tenantIdToUse) {
+      alert('Please select or enter a Tenant (Client or Corporate)');
       return;
     }
 
@@ -420,7 +464,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
         isMultiUnit: selectedUnits.length > 1,
         totalUnitsCount: selectedUnits.length,
         ownerId: primaryOwnerId,
-        tenantId: selectedTenantId,
+        tenantId: tenantIdToUse,
         rentBack: {
           enabled: rentBackEnabled,
           ...rentBackForm,
@@ -474,7 +518,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
         isMultiUnit: false,
         totalUnitsCount: 1,
         ownerId: selectedOwnerId,
-        tenantId: selectedTenantId,
+        tenantId: tenantIdToUse,
         rentBack: {
           enabled: rentBackEnabled,
           ...rentBackForm,
@@ -856,24 +900,63 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
                   </select>
                 </div>
 
-                {/* Tenant Picker */}
+                {/* Tenant Picker with Quick-Add Support */}
                 <div>
-                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
-                    Tenant (Client / Corporate) *
-                  </label>
-                  <select
-                    required
-                    value={selectedTenantId}
-                    onChange={(e) => setSelectedTenantId(e.target.value)}
-                    style={{ width: '100%' }}
-                  >
-                    <option value="">-- Choose Tenant --</option>
-                    {tenants.map((t) => (
-                      <option key={t._id} value={t._id}>
-                        {t.tenantDetails?.tenantType === 'company' ? '[Corporate] ' : '[Individual] '}{t.name} ({t.mobileNo})
-                      </option>
-                    ))}
-                  </select>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
+                    <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block' }}>
+                      Tenant (Client / Corporate) *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingNewTenant(!isAddingNewTenant)}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#1a73e8',
+                        fontSize: '0.72rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '3px'
+                      }}
+                    >
+                      {isAddingNewTenant ? '← Select Existing' : '+ Enter New Tenant'}
+                    </button>
+                  </div>
+
+                  {!isAddingNewTenant ? (
+                    <select
+                      required={!isAddingNewTenant}
+                      value={selectedTenantId}
+                      onChange={(e) => setSelectedTenantId(e.target.value)}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="">-- Choose Tenant --</option>
+                      {tenants.map((t) => (
+                        <option key={t._id} value={t._id}>
+                          {t.tenantDetails?.tenantType === 'company' ? '[Corporate] ' : '[Individual] '}{t.name} ({t.mobileNo})
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '6px' }}>
+                      <input
+                        type="text"
+                        placeholder="Tenant Name (e.g. Kavita Sharma)"
+                        value={newTenantName}
+                        onChange={(e) => setNewTenantName(e.target.value)}
+                        style={{ padding: '6px 8px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid #1a73e8' }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Mobile (e.g. 9876543299)"
+                        value={newTenantPhone}
+                        onChange={(e) => setNewTenantPhone(e.target.value)}
+                        style={{ padding: '6px 8px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid #1a73e8' }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

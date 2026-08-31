@@ -330,3 +330,175 @@ tr:hover td {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ======================================================== */
+/* ======================================================== */
+/* Enterprise BI Reports Printing Styles                    */
+/* ======================================================== */
+
+@media print {
+  /* Page setup for standard A4 portrait */
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm 15mm 10mm;
+  }
+
+  /* Retain full color fidelity for charts, stat cards, and status badges */
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Unconstrain viewport, shell, and scroll containers so multi-page documents break naturally */
+  html,
+  body,
+  #root,
+  .app-shell,
+  .main-wrapper,
+  .main-content,
+  main,
+  .app-main,
+  #root > div,
+  .main-wrapper > div {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+    overflow-x: visible !important;
+    position: static !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  /* Completely hide all app navigation, headers, drawers, buttons, and screen-only controls */
+  nav,
+  .sidebar,
+  .app-sidebar,
+  header,
+  .app-header,
+  footer,
+  .app-footer,
+  aside,
+  .no-print,
+  button,
+  .btn-primary,
+  .btn-secondary,
+  input,
+  select {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Print-only elements become visible */
+  .print-only {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* Report Layout & Grid adjustments for printed page */
+  #reports-print-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .grid-cols-4 {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .grid-cols-3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Keep cards flat, clean, and avoid page break cuts across cards */
+  .g-card,
+  .stat-card {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: #ffffff !important;
+    border-radius: 6px !important;
+  }
+
+  .stat-card {
+    min-height: auto !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Tables clean styling for print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tbody {
+    display: table-row-group !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    padding: 6px 8px !important;
+    text-align: left !important;
+  }
+
+  td {
+    border: 1px solid #e2e8f0 !important;
+    font-size: 0.72rem !important;
+    padding: 6px 8px !important;
+    color: #0f172a !important;
+    min-height: auto !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
+

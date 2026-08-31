@@ -188,16 +188,12 @@ export const App = () => {
               }
             />
 
-            {/* Notifications Hub (Frozen for deployment, retained for offline laptop use) */}
+            {/* Notifications & Telephony Hub */}
             <Route
               path="notifications"
               element={
                 <ProtectedRoute permission="notifications:view">
-                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
-                    <NotificationManagementPage />
-                  ) : (
-                    <Navigate to="/dashboard" replace />
-                  )}
+                  <NotificationManagementPage />
                 </ProtectedRoute>
               }
             />

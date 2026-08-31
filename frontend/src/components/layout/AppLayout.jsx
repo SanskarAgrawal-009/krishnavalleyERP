@@ -15,6 +15,7 @@ import {
   Briefcase,
   Folder,
   Bell,
+  PhoneCall,
   BarChart3,
   Search,
   Plus,
@@ -188,13 +189,14 @@ const NAV_ITEMS = [
   },
   {
     path: '/notifications',
-    label: 'Notifications Hub',
+    label: 'Notifications & Telephony',
     icon: Bell,
     badge: 'Hub',
-    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for laptop]
+    frozen: false,
     permission: 'notifications:view',
     subItems: [
       { path: '/notifications?tab=templates', label: 'Reminder Templates', icon: FileText },
+      { path: '/notifications?tab=calling', label: 'Telephony & Calling API', icon: PhoneCall },
       { path: '/notifications?tab=whatsapp', label: 'WhatsApp Gateway', icon: MessageSquare },
       { path: '/notifications?tab=sms', label: 'SMS Gateway', icon: Smartphone },
       { path: '/notifications?tab=email', label: 'Email Engine', icon: Mail },
@@ -494,7 +496,7 @@ export const AppLayout = () => {
 
   return (
     <div
-      className="bg-background text-on-surface font-body-md"
+      className="app-shell bg-background text-on-surface font-body-md"
       style={{
         height: '100vh',
         maxHeight: '100vh',
@@ -508,6 +510,7 @@ export const AppLayout = () => {
       {mobileMenuOpen && (
         <div
           onClick={() => setMobileMenuOpen(false)}
+          className="no-print"
           style={{
             position: 'fixed',
             inset: 0,
@@ -524,6 +527,7 @@ export const AppLayout = () => {
       {/* 1. SIDEBAR NAVIGATION RAIL                                */}
       {/* ======================================================== */}
       <nav
+        className="sidebar app-sidebar"
         style={{
           width: `${sidebarWidth}px`,
           height: '100vh',
@@ -1200,6 +1204,7 @@ export const AppLayout = () => {
       {/* 2. MAIN CONTENT WRAPPER                                   */}
       {/* ======================================================== */}
       <div
+        className="main-wrapper"
         style={{
           flex: 1,
           display: 'flex',
@@ -1215,6 +1220,7 @@ export const AppLayout = () => {
       >
         {/* Sticky Top Header Navbar */}
         <header
+          className="app-header"
           style={{
             height: '68px',
             minHeight: '68px',
@@ -1601,6 +1607,7 @@ export const AppLayout = () => {
 
         {/* Scrollable Middle Canvas for Route Content */}
         <main
+          className="app-main"
           style={{
             flex: 1,
             overflowY: 'auto',
@@ -1619,6 +1626,7 @@ export const AppLayout = () => {
 
         {/* Sticky Bottom Footer */}
         <footer
+          className="app-footer"
           style={{
             backgroundColor: '#f8f9fa',
             borderTop: '1px solid #dadce0',

@@ -164,12 +164,12 @@ export const getCustomers = async (req, res) => {
     const customers = await Customer.find(filter)
       .populate({
         path: 'ownerDetails.propertyIds',
-        select: 'flatNumber status projectId buildingId takenForRental',
+        select: 'flatNumber status projectId buildingId takenForRental floor bhkType carpetArea basePrice',
         populate: { path: 'projectId', select: 'projectName projectCode' }
       })
       .populate({
         path: 'tenantDetails.rentalDetails.flatId',
-        select: 'flatNumber status projectId buildingId takenForRental',
+        select: 'flatNumber status projectId buildingId takenForRental floor bhkType carpetArea basePrice',
         populate: { path: 'projectId', select: 'projectName projectCode' }
       })
       .sort({ updatedAt: -1 });
@@ -188,12 +188,12 @@ export const getCustomerById = async (req, res) => {
     const customer = await Customer.findById(id)
       .populate({
         path: 'ownerDetails.propertyIds',
-        select: 'flatNumber status projectId buildingId takenForRental',
+        select: 'flatNumber status projectId buildingId takenForRental floor bhkType carpetArea basePrice',
         populate: { path: 'projectId', select: 'projectName projectCode' }
       })
       .populate({
         path: 'tenantDetails.rentalDetails.flatId',
-        select: 'flatNumber status projectId buildingId takenForRental',
+        select: 'flatNumber status projectId buildingId takenForRental floor bhkType carpetArea basePrice',
         populate: { path: 'projectId', select: 'projectName projectCode' }
       });
 

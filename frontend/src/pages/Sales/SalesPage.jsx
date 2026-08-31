@@ -5,6 +5,7 @@ import { SalesDetailModal } from '../../components/sales/SalesDetailModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { ModuleMessagingCenter } from '../../components/notifications/ModuleMessagingCenter.jsx';
 import { QuickMessageModal } from '../../components/notifications/QuickMessageModal.jsx';
+import { ConvertLeadModal } from '../../components/sales/ConvertLeadModal.jsx';
 
 import {
   ShoppingBag,
@@ -23,6 +24,7 @@ import {
   ArrowRight,
   TrendingUp,
   Building2,
+  Plus,
   Send,
   Zap
 } from 'lucide-react';
@@ -56,17 +58,28 @@ export const SalesPage = () => {
   const [quickMsgLead, setQuickMsgLead] = useState(null);
   const [isQuickMsgModalOpen, setIsQuickMsgModalOpen] = useState(false);
 
+  // New Booking Modal State
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  const [errorMsg, setErrorMsg] = useState(null);
+
   const fetchSalesLeads = async () => {
     setLoading(true);
+    setErrorMsg(null);
     try {
       const params = {};
       if (searchTerm) params.search = searchTerm;
       if (statusFilter) params.salesStatus = statusFilter;
 
       const res = await salesService.getSalesLeads(params);
-      if (res.data) setSalesLeads(res.data);
+      if (res && res.data) {
+        setSalesLeads(res.data);
+      } else if (Array.isArray(res)) {
+        setSalesLeads(res);
+      }
     } catch (error) {
       console.error('Error fetching sales leads:', error);
+      setErrorMsg(error.message || 'Failed to fetch sales and allotments records');
     } finally {
       setLoading(false);
     }
@@ -212,6 +225,21 @@ export const SalesPage = () => {
     }
   };
 
+  const handleDirectBookingSubmit = async (bookingData) => {
+    try {
+      const res = await salesService.convertLead(bookingData);
+      alert(`Property allotment created successfully for ${bookingData.name}!`);
+      setIsBookingModalOpen(false);
+      await fetchSalesLeads();
+      if (res.data) {
+        setSelectedSalesLead(res.data);
+        setIsDetailModalOpen(true);
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to create sales booking');
+    }
+  };
+
   // Compute Pipeline Metrics
   const totalSales = salesLeads.length;
   let bookedCount = 0;
@@ -251,81 +279,138 @@ export const SalesPage = () => {
           </div>
         </div>
 
-        {/* View Switcher Ribbon */}
-        <div style={{ display: 'flex', background: '#f3f4f5', padding: '4px', borderRadius: '8px', border: '1px solid #dadce0', gap: '6px' }}>
+        {/* Right Action & View Switcher Ribbon */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <button
             type="button"
-            onClick={() => {
-              setSalesViewTab('pipeline');
-              setSearchParams({ tab: 'deals' });
-            }}
+            onClick={() => setIsBookingModalOpen(true)}
             style={{
-              padding: '8px 16px',
-              borderRadius: '6px',
+              padding: '9px 18px',
+              borderRadius: '8px',
               border: 'none',
-              background: salesViewTab === 'pipeline' ? '#1a73e8' : 'transparent',
-              color: salesViewTab === 'pipeline' ? '#ffffff' : '#4b5563',
-              fontWeight: salesViewTab === 'pipeline' ? '800' : '600',
-              fontSize: '0.82rem',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              color: '#ffffff',
+              fontWeight: '700',
+              fontSize: '0.85rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '8px',
+              boxShadow: '0 2px 4px rgba(16, 185, 129, 0.25)',
               transition: 'all 0.15s ease'
             }}
           >
-            <ShoppingBag size={14} /> Deals Pipeline ({salesLeads.length})
+            <Plus size={16} /> + New Booking / Convert Lead
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setSalesViewTab('lifecycle');
-              setSearchParams({ tab: 'lifecycle' });
-            }}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '6px',
-              border: 'none',
-              background: salesViewTab === 'lifecycle' ? '#1a73e8' : 'transparent',
-              color: salesViewTab === 'lifecycle' ? '#ffffff' : '#4b5563',
-              fontWeight: salesViewTab === 'lifecycle' ? '800' : '600',
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <DollarSign size={14} /> Milestone Demands ({salesLeads.length})
-          </button>
+          <div style={{ display: 'flex', background: '#f3f4f5', padding: '4px', borderRadius: '8px', border: '1px solid #dadce0', gap: '6px' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setSalesViewTab('pipeline');
+                setSearchParams({ tab: 'deals' });
+              }}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                background: salesViewTab === 'pipeline' ? '#1a73e8' : 'transparent',
+                color: salesViewTab === 'pipeline' ? '#ffffff' : '#4b5563',
+                fontWeight: salesViewTab === 'pipeline' ? '800' : '600',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <ShoppingBag size={14} /> Deals Pipeline ({salesLeads.length})
+            </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setSalesViewTab('messaging');
-              setSearchParams({ tab: 'messaging' });
-            }}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '6px',
-              border: 'none',
-              background: salesViewTab === 'messaging' ? '#1a73e8' : 'transparent',
-              color: salesViewTab === 'messaging' ? '#ffffff' : '#4b5563',
-              fontWeight: salesViewTab === 'messaging' ? '800' : '600',
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <MessageSquare size={14} /> Buyer Messaging Hub
-          </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSalesViewTab('lifecycle');
+                setSearchParams({ tab: 'lifecycle' });
+              }}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                background: salesViewTab === 'lifecycle' ? '#1a73e8' : 'transparent',
+                color: salesViewTab === 'lifecycle' ? '#ffffff' : '#4b5563',
+                fontWeight: salesViewTab === 'lifecycle' ? '800' : '600',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <DollarSign size={14} /> Milestone Demands ({salesLeads.length})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSalesViewTab('messaging');
+                setSearchParams({ tab: 'messaging' });
+              }}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                background: salesViewTab === 'messaging' ? '#1a73e8' : 'transparent',
+                color: salesViewTab === 'messaging' ? '#ffffff' : '#4b5563',
+                fontWeight: salesViewTab === 'messaging' ? '800' : '600',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <MessageSquare size={14} /> Buyer Messaging Hub
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Error Alert Banner */}
+      {errorMsg && (
+        <div style={{
+          background: '#fef2f2',
+          border: '1px solid #fecaca',
+          borderRadius: '8px',
+          padding: '14px 18px',
+          color: '#991b1b',
+          fontSize: '0.85rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div>
+            <strong>Error loading sales data: </strong> {errorMsg}
+          </div>
+          <button
+            onClick={fetchSalesLeads}
+            style={{
+              background: '#991b1b',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '4px 10px',
+              fontSize: '0.75rem',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      )}
 
       {/* ================= TAB 1: PIPELINE & DEALS ================= */}
       {salesViewTab === 'pipeline' && (
@@ -888,6 +973,14 @@ export const SalesPage = () => {
         onClose={() => setIsQuickMsgModalOpen(false)}
         record={quickMsgLead}
         module="sales"
+      />
+
+      {/* NEW DIRECT BOOKING / CONVERT LEAD MODAL */}
+      <ConvertLeadModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        onConvert={handleDirectBookingSubmit}
+        lead={null}
       />
 
     </div>

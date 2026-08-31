@@ -100,6 +100,31 @@ const notificationConfigSchema = new mongoose.Schema(
       }
     },
 
+    // ================= TELEPHONY & CALLING API CONFIGURATION =================
+    telephony: {
+      enabled: { type: Boolean, default: true },
+      provider: {
+        type: String,
+        enum: ['twilio', 'exotel', 'browser_dialer', 'simulated'],
+        default: 'browser_dialer'
+      },
+      // Twilio Voice API credentials
+      twilioAccountSid: { type: String, default: '' },
+      twilioAuthToken: { type: String, default: '' },
+      twilioCallerId: { type: String, default: '+91 98765 43210' }, // Registered caller ID / virtual number
+      // Exotel Cloud Telephony credentials
+      exotelApiKey: { type: String, default: '' },
+      exotelApiToken: { type: String, default: '' },
+      exotelSubdomain: { type: String, default: 'api.exotel.com' },
+      exotelCallerId: { type: String, default: '08088997766' },
+      recordCalls: { type: Boolean, default: false },
+      environment: {
+        type: String,
+        enum: ['sandbox', 'production'],
+        default: 'sandbox'
+      }
+    },
+
     // ================= GENERAL NOTIFICATION POLICIES =================
     general: {
       dailySummaryTime: { type: String, default: '09:00' },

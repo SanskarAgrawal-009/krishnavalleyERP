@@ -10,20 +10,19 @@ const __dirname = path.dirname(__filename);
 const s3Region = process.env.AWS_REGION || 'ap-south-1';
 const bucketName = process.env.AWS_BUCKET_NAME || 'krishna-valley-erp-documents';
 
-let s3Client = null;
-
-if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
-  s3Client = new S3Client({
-    region: s3Region,
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-    }
-  });
-  console.log(`[AWS S3] Configured for region: ${s3Region}, bucket: ${bucketName}`);
-} else {
-  console.log('[AWS S3] Notice: AWS S3 credentials not set in .env. Falling back to local persistent uploads directory.');
-}
+export const getS3Client = () => {
+  const s3Region = process.env.AWS_REGION || 'us-east-1';
+  if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+    return new S3Client({
+      region: s3Region,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+      }
+    });
+  }
+  return null;
+};
 
 /**
  * Uploads a file buffer to AWS S3 (or local fallback)
@@ -38,10 +37,14 @@ export const uploadFileToS3 = async (fileBuffer, originalName, mimeType, folder 
   const sanitizedName = originalName.replace(/[^a-zA-Z0-9.-]/g, '_');
   const fileKey = `${folder}/${timestamp}_${sanitizedName}`;
 
-  if (s3Client && process.env.AWS_BUCKET_NAME) {
+  const s3Client = getS3Client();
+  const currentBucket = process.env.AWS_BUCKET_NAME || 'krishna-valley-erp-documents';
+  const currentRegion = process.env.AWS_REGION || 'us-east-1';
+
+  if (s3Client && currentBucket) {
     try {
       const command = new PutObjectCommand({
-        Bucket: bucketName,
+        Bucket: currentBucket,
         Key: fileKey,
         Body: fileBuffer,
         ContentType: mimeType
@@ -49,7 +52,7 @@ export const uploadFileToS3 = async (fileBuffer, originalName, mimeType, folder 
 
       await s3Client.send(command);
 
-      const s3Url = `https://${bucketName}.s3.${s3Region}.amazonaws.com/${fileKey}`;
+      const s3Url = `https://${currentBucket}.s3.${currentRegion}.amazonaws.com/${fileKey}`;
       console.log(`[AWS S3] Successfully uploaded to S3: ${s3Url}`);
       return {
         documentUrl: s3Url,

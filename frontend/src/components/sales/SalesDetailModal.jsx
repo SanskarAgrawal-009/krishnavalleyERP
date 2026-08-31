@@ -96,7 +96,8 @@ export const SalesDetailModal = ({
   const [possessionForm, setPossessionForm] = useState({
     status: salesLead?.possession?.status || 'ready',
     scheduledDate: salesLead?.possession?.scheduledDate ? new Date(salesLead.possession.scheduledDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-    remarks: salesLead?.possession?.remarks || 'Keys & Welcome Kit handed over to buyer.'
+    remarks: salesLead?.possession?.remarks || 'Keys & Welcome Kit handed over to buyer.',
+    forceOverride: false
   });
 
   // Cancellation State
@@ -951,6 +952,34 @@ export const SalesDetailModal = ({
                 onChange={(e) => setPossessionForm({ ...possessionForm, remarks: e.target.value })}
                 style={{ width: '100%' }}
               />
+            </div>
+
+            {/* 3-Year Rental Lock-in Policy Notice */}
+            <div style={{
+              background: '#fef3c7',
+              border: '1px solid #fde68a',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              fontSize: '0.8rem',
+              color: '#92400e',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <div style={{ fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>🔒 3-Year Mandatory Rental Program Policy:</span>
+              </div>
+              <div>
+                All units under Krishna Valley's guaranteed rental program are subject to a mandatory <strong>36-month (3-year) lease term</strong> before possession is granted to the buyer. Early handover requires an authorized administrative override.
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '4px', fontSize: '0.78rem', color: '#78350f', fontWeight: '600' }}>
+                <input
+                  type="checkbox"
+                  checked={possessionForm.forceOverride}
+                  onChange={(e) => setPossessionForm({ ...possessionForm, forceOverride: e.target.checked })}
+                />
+                Authorize Early Possession / Administrative Lock-in Override
+              </label>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '6px' }}>

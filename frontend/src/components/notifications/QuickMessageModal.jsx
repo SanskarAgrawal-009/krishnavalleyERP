@@ -331,7 +331,7 @@ export const QuickMessageModal = ({
           )}
 
           {/* Action buttons */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px', flexWrap: 'wrap' }}>
             <button
               type="button"
               onClick={onClose}
@@ -347,6 +347,31 @@ export const QuickMessageModal = ({
             >
               Cancel
             </button>
+
+            {channels.whatsapp && recipient.phone && (
+              <a
+                href={`https://wa.me/${(recipient.phone || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(replaceVars(selectedTemplate?.whatsappContent?.bodyText || ''))}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  padding: '8px 14px',
+                  background: '#e6f4ea',
+                  border: '1px solid #10b981',
+                  borderRadius: 'var(--radius-sm)',
+                  color: '#137333',
+                  fontSize: '0.8rem',
+                  fontWeight: '700',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <MessageSquare size={13} />
+                Open WhatsApp Web
+              </a>
+            )}
+
             <button
               type="submit"
               disabled={loading}

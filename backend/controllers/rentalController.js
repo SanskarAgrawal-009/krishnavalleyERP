@@ -211,6 +211,24 @@ export const createRentalContract = async (req, res) => {
       { takenForRental: true, status: 'leased' }
     );
 
+    // Auto-sync Tenant Customer record with leased flat and rental details
+    if (tenantId && primaryFlatId) {
+      try {
+        await Customer.findByIdAndUpdate(tenantId, {
+          customerType: 'tenant',
+          'tenantDetails.rentalDetails.flatId': primaryFlatId,
+          'tenantDetails.rentalDetails.monthlyRent': Number(tenantAgreement?.monthlyRent) || 0,
+          'tenantDetails.rentalDetails.securityDeposit': Number(tenantReq) || 0,
+          'tenantDetails.rentalDetails.rentDueDay': Number(tenantAgreement?.rentDueDay) || 5,
+          'tenantDetails.rentalDetails.leaseStartDate': tenantAgreement?.startDate ? new Date(tenantAgreement.startDate) : new Date(),
+          'tenantDetails.rentalDetails.leaseEndDate': tenantAgreement?.endDate ? new Date(tenantAgreement.endDate) : null
+        });
+        console.log(`[Customer Registry] Linked leased flat to tenant customer ID: ${tenantId}`);
+      } catch (custErr) {
+        console.error('Error linking leased flat to tenant customer:', custErr);
+      }
+    }
+
     const populated = await RentalManagement.findById(saved._id)
       .populate('projectId', 'projectName projectCode')
       .populate('flatId', 'flatNumber status takenForRental')

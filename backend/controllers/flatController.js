@@ -1,5 +1,9 @@
 import Flat from '../models/Flat.js';
 import Project from '../models/Project.js';
+import Customer from '../models/Customer.js';
+import SalesLead from '../models/SalesLead.js';
+import Lead from '../models/Lead.js';
+import RentalManagement from '../models/RentalManagement.js';
 import { uploadFileToS3 } from '../config/s3.js';
 
 // Helper to parse floor number from flat string if not set
@@ -64,7 +68,7 @@ export const getFlats = async (req, res) => {
   }
 };
 
-// Get Flat By ID
+// Get Flat By ID with Owner, Sales, Rental, and 3-Year Lock-in Information
 export const getFlatById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -85,7 +89,123 @@ export const getFlatById = async (req, res) => {
       }
     }
 
-    return res.json({ success: true, data: obj });
+    // 1. Fetch Sales Record (if booked, converted, agreement signed, possessed)
+    const salesLead = await SalesLead.findOne({
+      flatId: id,
+      salesStatus: { $ne: 'cancelled' }
+    }).populate('leadId', 'name mobileNo email agentId').populate('booking.bookingPaymentId');
+
+    // 2. Fetch Owner from Customer collection
+    let ownerCustomer = await Customer.findOne({
+      customerType: 'owner',
+      'ownerDetails.propertyIds': id
+    });
+
+    if (!ownerCustomer && salesLead?.mobileNo) {
+      ownerCustomer = await Customer.findOne({ mobileNo: salesLead.mobileNo });
+    }
+
+    // 3. Fetch Rental Contracts for this Flat
+    const rentalContracts = await RentalManagement.find({
+      $or: [
+        { flatId: id },
+        { flatIds: id },
+        { 'leasedUnits.flatId': id }
+      ]
+    }).populate('ownerId', 'name mobileNo email address')
+      .populate('tenantId', 'name mobileNo email address')
+      .sort({ createdAt: -1 });
+
+    const activeRental = rentalContracts.find(r => r.status !== 'terminated') || rentalContracts[0] || null;
+
+    // 4. Calculate 3-Year Mandatory Rental Period & Possession Availability
+    // Business Rule: All flats enrolled in rental program have 3 years (36 months) rental lock-in before possession handover.
+    const hasRentalAgreement = !!(activeRental || flat.takenForRental || flat.status === 'leased');
+    const isSoldOrLeased = obj.status === 'sold' || obj.status === 'leased' || !!salesLead;
+    
+    let rentalStartDate = null;
+    if (activeRental?.rentBack?.startDate) {
+      rentalStartDate = new Date(activeRental.rentBack.startDate);
+    } else if (activeRental?.tenantAgreement?.startDate) {
+      rentalStartDate = new Date(activeRental.tenantAgreement.startDate);
+    } else if (activeRental?.createdAt) {
+      rentalStartDate = new Date(activeRental.createdAt);
+    } else if (salesLead?.booking?.bookingDate) {
+      rentalStartDate = new Date(salesLead.booking.bookingDate);
+    } else if (flat.createdAt) {
+      rentalStartDate = new Date(flat.createdAt);
+    } else {
+      rentalStartDate = new Date();
+    }
+
+    // Calculate exact 3 years (36 months) from rental start date
+    const lockInEndDate = new Date(rentalStartDate);
+    lockInEndDate.setFullYear(lockInEndDate.getFullYear() + 3);
+
+    const now = new Date();
+    const isEnrolledOrSold = isSoldOrLeased || activeRental;
+    const diffMs = lockInEndDate.getTime() - now.getTime();
+    const totalMs = lockInEndDate.getTime() - rentalStartDate.getTime();
+    
+    // An unsold flat is NOT currently locked; its 3-year term will start upon purchase & enrollment
+    const isLocked = isEnrolledOrSold && diffMs > 0;
+
+    const remainingDays = isLocked ? Math.ceil(diffMs / (1000 * 60 * 60 * 24)) : (isEnrolledOrSold ? 0 : 1095);
+    const remainingMonths = isLocked ? Math.ceil(remainingDays / 30.4375) : (isEnrolledOrSold ? 0 : 36);
+    const elapsedDays = isEnrolledOrSold ? Math.max(0, Math.floor((now.getTime() - rentalStartDate.getTime()) / (1000 * 60 * 60 * 24))) : 0;
+    const totalDays = Math.max(1, Math.floor(totalMs / (1000 * 60 * 60 * 24)));
+    const progressPercentage = isEnrolledOrSold ? Math.min(100, Math.max(0, Math.round((elapsedDays / totalDays) * 100))) : 0;
+
+    let possessionStatus = 'available_for_sale';
+    let possessionMessage = 'Unit is currently available for sale. Upon purchase & enrollment, a 3-year guaranteed rental lock-in will apply prior to physical possession.';
+
+    if (isEnrolledOrSold) {
+      if (salesLead?.possession?.status === 'completed' || salesLead?.salesStatus === 'possessed') {
+        possessionStatus = 'possession_completed';
+        possessionMessage = `Possession has already been completed on ${salesLead.possession?.possessionDate ? new Date(salesLead.possession.possessionDate).toLocaleDateString('en-IN') : 'record'}.`;
+      } else if (isLocked) {
+        possessionStatus = 'possession_locked_3yr';
+        possessionMessage = `Flat is currently enrolled in mandatory 3-Year Rental lock-in. Possession will become available on ${lockInEndDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (${remainingMonths} months / ${remainingDays} days remaining).`;
+      } else {
+        possessionStatus = 'possession_eligible';
+        possessionMessage = `3-Year rental lock-in term fulfilled on ${lockInEndDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}. Unit is now fully eligible for physical possession and key handover!`;
+      }
+    }
+
+    const lockInDetails = {
+      isEnrolledInRental: isEnrolledOrSold,
+      rentalStartDate: isEnrolledOrSold ? rentalStartDate : null,
+      lockInEndDate: isEnrolledOrSold ? lockInEndDate : null,
+      mandatoryTenureYears: 3,
+      mandatoryTenureMonths: 36,
+      elapsedDays,
+      totalDays,
+      remainingDays,
+      remainingMonths,
+      progressPercentage,
+      isLocked,
+      possessionStatus,
+      possessionMessage,
+      actualPossession: salesLead?.possession || null
+    };
+
+    return res.json({
+      success: true,
+      data: {
+        ...obj,
+        salesLead: salesLead || null,
+        owner: ownerCustomer || (salesLead ? {
+          name: salesLead.name,
+          mobileNo: salesLead.mobileNo,
+          email: salesLead.email,
+          customerType: 'owner',
+          source: 'sales_lead'
+        } : null),
+        rentalContract: activeRental,
+        allRentalContracts: rentalContracts,
+        rentalLockIn: lockInDetails
+      }
+    });
   } catch (error) {
     console.error('Error in getFlatById:', error);
     return res.status(500).json({ success: false, message: error.message });

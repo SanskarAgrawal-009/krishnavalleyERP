@@ -5,6 +5,7 @@ import { ManualProjectModal } from '../../components/manual/ManualProjectModal.j
 import { ManualBuildingModal } from '../../components/manual/ManualBuildingModal.jsx';
 import { ManualFloorModal } from '../../components/manual/ManualFloorModal.jsx';
 import { ManualFlatModal } from '../../components/manual/ManualFlatModal.jsx';
+import { FlatDetailModal } from '../../components/inventory/FlatDetailModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 
 import {
@@ -51,6 +52,8 @@ export const PropertyInventoryPage = () => {
   const [isFloorModalOpen, setIsFloorModalOpen] = useState(false);
   const [isFlatModalOpen, setIsFlatModalOpen] = useState(false);
   const [editingFlat, setEditingFlat] = useState(null);
+  const [selectedFlatForDetail, setSelectedFlatForDetail] = useState(null);
+  const [isFlatDetailOpen, setIsFlatDetailOpen] = useState(false);
 
   // Fetch Projects
   const fetchProjects = async () => {
@@ -1158,88 +1161,123 @@ export const PropertyInventoryPage = () => {
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '14px' }}>
                   {filteredFlats.map((flat) => (
-                <div
-                  key={flat._id || flat.id}
-                  className="g-card"
-                  style={{
-                    padding: '16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '6px',
-                        background: '#e8f0fe',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#1a73e8',
-                        fontWeight: '800'
-                      }}>
-                        <Home size={16} />
+                    <div
+                      key={flat._id || flat.id}
+                      className="g-card"
+                    onClick={() => {
+                      setSelectedFlatForDetail(flat);
+                      setIsFlatDetailOpen(true);
+                    }}
+                    style={{
+                      padding: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      border: '1px solid #dadce0',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 6px 18px rgba(26, 115, 232, 0.12)';
+                      e.currentTarget.style.borderColor = '#1a73e8';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                      e.currentTarget.style.borderColor = '#dadce0';
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '6px',
+                          background: '#e8f0fe',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#1a73e8',
+                          fontWeight: '800'
+                        }}>
+                          <Home size={16} />
+                        </div>
+                        <div>
+                          <span style={{ fontSize: '1.05rem', fontWeight: '700', color: '#191c1d' }}>{flat.flatNumber}</span>
+                          <span style={{ fontSize: '0.68rem', color: '#1a73e8', display: 'block', fontWeight: '600' }}>
+                            Click to inspect ➔
+                          </span>
+                        </div>
                       </div>
-                      <span style={{ fontSize: '1.05rem', fontWeight: '700', color: '#191c1d' }}>{flat.flatNumber}</span>
+                      <StatusBadge status={flat.status} />
                     </div>
-                    <StatusBadge status={flat.status} />
-                  </div>
 
-                  <div style={{
-                    background: '#f8f9fa',
-                    border: '1px solid #dadce0',
-                    padding: '8px 10px',
-                    borderRadius: '6px',
-                    fontSize: '0.75rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4px',
-                    color: '#414754'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>Floor:</span>
-                      <strong style={{ color: '#191c1d' }}>Floor {flat.floor || 1}</strong>
+                    <div style={{
+                      background: '#f8f9fa',
+                      border: '1px solid #dadce0',
+                      padding: '8px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      color: '#414754'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Floor:</span>
+                        <strong style={{ color: '#191c1d' }}>Floor {flat.floor || 1}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Configuration:</span>
+                        <strong style={{ color: '#191c1d' }}>{flat.bhkType || '2BHK'} ({flat.carpetArea || 950} sq.ft)</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Rental Program:</span>
+                        <strong style={{ color: flat.takenForRental ? '#7e22ce' : '#727785' }}>
+                          {flat.takenForRental ? '3-Yr Rental Lock-in' : 'Available'}
+                        </strong>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>Configuration:</span>
-                      <strong style={{ color: '#191c1d' }}>{flat.bhkType || '2BHK'} ({flat.carpetArea || 950} sq.ft)</strong>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>Rental Program:</span>
-                      <strong style={{ color: flat.takenForRental ? '#137333' : '#727785' }}>
-                        {flat.takenForRental ? 'Taken for Rental' : 'Available'}
-                      </strong>
-                    </div>
-                  </div>
 
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    gap: '6px',
-                    borderTop: '1px solid #dadce0',
-                    paddingTop: '8px'
-                  }}>
-                    <button
-                      onClick={() => {
-                        setEditingFlat(flat);
-                        setIsFlatModalOpen(true);
-                      }}
-                      style={{ padding: '5px 8px', background: '#f3f4f5', borderRadius: '4px', color: '#414754', cursor: 'pointer', border: '1px solid #dadce0' }}
-                    >
-                      <Edit size={13} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteFlat(flat)}
-                      style={{ padding: '5px 8px', background: '#ffdad6', borderRadius: '4px', color: '#ba1a1a', cursor: 'pointer', border: '1px solid #ffdad6' }}
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      borderTop: '1px solid #dadce0',
+                      paddingTop: '8px'
+                    }}>
+                      <span style={{ fontSize: '0.75rem', color: '#1a73e8', fontWeight: '600' }}>
+                        Owner & Rental Dossier
+                      </span>
+
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingFlat(flat);
+                            setIsFlatModalOpen(true);
+                          }}
+                          title="Edit Flat"
+                          style={{ padding: '5px 8px', background: '#f3f4f5', borderRadius: '4px', color: '#414754', cursor: 'pointer', border: '1px solid #dadce0' }}
+                        >
+                          <Edit size={13} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteFlat(flat);
+                          }}
+                          title="Delete Flat"
+                          style={{ padding: '5px 8px', background: '#ffdad6', borderRadius: '4px', color: '#ba1a1a', cursor: 'pointer', border: '1px solid #ffdad6' }}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
                 </div>
               )}
             </div>
@@ -1278,6 +1316,23 @@ export const PropertyInventoryPage = () => {
         buildingId={selectedBuilding?._id || selectedBuilding?.id}
         buildingName={selectedBuilding?.buildingName}
         flat={editingFlat}
+      />
+
+      {/* COMPREHENSIVE FLAT DETAIL & 3-YEAR RENTAL LOCK-IN MODAL */}
+      <FlatDetailModal
+        isOpen={isFlatDetailOpen}
+        onClose={() => {
+          setIsFlatDetailOpen(false);
+          setSelectedFlatForDetail(null);
+        }}
+        flatId={selectedFlatForDetail?._id || selectedFlatForDetail?.id}
+        initialFlat={selectedFlatForDetail}
+        projectName={selectedProject?.projectName}
+        buildingName={selectedBuilding?.buildingName}
+        onEditFlat={(flatToEdit) => {
+          setEditingFlat(flatToEdit);
+          setIsFlatModalOpen(true);
+        }}
       />
     </div>
   );

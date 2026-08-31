@@ -1419,70 +1419,7 @@ export const UserManagementPage = () => {
                 </div>
               )}
 
-              {/* Multi-branch Access Matrix */}
-              <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '12px' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#374151', marginBottom: '8px' }}>
-                  Branch Access Privileges
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {branches.map((branch) => {
-                    const accessObj = userFormData.branchAccess.find((b) => b.branchId === branch._id);
-                    const isEnabled = !!accessObj;
 
-                    return (
-                      <div
-                        key={branch._id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '8px 12px',
-                          borderRadius: '8px',
-                          backgroundColor: isEnabled ? '#f8fafc' : '#ffffff',
-                          border: '1px solid #e5e7eb',
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <input
-                            type="checkbox"
-                            checked={isEnabled}
-                            onChange={(e) => handleBranchAccessChange(branch._id, 'enabled', e.target.checked)}
-                            style={{ accentColor: '#1a73e8' }}
-                          />
-                          <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#1f2937' }}>
-                            {branch.branchName}
-                          </span>
-                        </div>
-
-                        {isEnabled && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <select
-                              value={accessObj.accessLevel}
-                              onChange={(e) => handleBranchAccessChange(branch._id, 'accessLevel', e.target.value)}
-                              style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.78rem' }}
-                            >
-                              <option value="view">View</option>
-                              <option value="edit">Edit</option>
-                              <option value="manage">Manage</option>
-                            </select>
-
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#6b7280', cursor: 'pointer' }}>
-                              <input
-                                type="radio"
-                                name="primaryBranchRadio"
-                                checked={accessObj.isPrimary}
-                                onChange={() => handleBranchAccessChange(branch._id, 'isPrimary', true)}
-                                style={{ accentColor: '#1a73e8' }}
-                              />
-                              <span>Primary</span>
-                            </label>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
 
               {/* Actions */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>

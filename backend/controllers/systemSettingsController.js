@@ -7,6 +7,8 @@ import Customer from '../models/Customer.js';
 import CommissionLedger from '../models/CommissionLedger.js';
 import Project from '../models/Project.js';
 import crypto from 'crypto';
+import { verifySmtpConnection, sendEmail } from '../services/emailService.js';
+import { sendWhatsApp } from '../services/whatsappService.js';
 
 // Helper to get or initialize singleton settings document
 export const getOrInitSettings = async () => {
@@ -224,11 +226,62 @@ export const testEmailConfig = async (req, res) => {
     const settings = await getOrInitSettings();
     const targetEmail = recipientEmail || req.user?.email || 'admin@krishnavalley.com';
 
-    // Simulate verification or real test
+    // Verify SMTP connection live
+    const verifyResult = await verifySmtpConnection({
+      smtpHost: settings.email?.smtp?.host,
+      smtpPort: settings.email?.smtp?.port,
+      secure: settings.email?.smtp?.secure,
+      smtpUser: settings.email?.smtp?.user,
+      smtpPassword: settings.email?.smtp?.pass,
+      fromEmail: settings.email?.smtp?.fromEmail,
+      fromName: settings.email?.smtp?.fromName
+    });
+
+    if (!verifyResult.success) {
+      settings.email.testStatus = {
+        lastTestedAt: new Date(),
+        isWorking: false,
+        lastError: verifyResult.message || 'SMTP Connection failed'
+      };
+      await settings.save();
+
+      return res.status(400).json({
+        success: false,
+        message: `SMTP Connection test failed: ${verifyResult.message}`,
+        details: verifyResult.details
+      });
+    }
+
+    // Dispatch live test email
+    const emailResult = await sendEmail({
+      to: targetEmail,
+      subject: 'Krishna Valley ERP - System SMTP Diagnostic Verification',
+      bodyHtml: `<div style="padding: 16px; font-family: sans-serif;">
+        <h3 style="color: #0f766e; margin-top: 0;">Krishna Valley Real Estate ERP</h3>
+        <p>This is a live test email verifying your system SMTP connection parameters.</p>
+        <div style="background: #f0fdfa; border-left: 4px solid #14b8a6; padding: 12px; margin: 16px 0;">
+          <p style="margin: 0 0 4px 0;"><strong>Host:</strong> ${settings.email?.smtp?.host}:${settings.email?.smtp?.port}</p>
+          <p style="margin: 0 0 4px 0;"><strong>User:</strong> ${settings.email?.smtp?.user}</p>
+          <p style="margin: 0;"><strong>Status:</strong> Verified & Operational</p>
+        </div>
+        <p style="font-size: 13px; color: #64748b;">Timestamp: ${new Date().toLocaleString('en-IN')}</p>
+      </div>`,
+      isTest: true,
+      customConfig: {
+        smtpHost: settings.email?.smtp?.host,
+        smtpPort: settings.email?.smtp?.port,
+        secure: settings.email?.smtp?.secure,
+        smtpUser: settings.email?.smtp?.user,
+        smtpPassword: settings.email?.smtp?.pass,
+        fromEmail: settings.email?.smtp?.fromEmail,
+        fromName: settings.email?.smtp?.fromName
+      }
+    });
+
     settings.email.testStatus = {
       lastTestedAt: new Date(),
       isWorking: true,
-      lastError: '',
+      lastError: ''
     };
     await settings.save();
 
@@ -238,9 +291,10 @@ export const testEmailConfig = async (req, res) => {
       data: {
         recipient: targetEmail,
         smtpHost: settings.email.smtp.host,
-        status: 'Delivered',
-        timestamp: new Date(),
-      },
+        status: emailResult.status || 'Delivered',
+        messageId: emailResult.messageId,
+        timestamp: new Date()
+      }
     });
   } catch (error) {
     console.error('testEmailConfig error:', error);
@@ -259,21 +313,39 @@ export const testWhatsAppConfig = async (req, res) => {
     const settings = await getOrInitSettings();
     const phone = testPhoneNumber || req.user?.mobileNo || '+91 98765 43210';
 
+    const waResult = await sendWhatsApp({
+      to: phone,
+      text: 'KV-ERP ALERT: Krishna Valley WhatsApp Cloud API test message. Your messaging integration is active and connected.',
+      headerText: 'Krishna Valley ERP Verification',
+      isTest: true,
+      customConfig: {
+        provider: settings.whatsappApi?.provider === 'twilio' ? 'twilio' : 'meta_cloud',
+        phoneNumberId: settings.whatsappApi?.cloudApi?.phoneNumberId,
+        apiKey: settings.whatsappApi?.cloudApi?.accessToken,
+        businessAccountId: settings.whatsappApi?.cloudApi?.wabaId,
+        twilioAccountSid: settings.whatsappApi?.twilio?.accountSid,
+        twilioAuthToken: settings.whatsappApi?.twilio?.authToken,
+        twilioFromNumber: settings.whatsappApi?.twilio?.fromNumber
+      }
+    });
+
     settings.whatsappApi.status = {
       isConnected: true,
-      lastVerifiedAt: new Date(),
+      lastVerifiedAt: new Date()
     };
     await settings.save();
 
     return res.json({
       success: true,
-      message: `WhatsApp Cloud API connection verified! Test payload dispatched to ${phone}`,
+      message: `WhatsApp API verification dispatched to ${phone}!`,
       data: {
         provider: settings.whatsappApi.provider,
-        phoneNumberId: settings.whatsappApi.cloudApi.phoneNumberId,
-        verifiedAt: new Date(),
-        status: 'Connected',
-      },
+        recipient: phone,
+        status: waResult.status,
+        clickToChatUrl: waResult.clickToChatUrl,
+        messageId: waResult.messageId,
+        verifiedAt: new Date()
+      }
     });
   } catch (error) {
     console.error('testWhatsAppConfig error:', error);
