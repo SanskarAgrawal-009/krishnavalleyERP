@@ -1,5 +1,8 @@
 import Customer from '../models/Customer.js';
 import Flat from '../models/Flat.js';
+import Lead from '../models/Lead.js';
+import SalesLead from '../models/SalesLead.js';
+import Project from '../models/Project.js';
 import { uploadFileToS3 } from '../config/s3.js';
 import { escapeRegex } from '../utils/regexUtil.js';
 import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
@@ -90,11 +93,118 @@ export const createCustomer = async (req, res) => {
 
     const saved = await customer.save();
 
-    // If customer is an owner with propertyIds, mark all those flats as 'sold' in Flat model
+    // If customer is an owner with propertyIds, mark all those flats as 'sold' and auto-create/sync Sales & Allotment deal
     if (customerType === 'owner' && ownerDetails?.propertyIds && Array.isArray(ownerDetails.propertyIds) && ownerDetails.propertyIds.length > 0) {
       const validFlatIds = ownerDetails.propertyIds.filter(id => mongoose.Types.ObjectId.isValid(id));
       if (validFlatIds.length > 0) {
         await Flat.updateMany({ _id: { $in: validFlatIds } }, { status: 'sold' });
+
+        try {
+          const primaryFlatId = validFlatIds[0];
+          const flatDoc = await Flat.findById(primaryFlatId).select('projectId buildingId flatNumber basePrice');
+
+          if (flatDoc) {
+            // Find or create lead for SalesLead unique leadId constraint
+            let lead = await Lead.findOne({ mobileNo: saved.mobileNo });
+            if (!lead) {
+              lead = await Lead.create({
+                name: saved.name,
+                mobileNo: saved.mobileNo,
+                email: saved.email || '',
+                status: 'converted',
+                source: 'walk_in',
+                assignedFlat: primaryFlatId,
+                notes: `Owner customer created with Flat ${flatDoc.flatNumber} allotment`
+              });
+            } else {
+              await Lead.findByIdAndUpdate(lead._id, { status: 'converted', assignedFlat: primaryFlatId });
+            }
+
+            const sa = ownerDetails.salesAllotment || {};
+            const dealPrice = Number(sa.agreedDealPrice) || flatDoc.basePrice || 4500000;
+            const bookingVal = Number(sa.bookingAmount) || 0;
+            const pMode = sa.paymentMode || 'bank_transfer';
+            const txRef = sa.transactionReference || '';
+            const agrNum = sa.agreementNumber || `AGR-KV-${Date.now().toString().slice(-6)}`;
+            const agrDate = sa.agreementDate ? new Date(sa.agreementDate) : new Date();
+            const allotDate = sa.allotmentDate ? new Date(sa.allotmentDate) : new Date();
+            const sStatus = sa.salesStatus || (bookingVal > 0 ? 'booked' : 'converted');
+            const pPlanType = sa.paymentPlanType || 'installment';
+
+            const receiptsArr = bookingVal > 0 ? [{
+              receiptNumber: `REC-${Date.now().toString().slice(-6)}`,
+              amount: bookingVal,
+              generatedAt: allotDate,
+            }] : [];
+
+            let salesLead = await SalesLead.findOne({
+              $or: [{ leadId: lead._id }, { customerId: saved._id }]
+            });
+
+            if (!salesLead) {
+              salesLead = await SalesLead.create({
+                leadId: lead._id,
+                customerId: saved._id,
+                name: saved.name,
+                mobileNo: saved.mobileNo,
+                email: saved.email || '',
+                projectId: flatDoc.projectId,
+                buildingId: flatDoc.buildingId,
+                flatId: primaryFlatId,
+                salesStatus: sStatus,
+                booking: {
+                  isBooked: bookingVal > 0,
+                  bookingDate: allotDate,
+                  bookingAmount: bookingVal,
+                  bookingStatus: bookingVal > 0 ? 'confirmed' : 'pending'
+                },
+                agreement: {
+                  required: true,
+                  uploaded: false,
+                  agreementNumber: agrNum,
+                  agreementDate: agrDate,
+                  verificationStatus: 'verified'
+                },
+                paymentPlan: {
+                  type: pPlanType,
+                  totalAmount: dealPrice,
+                  bookingAmount: bookingVal,
+                  remainingAmount: Math.max(0, dealPrice - bookingVal),
+                  numberOfInstallments: 0
+                },
+                receipts: receiptsArr
+              });
+            } else {
+              salesLead.customerId = saved._id;
+              salesLead.flatId = primaryFlatId;
+              salesLead.projectId = flatDoc.projectId;
+              salesLead.buildingId = flatDoc.buildingId;
+              salesLead.salesStatus = sStatus;
+              salesLead.paymentPlan.totalAmount = dealPrice;
+              salesLead.paymentPlan.bookingAmount = bookingVal;
+              salesLead.paymentPlan.remainingAmount = Math.max(0, dealPrice - bookingVal);
+              await salesLead.save();
+            }
+
+            // Link salesLead back to Customer record
+            saved.ownerDetails.salesAllotment = {
+              salesLeadId: salesLead._id,
+              agreedDealPrice: dealPrice,
+              bookingAmount: bookingVal,
+              paymentMode: pMode,
+              transactionReference: txRef,
+              allotmentDate: allotDate,
+              agreementNumber: agrNum,
+              agreementDate: agrDate,
+              salesStatus: sStatus,
+              paymentPlanType: pPlanType
+            };
+            await saved.save();
+            console.log(`[Sales Allotment] Auto-linked SalesLead ${salesLead._id} for Owner ${saved.name}`);
+          }
+        } catch (salesErr) {
+          console.error('Error auto-syncing SalesLead for owner:', salesErr);
+        }
       }
     }
 
@@ -106,8 +216,11 @@ export const createCustomer = async (req, res) => {
     const populated = await Customer.findById(saved._id)
       .populate({
         path: 'ownerDetails.propertyIds',
-        select: 'flatNumber status projectId buildingId',
+        select: 'flatNumber status projectId buildingId floor bhkType carpetArea basePrice',
         populate: { path: 'projectId', select: 'projectName projectCode' }
+      })
+      .populate({
+        path: 'ownerDetails.salesAllotment.salesLeadId'
       })
       .populate({
         path: 'tenantDetails.rentalDetails.flatId',
@@ -185,11 +298,14 @@ export const getCustomers = async (req, res) => {
 export const getCustomerById = async (req, res) => {
   try {
     const { id } = req.params;
-    const customer = await Customer.findById(id)
+    let customer = await Customer.findById(id)
       .populate({
         path: 'ownerDetails.propertyIds',
         select: 'flatNumber status projectId buildingId takenForRental floor bhkType carpetArea basePrice',
         populate: { path: 'projectId', select: 'projectName projectCode' }
+      })
+      .populate({
+        path: 'ownerDetails.salesAllotment.salesLeadId'
       })
       .populate({
         path: 'tenantDetails.rentalDetails.flatId',
@@ -198,7 +314,20 @@ export const getCustomerById = async (req, res) => {
       });
 
     if (!customer) return res.status(404).json({ success: false, message: 'Customer record not found' });
-    return res.json({ success: true, data: customer });
+
+    // Fallback: If owner has no linked salesLeadId in subdoc, dynamically find linked SalesLead
+    let customerObj = customer.toObject();
+    if (customer.customerType === 'owner') {
+      const salesLead = await SalesLead.findOne({
+        $or: [{ customerId: customer._id }, { mobileNo: customer.mobileNo }]
+      }).populate('projectId', 'projectName projectCode').populate('flatId', 'flatNumber floor bhkType carpetArea basePrice');
+
+      if (salesLead) {
+        customerObj.liveSalesAllotment = salesLead;
+      }
+    }
+
+    return res.json({ success: true, data: customerObj });
   } catch (error) {
     console.error('Error fetching customer by id:', error);
     return res.status(500).json({ success: false, message: error.message });
@@ -265,6 +394,36 @@ export const updateCustomer = async (req, res) => {
         const validFlatIds = updates.ownerDetails.propertyIds.filter(id => mongoose.Types.ObjectId.isValid(id));
         if (validFlatIds.length > 0) {
           await Flat.updateMany({ _id: { $in: validFlatIds } }, { status: 'sold' });
+
+          // Sync with SalesLead
+          try {
+            const primaryFlatId = validFlatIds[0];
+            const sa = updates.ownerDetails.salesAllotment || {};
+            const dealPrice = Number(sa.agreedDealPrice);
+            const bookingVal = Number(sa.bookingAmount);
+            const sStatus = sa.salesStatus;
+
+            const salesLead = await SalesLead.findOne({
+              $or: [{ customerId: customer._id }, { mobileNo: customer.mobileNo }]
+            });
+
+            if (salesLead) {
+              if (dealPrice) salesLead.paymentPlan.totalAmount = dealPrice;
+              if (bookingVal !== undefined && !isNaN(bookingVal)) {
+                salesLead.paymentPlan.bookingAmount = bookingVal;
+                salesLead.booking.bookingAmount = bookingVal;
+                salesLead.booking.isBooked = bookingVal > 0;
+              }
+              if (dealPrice && bookingVal !== undefined) {
+                salesLead.paymentPlan.remainingAmount = Math.max(0, dealPrice - bookingVal);
+              }
+              if (sStatus) salesLead.salesStatus = sStatus;
+              if (sa.agreementNumber) salesLead.agreement.agreementNumber = sa.agreementNumber;
+              await salesLead.save();
+            }
+          } catch (salesErr) {
+            console.error('Error updating SalesLead from Customer update:', salesErr);
+          }
         }
       }
     }
@@ -280,6 +439,7 @@ export const updateCustomer = async (req, res) => {
 
     const populated = await Customer.findById(customer._id)
       .populate('ownerDetails.propertyIds')
+      .populate('ownerDetails.salesAllotment.salesLeadId')
       .populate('tenantDetails.rentalDetails.flatId');
 
     return res.json({ success: true, data: populated });
@@ -312,7 +472,7 @@ export const uploadCustomerDocument = async (req, res) => {
       'customer_documents'
     );
 
-    customer.documents.push({
+    const newDoc = {
       documentType: documentType || 'other',
       documentName: documentName || file.originalname,
       documentNumber: documentNumber || '',
@@ -321,10 +481,59 @@ export const uploadCustomerDocument = async (req, res) => {
       fileType: file.mimetype,
       fileSize: file.size,
       uploadedAt: new Date(),
-      verificationStatus: verificationStatus || 'pending'
-    });
+      verificationStatus: verificationStatus || 'verified'
+    };
 
+    customer.documents.push(newDoc);
     await customer.save();
+
+    // Auto-mirror to linked SalesLead for Owners
+    if (customer.customerType === 'owner') {
+      try {
+        const salesLead = await SalesLead.findOne({
+          $or: [{ customerId: customer._id }, { mobileNo: customer.mobileNo }]
+        });
+
+        if (salesLead) {
+          const lowerType = (documentType || '').toLowerCase();
+          const isAgreement = ['sale_deed', 'registry', 'agreement', 'bba', 'allotment_letter', 'rental_agreement', 'lease_agreement'].includes(lowerType);
+          const isReceipt = ['rent_receipt', 'payment_receipt', 'booking_receipt', 'receipt'].includes(lowerType);
+
+          if (isAgreement) {
+            salesLead.agreement.uploaded = true;
+            salesLead.agreement.documentUrl = uploadResult.documentUrl;
+            salesLead.agreement.documentName = uploadResult.documentName;
+            salesLead.agreement.uploadedAt = new Date();
+            salesLead.agreement.verificationStatus = 'verified';
+            salesLead.bbaDocument = {
+              fileName: uploadResult.documentName,
+              fileUrl: uploadResult.documentUrl,
+              fileSize: file.size,
+              uploadedAt: new Date(),
+              isSigned: true,
+              signedAt: new Date()
+            };
+            if (['converted', 'booking_pending', 'booked', 'agreement_pending'].includes(salesLead.salesStatus)) {
+              salesLead.salesStatus = 'agreement_completed';
+            }
+            await salesLead.save();
+            console.log(`[Sales Allotment] Mirrored Agreement document to SalesLead ${salesLead._id}`);
+          } else if (isReceipt) {
+            const receiptAmt = customer.ownerDetails?.salesAllotment?.bookingAmount || 0;
+            salesLead.receipts.push({
+              receiptNumber: documentNumber || `REC-${Date.now().toString().slice(-6)}`,
+              amount: receiptAmt,
+              generatedAt: new Date(),
+              documentUrl: uploadResult.documentUrl
+            });
+            await salesLead.save();
+            console.log(`[Sales Allotment] Mirrored Payment Receipt document to SalesLead ${salesLead._id}`);
+          }
+        }
+      } catch (mirrorErr) {
+        console.error('Error mirroring document to SalesLead:', mirrorErr);
+      }
+    }
 
     console.log(`[Customer Document] Uploaded for ${customer.name}: ${uploadResult.documentUrl}`);
     return res.status(201).json({

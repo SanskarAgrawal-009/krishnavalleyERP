@@ -14,6 +14,12 @@ const SalesLeadSchema = new mongoose.Schema(
       index: true,
     },
 
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      index: true,
+    },
+
     name: {
       type: String,
       required: true,

@@ -91,6 +91,63 @@ const CustomerSchema = new mongoose.Schema(
         max: 100,
         default: 100,
       },
+
+      salesAllotment: {
+        salesLeadId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "SalesLead",
+        },
+        agreedDealPrice: {
+          type: Number,
+          default: 0,
+        },
+        bookingAmount: {
+          type: Number,
+          default: 0,
+        },
+        paymentMode: {
+          type: String,
+          enum: ["cheque", "bank_transfer", "upi", "cash", "card", "other"],
+          default: "bank_transfer",
+        },
+        transactionReference: {
+          type: String,
+          default: "",
+        },
+        allotmentDate: {
+          type: Date,
+          default: Date.now,
+        },
+        agreementNumber: {
+          type: String,
+        },
+        agreementDate: {
+          type: Date,
+        },
+        salesStatus: {
+          type: String,
+          enum: [
+            "converted",
+            "booking_pending",
+            "booked",
+            "agreement_pending",
+            "agreement_completed",
+            "payment_pending",
+            "payment_in_progress",
+            "fully_paid",
+            "possession_pending",
+            "possessed",
+            "cancelled",
+            "refunded",
+          ],
+          default: "booked",
+        },
+        paymentPlanType: {
+          type: String,
+          enum: ["full_payment", "installment", "custom"],
+          default: "installment",
+        },
+      },
     },
 
     // =====================================================

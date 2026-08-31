@@ -48,10 +48,26 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
     country: 'India'
   });
 
-  // Owner Details
+  // Owner Details & Sales Allotment
   const [selectedPropertyIds, setSelectedPropertyIds] = useState([]);
   const [ownershipType, setOwnershipType] = useState('individual');
   const [ownershipPercentage, setOwnershipPercentage] = useState(100);
+
+  // Owner Sales & Allotment Configuration
+  const [agreedDealPrice, setAgreedDealPrice] = useState('');
+  const [bookingAmount, setBookingAmount] = useState('');
+  const [paymentMode, setPaymentMode] = useState('bank_transfer');
+  const [transactionReference, setTransactionReference] = useState('');
+  const [allotmentDate, setAllotmentDate] = useState(new Date().toISOString().slice(0, 10));
+  const [agreementNumber, setAgreementNumber] = useState(`AGR-KV-${Date.now().toString().slice(-6)}`);
+  const [agreementDate, setAgreementDate] = useState(new Date().toISOString().slice(0, 10));
+  const [salesStatus, setSalesStatus] = useState('booked');
+  const [paymentPlanType, setPaymentPlanType] = useState('installment');
+
+  // File Upload Attachments (S3)
+  const [agreementFile, setAgreementFile] = useState(null);
+  const [receiptFile, setReceiptFile] = useState(null);
+  const [kycFile, setKycFile] = useState(null);
 
   // Individual Tenant Details
   const [fatherName, setFatherName] = useState('');
@@ -102,6 +118,17 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
           setSelectedPropertyIds((customer.ownerDetails.propertyIds || []).map((p) => p._id || p));
           setOwnershipType(customer.ownerDetails.ownershipType || 'individual');
           setOwnershipPercentage(customer.ownerDetails.ownershipPercentage || 100);
+
+          const sa = customer.ownerDetails.salesAllotment || {};
+          setAgreedDealPrice(sa.agreedDealPrice ? String(sa.agreedDealPrice) : '');
+          setBookingAmount(sa.bookingAmount ? String(sa.bookingAmount) : '');
+          setPaymentMode(sa.paymentMode || 'bank_transfer');
+          setTransactionReference(sa.transactionReference || '');
+          setAllotmentDate(sa.allotmentDate ? new Date(sa.allotmentDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
+          setAgreementNumber(sa.agreementNumber || `AGR-KV-${Date.now().toString().slice(-6)}`);
+          setAgreementDate(sa.agreementDate ? new Date(sa.agreementDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
+          setSalesStatus(sa.salesStatus || 'booked');
+          setPaymentPlanType(sa.paymentPlanType || 'installment');
         }
 
         if (customer.customerType === 'tenant' && customer.tenantDetails) {
@@ -143,6 +170,18 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
         setSelectedPropertyIds([]);
         setOwnershipType('individual');
         setOwnershipPercentage(100);
+        setAgreedDealPrice('');
+        setBookingAmount('');
+        setPaymentMode('bank_transfer');
+        setTransactionReference('');
+        setAllotmentDate(new Date().toISOString().slice(0, 10));
+        setAgreementNumber(`AGR-KV-${Date.now().toString().slice(-6)}`);
+        setAgreementDate(new Date().toISOString().slice(0, 10));
+        setSalesStatus('booked');
+        setPaymentPlanType('installment');
+        setAgreementFile(null);
+        setReceiptFile(null);
+        setKycFile(null);
         setFatherName('');
         setDateOfBirth('');
         setGovernmentIdType('aadhaar');
@@ -233,7 +272,18 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
       payload.ownerDetails = {
         propertyIds: selectedPropertyIds,
         ownershipType,
-        ownershipPercentage: Number(ownershipPercentage)
+        ownershipPercentage: Number(ownershipPercentage),
+        salesAllotment: {
+          agreedDealPrice: Number(agreedDealPrice) || 0,
+          bookingAmount: Number(bookingAmount) || 0,
+          paymentMode,
+          transactionReference,
+          allotmentDate: allotmentDate ? new Date(allotmentDate) : new Date(),
+          agreementNumber,
+          agreementDate: agreementDate ? new Date(agreementDate) : new Date(),
+          salesStatus,
+          paymentPlanType
+        }
       };
     } else {
       payload.tenantDetails = {
@@ -264,7 +314,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
       };
     }
 
-    onSubmit(payload);
+    onSubmit(payload, { agreementFile, receiptFile, kycFile });
   };
 
   return (
@@ -440,70 +490,279 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
           </div>
         </div>
 
-        {/* ================= OWNER SPECIFIC DETAILS ================= */}
+        {/* ================= OWNER SPECIFIC DETAILS & SALES ALLOTMENT ================= */}
         {customerType === 'owner' && (
-          <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderColor: 'rgba(168, 85, 247, 0.4)' }}>
-            <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Key size={15} /> Owner Property Holdings & Title Details
-            </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Holdings Panel */}
+            <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderColor: 'rgba(168, 85, 247, 0.4)' }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Key size={15} /> Owner Property Holdings & Title Details
+              </h4>
 
-            {/* Owned Property Multi-Selector */}
-            <div>
-              <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                Allotted / Owned Flat Units *
-              </label>
-              <select
-                multiple
-                value={selectedPropertyIds}
-                onChange={(e) => {
-                  const selected = Array.from(e.target.selectedOptions, (option) => option.value);
-                  setSelectedPropertyIds(selected);
-                }}
-                style={{ width: '100%', minHeight: '90px', padding: '6px', fontSize: '0.82rem' }}
-              >
-                {allFlats.map((f) => {
-                  const flr = f.floor !== undefined && f.floor !== null ? f.floor : 1;
-                  const bld = f.buildingName || 'Tower';
-                  return (
-                    <option key={f._id} value={f._id}>
-                      Flat {f.flatNumber} • Floor {flr} • {bld} [{f.projectId?.projectName || 'Project'}] - {f.bhkType || '2BHK'} ({f.status})
-                    </option>
-                  );
-                })}
-              </select>
-              <span style={{ fontSize: '0.72rem', color: '#414754', marginTop: '2px', display: 'block' }}>
-                Tip: Hold Ctrl (Windows) / Cmd (Mac) to select multiple flats with floor mapping for this owner.
-              </span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              {/* Owned Property Multi-Selector */}
               <div>
-                <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
-                  Ownership Type
+                <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                  Purchased / Allotted Flat Unit(s) *
                 </label>
                 <select
-                  value={ownershipType}
-                  onChange={(e) => setOwnershipType(e.target.value)}
-                  style={{ width: '100%' }}
+                  multiple
+                  value={selectedPropertyIds}
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.selectedOptions, (option) => option.value);
+                    setSelectedPropertyIds(selected);
+                    if (selected.length > 0 && (!agreedDealPrice || agreedDealPrice === '0')) {
+                      const firstFlat = allFlats.find(f => f._id === selected[0]);
+                      if (firstFlat?.basePrice) {
+                        setAgreedDealPrice(String(firstFlat.basePrice));
+                        setBookingAmount(String(Math.round(firstFlat.basePrice * 0.1))); // 10% token default
+                      }
+                    }
+                  }}
+                  style={{ width: '100%', minHeight: '90px', padding: '6px', fontSize: '0.82rem' }}
                 >
-                  <option value="individual">Individual Ownership</option>
-                  <option value="company">Corporate / Company</option>
-                  <option value="joint">Joint Allotment</option>
+                  {allFlats.map((f) => {
+                    const flr = f.floor !== undefined && f.floor !== null ? f.floor : 1;
+                    const bld = f.buildingName || 'Tower';
+                    const prc = f.basePrice ? ` • ₹${(f.basePrice / 100000).toFixed(1)}L` : '';
+                    return (
+                      <option key={f._id} value={f._id}>
+                        Flat {f.flatNumber} • Floor {flr} • {bld} [{f.projectId?.projectName || 'Project'}] - {f.bhkType || '2BHK'}{prc} ({f.status})
+                      </option>
+                    );
+                  })}
                 </select>
+                <span style={{ fontSize: '0.72rem', color: '#414754', marginTop: '2px', display: 'block' }}>
+                  Tip: Select one or more flats. Deal value will auto-populate from the flat inventory price.
+                </span>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
-                  Ownership Percentage (%)
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={ownershipPercentage}
-                  onChange={(e) => setOwnershipPercentage(e.target.value)}
-                  style={{ width: '100%' }}
-                />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
+                    Ownership Type
+                  </label>
+                  <select
+                    value={ownershipType}
+                    onChange={(e) => setOwnershipType(e.target.value)}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="individual">Individual Ownership</option>
+                    <option value="company">Corporate / Company</option>
+                    <option value="joint">Joint Allotment</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
+                    Ownership Percentage (%)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={ownershipPercentage}
+                    onChange={(e) => setOwnershipPercentage(e.target.value)}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sales & Allotment Financials & Document Uploads */}
+            <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderColor: 'rgba(26, 115, 232, 0.4)', background: '#f8fafd' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1a73e8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <DollarSign size={15} /> Sales Allotment & Payment Configuration
+                </h4>
+                <span style={{ fontSize: '0.72rem', background: '#e8f0fe', color: '#1a73e8', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                  Auto-Syncs with Sales Registry
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
+                    Total Agreed Deal Value (₹) *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 4500000"
+                    value={agreedDealPrice}
+                    onChange={(e) => setAgreedDealPrice(e.target.value)}
+                    style={{ width: '100%', fontSize: '0.85rem', fontWeight: '700' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
+                    Booking / Token Amount Paid (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 500000"
+                    value={bookingAmount}
+                    onChange={(e) => setBookingAmount(e.target.value)}
+                    style={{ width: '100%', fontSize: '0.85rem', color: '#137333', fontWeight: '700' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
+                    Balance Outstanding (₹)
+                  </label>
+                  <div style={{ padding: '8px 10px', background: '#ffffff', border: '1px solid #dadce0', borderRadius: '4px', fontSize: '0.85rem', fontWeight: '800', color: '#b06000' }}>
+                    ₹{Math.max(0, (Number(agreedDealPrice) || 0) - (Number(bookingAmount) || 0)).toLocaleString('en-IN')}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Payment Mode</label>
+                  <select
+                    value={paymentMode}
+                    onChange={(e) => setPaymentMode(e.target.value)}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="bank_transfer">Bank Transfer / NEFT / RTGS</option>
+                    <option value="cheque">Cheque</option>
+                    <option value="upi">UPI / Online</option>
+                    <option value="cash">Cash</option>
+                    <option value="card">Debit / Credit Card</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Transaction Ref / Cheque No / UTR</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. UTR987654321 / CHQ-1002"
+                    value={transactionReference}
+                    onChange={(e) => setTransactionReference(e.target.value)}
+                    style={{ width: '100%', fontSize: '0.8rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Allotment Date</label>
+                  <input
+                    type="date"
+                    value={allotmentDate}
+                    onChange={(e) => setAllotmentDate(e.target.value)}
+                    style={{ width: '100%', fontSize: '0.8rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Agreement Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. AGR-KV-0098"
+                    value={agreementNumber}
+                    onChange={(e) => setAgreementNumber(e.target.value)}
+                    style={{ width: '100%', fontSize: '0.8rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Agreement Date</label>
+                  <input
+                    type="date"
+                    value={agreementDate}
+                    onChange={(e) => setAgreementDate(e.target.value)}
+                    style={{ width: '100%', fontSize: '0.8rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Sales Allotment Status</label>
+                  <select
+                    value={salesStatus}
+                    onChange={(e) => setSalesStatus(e.target.value)}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="booked">Booked (Token Received)</option>
+                    <option value="agreement_completed">Agreement Completed</option>
+                    <option value="payment_in_progress">Payment In Progress</option>
+                    <option value="fully_paid">Fully Paid</option>
+                    <option value="possessed">Possession Handed Over</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Document Uploads for Owner */}
+              <div style={{ marginTop: '6px', borderTop: '1px solid #dadce0', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <FileText size={14} color="#1a73e8" /> Upload Allotment Documents & Receipts (AWS S3)
+                </span>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  {/* Agreement Upload */}
+                  <div style={{ background: '#ffffff', padding: '10px', border: '1px solid #dadce0', borderRadius: '6px' }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      📄 Sales Agreement / Allotment Letter
+                    </label>
+                    <input
+                      type="file"
+                      id="ownerAgreementFile"
+                      accept=".pdf,.doc,.docx,image/*"
+                      onChange={(e) => setAgreementFile(e.target.files?.[0] || null)}
+                      style={{ display: 'none' }}
+                    />
+                    <label
+                      htmlFor="ownerAgreementFile"
+                      style={{
+                        padding: '6px 12px',
+                        background: '#f8f9fa',
+                        border: '1px dashed #1a73e8',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        display: 'block',
+                        textAlign: 'center',
+                        color: agreementFile ? '#1a73e8' : '#374151',
+                        fontWeight: agreementFile ? '700' : '500'
+                      }}
+                    >
+                      {agreementFile ? `✓ ${agreementFile.name}` : '+ Choose Agreement File (PDF/Doc)'}
+                    </label>
+                  </div>
+
+                  {/* Payment Receipt Upload */}
+                  <div style={{ background: '#ffffff', padding: '10px', border: '1px solid #dadce0', borderRadius: '6px' }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      🧾 Booking / Payment Receipt
+                    </label>
+                    <input
+                      type="file"
+                      id="ownerReceiptFile"
+                      accept=".pdf,.doc,.docx,image/*"
+                      onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                      style={{ display: 'none' }}
+                    />
+                    <label
+                      htmlFor="ownerReceiptFile"
+                      style={{
+                        padding: '6px 12px',
+                        background: '#f8f9fa',
+                        border: '1px dashed #137333',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        display: 'block',
+                        textAlign: 'center',
+                        color: receiptFile ? '#137333' : '#374151',
+                        fontWeight: receiptFile ? '700' : '500'
+                      }}
+                    >
+                      {receiptFile ? `✓ ${receiptFile.name}` : '+ Choose Receipt / Cheque File'}
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

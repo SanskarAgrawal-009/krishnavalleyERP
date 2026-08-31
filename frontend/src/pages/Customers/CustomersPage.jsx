@@ -104,16 +104,47 @@ export const CustomersPage = () => {
   };
 
   // Customer Actions
-  const handleSaveCustomer = async (data) => {
+  const handleSaveCustomer = async (data, files = {}) => {
     try {
+      let customerRes;
       if (editingCustomer) {
-        await customerService.updateCustomer(editingCustomer._id, data);
+        customerRes = await customerService.updateCustomer(editingCustomer._id, data);
       } else {
-        await customerService.createCustomer(data);
+        customerRes = await customerService.createCustomer(data);
       }
+
+      const custId = editingCustomer ? editingCustomer._id : customerRes?.data?._id;
+
+      if (custId && files) {
+        if (files.agreementFile) {
+          const fd = new FormData();
+          fd.append('documentFile', files.agreementFile);
+          fd.append('documentType', 'sale_deed');
+          fd.append('documentName', files.agreementFile.name || 'Sales Agreement');
+          fd.append('documentNumber', data.ownerDetails?.salesAllotment?.agreementNumber || `AGR-${Date.now().toString().slice(-6)}`);
+          await customerService.uploadCustomerDocument(custId, fd);
+        }
+        if (files.receiptFile) {
+          const fd = new FormData();
+          fd.append('documentFile', files.receiptFile);
+          fd.append('documentType', 'rent_receipt');
+          fd.append('documentName', files.receiptFile.name || 'Payment Receipt');
+          fd.append('documentNumber', `REC-${Date.now().toString().slice(-6)}`);
+          await customerService.uploadCustomerDocument(custId, fd);
+        }
+        if (files.kycFile) {
+          const fd = new FormData();
+          fd.append('documentFile', files.kycFile);
+          fd.append('documentType', 'aadhaar');
+          fd.append('documentName', files.kycFile.name || 'Owner KYC Document');
+          await customerService.uploadCustomerDocument(custId, fd);
+        }
+      }
+
       setIsCreateModalOpen(false);
       setEditingCustomer(null);
       fetchCustomers();
+      alert(editingCustomer ? 'Owner / Customer updated successfully!' : 'Owner registered & Sales Allotment created with documents!');
     } catch (err) {
       alert(err.message);
     }

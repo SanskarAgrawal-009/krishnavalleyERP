@@ -647,88 +647,275 @@ export const CustomerDetailModal = ({
         {/* ================= TAB: PASSBOOK & FINANCIAL LEDGER ================= */}
         {activeTab === 'passbook' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Financial Summary Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
-              <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>ACCOUNT TYPE</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: '800', color: isOwner ? '#8b5cf6' : '#1a73e8', marginTop: '4px', textTransform: 'capitalize' }}>
-                  {customer.customerType} Ledger
+            {isOwner ? (
+              (() => {
+                const sa = customer.ownerDetails?.salesAllotment || {};
+                const liveSa = customer.liveSalesAllotment || {};
+                const totalDealVal = sa.agreedDealPrice || liveSa.paymentPlan?.totalAmount || customer.ownerDetails?.propertyIds?.[0]?.basePrice || 0;
+                const paidVal = sa.bookingAmount || liveSa.paymentPlan?.bookingAmount || 0;
+                const balanceVal = Math.max(0, totalDealVal - paidVal);
+                const sStatus = sa.salesStatus || liveSa.salesStatus || 'booked';
+                const agrNum = sa.agreementNumber || liveSa.agreement?.agreementNumber || 'AGR-KV-Record';
+                const agrDate = sa.agreementDate || liveSa.agreement?.agreementDate || customer.createdAt;
+                
+                // Find agreement document from liveSa or customer.documents
+                const agreementDoc = liveSa.agreement?.documentUrl 
+                  ? { fileUrl: liveSa.agreement.documentUrl, fileName: liveSa.agreement.documentName || 'Sales Agreement' }
+                  : customer.documents?.find(d => ['sale_deed', 'agreement', 'bba', 'allotment_letter', 'registry'].includes(d.documentType));
+
+                // Find receipt documents & records
+                const receipts = liveSa.receipts && liveSa.receipts.length > 0 
+                  ? liveSa.receipts 
+                  : (paidVal > 0 ? [{ receiptNumber: 'REC-BOOKING', amount: paidVal, generatedAt: sa.allotmentDate || customer.createdAt }] : []);
+
+                const receiptDocs = customer.documents?.filter(d => ['rent_receipt', 'payment_receipt', 'booking_receipt', 'receipt'].includes(d.documentType)) || [];
+
+                return (
+                  <>
+                    {/* Financial Summary Cards */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                      <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>TOTAL AGREEMENT VALUE</span>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>
+                          {formatINR(totalDealVal)}
+                        </div>
+                        <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>Agreed Sale Consideration</span>
+                      </div>
+
+                      <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>TOKEN / PAID AMOUNT</span>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
+                          {formatINR(paidVal)}
+                        </div>
+                        <span style={{ fontSize: '0.72rem', color: '#137333', fontWeight: '700' }}>
+                          ✓ {totalDealVal > 0 ? `${Math.round((paidVal / totalDealVal) * 100)}% Paid` : 'Recorded'}
+                        </span>
+                      </div>
+
+                      <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>BALANCE OUTSTANDING</span>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: balanceVal === 0 ? '#137333' : '#b06000', marginTop: '4px' }}>
+                          {formatINR(balanceVal)}
+                        </div>
+                        <span style={{ fontSize: '0.72rem', color: balanceVal === 0 ? '#137333' : '#b06000', fontWeight: '600' }}>
+                          {balanceVal === 0 ? 'Fully Paid' : 'Milestone Schedule Active'}
+                        </span>
+                      </div>
+
+                      <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>ALLOTMENT STATUS</span>
+                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px', textTransform: 'capitalize' }}>
+                          {sStatus.replace(/_/g, ' ')}
+                        </div>
+                        <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>Sales Registry Synced</span>
+                      </div>
+                    </div>
+
+                    {/* Allotment Agreement & Document Box */}
+                    <div style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '8px', padding: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <FileText size={16} color="#1a73e8" />
+                          <span style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>
+                            Sales Agreement & Title Allotment
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '0.75rem', color: '#1a73e8', background: '#e8f0fe', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                          Agreement #{agrNum}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', fontSize: '0.8rem', color: '#374151', background: '#f8f9fa', padding: '12px', borderRadius: '6px' }}>
+                        <div><strong>Allotted Flat:</strong> {customer.ownerDetails?.propertyIds?.map(p => `Flat ${p.flatNumber || p}`).join(', ') || 'Unit Allotted'}</div>
+                        <div><strong>Agreement Date:</strong> {new Date(agrDate).toLocaleDateString('en-IN')}</div>
+                        <div><strong>Payment Mode:</strong> <span style={{ textTransform: 'capitalize' }}>{sa.paymentMode || 'Bank Transfer'}</span> {sa.transactionReference ? `(${sa.transactionReference})` : ''}</div>
+                        <div><strong>Ownership Share:</strong> {customer.ownerDetails?.ownershipPercentage || 100}% ({customer.ownerDetails?.ownershipType || 'Individual'})</div>
+                      </div>
+
+                      {/* Agreement Document Action */}
+                      <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', borderTop: '1px solid #dadce0', paddingTop: '10px' }}>
+                        <div style={{ fontSize: '0.78rem', color: '#4b5563' }}>
+                          {agreementDoc ? (
+                            <span style={{ color: '#137333', fontWeight: '700' }}>✓ Agreement document uploaded & verified in S3 vault</span>
+                          ) : (
+                            <span style={{ color: '#b06000' }}>⚠ Agreement document copy pending upload</span>
+                          )}
+                        </div>
+
+                        {agreementDoc ? (
+                          <a
+                            href={agreementDoc.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-primary"
+                            style={{ padding: '6px 14px', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
+                          >
+                            <ExternalLink size={13} /> View / Download Agreement (PDF)
+                          </a>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab('documents')}
+                            className="btn-secondary"
+                            style={{ padding: '6px 14px', fontSize: '0.78rem' }}
+                          >
+                            + Upload Agreement Document
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Payment Receipts Box */}
+                    <div style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '8px', overflow: 'hidden' }}>
+                      <div style={{ padding: '12px 16px', background: '#f8f9fa', borderBottom: '1px solid #dadce0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <DollarSign size={15} color="#137333" /> Payment Receipts & Deposit Ledger ({receipts.length + receiptDocs.length})
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('documents')}
+                          style={{ background: 'transparent', border: 'none', color: '#1a73e8', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
+                        >
+                          + Upload New Receipt
+                        </button>
+                      </div>
+
+                      <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', fontSize: '0.8rem' }}>
+                          <thead>
+                            <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0' }}>
+                              <th style={{ padding: '10px 14px' }}>Receipt / Ref #</th>
+                              <th style={{ padding: '10px 14px' }}>Date</th>
+                              <th style={{ padding: '10px 14px' }}>Description</th>
+                              <th style={{ padding: '10px 14px' }}>Amount (₹)</th>
+                              <th style={{ padding: '10px 14px' }}>Document</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {receipts.map((rec, idx) => (
+                              <tr key={idx} style={{ borderBottom: '1px solid #f1f3f4' }}>
+                                <td style={{ padding: '10px 14px', fontWeight: '700', color: '#1a73e8' }}>
+                                  {rec.receiptNumber || `REC-${idx + 1}`}
+                                </td>
+                                <td style={{ padding: '10px 14px', color: '#4b5563' }}>
+                                  {new Date(rec.generatedAt || customer.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                </td>
+                                <td style={{ padding: '10px 14px', color: '#111827' }}>
+                                  Booking Token / Property Allotment Inflow
+                                </td>
+                                <td style={{ padding: '10px 14px', fontWeight: '800', color: '#137333' }}>
+                                  {formatINR(rec.amount || paidVal)}
+                                </td>
+                                <td style={{ padding: '10px 14px' }}>
+                                  {rec.documentUrl ? (
+                                    <a
+                                      href={rec.documentUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: '#1a73e8', fontWeight: '700', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                    >
+                                      <ExternalLink size={12} /> View Receipt
+                                    </a>
+                                  ) : (
+                                    <span style={{ color: '#727785', fontSize: '0.74rem' }}>Payment Verified</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+
+                            {receiptDocs.map((rd, idx) => (
+                              <tr key={`doc-${idx}`} style={{ borderBottom: '1px solid #f1f3f4' }}>
+                                <td style={{ padding: '10px 14px', fontWeight: '700', color: '#1a73e8' }}>
+                                  {rd.documentNumber || `REC-S3-${idx + 1}`}
+                                </td>
+                                <td style={{ padding: '10px 14px', color: '#4b5563' }}>
+                                  {new Date(rd.uploadedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                </td>
+                                <td style={{ padding: '10px 14px', color: '#111827' }}>
+                                  {rd.documentName || 'Payment Proof Attachment'}
+                                </td>
+                                <td style={{ padding: '10px 14px', fontWeight: '800', color: '#137333' }}>
+                                  {formatINR(paidVal)}
+                                </td>
+                                <td style={{ padding: '10px 14px' }}>
+                                  <a
+                                    href={rd.fileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: '#1a73e8', fontWeight: '700', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                  >
+                                    <ExternalLink size={12} /> View Receipt
+                                  </a>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()
+            ) : (
+              /* Tenant Passbook Section */
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                  <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>ACCOUNT TYPE</span>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px', textTransform: 'capitalize' }}>
+                      Tenant Ledger
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>KYC Verified</span>
+                  </div>
+
+                  <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>LINKED RESIDENCE</span>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>
+                      Flat {customer.tenantDetails?.rentalDetails?.flatId?.flatNumber || 'Allotted'}
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#137333', fontWeight: '600' }}>Active Lease</span>
+                  </div>
+
+                  <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY RENT</span>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
+                      {formatINR(customer.tenantDetails?.rentalDetails?.monthlyRent || 0)}
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>Due on Day {customer.tenantDetails?.rentalDetails?.rentDueDay || 5}</span>
+                  </div>
+
+                  <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>SECURITY ESCROW</span>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+                      {formatINR(customer.tenantDetails?.rentalDetails?.securityDeposit || 0)}
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>Deposit Held in Escrow</span>
+                  </div>
                 </div>
-                <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>KYC Verified</span>
-              </div>
 
-              <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>LINKED HOLDINGS</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>
-                  {isOwner ? `${customer.ownerDetails?.propertyIds?.length || 0} Units` : '1 Leased Unit'}
-                </div>
-                <span style={{ fontSize: '0.72rem', color: '#137333', fontWeight: '600' }}>Active in MongoDB</span>
-              </div>
+                {/* Tenant Passbook Ledger */}
+                <div style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '8px', overflow: 'hidden' }}>
+                  <div style={{ padding: '12px 16px', background: '#f8f9fa', borderBottom: '1px solid #dadce0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <FileText size={15} color="#1a73e8" /> Tenancy Statement & Rent Breakdown
+                    </span>
+                    <span style={{ fontSize: '0.74rem', color: '#137333', background: '#e6f4ea', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                      ✓ All Dues Settled Up-To-Date
+                    </span>
+                  </div>
 
-              <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>{isOwner ? 'TITLE ALLOTMENT' : 'MONTHLY RENT'}</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
-                  {isOwner ? '100% Freehold' : formatINR(customer.tenantDetails?.rentalDetails?.monthlyRent || 0)}
-                </div>
-                <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>{isOwner ? 'Registry Verified' : `Due on Day ${customer.tenantDetails?.rentalDetails?.rentDueDay || 5}`}</span>
-              </div>
-
-              <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>{isOwner ? 'MUTATION STATUS' : 'SECURITY ESCROW'}</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
-                  {isOwner ? 'Recorded' : formatINR(customer.tenantDetails?.rentalDetails?.securityDeposit || 0)}
-                </div>
-                <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>{isOwner ? 'Govt Municipal' : 'Escrow Deposit Held'}</span>
-              </div>
-            </div>
-
-            {/* Passbook Transactions / Ledger Table */}
-            <div style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '8px', overflow: 'hidden' }}>
-              <div style={{ padding: '12px 16px', background: '#f8f9fa', borderBottom: '1px solid #dadce0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <FileText size={15} color="#1a73e8" /> Passbook Statement & Ledger Breakdown
-                </span>
-                <span style={{ fontSize: '0.74rem', color: '#137333', background: '#e6f4ea', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
-                  ✓ All Dues Settled Up-To-Date
-                </span>
-              </div>
-
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', fontSize: '0.8rem' }}>
-                  <thead>
-                    <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0' }}>
-                      <th style={{ padding: '10px 14px' }}>Date</th>
-                      <th style={{ padding: '10px 14px' }}>Transaction / Description</th>
-                      <th style={{ padding: '10px 14px' }}>Type</th>
-                      <th style={{ padding: '10px 14px' }}>Amount (₹)</th>
-                      <th style={{ padding: '10px 14px' }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {isOwner ? (
-                      (customer.ownerDetails?.propertyIds || []).map((flat, idx) => (
-                        <tr key={flat._id || idx} style={{ borderBottom: '1px solid #f1f3f4' }}>
-                          <td style={{ padding: '10px 14px', color: '#4b5563' }}>
-                            {new Date(customer.createdAt || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                          </td>
-                          <td style={{ padding: '10px 14px', fontWeight: '700', color: '#111827' }}>
-                            Freehold Unit Allotment: Flat {flat.flatNumber || 'Unit'} ({flat.projectId?.projectName || 'Krishna Valley'})
-                          </td>
-                          <td style={{ padding: '10px 14px', color: '#8b5cf6', fontWeight: '700' }}>
-                            Ownership Title
-                          </td>
-                          <td style={{ padding: '10px 14px', fontWeight: '800', color: '#137333' }}>
-                            {formatINR(flat.basePrice || 4500000)}
-                          </td>
-                          <td style={{ padding: '10px 14px' }}>
-                            <span style={{ fontSize: '0.72rem', background: '#e6f4ea', color: '#137333', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
-                              Allotted
-                            </span>
-                          </td>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', fontSize: '0.8rem' }}>
+                      <thead>
+                        <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0' }}>
+                          <th style={{ padding: '10px 14px' }}>Date</th>
+                          <th style={{ padding: '10px 14px' }}>Transaction / Description</th>
+                          <th style={{ padding: '10px 14px' }}>Type</th>
+                          <th style={{ padding: '10px 14px' }}>Amount (₹)</th>
+                          <th style={{ padding: '10px 14px' }}>Status</th>
                         </tr>
-                      ))
-                    ) : (
-                      <>
+                      </thead>
+                      <tbody>
                         <tr style={{ borderBottom: '1px solid #f1f3f4' }}>
                           <td style={{ padding: '10px 14px', color: '#4b5563' }}>
                             {new Date(customer.createdAt || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -767,12 +954,12 @@ export const CustomerDetailModal = ({
                             </span>
                           </td>
                         </tr>
-                      </>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 
