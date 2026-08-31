@@ -2,16 +2,13 @@
  * API Fetch wrapper for Krishna Valley ERP
  */
 
-export const RAW_API_URL = import.meta.env.VITE_API_URL || '';
-export const BASE_URL = RAW_API_URL
-  ? (RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/$/, '')}/api`)
-  : '/api';
+const defaultBackend = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:5000'
+  : 'http://54.83.115.193';
 
-export const BACKEND_URL = RAW_API_URL
-  ? RAW_API_URL.replace(/\/api$/, '').replace(/\/$/, '')
-  : (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? 'http://localhost:5000'
-      : 'http://54.83.115.193');
+export const RAW_API_URL = import.meta.env.VITE_API_URL || defaultBackend;
+export const BASE_URL = RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/$/, '')}/api`;
+export const BACKEND_URL = RAW_API_URL.replace(/\/api$/, '').replace(/\/$/, '');
 
 /**
  * Resolves any file path (S3 or local uploads) to an absolute URL

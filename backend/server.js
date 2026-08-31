@@ -99,8 +99,8 @@ app.use('/uploads', (req, res) => {
   return res.send(svg.trim());
 });
 
-// Base Health Check Route
-app.get('/api/health', (req, res) => {
+// Base Health Check Routes
+app.get(['/health', '/api/health'], (req, res) => {
   res.json({
     status: 'online',
     system: 'Krishna Valley ERP Backend',
