@@ -98,7 +98,7 @@ export const getOwnerByFlat = async (req, res) => {
 // Create a new Rental Contract (with optional Rent-Back & Multi-Flat Support)
 export const createRentalContract = async (req, res) => {
   try {
-    const {
+    let {
       projectId,
       buildingId,
       flatId,
@@ -122,10 +122,29 @@ export const createRentalContract = async (req, res) => {
     const primaryFlatId = flatId || allFlatIds[0];
     const primaryOwnerId = ownerId || (Array.isArray(leasedUnits) && leasedUnits[0]?.ownerId) || null;
 
-    if (!projectId || allFlatIds.length === 0 || !primaryOwnerId || !tenantId) {
+    if (allFlatIds.length === 0 || !primaryOwnerId || !tenantId) {
       return res.status(400).json({
         success: false,
-        message: 'projectId, at least one flat, owner, and tenant are required'
+        message: 'At least one flat, owner, and tenant are required'
+      });
+    }
+
+    // Auto-resolve buildingId and projectId from primary flat if not provided
+    let resolvedBuildingId = buildingId;
+    let resolvedProjectId = projectId;
+
+    if (primaryFlatId && (!resolvedBuildingId || !resolvedProjectId)) {
+      const flatDoc = await Flat.findById(primaryFlatId).select('buildingId projectId');
+      if (flatDoc) {
+        if (!resolvedBuildingId && flatDoc.buildingId) resolvedBuildingId = flatDoc.buildingId;
+        if (!resolvedProjectId && flatDoc.projectId) resolvedProjectId = flatDoc.projectId;
+      }
+    }
+
+    if (!resolvedProjectId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Project ID is required and could not be resolved from flat unit'
       });
     }
 
@@ -149,9 +168,12 @@ export const createRentalContract = async (req, res) => {
       else contractStatus = 'tenant_pending';
     }
 
+    const isRentBackEnabled = Boolean(rentBack?.enabled);
+    const uniqueSuffix = `${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+
     const rentalContract = new RentalManagement({
-      projectId,
-      buildingId: buildingId || (allFlatIds.length > 0 ? undefined : buildingId),
+      projectId: resolvedProjectId,
+      buildingId: resolvedBuildingId,
       flatId: primaryFlatId,
       flatIds: allFlatIds,
       leasedUnits: Array.isArray(leasedUnits) ? leasedUnits : [],
@@ -160,8 +182,8 @@ export const createRentalContract = async (req, res) => {
       ownerId: primaryOwnerId,
       tenantId,
       rentBack: {
-        enabled: rentBack?.enabled || false,
-        agreementNumber: rentBack?.agreementNumber || `RB-${Date.now().toString().slice(-6)}`,
+        enabled: isRentBackEnabled,
+        agreementNumber: isRentBackEnabled ? (rentBack?.agreementNumber || `RB-${uniqueSuffix}`) : undefined,
         startDate: rentBack?.startDate ? new Date(rentBack.startDate) : null,
         endDate: rentBack?.endDate ? new Date(rentBack.endDate) : null,
         monthlyRent: Number(rentBack?.monthlyRent) || 0,
@@ -177,7 +199,7 @@ export const createRentalContract = async (req, res) => {
         moveOutDate: allocation?.moveOutDate ? new Date(allocation.moveOutDate) : null
       },
       tenantAgreement: {
-        agreementNumber: tenantAgreement?.agreementNumber || `TA-${Date.now().toString().slice(-6)}`,
+        agreementNumber: tenantAgreement?.agreementNumber || `TA-${uniqueSuffix}`,
         startDate: tenantAgreement?.startDate ? new Date(tenantAgreement.startDate) : null,
         endDate: tenantAgreement?.endDate ? new Date(tenantAgreement.endDate) : null,
         monthlyRent: Number(tenantAgreement?.monthlyRent) || 0,
@@ -246,18 +268,80 @@ export const createRentalContract = async (req, res) => {
   }
 };
 
+// Full Update Rental Contract
+export const updateRentalContract = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const contract = await RentalManagement.findById(id);
+    if (!contract) return res.status(404).json({ success: false, message: 'Rental contract not found' });
+
+    const updateData = req.body;
+
+    // If tenant agreement or rent back updated, merge safely
+    if (updateData.tenantAgreement) {
+      contract.tenantAgreement = {
+        ...contract.tenantAgreement.toObject(),
+        ...updateData.tenantAgreement
+      };
+    }
+
+    if (updateData.rentBack) {
+      contract.rentBack = {
+        ...contract.rentBack.toObject(),
+        ...updateData.rentBack
+      };
+    }
+
+    if (updateData.allocation) {
+      contract.allocation = {
+        ...contract.allocation.toObject(),
+        ...updateData.allocation
+      };
+    }
+
+    if (updateData.securityDeposit) {
+      contract.securityDeposit = {
+        ...contract.securityDeposit.toObject(),
+        ...updateData.securityDeposit
+      };
+    }
+
+    if (updateData.status) contract.status = updateData.status;
+    if (updateData.remarks !== undefined) contract.remarks = updateData.remarks;
+    if (updateData.ownerId) contract.ownerId = updateData.ownerId;
+    if (updateData.tenantId) contract.tenantId = updateData.tenantId;
+
+    await contract.save();
+
+    const populated = await RentalManagement.findById(contract._id)
+      .populate('projectId', 'projectName projectCode')
+      .populate('flatId', 'flatNumber status takenForRental')
+      .populate('flatIds', 'flatNumber status takenForRental')
+      .populate('leasedUnits.flatId', 'flatNumber status')
+      .populate('leasedUnits.ownerId', 'name mobileNo email')
+      .populate('ownerId', 'name mobileNo email address')
+      .populate('tenantId', 'name mobileNo email tenantDetails');
+
+    return res.json({ success: true, data: populated });
+  } catch (error) {
+    console.error('Error updating rental contract:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Get All Rental Contracts with filtering & search
 export const getRentalContracts = async (req, res) => {
   try {
-    const { search, status, rentBackEnabled, allocationStatus, projectId } = req.query;
+    const { search, status, rentBack, rentBackEnabled, allocationStatus, projectId } = req.query;
     let filter = {};
 
     if (status) {
       filter.status = status;
     }
 
-    if (rentBackEnabled !== undefined && rentBackEnabled !== '') {
-      filter['rentBack.enabled'] = rentBackEnabled === 'true' || rentBackEnabled === true;
+    const isRentBack = rentBack !== undefined ? rentBack : rentBackEnabled;
+    if (isRentBack !== undefined && isRentBack !== '') {
+      filter['rentBack.enabled'] = isRentBack === 'true' || isRentBack === true;
     }
 
     if (allocationStatus) {
@@ -282,7 +366,7 @@ export const getRentalContracts = async (req, res) => {
       .populate('flatIds', 'flatNumber status takenForRental')
       .populate('leasedUnits.flatId', 'flatNumber status')
       .populate('leasedUnits.ownerId', 'name mobileNo email')
-      .populate('ownerId', 'name mobileNo email')
+      .populate('ownerId', 'name mobileNo email address')
       .populate('tenantId', 'name mobileNo email tenantDetails')
       .sort({ updatedAt: -1 });
 

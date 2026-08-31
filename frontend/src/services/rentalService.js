@@ -12,6 +12,11 @@ export const rentalService = {
   },
 
   getRentalById: (id) => request(`/rentals/${id}`),
+
+  updateRental: (id, data) => request(`/rentals/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
   
   getOwnerByFlat: (flatId) => request(`/rentals/flat-owner/${flatId}`),
 

@@ -15,7 +15,7 @@ const RentalManagementSchema = new mongoose.Schema(
 
     buildingId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      required: false,
       index: true,
     },
 

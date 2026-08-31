@@ -40,20 +40,11 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedBuildingId, setSelectedBuildingId] = useState('');
   const [selectedFlatId, setSelectedFlatId] = useState('');
+  // Auto-Fetch & Quick-Add Owner State for Single Mode
   const [selectedOwnerId, setSelectedOwnerId] = useState('');
-
-  // Multi-Flat Selection Bundle: [{ flatId, flatNumber, projectId, projectName, buildingId, ownerId, ownerName, ownerPhone, monthlyRentBack, monthlyTenantRent, securityDeposit }]
-  const [selectedUnits, setSelectedUnits] = useState([]);
-  const [unitToAddFlatId, setUnitToAddFlatId] = useState('');
-  const [isAddingUnit, setIsAddingUnit] = useState(false);
-
-  // Selected Tenant (Client / Corporate)
-  const [selectedTenantId, setSelectedTenantId] = useState('');
-  const [isAddingNewTenant, setIsAddingNewTenant] = useState(false);
-  const [newTenantName, setNewTenantName] = useState('');
-  const [newTenantPhone, setNewTenantPhone] = useState('');
-
-  // Auto-Fetch Owner State for Single Mode
+  const [isAddingNewOwner, setIsAddingNewOwner] = useState(false);
+  const [newOwnerName, setNewOwnerName] = useState('');
+  const [newOwnerPhone, setNewOwnerPhone] = useState('');
   const [isFetchingOwner, setIsFetchingOwner] = useState(false);
   const [fetchedOwnerInfo, setFetchedOwnerInfo] = useState(null);
   const [ownerFetchStatus, setOwnerFetchStatus] = useState(''); // 'found_local' | 'found_api' | 'found_sales' | 'not_found' | 'error'
@@ -185,8 +176,14 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
         setSelectedBuildingId('');
         setSelectedFlatId('');
         setSelectedOwnerId('');
+        setIsAddingNewOwner(false);
+        setNewOwnerName('');
+        setNewOwnerPhone('');
         setSelectedUnits([]);
         setSelectedTenantId('');
+        setIsAddingNewTenant(false);
+        setNewTenantName('');
+        setNewTenantPhone('');
         setFetchedOwnerInfo(null);
         setOwnerFetchStatus('');
         setRentBackForm({
@@ -397,8 +394,39 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
+    let ownerIdToUse = selectedOwnerId;
     let tenantIdToUse = selectedTenantId;
 
+    // 1. Auto-create Owner if quick-add was used
+    if (isAddingNewOwner) {
+      if (!newOwnerName.trim() || !newOwnerPhone.trim()) {
+        alert('Please enter both Flat Owner Name and Mobile Number');
+        return;
+      }
+      try {
+        const createOwnerRes = await customerService.createCustomer({
+          name: newOwnerName.trim(),
+          mobileNo: newOwnerPhone.trim(),
+          customerType: 'owner',
+          ownerDetails: {
+            propertyIds: selectedFlatId ? [selectedFlatId] : [],
+            ownershipType: 'individual',
+            ownershipPercentage: 100
+          }
+        });
+        if (createOwnerRes.data?._id) {
+          ownerIdToUse = createOwnerRes.data._id;
+          setSelectedOwnerId(ownerIdToUse);
+          setOwners((prev) => [createOwnerRes.data, ...prev]);
+        }
+      } catch (err) {
+        console.error('Error creating new owner:', err);
+        alert(err.message || 'Failed to auto-register new owner');
+        return;
+      }
+    }
+
+    // 2. Auto-create Tenant if quick-add was used
     if (isAddingNewTenant) {
       if (!newTenantName.trim() || !newTenantPhone.trim()) {
         alert('Please enter both Tenant Name and Mobile Number');
@@ -445,12 +473,13 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
       }
 
       const primaryFlatId = selectedUnits[0].flatId;
-      const primaryOwnerId = selectedUnits[0].ownerId || selectedOwnerId || (owners.length > 0 ? owners[0]._id : null);
+      const primaryOwnerId = selectedUnits[0].ownerId || ownerIdToUse || (owners.length > 0 ? owners[0]._id : null);
       const primaryProjectId = selectedUnits[0].projectId || selectedProjectId || (projects.length > 0 ? projects[0]._id : null);
+      const primaryBuildingId = selectedUnits[0].buildingId || selectedBuildingId;
 
       payload = {
         projectId: primaryProjectId,
-        buildingId: selectedUnits[0].buildingId || selectedBuildingId,
+        buildingId: primaryBuildingId,
         flatId: primaryFlatId,
         flatIds: selectedUnits.map((u) => u.flatId),
         leasedUnits: selectedUnits.map((u) => ({
@@ -495,21 +524,25 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
         remarks
       };
     } else {
-      if (!selectedFlatId || !selectedOwnerId) {
+      if (!selectedFlatId || !ownerIdToUse) {
         alert('Please select a Flat and Flat Owner');
         return;
       }
 
+      const matchedFlat = flats.find((f) => f._id === selectedFlatId);
+      const resolvedProjectId = selectedProjectId || matchedFlat?.projectId?._id || matchedFlat?.projectId;
+      const resolvedBuildingId = selectedBuildingId || matchedFlat?.buildingId;
+
       payload = {
-        projectId: selectedProjectId,
-        buildingId: selectedBuildingId,
+        projectId: resolvedProjectId,
+        buildingId: resolvedBuildingId,
         flatId: selectedFlatId,
         flatIds: [selectedFlatId],
         leasedUnits: [
           {
             flatId: selectedFlatId,
-            ownerId: selectedOwnerId,
-            flatNumber: flats.find((f) => f._id === selectedFlatId)?.flatNumber || 'Unit',
+            ownerId: ownerIdToUse,
+            flatNumber: matchedFlat?.flatNumber || 'Unit',
             monthlyRentBack: Number(rentBackForm.monthlyRent) || 0,
             monthlyTenantRent: Number(tenantAgreementForm.monthlyRent) || 0,
             depositAmount: Number(ownerDepositReq) || 0
@@ -517,7 +550,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
         ],
         isMultiUnit: false,
         totalUnitsCount: 1,
-        ownerId: selectedOwnerId,
+        ownerId: ownerIdToUse,
         tenantId: tenantIdToUse,
         rentBack: {
           enabled: rentBackEnabled,
@@ -870,34 +903,73 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
                   </select>
                 </div>
 
-                {/* Owner Picker */}
+                {/* Owner Picker with Quick-Add Support */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
                     <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block' }}>
                       Flat Owner (Title Holder) *
                     </label>
-                    {isFetchingOwner && (
-                      <span style={{ fontSize: '0.7rem', color: '#1a73e8', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: '700' }}>
-                        <Loader2 size={12} className="animate-spin" /> Auto-fetching...
-                      </span>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {isFetchingOwner && (
+                        <span style={{ fontSize: '0.7rem', color: '#1a73e8', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: '700' }}>
+                          <Loader2 size={12} className="animate-spin" /> Auto-fetching...
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingNewOwner(!isAddingNewOwner)}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#1a73e8',
+                          fontSize: '0.72rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                      >
+                        {isAddingNewOwner ? '← Select Existing' : '+ Enter New Owner'}
+                      </button>
+                    </div>
                   </div>
-                  <select
-                    required
-                    value={selectedOwnerId}
-                    onChange={(e) => handleOwnerChange(e.target.value)}
-                    style={{
-                      width: '100%',
-                      borderColor: (ownerFetchStatus === 'found_api' || ownerFetchStatus === 'found_local' || ownerFetchStatus === 'found_sales') ? '#10b981' : undefined
-                    }}
-                  >
-                    <option value="">-- Choose Owner --</option>
-                    {owners.map((o) => (
-                      <option key={o._id} value={o._id}>
-                        {o.name} ({o.mobileNo})
-                      </option>
-                    ))}
-                  </select>
+
+                  {!isAddingNewOwner ? (
+                    <select
+                      required={!isAddingNewOwner}
+                      value={selectedOwnerId}
+                      onChange={(e) => handleOwnerChange(e.target.value)}
+                      style={{
+                        width: '100%',
+                        borderColor: (ownerFetchStatus === 'found_api' || ownerFetchStatus === 'found_local' || ownerFetchStatus === 'found_sales') ? '#10b981' : undefined
+                      }}
+                    >
+                      <option value="">-- Choose Owner --</option>
+                      {owners.map((o) => (
+                        <option key={o._id} value={o._id}>
+                          {o.name} ({o.mobileNo})
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '6px' }}>
+                      <input
+                        type="text"
+                        placeholder="Owner Name (e.g. Rajesh Gupta)"
+                        value={newOwnerName}
+                        onChange={(e) => setNewOwnerName(e.target.value)}
+                        style={{ padding: '6px 8px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid #1a73e8' }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Mobile (e.g. 9876543210)"
+                        value={newOwnerPhone}
+                        onChange={(e) => setNewOwnerPhone(e.target.value)}
+                        style={{ padding: '6px 8px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid #1a73e8' }}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Tenant Picker with Quick-Add Support */}

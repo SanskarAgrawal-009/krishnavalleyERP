@@ -4,6 +4,7 @@ import {
   createRentalContract,
   getRentalContracts,
   getRentalContractById,
+  updateRentalContract,
   getOwnerByFlat,
   updateRentBack,
   updateTenantAgreement,
@@ -36,6 +37,7 @@ router.get('/flat-owner/:flatId', authorizePermission('rentals:view'), getOwnerB
 router.post('/', authorizePermission('rentals:create', 'rentals:manage'), createRentalContract);
 router.get('/', authorizePermission('rentals:view'), getRentalContracts);
 router.get('/:id', authorizePermission('rentals:view'), getRentalContractById);
+router.put('/:id', authorizePermission('rentals:manage'), updateRentalContract);
 router.delete('/:id', authorizePermission('rentals:manage'), deleteRentalContract);
 
 // Lifecycle Operations
