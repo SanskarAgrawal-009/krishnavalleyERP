@@ -4,7 +4,7 @@
 
 const defaultBackend = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:5000'
-  : 'http://54.83.115.193';
+  : 'https://54-83-115-193.sslip.io';
 
 export const RAW_API_URL = import.meta.env.VITE_API_URL || defaultBackend;
 export const BASE_URL = RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/$/, '')}/api`;
