@@ -192,7 +192,6 @@ const NAV_ITEMS = [
     label: 'Notifications & Telephony',
     icon: Bell,
     badge: 'Hub',
-    frozen: false,
     permission: 'notifications:view',
     subItems: [
       { path: '/notifications?tab=templates', label: 'Reminder Templates', icon: FileText },
@@ -210,7 +209,6 @@ const NAV_ITEMS = [
     icon: BarChart3,
     highlight: true,
     badge: 'BI',
-    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for future updates]
     permission: 'reports:view',
     subItems: [
       { path: '/reports/sales', label: 'Sales Report' },
@@ -229,7 +227,6 @@ const NAV_ITEMS = [
     icon: ShieldCheck,
     highlight: false,
     badge: 'Admin',
-    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for laptop]
     permission: 'users:view',
     subItems: [
       { path: '/access-control?tab=users', label: 'User Directory', icon: Users },
@@ -239,10 +236,9 @@ const NAV_ITEMS = [
   },
   {
     path: '/settings',
-    label: '14. Settings',
+    label: 'Settings',
     icon: Settings,
     badge: 'Core',
-    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for laptop]
     permission: 'settings:view',
     subItems: [
       { path: '/settings?tab=company', label: 'Company Profile', icon: Building2 },
@@ -257,10 +253,9 @@ const NAV_ITEMS = [
   },
   {
     path: '/audit-logs',
-    label: '15. Audit Logs',
+    label: 'Audit Logs',
     icon: ShieldCheck,
     badge: 'Sec',
-    frozen: true, // [FROZEN FOR PRODUCTION DEPLOYMENT - Kept offline for laptop]
     permission: 'users:view',
     subItems: [
       { path: '/audit-logs?tab=activity', label: 'Activity Logs (CRUD)', icon: FileText },
@@ -359,11 +354,6 @@ export const AppLayout = () => {
   );
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
-    // 0. Frozen modules: removed from live production deployment, retained in project offline for future updates
-    if (item.frozen && !isOfflineDev) {
-      return false;
-    }
-
     // 1. Agent Portal is exclusively for logged-in Agents
     if (item.path === '/agent-portal') {
       return isAgentUser;
@@ -1108,29 +1098,27 @@ export const AppLayout = () => {
           {/* Quick Footer Links */}
           {(!isCollapsed || isMobile) ? (
             <div style={{ display: 'flex', gap: '6px', flexDirection: 'column' }}>
-              {isOfflineDev && (
-                <NavLink
-                  to="/notifications"
-                  onClick={() => isMobile && setMobileMenuOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '6px 10px',
-                    borderRadius: '6px',
-                    color: 'var(--on-surface-variant)',
-                    textDecoration: 'none',
-                    fontSize: '0.8rem',
-                    fontWeight: '500'
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                >
-                  <HelpCircle size={16} /> Help & Documentation
-                </NavLink>
-              )}
+              <NavLink
+                to="/notifications"
+                onClick={() => isMobile && setMobileMenuOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  color: 'var(--on-surface-variant)',
+                  textDecoration: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: '500'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                <HelpCircle size={16} /> Help & Documentation
+              </NavLink>
 
-              {isOfflineDev && (
+              {(isSuperAdmin || hasPermission('settings:view')) && (
                 <NavLink
                   to="/settings"
                   onClick={() => isMobile && setMobileMenuOpen(false)}
@@ -1154,28 +1142,26 @@ export const AppLayout = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
-              {isOfflineDev && (
-                <button
-                  onClick={() => navigate('/notifications')}
-                  title="Help & Documentation"
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '6px',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: 'var(--on-surface-variant)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <HelpCircle size={17} />
-                </button>
-              )}
+              <button
+                onClick={() => navigate('/notifications')}
+                title="Help & Documentation"
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '6px',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  color: 'var(--on-surface-variant)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+              >
+                <HelpCircle size={17} />
+              </button>
 
-              {isOfflineDev && (
+              {(isSuperAdmin || hasPermission('settings:view')) && (
                 <button
                   onClick={() => navigate('/settings')}
                   title="System Settings"
@@ -1372,11 +1358,11 @@ export const AppLayout = () => {
               />
             </div>
 
-            {/* Reports & Analytics shortcut (Offline development only) */}
-            {isOfflineDev && (
+            {/* Reports & Analytics shortcut */}
+            {(isSuperAdmin || hasPermission('reports:view')) && (
               <button
                 onClick={() => navigate('/reports')}
-                title="Reports & Analytics Hub (Offline Development)"
+                title="Reports & Analytics Hub"
                 style={{
                   width: '38px',
                   height: '38px',
@@ -1503,8 +1489,8 @@ export const AppLayout = () => {
                     </span>
                   </div>
 
-                  {/* Access Control shortcut (if authorized & offline dev) */}
-                  {isOfflineDev && (isSuperAdmin || hasPermission('users:view')) && (
+                  {/* Access Control shortcut (if authorized) */}
+                  {(isSuperAdmin || hasPermission('users:view')) && (
                     <button
                       onClick={() => {
                         setProfileDropdownOpen(false);
