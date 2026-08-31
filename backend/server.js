@@ -48,6 +48,8 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://localhost:5000',
   'http://127.0.0.1:5000',
+  'https://main.djgpkgdb3xyow.amplifyapp.com',
+  'http://54.83.115.193',
   process.env.CLIENT_URL
 ].filter(Boolean);
 
@@ -57,6 +59,7 @@ app.use(cors({
       !origin ||
       allowedOrigins.includes(origin) ||
       origin.endsWith('.vercel.app') ||
+      origin.endsWith('.amplifyapp.com') ||
       origin.includes('localhost') ||
       origin.includes('127.0.0.1')
     ) {
