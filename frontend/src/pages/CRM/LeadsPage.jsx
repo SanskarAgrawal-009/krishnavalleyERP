@@ -210,7 +210,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
   const handleConvertLead = async (data) => {
     try {
       const res = await salesService.convertLead(data);
-      alert(`Lead "${leadToConvert?.name}" successfully converted to Sales!`);
+      alert(`Lead "${leadToConvert?.name}" successfully converted and shifted to Sales & Allotment!`);
       setIsConvertModalOpen(false);
       setLeadToConvert(null);
       await fetchLeads();
@@ -249,13 +249,14 @@ export const LeadsPage = ({ onNavigateToSales }) => {
   };
 
   // Compute CRM Top Metrics
-  const totalLeads = leads.length;
+  const totalLeads = leads.filter(l => statusFilter === 'converted' || l.status !== 'converted').length;
   let totalFollowUps = 0;
   let pendingFollowUps = 0;
   let siteVisitsCount = 0;
   let assignedFlatsCount = 0;
 
   leads.forEach((l) => {
+    if (statusFilter !== 'converted' && l.status === 'converted') return;
     if (l.assignedFlat) assignedFlatsCount++;
     (l.followUps || []).forEach((fu) => {
       totalFollowUps++;
@@ -264,8 +265,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
     });
   });
 
-  // Filter leads based on interactive quickFilter
+  // Filter leads based on interactive quickFilter (excluding converted leads by default)
   const displayedLeads = leads.filter((lead) => {
+    if (statusFilter !== 'converted' && lead.status === 'converted') return false;
     if (quickFilter === 'assigned') return Boolean(lead.assignedFlat);
     if (quickFilter === 'unassigned') return !lead.assignedFlat;
     if (quickFilter === 'pending') {

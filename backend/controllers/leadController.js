@@ -1,6 +1,8 @@
 import Lead from '../models/Lead.js';
 import Flat from '../models/Flat.js';
 import User from '../models/User.js';
+import Project from '../models/Project.js';
+import SalesLead from '../models/SalesLead.js';
 import CommissionLedger from '../models/CommissionLedger.js';
 import SystemSettings from '../models/SystemSettings.js';
 import { recordAuditEvent } from '../middleware/auditMiddleware.js';
@@ -245,8 +247,11 @@ export const getLeads = async (req, res) => {
       });
     }
 
+    // Shift converted leads to Sales & Allotment: exclude converted leads by default from CRM
     if (status) {
       queryConditions.push({ status });
+    } else {
+      queryConditions.push({ status: { $ne: 'converted' } });
     }
 
     if (mode) {
@@ -416,6 +421,51 @@ export const updateLead = async (req, res) => {
       // Trigger commission credit if site visit is marked completed
       if ((status === 'site_visit_completed' || status === 'matured') && lead.agentId) {
         await processAgentCommission(lead, req.user?.id);
+      }
+
+      // Auto-shift converted lead to Sales & Allotment
+      if (status === 'converted') {
+        try {
+          const existingSalesLead = await SalesLead.findOne({ leadId: lead._id });
+          if (!existingSalesLead && lead.assignedFlat) {
+            const flatDoc = await Flat.findById(lead.assignedFlat);
+            if (flatDoc) {
+              const dealPrice = Number(lead.budget) || flatDoc.basePrice || 4500000;
+              await SalesLead.create({
+                leadId: lead._id,
+                name: lead.name,
+                mobileNo: lead.mobileNo,
+                email: lead.email || '',
+                projectId: flatDoc.projectId,
+                buildingId: flatDoc.buildingId,
+                flatId: lead.assignedFlat,
+                salesStatus: 'converted',
+                booking: {
+                  isBooked: false,
+                  bookingDate: new Date(),
+                  bookingAmount: 0,
+                  bookingStatus: 'pending'
+                },
+                agreement: {
+                  required: true,
+                  uploaded: false,
+                  verificationStatus: 'pending'
+                },
+                paymentPlan: {
+                  type: 'installment',
+                  totalAmount: dealPrice,
+                  bookingAmount: 0,
+                  remainingAmount: dealPrice,
+                  numberOfInstallments: 0
+                }
+              });
+              await Flat.findByIdAndUpdate(lead.assignedFlat, { status: 'hold' });
+              console.log(`[Sales Allotment] Auto-shifted converted lead "${lead.name}" to SalesLead`);
+            }
+          }
+        } catch (salesShiftErr) {
+          console.error('Error shifting converted lead to SalesLead:', salesShiftErr);
+        }
       }
     }
 
