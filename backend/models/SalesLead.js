@@ -39,6 +39,17 @@ const SalesLeadSchema = new mongoose.Schema(
       lowercase: true,
     },
 
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      index: true,
+    },
+
+    convertedAt: {
+      type: Date,
+      default: Date.now,
+    },
+
     // =========================
     // PROPERTY DETAILS
     // =========================

@@ -1801,6 +1801,7 @@ export const AgentPortalPage = () => {
                     <option value="1BHK Studio Apartment">1BHK Studio Apartment</option>
                     <option value="2BHK Apartment">2BHK Apartment</option>
                     <option value="3BHK Premium Suite">3BHK Premium Suite</option>
+                    <option value="Service Apartment">Service Apartment</option>
                     <option value="Luxury Villa / Duplex">Luxury Villa / Duplex</option>
                     <option value="Commercial Shop / Retail">Commercial Shop / Retail</option>
                   </select>

@@ -6,6 +6,7 @@ import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { ModuleMessagingCenter } from '../../components/notifications/ModuleMessagingCenter.jsx';
 import { QuickMessageModal } from '../../components/notifications/QuickMessageModal.jsx';
 import { ConvertLeadModal } from '../../components/sales/ConvertLeadModal.jsx';
+import { ImportPaymentsModal } from '../../components/sales/ImportPaymentsModal.jsx';
 
 import {
   ShoppingBag,
@@ -26,7 +27,9 @@ import {
   Building2,
   Plus,
   Send,
-  Zap
+  Zap,
+  FileSpreadsheet,
+  Trash2
 } from 'lucide-react';
 
 export const SalesPage = () => {
@@ -53,10 +56,25 @@ export const SalesPage = () => {
   // Active Sales Lead Detail Modal
   const [selectedSalesLead, setSelectedSalesLead] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+
+  const handleDeleteSalesLead = async (sl) => {
+    if (window.confirm(`Are you sure you want to delete sales allotment for "${sl.name}"? This will release the unit back to available inventory.`)) {
+      try {
+        const res = await salesService.deleteSalesLead(sl._id);
+        fetchSalesLeads();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  };
 
   // Quick Message Modal
   const [quickMsgLead, setQuickMsgLead] = useState(null);
   const [isQuickMsgModalOpen, setIsQuickMsgModalOpen] = useState(false);
+
+  // Import Previous Payments Modal
+  const [isImportPaymentsModalOpen, setIsImportPaymentsModalOpen] = useState(false);
 
   // New Booking Modal State
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -281,6 +299,28 @@ export const SalesPage = () => {
 
         {/* Right Action & View Switcher Ribbon */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setIsImportPaymentsModalOpen(true)}
+            style={{
+              padding: '9px 16px',
+              background: '#16a34a',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '6px',
+              fontWeight: '700',
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 2px 4px rgba(22, 163, 74, 0.25)',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <FileSpreadsheet size={16} /> Import Previous Payments Excel
+          </button>
+
           <button
             type="button"
             onClick={() => setIsBookingModalOpen(true)}
@@ -549,15 +589,23 @@ export const SalesPage = () => {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '16px' }}>
               {salesLeads.map((sl) => {
-                const cleanPhone = sl.mobileNo ? sl.mobileNo.replace(/[^0-9]/g, '') : '';
-                const totalDeal = sl.paymentPlan?.totalAmount || 0;
-                const tokenAmount = sl.booking?.bookingAmount || 0;
+                const cleanPhone = (sl.mobileNo || sl.customerPhone || '').replace(/[^0-9]/g, '');
+                const totalDeal = Number(sl.paymentPlan?.totalAmount) || Number(sl.booking?.agreedDealPrice) || Number(sl.flatId?.basePrice) || 0;
+                const tokenAmount = Number(sl.booking?.bookingAmount) || 0;
 
-                let totalPaid = tokenAmount;
-                (sl.installments || []).forEach((inst) => {
-                  totalPaid += (inst.paidAmount || 0);
-                });
+                let totalPaid = 0;
+                if (sl.receipts && sl.receipts.length > 0) {
+                  totalPaid = sl.receipts.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+                } else if (sl.installments && sl.installments.length > 0) {
+                  totalPaid = sl.installments.reduce((sum, inst) => sum + (Number(inst.paidAmount) || 0), 0);
+                } else {
+                  totalPaid = tokenAmount;
+                }
+
+                // Bound totalPaid to totalDeal
+                totalPaid = Math.min(totalPaid, totalDeal > 0 ? totalDeal : totalPaid);
                 const payPercent = totalDeal > 0 ? Math.min(100, Math.round((totalPaid / totalDeal) * 100)) : 0;
+                const balanceDue = Math.max(0, totalDeal - totalPaid);
 
                 return (
                   <div
@@ -576,7 +624,7 @@ export const SalesPage = () => {
                       <div>
                         <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827' }}>{sl.name}</h3>
                         <div style={{ fontSize: '0.74rem', color: '#4b5563', marginTop: '2px', fontWeight: '500' }}>
-                          Converted: {new Date(sl.convertedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          Converted: {(sl.convertedAt || sl.booking?.bookingDate || sl.createdAt) ? new Date(sl.convertedAt || sl.booking?.bookingDate || sl.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                         </div>
                       </div>
 
@@ -685,8 +733,8 @@ export const SalesPage = () => {
                       </div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#4b5563', fontWeight: '500' }}>
-                        <span>Token: {formatINR(tokenAmount)}</span>
-                        <span>Milestones: {sl.installments?.length || 0} scheduled</span>
+                        <span>Paid: {formatINR(totalPaid)}</span>
+                        <span>Balance: {formatINR(balanceDue)}</span>
                       </div>
                     </div>
 
@@ -722,28 +770,48 @@ export const SalesPage = () => {
                         <Zap size={13} /> Send Notice
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedSalesLead(sl);
-                          setIsDetailModalOpen(true);
-                        }}
-                        style={{
-                          padding: '6px 14px',
-                          background: '#1a73e8',
-                          color: '#ffffff',
-                          fontWeight: '700',
-                          borderRadius: '6px',
-                          fontSize: '0.78rem',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          cursor: 'pointer',
-                          border: 'none'
-                        }}
-                      >
-                        Manage Lifecycle <ArrowRight size={14} />
-                      </button>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSalesLead(sl)}
+                          title="Delete Sales Allotment"
+                          style={{
+                            padding: '6px 8px',
+                            background: '#fef2f2',
+                            border: '1px solid #fecaca',
+                            color: '#dc2626',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedSalesLead(sl);
+                            setIsDetailModalOpen(true);
+                          }}
+                          style={{
+                            padding: '6px 14px',
+                            background: '#1a73e8',
+                            color: '#ffffff',
+                            fontWeight: '700',
+                            borderRadius: '6px',
+                            fontSize: '0.78rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            cursor: 'pointer',
+                            border: 'none'
+                          }}
+                        >
+                          Manage Lifecycle <ArrowRight size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -854,10 +922,14 @@ export const SalesPage = () => {
                     </tr>
                   ) : (
                     salesLeads.map((sl) => {
-                      const totalAmt = sl.paymentPlan?.totalAmount || sl.booking?.bookingAmount || 0;
-                      const bookingAmt = sl.booking?.bookingAmount || 0;
+                      const totalAmt = Number(sl.paymentPlan?.totalAmount) || Number(sl.booking?.agreedDealPrice) || Number(sl.flatId?.basePrice) || 0;
+                      const bookingAmt = Number(sl.booking?.bookingAmount) || (sl.receipts?.[0]?.amount) || 0;
+                      const totalPaidAmt = sl.receipts && sl.receipts.length > 0
+                        ? sl.receipts.reduce((s, r) => s + (Number(r.amount) || 0), 0)
+                        : (sl.installments?.reduce((s, i) => s + (Number(i.paidAmount) || 0), 0) || bookingAmt);
+                      const balanceAmt = Math.max(0, totalAmt - totalPaidAmt);
                       const milestones = sl.paymentPlan?.milestones || [];
-                      const activeMilestone = milestones.find((m) => m.status === 'demand_issued' || m.status === 'pending') || milestones[0] || { name: 'Booking Confirmation', percentage: 10 };
+                      const activeMilestone = sl.installments?.find(i => i.status !== 'paid') || { installmentNumber: 1, amount: balanceAmt, status: 'due' };
 
                       return (
                         <tr key={sl._id}>
@@ -981,6 +1053,13 @@ export const SalesPage = () => {
         onClose={() => setIsBookingModalOpen(false)}
         onConvert={handleDirectBookingSubmit}
         lead={null}
+      />
+
+      {/* IMPORT PREVIOUS PAYMENTS EXCEL MODAL */}
+      <ImportPaymentsModal
+        isOpen={isImportPaymentsModalOpen}
+        onClose={() => setIsImportPaymentsModalOpen(false)}
+        onSuccess={fetchSalesLeads}
       />
 
     </div>

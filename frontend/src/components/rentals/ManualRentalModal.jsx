@@ -38,8 +38,11 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
 
   // Multi-Unit Selection
   const [selectedUnits, setSelectedUnits] = useState([]);
+  const [unitToAddFlatId, setUnitToAddFlatId] = useState('');
+  const [isAddingUnit, setIsAddingUnit] = useState(false);
 
-  // Tenant State
+  // Tenant Sublease Option (Temporary Agreement)
+  const [hasTenantSublease, setHasTenantSublease] = useState(false);
   const [selectedTenantId, setSelectedTenantId] = useState('');
   const [isAddingNewTenant, setIsAddingNewTenant] = useState(false);
   const [newTenantName, setNewTenantName] = useState('');
@@ -65,15 +68,15 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
     return d.toISOString().slice(0, 10);
   };
 
-  // Rent-Back Configuration (Company takes flat from owner - 3 Year Mandatory Policy)
-  const [rentBackEnabled, setRentBackEnabled] = useState(false);
+  // 36-Month Permanent Owner Rent-Back Agreement (Primary Fixed Contract)
+  const [rentBackEnabled, setRentBackEnabled] = useState(true);
   const [rentBackForm, setRentBackForm] = useState({
-    agreementNumber: `RB-${Date.now().toString().slice(-6)}`,
+    agreementNumber: `MOU-KV-${Date.now().toString().slice(-6)}`,
     startDate: new Date().toISOString().slice(0, 10),
     endDate: default3YearEnd(),
-    monthlyRent: 0,
+    monthlyRent: 31000,
     securityDeposit: 0,
-    rentDueDay: 5,
+    rentDueDay: 25,
     status: 'active'
   });
 
@@ -435,8 +438,8 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
       }
     }
 
-    // 2. Auto-create Tenant if quick-add was used
-    if (isAddingNewTenant) {
+    // 2. Auto-create Tenant ONLY IF temporary sublease is enabled
+    if (hasTenantSublease && isAddingNewTenant) {
       if (!newTenantName.trim() || !newTenantPhone.trim()) {
         alert('Please enter both Tenant Name and Mobile Number');
         return;
@@ -468,8 +471,8 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
       }
     }
 
-    if (!tenantIdToUse) {
-      alert('Please select or enter a Tenant (Client or Corporate)');
+    if (hasTenantSublease && !tenantIdToUse) {
+      alert('Please select or enter a Tenant for the temporary sub-lease agreement');
       return;
     }
 
@@ -1109,68 +1112,249 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
           )}
         </div>
 
-        {/* Step 2: Rent-Back Toggle & Terms (Company takes from Owner) */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderColor: rentBackEnabled ? 'rgba(168, 85, 247, 0.4)' : 'var(--border-subtle)' }}>
+        {/* Step 2: 36-Month Permanent Owner Rent-Back Agreement (Company to Owner) */}
+        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', border: '1.5px solid #16a34a', background: '#f0fdf4' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Repeat size={16} color="#c084fc" />
+              <div style={{ background: '#dcfce7', padding: '8px', borderRadius: '50%' }}>
+                <ShieldCheck size={20} color="#16a34a" />
+              </div>
               <div>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#c084fc', margin: 0 }}>
-                  2. Rent-Back Agreement (Taking flat{leaseMode === 'multi' ? 's' : ''} from Owner{leaseMode === 'multi' ? 's' : ''})
+                <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#166534', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  2. Permanent 36-Month Owner Rent-Back Commitment (Fixed)
+                  <span style={{ fontSize: '0.7rem', background: '#16a34a', color: '#ffffff', padding: '2px 8px', borderRadius: '12px', fontWeight: '700' }}>
+                    Fixed 3-Year Policy
+                  </span>
                 </h4>
-                <p style={{ fontSize: '0.72rem', color: '#4b5563', margin: 0 }}>
-                  Company guarantees monthly rent payout to flat title holder{leaseMode === 'multi' ? 's' : ''}
+                <p style={{ fontSize: '0.74rem', color: '#15803d', margin: '2px 0 0 0' }}>
+                  Company guarantees fixed monthly rental payouts to the registered owner for the entire 36-month duration.
                 </p>
               </div>
             </div>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: '700', color: '#111827', cursor: 'pointer' }}>
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700' }}>36-Mo Total Commitment:</span>
+              <div style={{ fontSize: '1.15rem', fontWeight: '900', color: '#15803d' }}>
+                {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format((Number(rentBackForm.monthlyRent) || 0) * 36)}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '6px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+              <div>
+                <label style={{ fontSize: '0.72rem', color: '#166534', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
+                  MOU Agreement / Contract #
+                </label>
+                <input
+                  type="text"
+                  value={rentBackForm.agreementNumber}
+                  onChange={(e) => setRentBackForm({ ...rentBackForm, agreementNumber: e.target.value })}
+                  style={{ width: '100%', fontSize: '0.8rem', borderColor: '#86efac' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.72rem', color: '#166534', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
+                  Assured Monthly Rent to Owner (₹) *
+                </label>
+                <input
+                  type="number"
+                  required
+                  value={rentBackForm.monthlyRent}
+                  onChange={(e) => setRentBackForm({ ...rentBackForm, monthlyRent: e.target.value })}
+                  style={{ width: '100%', fontSize: '0.82rem', fontWeight: '800', borderColor: '#86efac' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.72rem', color: '#166534', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
+                  Payout Due Day of Month *
+                </label>
+                <select
+                  value={rentBackForm.rentDueDay}
+                  onChange={(e) => setRentBackForm({ ...rentBackForm, rentDueDay: Number(e.target.value) })}
+                  style={{ width: '100%', fontSize: '0.8rem', fontWeight: '700', borderColor: '#86efac' }}
+                >
+                  <option value={5}>5th of every month</option>
+                  <option value={10}>10th of every month</option>
+                  <option value={15}>15th of every month</option>
+                  <option value={20}>20th of every month</option>
+                  <option value={25}>25th of every month</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.72rem', color: '#166534', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
+                  Lock-in Tenure
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  value="36 Months (3 Years)"
+                  style={{ width: '100%', fontSize: '0.8rem', background: '#dcfce7', fontWeight: '700', color: '#166534' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div>
+                <label style={{ fontSize: '0.72rem', color: '#166534', display: 'block', marginBottom: '2px', fontWeight: '600' }}>
+                  MOU / Rental Start Date
+                </label>
+                <input
+                  type="date"
+                  value={rentBackForm.startDate}
+                  onChange={(e) => setRentBackForm({ ...rentBackForm, startDate: e.target.value })}
+                  style={{ width: '100%', fontSize: '0.8rem', borderColor: '#86efac' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.72rem', color: '#166534', display: 'block', marginBottom: '2px', fontWeight: '600' }}>
+                  Rental End Date (3-Year Completion)
+                </label>
+                <input
+                  type="date"
+                  value={rentBackForm.endDate}
+                  onChange={(e) => setRentBackForm({ ...rentBackForm, endDate: e.target.value })}
+                  style={{ width: '100%', fontSize: '0.8rem', borderColor: '#86efac' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Step 3: Temporary / Optional Tenant Sub-Lease Agreement (Company to Tenant) */}
+        <div className="glass-panel" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          border: hasTenantSublease ? '1.5px solid #0284c7' : '1px dashed #cbd5e1',
+          background: hasTenantSublease ? '#f0f9ff' : '#f8fafc'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ background: hasTenantSublease ? '#e0f2fe' : '#e2e8f0', padding: '8px', borderRadius: '50%' }}>
+                <FileText size={18} color={hasTenantSublease ? '#0284c7' : '#64748b'} />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: hasTenantSublease ? '#0369a1' : '#475569', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  3. Tenant Sub-Lease Agreement (Optional / Temporary)
+                  <span style={{ fontSize: '0.7rem', background: hasTenantSublease ? '#0284c7' : '#94a3b8', color: '#ffffff', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                    {hasTenantSublease ? 'Active Sub-Lease' : 'Optional'}
+                  </span>
+                </h4>
+                <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '2px 0 0 0' }}>
+                  Optional short-term or corporate sub-lease to collect rental inflow while owner rent-back is active.
+                </p>
+              </div>
+            </div>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', fontWeight: '800', color: '#1e293b', cursor: 'pointer' }}>
               <input
                 type="checkbox"
-                checked={rentBackEnabled}
-                onChange={(e) => setRentBackEnabled(e.target.checked)}
+                checked={hasTenantSublease}
+                onChange={(e) => setHasTenantSublease(e.target.checked)}
               />
-              Enable Rent-Back
+              Sub-Lease to Tenant
             </label>
           </div>
 
-          {rentBackEnabled && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '6px' }}>
+          {hasTenantSublease ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '6px' }}>
+              {/* Tenant Selection */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
+                  <label style={{ fontSize: '0.75rem', color: '#0369a1', display: 'block', fontWeight: '700' }}>
+                    Tenant (Individual / Corporate Client) *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingNewTenant(!isAddingNewTenant)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#0284c7',
+                      fontSize: '0.72rem',
+                      fontWeight: '700',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {isAddingNewTenant ? '← Choose Existing Tenant' : '+ Quick-Add New Tenant'}
+                  </button>
+                </div>
+
+                {!isAddingNewTenant ? (
+                  <select
+                    required={hasTenantSublease && !isAddingNewTenant}
+                    value={selectedTenantId}
+                    onChange={(e) => setSelectedTenantId(e.target.value)}
+                    style={{ width: '100%', fontSize: '0.82rem' }}
+                  >
+                    <option value="">-- Choose Tenant --</option>
+                    {tenants.map((t) => (
+                      <option key={t._id} value={t._id}>
+                        {t.tenantDetails?.tenantType === 'company' ? '[Corporate] ' : '[Individual] '}{t.name} ({t.mobileNo})
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '6px' }}>
+                    <input
+                      type="text"
+                      placeholder="Tenant Name (e.g. Kavita Sharma / Tech Corp)"
+                      value={newTenantName}
+                      onChange={(e) => setNewTenantName(e.target.value)}
+                      style={{ padding: '6px 8px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid #0284c7' }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Mobile (e.g. 9876543299)"
+                      value={newTenantPhone}
+                      onChange={(e) => setNewTenantPhone(e.target.value)}
+                      style={{ padding: '6px 8px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid #0284c7' }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Sub-lease Financial Terms */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                 <div>
                   <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                    Rent-Back Agreement #
+                    Tenant Agreement #
                   </label>
                   <input
                     type="text"
-                    value={rentBackForm.agreementNumber}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, agreementNumber: e.target.value })}
+                    value={tenantAgreementForm.agreementNumber}
+                    onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, agreementNumber: e.target.value })}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
                 </div>
 
                 <div>
                   <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                    Total Monthly Payout to Owners (₹) *
+                    Monthly Rent Collected (₹) *
                   </label>
                   <input
                     type="number"
-                    value={rentBackForm.monthlyRent}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, monthlyRent: e.target.value })}
+                    value={tenantAgreementForm.monthlyRent}
+                    onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, monthlyRent: e.target.value })}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
                 </div>
 
                 <div>
                   <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                    Total Deposit to Owners (₹)
+                    Tenant Security Deposit (₹)
                   </label>
                   <input
                     type="number"
-                    value={ownerDepositReq}
+                    value={tenantDepositReq}
                     onChange={(e) => {
-                      setOwnerDepositReq(e.target.value);
-                      setOwnerDepositPaid(e.target.value);
+                      setTenantDepositReq(e.target.value);
+                      setTenantDepositPaid(e.target.value);
                     }}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
@@ -1178,14 +1362,14 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
 
                 <div>
                   <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                    Payout Due Day
+                    Rent Collection Day
                   </label>
                   <input
                     type="number"
                     min="1"
                     max="31"
-                    value={rentBackForm.rentDueDay}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, rentDueDay: e.target.value })}
+                    value={tenantAgreementForm.rentDueDay}
+                    onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, rentDueDay: e.target.value })}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
                 </div>
@@ -1194,120 +1378,34 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                    Rent-Back Start Date
+                    Sub-Lease Start Date
                   </label>
                   <input
                     type="date"
-                    value={rentBackForm.startDate}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, startDate: e.target.value })}
+                    value={tenantAgreementForm.startDate}
+                    onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, startDate: e.target.value })}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
                 </div>
 
                 <div>
                   <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                    Rent-Back End Date
+                    Sub-Lease End Date
                   </label>
                   <input
                     type="date"
-                    value={rentBackForm.endDate}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, endDate: e.target.value })}
+                    value={tenantAgreementForm.endDate}
+                    onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, endDate: e.target.value })}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   />
                 </div>
               </div>
             </div>
+          ) : (
+            <div style={{ padding: '8px 12px', background: '#f1f5f9', borderRadius: '6px', fontSize: '0.76rem', color: '#64748b' }}>
+              ✓ Unit is under direct company management. No active tenant sub-lease agreement required.
+            </div>
           )}
-        </div>
-
-        {/* Step 3: Tenant Lease Agreement (Company to Tenant) */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderColor: 'rgba(59, 130, 246, 0.4)' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <FileText size={15} /> 3. Tenant Lease Agreement & Rent Terms
-          </h4>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                Tenant Agreement # *
-              </label>
-              <input
-                type="text"
-                required
-                value={tenantAgreementForm.agreementNumber}
-                onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, agreementNumber: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                Monthly Rent from Tenant (₹) *
-              </label>
-              <input
-                type="number"
-                required
-                value={tenantAgreementForm.monthlyRent}
-                onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, monthlyRent: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                Tenant Security Deposit (₹)
-              </label>
-              <input
-                type="number"
-                value={tenantDepositReq}
-                onChange={(e) => {
-                  setTenantDepositReq(e.target.value);
-                  setTenantDepositPaid(e.target.value);
-                }}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                Rent Collection Day
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="31"
-                value={tenantAgreementForm.rentDueDay}
-                onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, rentDueDay: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                Tenant Lease Start Date
-              </label>
-              <input
-                type="date"
-                value={tenantAgreementForm.startDate}
-                onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, startDate: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                Tenant Lease End Date
-              </label>
-              <input
-                type="date"
-                value={tenantAgreementForm.endDate}
-                onChange={(e) => setTenantAgreementForm({ ...tenantAgreementForm, endDate: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-          </div>
         </div>
 
         {/* Step 4: Margin / Profit Real-Time Summary */}

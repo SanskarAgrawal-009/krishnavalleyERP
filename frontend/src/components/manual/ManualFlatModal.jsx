@@ -121,7 +121,7 @@ export const ManualFlatModal = ({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
           <div>
             <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              BHK Type
+              Flat / BHK Type
             </label>
             <select
               value={formData.bhkType}
@@ -132,8 +132,11 @@ export const ManualFlatModal = ({
               <option value="2BHK">2 BHK</option>
               <option value="3BHK">3 BHK</option>
               <option value="4BHK">4 BHK</option>
-              <option value="Penthouse">Penthouse</option>
               <option value="Studio">Studio</option>
+              <option value="Service Apartment">Service Apartment</option>
+              <option value="Penthouse">Penthouse</option>
+              <option value="Villa">Villa</option>
+              <option value="Commercial">Commercial</option>
             </select>
           </div>
 

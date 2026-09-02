@@ -403,54 +403,85 @@ export const setupPaymentPlan = async (req, res) => {
     const salesLead = await SalesLead.findById(id);
     if (!salesLead) return res.status(404).json({ success: false, message: 'Sales record not found' });
 
-    const total = Number(totalAmount) || 0;
-    const token = Number(bookingAmount) || salesLead.booking.bookingAmount || 0;
+    const total = Number(totalAmount) || salesLead.booking?.agreedDealPrice || 0;
+    const token = Number(bookingAmount) !== undefined && !isNaN(Number(bookingAmount)) ? Number(bookingAmount) : (salesLead.booking?.bookingAmount || 0);
     const remaining = Math.max(0, total - token);
     const numInst = Number(numberOfInstallments) || 1;
 
     let generatedInstallments = [];
 
     if (customInstallments && Array.isArray(customInstallments) && customInstallments.length > 0) {
-      generatedInstallments = customInstallments.map((inst, index) => ({
-        installmentNumber: index + 1,
-        dueDate: inst.dueDate ? new Date(inst.dueDate) : new Date(Date.now() + (index + 1) * 30 * 86400000),
-        amount: Number(inst.amount),
-        paidAmount: 0,
-        remainingAmount: Number(inst.amount),
-        status: 'upcoming'
-      }));
+      let allocatedTotal = 0;
+      generatedInstallments = customInstallments.map((inst, idx) => {
+        const amt = Number(inst.amount) || 0;
+        allocatedTotal += amt;
+        const isPaid = inst.isPaid === true || (idx === 0 && token > 0 && amt === token);
+        const pAmt = isPaid ? amt : (Number(inst.paidAmount) || 0);
+        const rAmt = isPaid ? 0 : Math.max(0, amt - pAmt);
+        return {
+          installmentNumber: idx + 1,
+          name: inst.name || `Milestone ${idx + 1}`,
+          dueDate: inst.dueDate ? new Date(inst.dueDate) : new Date(Date.now() + (idx + 1) * 30 * 86400000),
+          amount: amt,
+          paidAmount: pAmt,
+          remainingAmount: rAmt,
+          status: rAmt === 0 ? 'paid' : (pAmt > 0 ? 'partially_paid' : 'upcoming'),
+          paidAt: isPaid ? (salesLead.booking?.bookingDate || new Date()) : null
+        };
+      });
     } else {
-      const perInstallmentAmount = Math.round(remaining / numInst);
-      for (let i = 1; i <= numInst; i++) {
-        const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + i * 30); // 30-day interval milestones
-
-        const amount = (i === numInst) 
-          ? (remaining - perInstallmentAmount * (numInst - 1)) 
-          : perInstallmentAmount;
-
+      // Milestone 1: Booking Advance Milestone (Credited as Paid)
+      if (token > 0) {
         generatedInstallments.push({
-          installmentNumber: i,
-          dueDate: dueDate,
-          amount: amount,
-          paidAmount: 0,
-          remainingAmount: amount,
-          status: 'upcoming'
+          installmentNumber: 1,
+          name: 'Booking Token / Advance',
+          dueDate: salesLead.booking?.bookingDate || new Date(),
+          amount: token,
+          paidAmount: token,
+          remainingAmount: 0,
+          status: 'paid',
+          paidAt: salesLead.booking?.bookingDate || new Date()
         });
+      }
+
+      if (remaining > 0) {
+        const perInstallmentAmount = Math.round(remaining / numInst);
+        for (let i = 1; i <= numInst; i++) {
+          const dueDate = new Date();
+          dueDate.setDate(dueDate.getDate() + i * 30); // 30-day interval milestones
+
+          const amount = (i === numInst) 
+            ? (remaining - perInstallmentAmount * (numInst - 1)) 
+            : perInstallmentAmount;
+
+          generatedInstallments.push({
+            installmentNumber: generatedInstallments.length + 1,
+            name: `Milestone ${generatedInstallments.length + 1}`,
+            dueDate: dueDate,
+            amount: amount,
+            paidAmount: 0,
+            remainingAmount: amount,
+            status: 'upcoming'
+          });
+        }
       }
     }
 
+    const calculatedTotal = generatedInstallments.reduce((sum, inst) => sum + (inst.amount || 0), 0) || total;
+    const calculatedPaid = generatedInstallments.reduce((sum, inst) => sum + (inst.paidAmount || 0), 0);
+    const calculatedRemaining = Math.max(0, calculatedTotal - calculatedPaid);
+
     salesLead.paymentPlan = {
       type: type || 'installment',
-      totalAmount: total,
-      bookingAmount: token,
-      remainingAmount: remaining,
+      totalAmount: calculatedTotal,
+      bookingAmount: calculatedPaid,
+      remainingAmount: calculatedRemaining,
       numberOfInstallments: generatedInstallments.length,
       decidedAt: new Date()
     };
 
     salesLead.installments = generatedInstallments;
-    salesLead.salesStatus = 'payment_in_progress';
+    salesLead.salesStatus = calculatedRemaining === 0 ? 'fully_paid' : 'payment_in_progress';
 
     await salesLead.save();
     return res.json({ success: true, data: salesLead });
@@ -469,26 +500,46 @@ export const recordInstallmentPayment = async (req, res) => {
     const salesLead = await SalesLead.findById(id);
     if (!salesLead) return res.status(404).json({ success: false, message: 'Sales record not found' });
 
-    const payAmount = Number(paidAmount);
-    if (!payAmount || payAmount <= 0) {
+    let remainingToCredit = Number(paidAmount);
+    if (!remainingToCredit || remainingToCredit <= 0) {
       return res.status(400).json({ success: false, message: 'Valid paidAmount is required' });
     }
 
-    const installment = salesLead.installments.find((inst) => inst.installmentNumber === Number(installmentNumber));
-    if (!installment) {
-      return res.status(404).json({ success: false, message: 'Installment number not found' });
+    const startInstNum = Number(installmentNumber) || 1;
+    const sortedInstallments = [...(salesLead.installments || [])].sort((a, b) => a.installmentNumber - b.installmentNumber);
+
+    // Filter installments that actually have remaining amount > 0
+    let startIndex = sortedInstallments.findIndex(i => i.installmentNumber === startInstNum);
+    if (startIndex === -1 || (sortedInstallments[startIndex]?.remainingAmount || 0) <= 0) {
+      // Find the first unpaid installment with positive balance
+      startIndex = sortedInstallments.findIndex(i => (i.remainingAmount || 0) > 0);
     }
 
-    installment.paidAmount = (installment.paidAmount || 0) + payAmount;
-    installment.remainingAmount = Math.max(0, installment.amount - installment.paidAmount);
-    installment.status = installment.remainingAmount === 0 ? 'paid' : 'partially_paid';
-    installment.paidAt = new Date();
+    if (startIndex === -1) {
+      return res.status(400).json({ success: false, message: 'All installments for this unit are already fully paid. No remaining balance to credit.' });
+    }
 
-    // Auto-Generate Receipt
+    let actualCredited = 0;
+
+    for (let i = startIndex; i < sortedInstallments.length && remainingToCredit > 0; i++) {
+      const inst = sortedInstallments[i];
+      const maxCanPay = Math.max(0, inst.amount - (inst.paidAmount || 0));
+      if (maxCanPay > 0) {
+        const creditNow = Math.min(maxCanPay, remainingToCredit);
+        inst.paidAmount = (inst.paidAmount || 0) + creditNow;
+        inst.remainingAmount = Math.max(0, inst.amount - inst.paidAmount);
+        inst.status = inst.remainingAmount === 0 ? 'paid' : 'partially_paid';
+        inst.paidAt = new Date();
+        remainingToCredit -= creditNow;
+        actualCredited += creditNow;
+      }
+    }
+
+    // Auto-Generate Receipt for the exact amount credited
     const genReceiptNumber = receiptNumber || `RCP-${Date.now().toString().slice(-6)}`;
     salesLead.receipts.push({
       receiptNumber: genReceiptNumber,
-      amount: payAmount,
+      amount: actualCredited,
       generatedAt: new Date(),
       documentUrl: `/receipts/${genReceiptNumber}.pdf`
     });
@@ -497,12 +548,112 @@ export const recordInstallmentPayment = async (req, res) => {
     const allPaid = salesLead.installments.every((inst) => inst.status === 'paid');
     if (allPaid && salesLead.installments.length > 0) {
       salesLead.salesStatus = 'fully_paid';
+    } else {
+      salesLead.salesStatus = 'payment_in_progress';
     }
 
     await salesLead.save();
     return res.json({ success: true, data: salesLead, receiptNumber: genReceiptNumber });
   } catch (error) {
     console.error('Error recording payment:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Bulk Import Previous Payments from Excel / Ledger
+export const importPreviousPayments = async (req, res) => {
+  try {
+    const { payments } = req.body;
+    if (!payments || !Array.isArray(payments) || payments.length === 0) {
+      return res.status(400).json({ success: false, message: 'No payment records provided in payload' });
+    }
+
+    const Flat = (await import('../models/Flat.js')).default;
+
+    const summary = {
+      totalRows: payments.length,
+      creditedCount: 0,
+      totalAmountCredited: 0,
+      errors: []
+    };
+
+    for (let idx = 0; idx < payments.length; idx++) {
+      const row = payments[idx];
+      const rowNumber = idx + 2;
+
+      const flatNumber = String(row.flatNo || row.flat_no || row.unitNo || row.unit || '').trim();
+      const paidAmount = Number(row.amount || row.paidAmount || row.amountPaid || row.paymentAmount || 0);
+      const receiptNumber = String(row.receiptNumber || row.receiptNo || row.utr || row.referenceNo || `RCP-PREV-${flatNumber}-${Date.now().toString().slice(-4)}`).trim();
+      const paymentDate = row.paymentDate ? new Date(row.paymentDate) : new Date();
+      const paymentMode = String(row.paymentMode || 'bank_transfer').toLowerCase().trim();
+
+      if (!flatNumber) {
+        summary.errors.push(`Row ${rowNumber}: Skipped (Missing flat number).`);
+        continue;
+      }
+
+      if (paidAmount <= 0) {
+        summary.errors.push(`Row ${rowNumber} (Flat ${flatNumber}): Skipped (Invalid or 0 paid amount).`);
+        continue;
+      }
+
+      const flat = await Flat.findOne({ flatNumber: new RegExp(`^${flatNumber}$`, 'i') });
+      if (!flat) {
+        summary.errors.push(`Row ${rowNumber}: Flat ${flatNumber} not found in inventory.`);
+        continue;
+      }
+
+      let salesLead = await SalesLead.findOne({ flatId: flat._id, salesStatus: { $ne: 'cancelled' } });
+      if (!salesLead) {
+        summary.errors.push(`Row ${rowNumber}: No active sales allotment found for Flat ${flatNumber}.`);
+        continue;
+      }
+
+      let remainingToCredit = paidAmount;
+      const sortedInstallments = [...(salesLead.installments || [])].sort((a, b) => a.installmentNumber - b.installmentNumber);
+      let actualCredited = 0;
+
+      for (let i = 0; i < sortedInstallments.length && remainingToCredit > 0; i++) {
+        const inst = sortedInstallments[i];
+        const maxCanPay = Math.max(0, inst.amount - (inst.paidAmount || 0));
+        if (maxCanPay > 0) {
+          const creditNow = Math.min(maxCanPay, remainingToCredit);
+          inst.paidAmount = (inst.paidAmount || 0) + creditNow;
+          inst.remainingAmount = Math.max(0, inst.amount - inst.paidAmount);
+          inst.status = inst.remainingAmount === 0 ? 'paid' : 'partially_paid';
+          inst.paidAt = paymentDate;
+          remainingToCredit -= creditNow;
+          actualCredited += creditNow;
+        }
+      }
+
+      // Add verified receipt
+      salesLead.receipts.push({
+        receiptNumber,
+        amount: paidAmount,
+        paymentMode,
+        generatedAt: paymentDate,
+        documentUrl: `/receipts/${receiptNumber}.pdf`
+      });
+
+      const allPaid = salesLead.installments.length > 0 && salesLead.installments.every((inst) => inst.status === 'paid');
+      if (allPaid) {
+        salesLead.salesStatus = 'fully_paid';
+      }
+
+      await salesLead.save();
+
+      summary.creditedCount++;
+      summary.totalAmountCredited += paidAmount;
+    }
+
+    return res.json({
+      success: true,
+      message: `Successfully processed ${summary.creditedCount} payment records totaling ₹${summary.totalAmountCredited.toLocaleString('en-IN')}.`,
+      data: summary
+    });
+  } catch (error) {
+    console.error('Error importing previous payments:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -727,6 +878,69 @@ export const processCancellationAndRefund = async (req, res) => {
     return res.json({ success: true, data: salesLead });
   } catch (error) {
     console.error('Error processing cancellation:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Delete Single Sales Allotment / Lead (Releases Flat)
+export const deleteSalesLead = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const salesLead = await SalesLead.findById(id);
+    if (!salesLead) return res.status(404).json({ success: false, message: 'Sales allotment not found' });
+
+    // Release flat back to available
+    if (salesLead.flatId) {
+      await Flat.findByIdAndUpdate(salesLead.flatId, {
+        status: 'available',
+        isSold: false,
+        $unset: { salesDetails: '', currentOwner: '' }
+      });
+
+      // Unlink from customer owner details
+      await Customer.updateMany(
+        { 'ownerDetails.propertyIds': salesLead.flatId },
+        { $pull: { 'ownerDetails.propertyIds': salesLead.flatId } }
+      );
+    }
+
+    await SalesLead.findByIdAndDelete(id);
+
+    return res.json({
+      success: true,
+      message: `Sales allotment for ${salesLead.name} deleted successfully and unit released to inventory`
+    });
+  } catch (error) {
+    console.error('Error deleting sales lead:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Delete All Sales Allotments
+export const deleteAllSalesLeads = async (req, res) => {
+  try {
+    const deleteRes = await SalesLead.deleteMany({});
+    
+    // Release all flats
+    await Flat.updateMany({}, {
+      status: 'available',
+      isSold: false,
+      $unset: { salesDetails: '', currentOwner: '' }
+    });
+
+    // Clear customer property links
+    await Customer.updateMany({}, {
+      $set: { 'ownerDetails.propertyIds': [] },
+      $unset: { salesAllotment: '' }
+    });
+
+    return res.json({
+      success: true,
+      message: `Successfully deleted all ${deleteRes.deletedCount} sales allotments and released flats to inventory.`,
+      deletedCount: deleteRes.deletedCount
+    });
+  } catch (error) {
+    console.error('Error in deleteAllSalesLeads:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

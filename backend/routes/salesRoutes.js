@@ -12,7 +12,10 @@ import {
   generateDemandLetter,
   addSalesFollowUp,
   updatePossession,
-  processCancellationAndRefund
+  processCancellationAndRefund,
+  importPreviousPayments,
+  deleteSalesLead,
+  deleteAllSalesLeads
 } from '../controllers/salesController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
@@ -31,8 +34,11 @@ router.use(authenticateToken);
 
 // Sales Lead Core
 router.post('/convert', authorizePermission('sales:create', 'crm:edit'), convertLeadToSales);
+router.post('/import-payments', authorizePermission('sales:create', 'sales:edit', 'accounts:manage'), importPreviousPayments);
 router.get('/', authorizePermission('sales:view'), getSalesLeads);
 router.get('/:id', authorizePermission('sales:view'), getSalesLeadById);
+router.delete('/delete-all', authorizePermission('sales:manage', 'sales:approve'), deleteAllSalesLeads);
+router.delete('/:id', authorizePermission('sales:manage', 'sales:approve'), deleteSalesLead);
 
 // Lifecycle Operations
 router.put('/:id/booking', authorizePermission('sales:create', 'sales:edit'), updateBooking);

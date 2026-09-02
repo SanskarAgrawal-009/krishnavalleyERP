@@ -48,6 +48,8 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
           Icon: Clock
         };
 
+      case 'sold':
+      case 'leased':
       case 'agreement_signed':
       case 'agreement_completed':
       case 'possessed':
@@ -60,7 +62,7 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
           bg: '#d8e2ff',
           color: '#00285c',
           border: '#adc7ff',
-          label: status?.replace(/_/g, ' ') || 'Allocated',
+          label: status === 'sold' ? 'Sold' : (status === 'leased' ? 'Leased' : status?.replace(/_/g, ' ') || 'Allocated'),
           Icon: ShieldCheck
         };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { StatusBadge } from '../common/StatusBadge.jsx';
 import { 
@@ -111,6 +111,83 @@ export const SalesDetailModal = ({
     remarks: 'Refund processed via NEFT transfer.'
   });
 
+  // Custom Monthly Milestones Builder State
+  const [customMilestones, setCustomMilestones] = useState([
+    { name: 'Month 1: Booking Advance / Token', amount: 1000000, dueDate: new Date().toISOString().slice(0, 10), isPaid: true },
+    { name: 'Month 2: 1st Floor Slab Stage', amount: 1500000, dueDate: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10), isPaid: false },
+    { name: 'Month 3: Brickwork & Plastering', amount: 2500000, dueDate: new Date(Date.now() + 60 * 86400000).toISOString().slice(0, 10), isPaid: false },
+    { name: 'Month 4: Finishing & Handover', amount: 5000000, dueDate: new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10), isPaid: false }
+  ]);
+
+  // Synchronize form states whenever salesLead changes
+  useEffect(() => {
+    if (salesLead) {
+      setBookingForm({
+        isBooked: salesLead.booking?.isBooked ?? true,
+        bookingDate: salesLead.booking?.bookingDate ? new Date(salesLead.booking.bookingDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+        bookingAmount: salesLead.booking?.bookingAmount || 0,
+        agreedDealPrice: salesLead.booking?.agreedDealPrice || salesLead.paymentPlan?.totalAmount || salesLead.flatId?.basePrice || 0,
+        bookingStatus: salesLead.booking?.bookingStatus || 'confirmed'
+      });
+      setAgreementForm({
+        agreementNumber: salesLead.agreement?.agreementNumber || `AGR-${Date.now().toString().slice(-6)}`,
+        agreementDate: salesLead.agreement?.agreementDate ? new Date(salesLead.agreement.agreementDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+        verificationStatus: salesLead.agreement?.verificationStatus || 'verified'
+      });
+      setPlanForm({
+        type: salesLead.paymentPlan?.type || 'installment',
+        totalAmount: salesLead.paymentPlan?.totalAmount || salesLead.booking?.agreedDealPrice || salesLead.flatId?.basePrice || 0,
+        bookingAmount: salesLead.booking?.bookingAmount || 0,
+        numberOfInstallments: salesLead.paymentPlan?.numberOfInstallments || (salesLead.installments?.length > 1 ? salesLead.installments.length - 1 : 1)
+      });
+
+      if (salesLead.installments && salesLead.installments.length > 0) {
+        setCustomMilestones(
+          salesLead.installments.map((inst) => ({
+            name: inst.name || `Milestone ${inst.installmentNumber}`,
+            amount: inst.amount,
+            dueDate: inst.dueDate ? new Date(inst.dueDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+            isPaid: inst.status === 'paid',
+            paidAmount: inst.paidAmount || 0
+          }))
+        );
+      }
+    }
+  }, [salesLead]);
+
+  const handleAddMilestone = () => {
+    const nextIdx = customMilestones.length + 1;
+    const nextDate = new Date(Date.now() + nextIdx * 30 * 86400000).toISOString().slice(0, 10);
+    setCustomMilestones([
+      ...customMilestones,
+      { name: `Month ${nextIdx}: Milestone Stage`, amount: 500000, dueDate: nextDate, isPaid: false }
+    ]);
+  };
+
+  const handleRemoveMilestone = (idx) => {
+    if (customMilestones.length <= 1) {
+      alert('You must have at least one milestone in the payment plan.');
+      return;
+    }
+    setCustomMilestones(customMilestones.filter((_, i) => i !== idx));
+  };
+
+  const handleMilestoneChange = (idx, field, value) => {
+    const updated = [...customMilestones];
+    updated[idx] = { ...updated[idx], [field]: field === 'amount' ? (parseFloat(value) || 0) : value };
+    setCustomMilestones(updated);
+  };
+
+  const handleAutoBalanceLastMilestone = () => {
+    const totalDeal = Number(planForm.totalAmount) || 0;
+    if (customMilestones.length === 0) return;
+    const priorSum = customMilestones.slice(0, -1).reduce((sum, m) => sum + (Number(m.amount) || 0), 0);
+    const balance = Math.max(0, totalDeal - priorSum);
+    const updated = [...customMilestones];
+    updated[updated.length - 1].amount = balance;
+    setCustomMilestones(updated);
+  };
+
   if (!salesLead) return null;
 
   const installments = salesLead.installments || [];
@@ -122,6 +199,12 @@ export const SalesDetailModal = ({
     if (val === undefined || val === null || isNaN(val)) return '₹0';
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
   };
+
+  const totalDealVal = Number(salesLead.paymentPlan?.totalAmount) || Number(salesLead.booking?.agreedDealPrice) || Number(salesLead.flatId?.basePrice) || 0;
+  const totalPaidVal = salesLead.receipts && salesLead.receipts.length > 0
+    ? salesLead.receipts.reduce((s, r) => s + (Number(r.amount) || 0), 0)
+    : (salesLead.installments?.reduce((s, i) => s + (Number(i.paidAmount) || 0), 0) || Number(salesLead.booking?.bookingAmount) || 0);
+  const balanceRemainingVal = Math.max(0, totalDealVal - totalPaidVal);
 
   const handleAgreementSubmit = async (e) => {
     e.preventDefault();
@@ -185,10 +268,24 @@ export const SalesDetailModal = ({
             </div>
           </div>
 
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>TOTAL DEAL VALUE</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827' }}>
-              {formatINR(salesLead.paymentPlan?.totalAmount || 0)}
+          <div style={{ textAlign: 'right', display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '600' }}>TOTAL DEAL</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827' }}>
+                {formatINR(totalDealVal)}
+              </div>
+            </div>
+            <div style={{ borderLeft: '1px solid #dadce0', paddingLeft: '14px' }}>
+              <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: '600' }}>PAID</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#16a34a' }}>
+                {formatINR(totalPaidVal)}
+              </div>
+            </div>
+            <div style={{ borderLeft: '1px solid #dadce0', paddingLeft: '14px' }}>
+              <div style={{ fontSize: '0.7rem', color: '#dc2626', fontWeight: '600' }}>BALANCE</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: balanceRemainingVal > 0 ? '#ea580c' : '#16a34a' }}>
+                {formatINR(balanceRemainingVal)}
+              </div>
             </div>
           </div>
         </div>
@@ -531,7 +628,12 @@ export const SalesDetailModal = ({
                 <button
                   type="button"
                   onClick={() => {
-                    setPayForm({ installmentNumber: 1, paidAmount: 0, receiptNumber: `RCP-${Date.now().toString().slice(-5)}` });
+                    const nextUnpaid = installments.find((inst) => inst.status !== 'paid') || installments[installments.length - 1] || { installmentNumber: 1, remainingAmount: 0 };
+                    setPayForm({
+                      installmentNumber: nextUnpaid.installmentNumber,
+                      paidAmount: nextUnpaid.remainingAmount || nextUnpaid.amount || 0,
+                      receiptNumber: `RCP-${Date.now().toString().slice(-5)}`
+                    });
                     setPayModalOpen(true);
                   }}
                   style={{
@@ -551,7 +653,7 @@ export const SalesDetailModal = ({
                 </button>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: planForm.type === 'custom' ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '10px' }}>
                 <div>
                   <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
                     Plan Type
@@ -561,9 +663,9 @@ export const SalesDetailModal = ({
                     onChange={(e) => setPlanForm({ ...planForm, type: e.target.value })}
                     style={{ width: '100%', fontSize: '0.8rem' }}
                   >
-                    <option value="installment">Installment Linked</option>
+                    <option value="installment">Standard Installment Linked</option>
+                    <option value="custom">Custom Monthly Amounts (e.g. ₹10L, ₹15L, ₹35L, ₹50L)</option>
                     <option value="full_payment">Full Down-Payment</option>
-                    <option value="custom">Custom Milestone</option>
                   </select>
                 </div>
 
@@ -579,48 +681,199 @@ export const SalesDetailModal = ({
                   />
                 </div>
 
-                <div>
-                  <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                    Booking Token (₹)
-                  </label>
-                  <input
-                    type="number"
-                    value={planForm.bookingAmount}
-                    onChange={(e) => setPlanForm({ ...planForm, bookingAmount: e.target.value })}
-                    style={{ width: '100%', fontSize: '0.8rem' }}
-                  />
-                </div>
+                {planForm.type !== 'custom' && (
+                  <>
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
+                        Booking Token (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={planForm.bookingAmount}
+                        onChange={(e) => setPlanForm({ ...planForm, bookingAmount: e.target.value })}
+                        style={{ width: '100%', fontSize: '0.8rem' }}
+                      />
+                    </div>
 
-                <div>
-                  <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
-                    # Installments
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={planForm.numberOfInstallments}
-                    onChange={(e) => setPlanForm({ ...planForm, numberOfInstallments: e.target.value })}
-                    style={{ width: '100%', fontSize: '0.8rem' }}
-                  />
-                </div>
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>
+                        # Installments
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        value={planForm.numberOfInstallments}
+                        onChange={(e) => setPlanForm({ ...planForm, numberOfInstallments: e.target.value })}
+                        style={{ width: '100%', fontSize: '0.8rem' }}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
+
+              {/* Custom Monthly Installment Plan Builder */}
+              {planForm.type === 'custom' && (
+                <div style={{
+                  background: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1e293b' }}>
+                      Configure Custom Monthly Installment Amounts ({customMilestones.length} Milestones)
+                    </span>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <button
+                        type="button"
+                        onClick={handleAddMilestone}
+                        style={{
+                          padding: '4px 10px',
+                          background: '#e0f2fe',
+                          border: '1px solid #bae6fd',
+                          color: '#0284c7',
+                          borderRadius: '4px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        + Add Month / Milestone
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleAutoBalanceLastMilestone}
+                        style={{
+                          padding: '4px 10px',
+                          background: '#f0fdf4',
+                          border: '1px solid #bbf7d0',
+                          color: '#16a34a',
+                          borderRadius: '4px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Auto-Balance Final Month
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {customMilestones.map((m, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '2fr 1.2fr 1.5fr auto',
+                          gap: '8px',
+                          alignItems: 'center',
+                          background: '#ffffff',
+                          padding: '8px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #e2e8f0'
+                        }}
+                      >
+                        <input
+                          type="text"
+                          placeholder="e.g. Month 1: Booking Token"
+                          value={m.name}
+                          onChange={(e) => handleMilestoneChange(idx, 'name', e.target.value)}
+                          style={{ fontSize: '0.8rem', padding: '5px 8px' }}
+                        />
+                        <input
+                          type="date"
+                          value={m.dueDate}
+                          onChange={(e) => handleMilestoneChange(idx, 'dueDate', e.target.value)}
+                          style={{ fontSize: '0.8rem', padding: '5px 8px' }}
+                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b' }}>₹</span>
+                          <input
+                            type="number"
+                            step="10000"
+                            placeholder="Amount (₹)"
+                            value={m.amount}
+                            onChange={(e) => handleMilestoneChange(idx, 'amount', e.target.value)}
+                            style={{ fontSize: '0.82rem', fontWeight: '700', width: '100%', padding: '5px 8px' }}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMilestone(idx)}
+                          style={{
+                            background: '#fee2e2',
+                            color: '#dc2626',
+                            border: 'none',
+                            borderRadius: '4px',
+                            padding: '6px 10px',
+                            cursor: 'pointer',
+                            fontSize: '0.75rem',
+                            fontWeight: '700'
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Allocation Validation Bar */}
+                  {(() => {
+                    const customTotal = customMilestones.reduce((sum, m) => sum + (Number(m.amount) || 0), 0);
+                    const totalCost = Number(planForm.totalAmount) || 0;
+                    const diff = totalCost - customTotal;
+                    const isBalanced = diff === 0;
+
+                    return (
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: isBalanced ? '#f0fdf4' : '#fffbeb',
+                        border: `1px solid ${isBalanced ? '#86efac' : '#fde68a'}`,
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        fontSize: '0.78rem'
+                      }}>
+                        <span style={{ color: isBalanced ? '#166534' : '#92400e', fontWeight: '700' }}>
+                          Custom Milestones Sum: {formatINR(customTotal)} / Deal Value: {formatINR(totalCost)}
+                        </span>
+                        <span style={{ color: isBalanced ? '#16a34a' : '#d97706', fontWeight: '800' }}>
+                          {isBalanced ? '✓ 100% Balanced & Verified' : `Difference: ${diff > 0 ? `₹${diff.toLocaleString('en-IN')} unallocated` : `₹${Math.abs(diff).toLocaleString('en-IN')} exceeded`}`}
+                        </span>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
                 <button
                   type="button"
-                  onClick={() => onSetupPaymentPlan(salesLead._id, planForm)}
+                  onClick={() => {
+                    if (planForm.type === 'custom') {
+                      onSetupPaymentPlan(salesLead._id, { ...planForm, customInstallments: customMilestones });
+                    } else {
+                      onSetupPaymentPlan(salesLead._id, planForm);
+                    }
+                  }}
                   style={{
-                    padding: '7px 16px',
+                    padding: '8px 18px',
                     background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
-                    color: '#111827',
+                    color: '#ffffff',
                     fontWeight: '700',
-                    fontSize: '0.8rem',
+                    fontSize: '0.82rem',
                     borderRadius: 'var(--radius-sm)',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 4px rgba(139,92,246,0.25)'
                   }}
                 >
-                  Generate Milestone Schedule
+                  Save &amp; Generate Milestone Schedule
                 </button>
               </div>
             </div>
@@ -1130,6 +1383,39 @@ export const SalesDetailModal = ({
             }}
             style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
           >
+            <div>
+              <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
+                Select Milestone / Installment *
+              </label>
+              <select
+                value={payForm.installmentNumber}
+                onChange={(e) => {
+                  const num = Number(e.target.value);
+                  const inst = installments.find(i => i.installmentNumber === num);
+                  setPayForm({
+                    ...payForm,
+                    installmentNumber: num,
+                    paidAmount: inst && (inst.remainingAmount > 0) ? inst.remainingAmount : (inst?.amount || 0)
+                  });
+                }}
+                style={{ width: '100%', fontSize: '0.85rem' }}
+              >
+                {installments.map((inst) => {
+                  const isZeroBalance = (inst.remainingAmount || 0) <= 0 && inst.status === 'paid';
+                  return (
+                    <option
+                      key={inst.installmentNumber}
+                      value={inst.installmentNumber}
+                      disabled={isZeroBalance}
+                      style={{ color: isZeroBalance ? '#9ca3af' : '#111827', background: isZeroBalance ? '#f3f4f6' : '#ffffff' }}
+                    >
+                      Installment #{inst.installmentNumber} ({inst.name || `Milestone ${inst.installmentNumber}`}) — Due: {formatINR(inst.amount)} | Balance: {formatINR(inst.remainingAmount || 0)} {isZeroBalance ? '✓ (FULLY PAID - NO BALANCE)' : ''}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
             <div>
               <label style={{ fontSize: '0.75rem', color: '#374151', display: 'block', marginBottom: '3px' }}>
                 Payment Amount (₹) *

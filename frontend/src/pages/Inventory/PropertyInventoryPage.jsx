@@ -6,6 +6,8 @@ import { ManualBuildingModal } from '../../components/manual/ManualBuildingModal
 import { ManualFloorModal } from '../../components/manual/ManualFloorModal.jsx';
 import { ManualFlatModal } from '../../components/manual/ManualFlatModal.jsx';
 import { FlatDetailModal } from '../../components/inventory/FlatDetailModal.jsx';
+import { ImportInventoryModal } from '../../components/inventory/ImportInventoryModal.jsx';
+import { BulkEnrollRentalSalesModal } from '../../components/inventory/BulkEnrollRentalSalesModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 
 import {
@@ -24,7 +26,11 @@ import {
   X,
   RotateCcw,
   CheckCircle2,
-  Clock
+  Clock,
+  FileSpreadsheet,
+  ShieldCheck,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 
 export const PropertyInventoryPage = () => {
@@ -54,6 +60,31 @@ export const PropertyInventoryPage = () => {
   const [editingFlat, setEditingFlat] = useState(null);
   const [selectedFlatForDetail, setSelectedFlatForDetail] = useState(null);
   const [isFlatDetailOpen, setIsFlatDetailOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [selectedFlatIds, setSelectedFlatIds] = useState([]);
+  const [isBulkEnrollModalOpen, setIsBulkEnrollModalOpen] = useState(false);
+
+  // Toggle Flat Selection
+  const handleToggleSelectFlat = (flatId, e) => {
+    if (e) e.stopPropagation();
+    setSelectedFlatIds((prev) =>
+      prev.includes(flatId) ? prev.filter((id) => id !== flatId) : [...prev, flatId]
+    );
+  };
+
+  const handleSelectAllVisible = () => {
+    const visibleIds = filteredFlats.map((f) => f._id || f.id);
+    const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedFlatIds.includes(id));
+    if (allSelected) {
+      setSelectedFlatIds((prev) => prev.filter((id) => !visibleIds.includes(id)));
+    } else {
+      setSelectedFlatIds((prev) => Array.from(new Set([...prev, ...visibleIds])));
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSelectedFlatIds([]);
+  };
 
   // Fetch Projects
   const fetchProjects = async () => {
@@ -129,7 +160,8 @@ export const PropertyInventoryPage = () => {
   const rentalCount = flats.filter(f => f.takenForRental || (f.status || '').toLowerCase() === 'leased').length;
 
   const uniqueFloors = Array.from(new Set(flats.map(f => f.floor).filter(f => f !== undefined && f !== null))).sort((a, b) => a - b);
-  const uniqueBhkTypes = Array.from(new Set(flats.map(f => f.bhkType).filter(Boolean))).sort();
+  const standardBhkOptions = ['1BHK', '2BHK', '3BHK', '4BHK', 'Service Apartment', 'Studio', 'Penthouse', 'Villa', 'Commercial'];
+  const uniqueBhkTypes = Array.from(new Set([...standardBhkOptions, ...flats.map(f => f.bhkType).filter(Boolean)]));
 
   // Filtered Flats List
   const filteredFlats = flats.filter((flat) => {
@@ -260,11 +292,39 @@ export const PropertyInventoryPage = () => {
   };
 
   const handleDeleteFlat = async (flat) => {
-    if (window.confirm(`Are you sure you want to delete flat "${flat.flatNumber}"?`)) {
+    if (window.confirm(`Are you sure you want to delete flat "${flat.flatNumber}"? This will permanently remove its sales allotment, payment records, and rental contract.`)) {
       try {
         const fId = flat._id || flat.id;
-        await projectService.deleteFlat(fId);
+        const res = await projectService.deleteFlat(fId);
         fetchFlats();
+        fetchProjects();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  };
+
+  const handleBulkDeleteSelected = async () => {
+    if (selectedFlatIds.length === 0) return;
+    if (window.confirm(`Are you sure you want to delete ${selectedFlatIds.length} selected unit(s)? This will also permanently delete all associated sales allotments, agreements, and rental contracts.`)) {
+      try {
+        const res = await projectService.bulkDeleteFlats(selectedFlatIds);
+        setSelectedFlatIds([]);
+        fetchFlats();
+        fetchProjects();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  };
+
+  const handleWipeAllFlats = async () => {
+    if (window.confirm('⚠️ Are you sure you want to wipe ALL flats and all sales/rental contracts from the database?')) {
+      try {
+        const res = await projectService.deleteAllFlats();
+        setSelectedFlatIds([]);
+        fetchFlats();
+        fetchProjects();
       } catch (err) {
         alert(err.message);
       }
@@ -289,25 +349,47 @@ export const PropertyInventoryPage = () => {
           </p>
         </div>
 
-        <button
-          onClick={fetchProjects}
-          title="Refresh Inventory"
-          style={{
-            background: '#ffffff',
-            border: '1px solid #dadce0',
-            color: '#414754',
-            padding: '8px 14px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '0.82rem',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}
-        >
-          <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh Sites
-        </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            onClick={handleWipeAllFlats}
+            title="Wipe all flats, sales, and rentals"
+            style={{
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#dc2626',
+              padding: '8px 14px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '0.82rem',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Trash2 size={14} /> Wipe All Inventory
+          </button>
+
+          <button
+            onClick={fetchProjects}
+            title="Refresh Inventory"
+            style={{
+              background: '#ffffff',
+              border: '1px solid #dadce0',
+              color: '#414754',
+              padding: '8px 14px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '0.82rem',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh Sites
+          </button>
+        </div>
       </div>
 
       {/* Breadcrumb Navigation Trail */}
@@ -390,6 +472,26 @@ export const PropertyInventoryPage = () => {
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setIsImportModalOpen(true)}
+            style={{
+              background: '#16a34a',
+              color: '#ffffff',
+              padding: '8px 14px',
+              borderRadius: '6px',
+              fontSize: '0.82rem',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              border: 'none',
+              boxShadow: '0 1px 2px rgba(22,163,74,0.2)'
+            }}
+          >
+            <FileSpreadsheet size={15} /> Import Excel / Legacy Data
+          </button>
+
           <button
             onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
             style={{
@@ -478,6 +580,63 @@ export const PropertyInventoryPage = () => {
       {/* TIER 1: ALL PROJECTS */}
       {!selectedProject && (
         <div>
+          {/* EXCEL UPLOAD QUICK ACTION BANNER */}
+          <div style={{
+            background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
+            border: '1px solid #86efac',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '10px',
+                background: '#16a34a',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <FileSpreadsheet size={22} />
+              </div>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#14532d' }}>
+                  Have Previous Inventory or Legacy Excel Sheets?
+                </h4>
+                <p style={{ margin: '2px 0 0', fontSize: '0.82rem', color: '#166534' }}>
+                  Upload your Excel file to automatically create buildings, floors, flats, buyer allotments, and 3-Year Rental contracts in one click.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsImportModalOpen(true)}
+              style={{
+                background: '#16a34a',
+                color: '#ffffff',
+                border: 'none',
+                padding: '9px 18px',
+                borderRadius: '8px',
+                fontWeight: '700',
+                fontSize: '0.86rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 4px rgba(22,163,74,0.3)'
+              }}
+            >
+              <FileSpreadsheet size={16} /> Upload Excel File
+            </button>
+          </div>
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: '#191c1d' }}>
               Projects Overview ({projects.length})
@@ -998,8 +1157,36 @@ export const PropertyInventoryPage = () => {
                     </button>
                   </div>
 
-                  {/* Summary & Clear Button */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  {/* Summary & Selection Controls */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={handleSelectAllVisible}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1px solid #cbd5e1',
+                        color: '#334155',
+                        padding: '5px 10px',
+                        borderRadius: '6px',
+                        fontSize: '0.78rem',
+                        fontWeight: '700',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {filteredFlats.length > 0 && filteredFlats.every((f) => selectedFlatIds.includes(f._id || f.id)) ? (
+                        <>
+                          <CheckSquare size={14} color="#1a73e8" /> Deselect All ({filteredFlats.length})
+                        </>
+                      ) : (
+                        <>
+                          <Square size={14} color="#64748b" /> Select All ({filteredFlats.length})
+                        </>
+                      )}
+                    </button>
+
                     <span style={{ fontSize: '0.82rem', color: '#5f6368', fontWeight: '500' }}>
                       Showing <strong>{filteredFlats.length}</strong> of <strong>{flats.length}</strong> flats
                     </span>
@@ -1103,34 +1290,81 @@ export const PropertyInventoryPage = () => {
                   )}
 
                   {/* BHK Configuration Dropdown */}
-                  {uniqueBhkTypes.length > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontSize: '0.78rem', color: '#5f6368', fontWeight: '500' }}>Configuration:</span>
-                      <select
-                        value={bhkFilter}
-                        onChange={(e) => setBhkFilter(e.target.value)}
-                        style={{
-                          padding: '6px 10px',
-                          borderRadius: '6px',
-                          border: '1px solid #dadce0',
-                          fontSize: '0.82rem',
-                          background: '#ffffff',
-                          color: '#3c4043',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <option value="all">All BHKs</option>
-                        {uniqueBhkTypes.map((bhk) => (
-                          <option key={bhk} value={bhk}>{bhk}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#5f6368', fontWeight: '500' }}>Flat Type:</span>
+                    <select
+                      value={bhkFilter}
+                      onChange={(e) => setBhkFilter(e.target.value)}
+                      style={{
+                        padding: '6px 10px',
+                        borderRadius: '6px',
+                        border: '1px solid #dadce0',
+                        fontSize: '0.82rem',
+                        background: '#ffffff',
+                        color: '#3c4043',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="all">All Flat Types</option>
+                      {uniqueBhkTypes.map((bhk) => (
+                        <option key={bhk} value={bhk}>{bhk}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
               {/* Flats Listing / Empty State */}
-              {filteredFlats.length === 0 ? (
+              {flats.length === 0 ? (
+                <div className="g-card" style={{ textAlign: 'center', padding: '50px 20px', background: '#ffffff', borderRadius: '12px', border: '2px dashed #86efac' }}>
+                  <FileSpreadsheet size={48} style={{ margin: '0 auto 12px', color: '#16a34a' }} />
+                  <h4 style={{ color: '#0f172a', fontWeight: '800', marginBottom: '6px', fontSize: '1.15rem' }}>
+                    No Flats in {selectedBuilding.buildingName} Yet
+                  </h4>
+                  <p style={{ fontSize: '0.86rem', color: '#64748b', marginBottom: '20px', maxWidth: '480px', margin: '0 auto 20px' }}>
+                    Upload your inventory Excel sheet with flat numbers, floors, owner names, deal prices, and 3-Year rental terms to instantly populate everything!
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => setIsImportModalOpen(true)}
+                      style={{
+                        background: '#16a34a',
+                        color: '#ffffff',
+                        padding: '10px 20px',
+                        borderRadius: '8px',
+                        fontWeight: '700',
+                        fontSize: '0.88rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
+                        border: 'none',
+                        boxShadow: '0 2px 6px rgba(22,163,74,0.3)'
+                      }}
+                    >
+                      <FileSpreadsheet size={17} /> Upload Excel / Legacy Sheet
+                    </button>
+                    <button
+                      onClick={() => setIsFloorModalOpen(true)}
+                      style={{
+                        background: '#ffffff',
+                        color: '#1a73e8',
+                        border: '1px solid #1a73e8',
+                        padding: '10px 18px',
+                        borderRadius: '8px',
+                        fontWeight: '700',
+                        fontSize: '0.88rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      <Plus size={16} /> Add Floor &amp; Flats Manually
+                    </button>
+                  </div>
+                </div>
+              ) : filteredFlats.length === 0 ? (
                 <div className="g-card" style={{ textAlign: 'center', padding: '50px 20px', background: '#ffffff', borderRadius: '12px', border: '1px solid #dadce0' }}>
                   <Filter size={40} style={{ opacity: 0.35, margin: '0 auto 12px', color: '#727785' }} />
                   <h4 style={{ color: '#191c1d', fontWeight: '700', marginBottom: '6px', fontSize: '1.05rem' }}>
@@ -1160,9 +1394,13 @@ export const PropertyInventoryPage = () => {
                 </div>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '14px' }}>
-                  {filteredFlats.map((flat) => (
+                  {filteredFlats.map((flat) => {
+                    const fId = flat._id || flat.id;
+                    const isSelected = selectedFlatIds.includes(fId);
+
+                    return (
                     <div
-                      key={flat._id || flat.id}
+                      key={fId}
                       className="g-card"
                     onClick={() => {
                       setSelectedFlatForDetail(flat);
@@ -1175,34 +1413,48 @@ export const PropertyInventoryPage = () => {
                       gap: '10px',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      border: '1px solid #dadce0',
+                      border: isSelected ? '2px solid #1a73e8' : '1px solid #dadce0',
+                      background: isSelected ? '#f4f8fe' : '#ffffff',
                       position: 'relative'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.boxShadow = '0 6px 18px rgba(26, 115, 232, 0.12)';
-                      e.currentTarget.style.borderColor = '#1a73e8';
+                      if (!isSelected) e.currentTarget.style.borderColor = '#1a73e8';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.borderColor = '#dadce0';
+                      if (!isSelected) e.currentTarget.style.borderColor = '#dadce0';
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => handleToggleSelectFlat(fId, e)}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            cursor: 'pointer',
+                            accentColor: '#1a73e8'
+                          }}
+                          title="Select unit for bulk rental & sales enrollment"
+                        />
                         <div style={{
-                          width: '32px',
-                          height: '32px',
+                          width: '30px',
+                          height: '30px',
                           borderRadius: '6px',
-                          background: '#e8f0fe',
+                          background: isSelected ? '#d8e2ff' : '#e8f0fe',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           color: '#1a73e8',
                           fontWeight: '800'
                         }}>
-                          <Home size={16} />
+                          <Home size={15} />
                         </div>
                         <div>
                           <span style={{ fontSize: '1.05rem', fontWeight: '700', color: '#191c1d' }}>{flat.flatNumber}</span>
@@ -1277,8 +1529,9 @@ export const PropertyInventoryPage = () => {
                       </div>
                     </div>
                   </div>
-                ))}
-                </div>
+                );
+              })}
+              </div>
               )}
             </div>
           )}
@@ -1318,6 +1571,90 @@ export const PropertyInventoryPage = () => {
         flat={editingFlat}
       />
 
+      {/* FLOATING BULK SELECTION ACTION BAR */}
+      {selectedFlatIds.length > 0 && (
+        <div style={{
+          position: 'sticky',
+          bottom: '24px',
+          zIndex: 40,
+          background: '#0f172a',
+          color: '#ffffff',
+          padding: '12px 24px',
+          borderRadius: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+          flexWrap: 'wrap',
+          gap: '12px',
+          animation: 'fadeIn 0.2s ease-in-out'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <span style={{ fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle2 size={18} color="#22c55e" />
+              {selectedFlatIds.length} Unit(s) Selected
+            </span>
+            <button
+              onClick={handleClearSelection}
+              style={{
+                background: '#334155',
+                color: '#e2e8f0',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '5px 12px',
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Clear Selection
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button
+              onClick={handleBulkDeleteSelected}
+              style={{
+                background: '#dc2626',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '9px 16px',
+                fontSize: '0.84rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 8px rgba(220,38,38,0.4)'
+              }}
+            >
+              <Trash2 size={15} /> Delete Selected ({selectedFlatIds.length})
+            </button>
+
+            <button
+              onClick={() => setIsBulkEnrollModalOpen(true)}
+              style={{
+                background: '#16a34a',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '9px 18px',
+                fontSize: '0.86rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 2px 8px rgba(22,163,74,0.4)'
+              }}
+            >
+              <ShieldCheck size={16} /> Enroll Selected in 3-Year Rental &amp; Sales Allotment
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* COMPREHENSIVE FLAT DETAIL & 3-YEAR RENTAL LOCK-IN MODAL */}
       <FlatDetailModal
         isOpen={isFlatDetailOpen}
@@ -1332,6 +1669,32 @@ export const PropertyInventoryPage = () => {
         onEditFlat={(flatToEdit) => {
           setEditingFlat(flatToEdit);
           setIsFlatModalOpen(true);
+        }}
+      />
+
+      {/* EXCEL INVENTORY & LEGACY DATA IMPORT MODAL */}
+      <ImportInventoryModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        projects={projects}
+        defaultProjectId={selectedProject?._id || selectedProject?.id || ''}
+        onImportSuccess={() => {
+          fetchProjects();
+          if (selectedBuilding) fetchFlats();
+        }}
+      />
+
+      {/* BULK ENROLL SELECTED FLATS MODAL */}
+      <BulkEnrollRentalSalesModal
+        isOpen={isBulkEnrollModalOpen}
+        onClose={() => setIsBulkEnrollModalOpen(false)}
+        selectedFlats={flats.filter((f) => selectedFlatIds.includes(f._id || f.id))}
+        building={selectedBuilding}
+        project={selectedProject}
+        onSuccess={() => {
+          setSelectedFlatIds([]);
+          fetchFlats();
+          fetchProjects();
         }}
       />
     </div>

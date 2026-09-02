@@ -6,7 +6,11 @@ import {
   createFlat,
   updateFlat,
   deleteFlat,
-  uploadFlatBlueprint
+  uploadFlatBlueprint,
+  importFlatsFromExcel,
+  bulkEnrollRentalSales,
+  bulkDeleteFlats,
+  deleteAllFlats
 } from '../controllers/flatController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
@@ -21,6 +25,12 @@ const upload = multer({
 
 // Apply auth to all flat routes
 router.use(authenticateToken);
+
+// Bulk Excel / Legacy Import & Bulk Enrollment & Bulk Deletion Endpoints
+router.post('/import-excel', authorizePermission('inventory:create', 'inventory:manage'), upload.single('excelFile'), importFlatsFromExcel);
+router.post('/bulk-enroll-rental-sales', authorizePermission('inventory:create', 'inventory:manage', 'sales:create', 'rentals:create'), bulkEnrollRentalSales);
+router.post('/bulk-delete', authorizePermission('inventory:manage'), bulkDeleteFlats);
+router.delete('/delete-all-flats', authorizePermission('inventory:manage'), deleteAllFlats);
 
 // Flats Endpoints
 router.get('/', authorizePermission('inventory:view'), getFlats);

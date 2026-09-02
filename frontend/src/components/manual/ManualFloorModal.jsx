@@ -148,6 +148,8 @@ export const ManualFloorModal = ({
               <option value="2BHK">2 BHK Luxury</option>
               <option value="3BHK">3 BHK Premium</option>
               <option value="4BHK">4 BHK Penthouse</option>
+              <option value="Service Apartment">Service Apartment</option>
+              <option value="Studio">Studio Apartment</option>
               <option value="Villa">Villa / Duplex</option>
               <option value="Commercial">Commercial Office / Shop</option>
             </select>

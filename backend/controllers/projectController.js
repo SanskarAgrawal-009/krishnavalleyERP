@@ -121,7 +121,7 @@ export const addBuilding = async (req, res) => {
   }
 };
 
-// Delete Building from Project
+// Delete Building from Project (with Cascading Deletion)
 export const deleteBuilding = async (req, res) => {
   try {
     const { projectId, buildingId } = req.params;
@@ -129,13 +129,51 @@ export const deleteBuilding = async (req, res) => {
     const project = await Project.findById(projectId);
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
+    // Find all flats in this building
+    const flatsInBuilding = await Flat.find({ buildingId });
+    const flatIds = flatsInBuilding.map(f => f._id);
+
+    if (flatIds.length > 0) {
+      const SalesLead = (await import('../models/SalesLead.js')).default;
+      const RentalManagement = (await import('../models/RentalManagement.js')).default;
+      const Customer = (await import('../models/Customer.js')).default;
+
+      // 1. Delete associated Sales Allotments
+      await SalesLead.deleteMany({ flatId: { $in: flatIds } });
+
+      // 2. Delete associated Rental Contracts
+      await RentalManagement.deleteMany({
+        $or: [
+          { flatId: { $in: flatIds } },
+          { flatIds: { $in: flatIds } }
+        ]
+      });
+
+      // 3. Unlink from Customers
+      await Customer.updateMany(
+        {
+          $or: [
+            { 'ownerDetails.propertyIds': { $in: flatIds } },
+            { 'tenantDetails.leasedPropertyIds': { $in: flatIds } }
+          ]
+        },
+        {
+          $pull: {
+            'ownerDetails.propertyIds': { $in: flatIds },
+            'tenantDetails.leasedPropertyIds': { $in: flatIds }
+          }
+        }
+      );
+
+      // 4. Delete flats
+      await Flat.deleteMany({ buildingId });
+    }
+
     project.buildings.pull({ _id: buildingId });
     const updated = await project.save();
     
-    // Also delete flats associated with this building
-    await Flat.deleteMany({ buildingId });
-    console.log(`[MongoDB] Deleted building ${buildingId} from project ${projectId}`);
-    return res.json({ success: true, data: updated });
+    console.log(`[MongoDB] Deleted building ${buildingId} and ${flatIds.length} flats from project ${projectId}`);
+    return res.json({ success: true, message: `Building and ${flatIds.length} flat(s) deleted successfully`, data: updated });
   } catch (error) {
     console.error('Error deleting building:', error);
     return res.status(500).json({ success: false, message: error.message });

@@ -102,5 +102,15 @@ export const rentalService = {
   addPenalty: (id, data) => request(`/maintenance/penalties`, {
     method: 'POST',
     body: JSON.stringify({ ...data, rentalId: id })
+  }),
+
+  recordOwnerPayout: (id, data) => request(`/rentals/${id}/payout`, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+
+  importRentalLedger: (payload, format = 'single_passbook') => request(`/rentals/import-ledger`, {
+    method: 'POST',
+    body: JSON.stringify({ payload, format })
   })
 };

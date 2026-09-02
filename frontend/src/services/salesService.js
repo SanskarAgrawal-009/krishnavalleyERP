@@ -82,5 +82,18 @@ export const salesService = {
   processCancellation: (id, data) => request(`/sales/${id}/cancel-refund`, {
     method: 'POST',
     body: JSON.stringify(data)
+  }),
+
+  importPreviousPayments: (payments) => request('/sales/import-payments', {
+    method: 'POST',
+    body: JSON.stringify({ payments })
+  }),
+
+  deleteSalesLead: (id) => request(`/sales/${id}`, {
+    method: 'DELETE'
+  }),
+
+  deleteAllSalesLeads: () => request('/sales/delete-all', {
+    method: 'DELETE'
   })
 };

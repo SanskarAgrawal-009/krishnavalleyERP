@@ -122,10 +122,10 @@ export const createRentalContract = async (req, res) => {
     const primaryFlatId = flatId || allFlatIds[0];
     const primaryOwnerId = ownerId || (Array.isArray(leasedUnits) && leasedUnits[0]?.ownerId) || null;
 
-    if (allFlatIds.length === 0 || !primaryOwnerId || !tenantId) {
+    if (allFlatIds.length === 0 || !primaryOwnerId) {
       return res.status(400).json({
         success: false,
-        message: 'At least one flat, owner, and tenant are required'
+        message: 'At least one flat and registered owner are required'
       });
     }
 
@@ -224,6 +224,42 @@ export const createRentalContract = async (req, res) => {
       status: contractStatus,
       remarks: remarks || ''
     });
+
+    if (isRentBackEnabled && Number(rentBack?.monthlyRent) > 0) {
+      const mRent = Number(rentBack.monthlyRent);
+      const tenure = 36;
+      const totalAmount = mRent * tenure;
+      const startDate = rentBack.startDate ? new Date(rentBack.startDate) : new Date();
+      const dueDay = Number(rentBack.rentDueDay) || 25;
+
+      const entries = [];
+      for (let m = 1; m <= tenure; m++) {
+        const d = new Date(startDate);
+        d.setMonth(d.getMonth() + (m - 1));
+        d.setDate(dueDay);
+
+        entries.push({
+          monthIndex: m,
+          dueDate: d,
+          payoutAmount: mRent,
+          tdsDeducted: 0,
+          netAmountPaid: 0,
+          status: 'due',
+          paymentReference: '',
+          remarks: ''
+        });
+      }
+
+      rentalContract.rentBackLedger = {
+        tenureMonths: tenure,
+        monthlyRent: mRent,
+        dueDay,
+        totalTenureAmount: totalAmount,
+        totalPaidToOwner: 0,
+        remainingPayableToOwner: totalAmount,
+        entries
+      };
+    }
 
     const saved = await rentalContract.save();
 
@@ -381,6 +417,14 @@ export const getRentalContracts = async (req, res) => {
         (c.rentBack?.agreementNumber && c.rentBack.agreementNumber.toLowerCase().includes(s)) ||
         (c.tenantAgreement?.agreementNumber && c.tenantAgreement.agreementNumber.toLowerCase().includes(s))
       );
+    }
+
+    // Ensure rentBackLedger is initialized for rentBack enabled contracts
+    for (const c of contracts) {
+      if (c.rentBack?.enabled && (!c.rentBackLedger || !c.rentBackLedger.entries || c.rentBackLedger.entries.length === 0)) {
+        c.rentBackLedger = generateDefaultRentBackLedger(c);
+        await c.save();
+      }
     }
 
     return res.json({ success: true, count: contracts.length, data: contracts });
@@ -621,6 +665,299 @@ export const terminateRentalContract = async (req, res) => {
     return res.json({ success: true, message: 'Rental contract terminated successfully', data: contract });
   } catch (error) {
     console.error('Error terminating rental contract:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Helper to generate 36-Month Owner Rental Ledger
+export const generateDefaultRentBackLedger = (contractData) => {
+  const tenureMonths = Number(contractData.tenureMonths || contractData.rentBack?.tenureMonths) || 36;
+  const monthlyRent = Number(contractData.monthlyRent || contractData.rentBack?.monthlyRent) || 0;
+  const dueDay = Number(contractData.dueDay || contractData.rentBack?.rentDueDay) || 25;
+  const startDate = contractData.startDate ? new Date(contractData.startDate) : (contractData.rentBack?.startDate ? new Date(contractData.rentBack.startDate) : new Date());
+  const mouDate = contractData.mouDate ? new Date(contractData.mouDate) : (contractData.rentBack?.mouDate ? new Date(contractData.rentBack.mouDate) : new Date(startDate.getTime() - 30 * 86400000));
+  
+  const endDate = new Date(startDate);
+  endDate.setMonth(endDate.getMonth() + tenureMonths);
+
+  const totalTenureAmount = monthlyRent * tenureMonths;
+
+  const entries = [];
+  for (let i = 1; i <= tenureMonths; i++) {
+    const dueDate = new Date(startDate.getFullYear(), startDate.getMonth() + (i - 1), dueDay);
+    entries.push({
+      monthIndex: i,
+      dueDate,
+      paymentDate: null,
+      paymentMode: 'NEFT',
+      referenceNumber: '',
+      grossAmount: monthlyRent,
+      tdsDeducted: 0,
+      netAmountPaid: 0,
+      cumulativePaid: 0,
+      remainingTenureBalance: totalTenureAmount,
+      status: 'upcoming',
+      remarks: ''
+    });
+  }
+
+  return {
+    mouDate,
+    startDate,
+    endDate,
+    dueDay,
+    tenureMonths,
+    monthlyRent,
+    totalTenureAmount,
+    totalPaidToOwner: 0,
+    remainingPayableToOwner: totalTenureAmount,
+    entries
+  };
+};
+
+// Record Monthly Owner Rental Payout & Auto-Deduct from Total Tenure Balance
+export const recordOwnerRentalPayout = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      monthIndex,
+      paymentDate,
+      paymentMode,
+      referenceNumber,
+      amountPaid,
+      tdsDeducted,
+      remarks
+    } = req.body;
+
+    const contract = await RentalManagement.findById(id);
+    if (!contract) return res.status(404).json({ success: false, message: 'Rental contract not found' });
+
+    // If rentBackLedger doesn't exist, initialize it
+    if (!contract.rentBackLedger || !contract.rentBackLedger.entries || contract.rentBackLedger.entries.length === 0) {
+      contract.rentBackLedger = generateDefaultRentBackLedger(contract);
+    }
+
+    const mIdx = Number(monthIndex);
+    const entry = contract.rentBackLedger.entries.find(e => e.monthIndex === mIdx);
+    if (!entry) {
+      return res.status(404).json({ success: false, message: `Month index #${monthIndex} not found in ledger` });
+    }
+
+    const netPaid = Number(amountPaid) || 0;
+    const tds = Number(tdsDeducted) || 0;
+    const grossPaid = netPaid + tds;
+
+    entry.paymentDate = paymentDate ? new Date(paymentDate) : new Date();
+    entry.paymentMode = paymentMode || 'NEFT';
+    entry.referenceNumber = referenceNumber || `PAY-RENT-${contract._id.toString().slice(-4)}-M${mIdx}`;
+    entry.netAmountPaid = netPaid;
+    entry.tdsDeducted = tds;
+    entry.grossAmount = grossPaid > 0 ? grossPaid : (entry.grossAmount || contract.rentBackLedger.monthlyRent);
+    entry.status = (netPaid > 0 || grossPaid > 0) ? 'paid' : 'upcoming';
+    entry.remarks = remarks || '';
+
+    // Recalculate full ledger totals & running balances
+    const totalTenure = Number(contract.rentBackLedger.totalTenureAmount) || (contract.rentBackLedger.monthlyRent * (contract.rentBackLedger.tenureMonths || 36));
+    let cumPaid = 0;
+
+    contract.rentBackLedger.entries.forEach(e => {
+      const paid = Number(e.netAmountPaid || 0) + Number(e.tdsDeducted || 0);
+      cumPaid += paid;
+      e.cumulativePaid = cumPaid;
+      e.remainingTenureBalance = Math.max(0, totalTenure - cumPaid);
+      if (paid > 0) {
+        e.status = 'paid';
+      }
+    });
+
+    contract.rentBackLedger.totalPaidToOwner = cumPaid;
+    contract.rentBackLedger.remainingPayableToOwner = Math.max(0, totalTenure - cumPaid);
+
+    await contract.save();
+
+    const populated = await RentalManagement.findById(contract._id)
+      .populate('projectId', 'projectName projectCode')
+      .populate('flatId', 'flatNumber status takenForRental')
+      .populate('ownerId', 'name mobileNo email address');
+
+    return res.json({
+      success: true,
+      message: `Month #${mIdx} payout of ₹${grossPaid.toLocaleString('en-IN')} recorded successfully. Remaining Balance: ₹${contract.rentBackLedger.remainingPayableToOwner.toLocaleString('en-IN')}`,
+      data: populated
+    });
+  } catch (error) {
+    console.error('Error recording owner payout:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Bulk / Single Excel Import of Owner Rental Ledger
+export const importOwnerRentalLedger = async (req, res) => {
+  try {
+    const { payload, format } = req.body;
+    if (!payload) return res.status(400).json({ success: false, message: 'No payload data provided' });
+
+    const summary = {
+      totalProcessed: 0,
+      totalPayoutsRecorded: 0,
+      totalAmountDisbursed: 0,
+      unitsUpdated: [],
+      errors: []
+    };
+
+    if (format === 'single_passbook' || payload.flatNo) {
+      const {
+        flatNo,
+        ownerName,
+        mouDate,
+        startDate,
+        endDate,
+        dueDay,
+        monthlyRent,
+        entries
+      } = payload;
+
+      const flatNumber = String(flatNo || '').trim();
+      if (!flatNumber) return res.status(400).json({ success: false, message: 'Flat number is required' });
+
+      const flat = await Flat.findOne({ flatNumber: new RegExp(`^${flatNumber}$`, 'i') });
+      if (!flat) return res.status(404).json({ success: false, message: `Flat ${flatNumber} not found in inventory` });
+
+      // Find or create Owner Customer
+      let owner = null;
+      if (ownerName) {
+        owner = await Customer.findOne({ name: new RegExp(`^${ownerName}$`, 'i'), customerType: 'owner' });
+        if (!owner) {
+          owner = new Customer({
+            customerType: 'owner',
+            name: ownerName,
+            mobileNo: `+91 98${Math.floor(10000000 + Math.random() * 90000000)}`,
+            ownerDetails: { propertyIds: [flat._id], ownershipType: 'individual', ownershipPercentage: 100 },
+            status: 'active'
+          });
+          await owner.save();
+        }
+      }
+
+      let contract = await RentalManagement.findOne({ flatId: flat._id });
+      if (!contract) {
+        contract = new RentalManagement({
+          projectId: flat.projectId,
+          buildingId: flat.buildingId,
+          flatId: flat._id,
+          flatIds: [flat._id],
+          ownerId: owner?._id || flat.ownerId,
+          rentBack: {
+            enabled: true,
+            agreementNumber: `RB-${flatNumber}-${Date.now().toString().slice(-4)}`,
+            mouDate: mouDate ? new Date(mouDate) : new Date(),
+            startDate: startDate ? new Date(startDate) : new Date(),
+            endDate: endDate ? new Date(endDate) : new Date(Date.now() + 36 * 30 * 86400000),
+            monthlyRent: Number(monthlyRent) || 31000,
+            rentDueDay: Number(dueDay) || 25,
+            status: 'active'
+          },
+          status: 'rent_back_active'
+        });
+      }
+
+      // Build 36 entries
+      const mRent = Number(monthlyRent) || contract.rentBack?.monthlyRent || 31000;
+      const tenure = 36;
+      const totalTenure = mRent * tenure;
+      const parsedStartDate = startDate ? new Date(startDate) : (contract.rentBack?.startDate || new Date());
+      const day = Number(dueDay) || 25;
+
+      const scheduleEntries = [];
+      let totalPaid = 0;
+      let cumPaid = 0;
+
+      for (let i = 1; i <= tenure; i++) {
+        const dueDate = new Date(parsedStartDate.getFullYear(), parsedStartDate.getMonth() + (i - 1), day);
+        const userRow = (entries || []).find(e => Number(e.sNo || e.monthIndex) === i);
+
+        let netPaid = 0;
+        let tds = 0;
+        let pDate = null;
+        let pMode = 'NEFT';
+        let refNo = '';
+        let rem = '';
+        let isPaid = false;
+
+        if (userRow && (Number(userRow.amountPaid || userRow.netAmountPaid) > 0 || userRow.paymentDate)) {
+          netPaid = Number(userRow.netAmountPaid || userRow.amountPaid) || 0;
+          tds = Number(userRow.tdsDeducted) || 0;
+          pDate = userRow.paymentDate ? new Date(userRow.paymentDate) : dueDate;
+          pMode = userRow.paymentMode || 'NEFT';
+          refNo = userRow.referenceNumber || userRow.refNo || `RCP-${flatNumber}-M${i}`;
+          rem = userRow.remarks || userRow.remark || '';
+          isPaid = netPaid > 0 || tds > 0;
+        }
+
+        const gross = isPaid ? (netPaid + tds) : mRent;
+        const actualPaid = isPaid ? (netPaid + tds) : 0;
+        cumPaid += actualPaid;
+        totalPaid += actualPaid;
+
+        scheduleEntries.push({
+          monthIndex: i,
+          dueDate,
+          paymentDate: pDate,
+          paymentMode: pMode,
+          referenceNumber: refNo,
+          grossAmount: gross,
+          tdsDeducted: tds,
+          netAmountPaid: netPaid,
+          cumulativePaid: cumPaid,
+          remainingTenureBalance: Math.max(0, totalTenure - cumPaid),
+          status: isPaid ? 'paid' : 'upcoming',
+          remarks: rem
+        });
+      }
+
+      contract.rentBackLedger = {
+        mouDate: mouDate ? new Date(mouDate) : new Date(),
+        startDate: parsedStartDate,
+        endDate: endDate ? new Date(endDate) : new Date(parsedStartDate.getTime() + 36 * 30 * 86400000),
+        dueDay: day,
+        tenureMonths: tenure,
+        monthlyRent: mRent,
+        totalTenureAmount: totalTenure,
+        totalPaidToOwner: totalPaid,
+        remainingPayableToOwner: Math.max(0, totalTenure - totalPaid),
+        entries: scheduleEntries
+      };
+
+      contract.rentBack.enabled = true;
+      contract.rentBack.monthlyRent = mRent;
+      contract.rentBack.rentDueDay = day;
+      if (mouDate) contract.rentBack.mouDate = new Date(mouDate);
+      contract.status = 'rent_back_active';
+
+      await contract.save();
+
+      // Mark Flat as taken for rental
+      await Flat.findByIdAndUpdate(flat._id, { takenForRental: true, isSold: true });
+
+      summary.totalProcessed = 1;
+      summary.totalPayoutsRecorded = scheduleEntries.filter(e => e.status === 'paid').length;
+      summary.totalAmountDisbursed = totalPaid;
+      summary.unitsUpdated.push({
+        flatNumber,
+        ownerName: ownerName || 'Owner',
+        monthlyRent: mRent,
+        totalPaid,
+        remainingBalance: Math.max(0, totalTenure - totalPaid)
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: `Successfully updated Rental Ledger for Flat ${summary.unitsUpdated[0]?.flatNumber || ''}. Recorded ${summary.totalPayoutsRecorded} payouts totaling ₹${summary.totalAmountDisbursed.toLocaleString('en-IN')}.`,
+      data: summary
+    });
+  } catch (error) {
+    console.error('Error importing owner rental ledger:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

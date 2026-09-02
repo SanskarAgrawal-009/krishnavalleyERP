@@ -105,19 +105,19 @@ const RentalManagementSchema = new mongoose.Schema(
 
     // =====================================================
     // TENANT
-    // Existing Customer
+    // (Optional for Pure Owner Rent-Back Agreements)
     // =====================================================
 
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Customer",
-      required: true,
+      required: false,
       index: true,
     },
 
     // =====================================================
     // RENT-BACK
-    // Company takes flat from owner
+    // Company takes flat from owner (Guaranteed Yield)
     // =====================================================
 
     rentBack: {
@@ -131,6 +131,8 @@ const RentalManagementSchema = new mongoose.Schema(
         unique: true,
         sparse: true,
       },
+
+      mouDate: Date,
 
       startDate: Date,
 
@@ -148,6 +150,7 @@ const RentalManagementSchema = new mongoose.Schema(
 
       rentDueDay: {
         type: Number,
+        default: 25,
         min: 1,
         max: 31,
       },
@@ -187,6 +190,80 @@ const RentalManagementSchema = new mongoose.Schema(
         ],
         default: "pending",
       },
+    },
+
+    // =====================================================
+    // 36-MONTH OWNER RENTAL LEDGER / PASSBOOK
+    // =====================================================
+    rentBackLedger: {
+      mouDate: Date,
+      startDate: Date,
+      endDate: Date,
+      dueDay: {
+        type: Number,
+        default: 25
+      },
+      tenureMonths: {
+        type: Number,
+        default: 36
+      },
+      monthlyRent: {
+        type: Number,
+        default: 0
+      },
+      totalTenureAmount: {
+        type: Number,
+        default: 0
+      },
+      totalPaidToOwner: {
+        type: Number,
+        default: 0
+      },
+      remainingPayableToOwner: {
+        type: Number,
+        default: 0
+      },
+      entries: [
+        {
+          monthIndex: {
+            type: Number,
+            required: true
+          },
+          dueDate: Date,
+          paymentDate: Date,
+          paymentMode: {
+            type: String,
+            default: 'NEFT'
+          },
+          referenceNumber: String,
+          grossAmount: {
+            type: Number,
+            default: 0
+          },
+          tdsDeducted: {
+            type: Number,
+            default: 0
+          },
+          netAmountPaid: {
+            type: Number,
+            default: 0
+          },
+          cumulativePaid: {
+            type: Number,
+            default: 0
+          },
+          remainingTenureBalance: {
+            type: Number,
+            default: 0
+          },
+          status: {
+            type: String,
+            enum: ['paid', 'due', 'upcoming', 'partial'],
+            default: 'upcoming'
+          },
+          remarks: String
+        }
+      ]
     },
 
     // =====================================================

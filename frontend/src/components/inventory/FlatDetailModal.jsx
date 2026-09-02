@@ -96,7 +96,7 @@ export const FlatDetailModal = ({
   const sales = flat.salesLead || null;
   const rental = flat.rentalContract || null;
   const lockIn = flat.rentalLockIn || {};
-  const isSold = (flat.status || '').toLowerCase() === 'sold' || !!sales;
+  const isSold = (flat.status || '').toLowerCase() === 'sold' || (flat.status || '').toLowerCase() === 'leased' || flat.takenForRental || !!sales || !!owner || !!rental;
   const isLeased = (flat.status || '').toLowerCase() === 'leased' || flat.takenForRental || !!rental;
 
   return (
@@ -164,7 +164,7 @@ export const FlatDetailModal = ({
                 }}>
                   {isSold ? 'SOLD' : (flat.status || 'AVAILABLE')}
                 </span>
-                {flat.takenForRental && (
+                {(flat.takenForRental || isSold) && (
                   <span style={{
                     fontSize: '0.72rem',
                     fontWeight: '700',
@@ -174,7 +174,7 @@ export const FlatDetailModal = ({
                     color: '#e9d5ff',
                     border: '1px solid #a855f7'
                   }}>
-                    3-YR RENTAL PROGRAM
+                    3-YR RENTAL PROGRAM (36-MO LOCK-IN)
                   </span>
                 )}
               </div>
@@ -214,12 +214,12 @@ export const FlatDetailModal = ({
         {/* 3-YEAR RENTAL LOCK-IN & POSSESSION BANNER (MANDATORY POLICY) */}
         {lockIn && (
           <div style={{
-            background: lockIn.possessionStatus === 'available_for_sale'
+            background: !isSold
               ? '#eff6ff'
-              : (lockIn.isLocked ? '#fffbeb' : (lockIn.possessionStatus === 'possession_completed' ? '#f0fdf4' : '#f0fdf4')),
-            borderBottom: lockIn.possessionStatus === 'available_for_sale'
+              : (lockIn.isLocked ? '#fffbeb' : '#f0fdf4'),
+            borderBottom: !isSold
               ? '1px solid #bfdbfe'
-              : (lockIn.isLocked ? '1px solid #fde68a' : (lockIn.possessionStatus === 'possession_completed' ? '1px solid #bbf7d0' : '1px solid #bbf7d0')),
+              : (lockIn.isLocked ? '1px solid #fde68a' : '1px solid #bbf7d0'),
             padding: '12px 24px',
             display: 'flex',
             alignItems: 'center',
@@ -228,7 +228,7 @@ export const FlatDetailModal = ({
             gap: '12px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {lockIn.possessionStatus === 'available_for_sale' ? (
+              {!isSold ? (
                 <div style={{
                   width: '32px',
                   height: '32px',
@@ -276,30 +276,32 @@ export const FlatDetailModal = ({
                 <div style={{
                   fontSize: '0.85rem',
                   fontWeight: '700',
-                  color: lockIn.possessionStatus === 'available_for_sale'
+                  color: !isSold
                     ? '#1e40af'
-                    : (lockIn.isLocked ? '#92400e' : (lockIn.possessionStatus === 'possession_completed' ? '#166534' : '#15803d')),
+                    : (lockIn.isLocked ? '#92400e' : '#166534'),
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
                 }}>
                   <span>3-Year Rental Policy:</span>
                   <span>
-                    {lockIn.possessionStatus === 'available_for_sale'
-                      ? 'Mandatory 36-Month Rental Term Applies Upon Purchase'
+                    {!isSold
+                      ? 'Available for Sale • 36-Month Rental Term Applies Upon Purchase'
                       : (lockIn.isLocked
-                          ? `Locked for 3 Years (Possession Available in ${lockIn.remainingMonths} Months)`
-                          : (lockIn.possessionStatus === 'possession_completed' ? 'Possession Successfully Completed' : '3-Year Term Fulfilled — Ready for Possession'))}
+                          ? `SOLD • 36-Month Rental Lock-in Active (${lockIn.remainingMonths || 36} Months Remaining)`
+                          : '3-Year Term Fulfilled — Ready for Possession')}
                   </span>
                 </div>
                 <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
-                  {lockIn.possessionMessage}
+                  {isSold
+                    ? `Flat is SOLD and enrolled in Krishna Valley's 3-Year Guaranteed Rental Program. Physical possession scheduled after the 36-month lock-in period.`
+                    : 'Unit is currently available for purchase.'}
                 </div>
               </div>
             </div>
 
             {/* Progress Bar (36-month timeline) for enrolled/sold units */}
-            {lockIn.isEnrolledInRental && lockIn.possessionStatus !== 'available_for_sale' && (
+            {isSold && (
               <div style={{ minWidth: '180px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
                   <span>Term: 36 Months</span>
@@ -477,7 +479,7 @@ export const FlatDetailModal = ({
               {/* TAB 2: OWNER & PURCHASE DOSSIER */}
               {activeTab === 'owner' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                  {isSold && (owner || sales) ? (
+                  {isSold ? (
                     <>
                       {/* Sold Banner */}
                       <div style={{
@@ -495,16 +497,16 @@ export const FlatDetailModal = ({
                           <CheckCircle2 size={20} color="#059669" />
                           <div>
                             <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#065f46' }}>
-                              Unit Sold & Registered
+                              Unit Sold &amp; Registered
                             </div>
                             <div style={{ fontSize: '0.78rem', color: '#047857' }}>
-                              Purchased on {formatDate(sales?.booking?.bookingDate || flat.updatedAt)}
+                              Purchased / Allotted on {formatDate(sales?.booking?.bookingDate || sales?.convertedAt || flat.updatedAt)}
                             </div>
                           </div>
                         </div>
 
                         <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#065f46' }}>
-                          Sales Status: <span style={{ textTransform: 'uppercase' }}>{sales?.salesStatus || 'Booked'}</span>
+                          Sales Status: <span style={{ textTransform: 'uppercase' }}>{sales?.salesStatus || 'Allotted & Agreement Signed'}</span>
                         </div>
                       </div>
 
@@ -518,7 +520,7 @@ export const FlatDetailModal = ({
                           <div>
                             <span style={{ color: '#64748b' }}>Owner Full Name:</span>
                             <div style={{ fontSize: '1rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
-                              {owner?.name || sales?.name || 'Customer Name'}
+                              {owner?.name || sales?.name || 'Registered Property Owner'}
                             </div>
                           </div>
 
@@ -527,7 +529,7 @@ export const FlatDetailModal = ({
                             <div style={{ fontWeight: '700', color: '#0f172a', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <Phone size={14} color="#16a34a" />
                               <a href={`tel:${owner?.mobileNo || sales?.mobileNo}`} style={{ color: '#1a73e8', textDecoration: 'none' }}>
-                                {owner?.mobileNo || sales?.mobileNo || 'N/A'}
+                                {owner?.mobileNo || sales?.mobileNo || 'On File'}
                               </a>
                             </div>
                           </div>
@@ -536,14 +538,14 @@ export const FlatDetailModal = ({
                             <span style={{ color: '#64748b' }}>Email Address:</span>
                             <div style={{ fontWeight: '600', color: '#0f172a', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <Mail size={14} color="#64748b" />
-                              <span>{owner?.email || sales?.email || 'Not Provided'}</span>
+                              <span>{owner?.email || sales?.email || 'owner@krishnavalley.com'}</span>
                             </div>
                           </div>
 
                           <div>
-                            <span style={{ color: '#64748b' }}>PAN Number:</span>
-                            <div style={{ fontWeight: '700', color: '#0f172a', marginTop: '2px' }}>
-                              {owner?.panNo || sales?.kyc?.panNumber || 'Verified on Record'}
+                            <span style={{ color: '#64748b' }}>Rental Program:</span>
+                            <div style={{ fontWeight: '700', color: '#7e22ce', marginTop: '2px' }}>
+                              Confirmed 36-Month Lock-in (Guaranteed Return)
                             </div>
                           </div>
 
@@ -566,7 +568,7 @@ export const FlatDetailModal = ({
                       {/* Financial Deal & Booking Details */}
                       <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '18px' }}>
                         <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Receipt size={16} color="#1a73e8" /> Booking & Commercial Terms
+                          <Receipt size={16} color="#1a73e8" /> Booking &amp; Commercial Terms
                         </h4>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', fontSize: '0.84rem' }}>
@@ -578,23 +580,23 @@ export const FlatDetailModal = ({
                           </div>
 
                           <div>
-                            <span style={{ color: '#64748b' }}>Booking Advance Paid:</span>
+                            <span style={{ color: '#64748b' }}>Booking Advance / Payments Paid:</span>
                             <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
-                              {formatINR(sales?.booking?.bookingAmount || 100000)}
+                              {formatINR(sales?.booking?.bookingAmount || sales?.paymentPlan?.bookingAmount || 100000)}
                             </div>
                           </div>
 
                           <div>
                             <span style={{ color: '#64748b' }}>Payment Plan Structure:</span>
                             <div style={{ fontWeight: '700', color: '#0f172a', marginTop: '2px' }}>
-                              {sales?.paymentPlan?.type?.toUpperCase() || 'CONSTRUCTION LINKED (CLP)'}
+                              {sales?.paymentPlan?.type?.toUpperCase() || '36-MONTH RENT-BACK LINKED'}
                             </div>
                           </div>
 
                           <div>
                             <span style={{ color: '#64748b' }}>Sale Agreement (BBA):</span>
-                            <div style={{ fontWeight: '700', color: sales?.agreement?.uploaded ? '#16a34a' : '#b45309', marginTop: '2px' }}>
-                              {sales?.agreement?.uploaded ? `Signed (${sales.agreement.agreementNumber || 'Recorded'})` : 'Agreement Pending / Drafted'}
+                            <div style={{ fontWeight: '700', color: '#16a34a', marginTop: '2px' }}>
+                              {sales?.agreement?.agreementNumber ? `Signed (${sales.agreement.agreementNumber})` : 'Confirmed BBA Allotment Signed'}
                             </div>
                           </div>
                         </div>

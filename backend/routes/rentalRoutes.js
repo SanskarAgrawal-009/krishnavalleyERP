@@ -13,7 +13,9 @@ import {
   updateAllocation,
   recordDepositPayment,
   terminateRentalContract,
-  deleteRentalContract
+  deleteRentalContract,
+  recordOwnerRentalPayout,
+  importOwnerRentalLedger
 } from '../controllers/rentalController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
@@ -33,12 +35,18 @@ router.use(authenticateToken);
 // Auto-fetch Owner for a Flat
 router.get('/flat-owner/:flatId', authorizePermission('rentals:view'), getOwnerByFlat);
 
+// Bulk Import Rental Ledger from Excel
+router.post('/import-ledger', authorizePermission('rentals:create', 'rentals:manage'), importOwnerRentalLedger);
+
 // Rental Core
 router.post('/', authorizePermission('rentals:create', 'rentals:manage'), createRentalContract);
 router.get('/', authorizePermission('rentals:view'), getRentalContracts);
 router.get('/:id', authorizePermission('rentals:view'), getRentalContractById);
 router.put('/:id', authorizePermission('rentals:manage'), updateRentalContract);
 router.delete('/:id', authorizePermission('rentals:manage'), deleteRentalContract);
+
+// 36-Month Owner Rental Payout
+router.post('/:id/payout', authorizePermission('rentals:manage', 'accounts:manage'), recordOwnerRentalPayout);
 
 // Lifecycle Operations
 router.put('/:id/rent-back', authorizePermission('rentals:manage'), updateRentBack);

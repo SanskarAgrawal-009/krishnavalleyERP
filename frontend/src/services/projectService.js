@@ -21,5 +21,28 @@ export const projectService = {
   getFlatById: (id) => request(`/flats/${id}`),
   createFlat: (data) => request('/flats', { method: 'POST', body: JSON.stringify(data) }),
   updateFlat: (id, data) => request(`/flats/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteFlat: (id) => request(`/flats/${id}`, { method: 'DELETE' })
+  deleteFlat: (id) => request(`/flats/${id}`, { method: 'DELETE' }),
+  importFlatsExcel: (formDataOrJson) => {
+    if (formDataOrJson instanceof FormData) {
+      return request('/flats/import-excel', {
+        method: 'POST',
+        body: formDataOrJson
+      });
+    }
+    return request('/flats/import-excel', {
+      method: 'POST',
+      body: JSON.stringify(formDataOrJson)
+    });
+  },
+  bulkEnrollRentalSales: (data) => request('/flats/bulk-enroll-rental-sales', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  bulkDeleteFlats: (flatIds) => request('/flats/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify({ flatIds })
+  }),
+  deleteAllFlats: () => request('/flats/delete-all-flats', {
+    method: 'DELETE'
+  })
 };

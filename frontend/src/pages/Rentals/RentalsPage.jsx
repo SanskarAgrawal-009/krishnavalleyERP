@@ -3,10 +3,13 @@ import { useSearchParams } from 'react-router-dom';
 import { rentalService } from '../../services/rentalService.js';
 import { ManualRentalModal } from '../../components/rentals/ManualRentalModal.jsx';
 import { RentalDetailModal } from '../../components/rentals/RentalDetailModal.jsx';
+import { RentalLedgerModal } from '../../components/rentals/RentalLedgerModal.jsx';
+import { ImportRentalLedgerModal } from '../../components/rentals/ImportRentalLedgerModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { ModuleMessagingCenter } from '../../components/notifications/ModuleMessagingCenter.jsx';
 import { QuickMessageModal } from '../../components/notifications/QuickMessageModal.jsx';
 
+import * as XLSX from 'xlsx';
 import {
   Home,
   Repeat,
@@ -26,7 +29,12 @@ import {
   Building2,
   MessageSquare,
   Zap,
-  Send
+  Send,
+  FileSpreadsheet,
+  BookOpen,
+  Printer,
+  Download,
+  Filter
 } from 'lucide-react';
 
 export const RentalsPage = () => {
@@ -57,6 +65,18 @@ export const RentalsPage = () => {
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
+
+  // 36-Month Rental Ledger Modal
+  const [isLedgerModalOpen, setIsLedgerModalOpen] = useState(false);
+  const [ledgerContract, setLedgerContract] = useState(null);
+
+  // Rental Due Day Filter & Search for Printing / Batch Payouts
+  const [dueDayFilter, setDueDayFilter] = useState('all'); // 'all', '5', '10', '15', '20', '25', or custom
+  const [customDueDay, setCustomDueDay] = useState('');
+  const [ledgerSearch, setLedgerSearch] = useState('');
+
+  // Import Rental Ledger Excel Modal
+  const [isImportLedgerModalOpen, setIsImportLedgerModalOpen] = useState(false);
 
   // Quick Message Modal
   const [quickMsgRental, setQuickMsgRental] = useState(null);
@@ -269,30 +289,6 @@ export const RentalsPage = () => {
             <button
               type="button"
               onClick={() => {
-                setRentalViewTab('contracts');
-                setSearchParams({ tab: 'contracts' });
-              }}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '6px',
-                border: 'none',
-                background: rentalViewTab === 'contracts' ? '#1a73e8' : 'transparent',
-                color: rentalViewTab === 'contracts' ? '#ffffff' : '#4b5563',
-                fontWeight: rentalViewTab === 'contracts' ? '800' : '600',
-                fontSize: '0.82rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Repeat size={14} /> Rental Contracts ({rentals.length})
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
                 setRentalViewTab('rentback');
                 setSearchParams({ tab: 'rentback' });
               }}
@@ -311,7 +307,31 @@ export const RentalsPage = () => {
                 transition: 'all 0.15s ease'
               }}
             >
-              <ShieldCheck size={14} /> Guaranteed Yields ({rentBackCount})
+              <BookOpen size={14} /> 36-Month Rental Ledger ({rentBackCount})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setRentalViewTab('contracts');
+                setSearchParams({ tab: 'contracts' });
+              }}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                background: rentalViewTab === 'contracts' ? '#1a73e8' : 'transparent',
+                color: rentalViewTab === 'contracts' ? '#ffffff' : '#4b5563',
+                fontWeight: rentalViewTab === 'contracts' ? '800' : '600',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <Repeat size={14} /> All Lease Contracts ({rentals.length})
             </button>
 
             <button
@@ -335,9 +355,30 @@ export const RentalsPage = () => {
                 transition: 'all 0.15s ease'
               }}
             >
-              <MessageSquare size={14} /> Tenant Messaging Hub
+              <MessageSquare size={14} /> Owner Messaging Hub
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setIsImportLedgerModalOpen(true)}
+            style={{
+              padding: '9px 16px',
+              background: '#16a34a',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '6px',
+              fontWeight: '700',
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 2px 4px rgba(22, 163, 74, 0.25)'
+            }}
+          >
+            <FileSpreadsheet size={16} /> Upload Rental Ledger Excel
+          </button>
 
           <button
             onClick={() => {
@@ -345,7 +386,7 @@ export const RentalsPage = () => {
               setIsCreateModalOpen(true);
             }}
             className="btn-primary"
-            style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+            style={{ padding: '9px 18px', fontSize: '0.82rem' }}
           >
             <Plus size={16} /> New Rental Contract
           </button>
@@ -762,53 +803,69 @@ export const RentalsPage = () => {
       {rentalViewTab === 'rentback' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Rent-Back Financial Overview Ribbon */}
-          <div className="grid-cols-4">
-            <div className="stat-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK UNITS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
-                  <ShieldCheck size={16} />
-                </div>
-              </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{rentBackCount}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active guaranteed payout pool</span>
-            </div>
+          {(() => {
+            const rentBackList = rentals.filter((r) => r.rentBack?.enabled);
+            const totalTenureCommitment = rentBackList.reduce((sum, r) => {
+              const ledger = r.rentBackLedger || {};
+              const mRent = ledger.monthlyRent || r.rentBack?.monthlyRent || 0;
+              return sum + (ledger.totalTenureAmount || (mRent * 36));
+            }, 0);
 
-            <div className="stat-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>INVESTOR ASSURED PAYOUT</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
-                  <TrendingUp size={16} />
-                </div>
-              </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>{formatINR(totalOwnerMonthlyOutflow)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Monthly assured owner commitment</span>
-            </div>
+            const totalDisbursed = rentBackList.reduce((sum, r) => {
+              const ledger = r.rentBackLedger || {};
+              return sum + (ledger.totalPaidToOwner || 0);
+            }, 0);
 
-            <div className="stat-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TENANT RENT INFLOW</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
-                  <DollarSign size={16} />
-                </div>
-              </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>{formatINR(totalTenantMonthlyInflow)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#137333', fontWeight: '700' }}>Monthly gross tenancy collection</span>
-            </div>
+            const totalRemaining = Math.max(0, totalTenureCommitment - totalDisbursed);
 
-            <div className="stat-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>COMPANY NET SPREAD</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: netMonthlySpread >= 0 ? '#e6f4ea' : '#ffdad6', color: netMonthlySpread >= 0 ? '#137333' : '#ba1a1a' }}>
-                  <DollarSign size={16} />
+            return (
+              <div className="grid-cols-4">
+                <div className="stat-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL 36-MO COMMITMENT</span>
+                    <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
+                      <Building2 size={16} />
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>{formatINR(totalTenureCommitment)}</div>
+                  <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Across {rentBackList.length} guaranteed units</span>
+                </div>
+
+                <div className="stat-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL PAID TO OWNERS</span>
+                    <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#16a34a' }}>
+                      <DollarSign size={16} />
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#15803d', marginTop: '4px' }}>{formatINR(totalDisbursed)}</div>
+                  <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: '700' }}>Disbursed payouts</span>
+                </div>
+
+                <div className="stat-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>REMAINING TENURE LIABILITY</span>
+                    <div style={{ padding: '6px', borderRadius: '6px', background: '#fffbeb', color: '#b45309' }}>
+                      <TrendingUp size={16} />
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#b45309', marginTop: '4px' }}>{formatINR(totalRemaining)}</div>
+                  <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Future payable balance</span>
+                </div>
+
+                <div className="stat-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY RENT POOL</span>
+                    <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+                      <ShieldCheck size={16} />
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{formatINR(totalOwnerMonthlyOutflow)}</div>
+                  <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Monthly assured payout</span>
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: netMonthlySpread >= 0 ? '#137333' : '#ba1a1a', marginTop: '4px' }}>
-                {netMonthlySpread >= 0 ? `+${formatINR(netMonthlySpread)}` : formatINR(netMonthlySpread)}
-              </div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Net monthly yield profit</span>
-            </div>
-          </div>
+            );
+          })()}
 
           {/* Rent-Back Units Ledger */}
           <div className="g-card" style={{ overflow: 'hidden' }}>
@@ -819,129 +876,412 @@ export const RentalsPage = () => {
               justifyContent: 'space-between',
               alignItems: 'center',
               flexWrap: 'wrap',
-              gap: '10px'
+              gap: '12px'
             }}>
               <div>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <ShieldCheck size={18} color="#8b5cf6" /> Guaranteed Yields & Rent-Back Register ({rentBackCount})
+                  <BookOpen size={18} color="#16a34a" /> 36-Month Owner Rent-Back Passbook Register
                 </h3>
                 <p style={{ fontSize: '0.8rem', color: '#4b5563', marginTop: '2px' }}>
-                  Assured return contracts with fixed investor disbursements and tenant rent spreads.
+                  Filter and print monthly owner payout lists by due date (e.g. 10th, 20th, 25th of month).
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={fetchRentals}
-                style={{ padding: '6px 12px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
-                <RefreshCw size={13} className={loading ? 'spin' : ''} /> Refresh Yields
-              </button>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  style={{
+                    padding: '7px 14px',
+                    background: '#1e293b',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
+                  }}
+                >
+                  <Printer size={15} /> Print Payout List
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const rentBackList = rentals.filter((r) => r.rentBack?.enabled);
+                    const effectiveDue = dueDayFilter === 'custom' ? customDueDay : dueDayFilter;
+                    const filtered = rentBackList.filter((r) => {
+                      const dueDay = r.rentBackLedger?.dueDay || r.rentBack?.rentDueDay || 25;
+                      if (effectiveDue !== 'all' && String(dueDay) !== String(effectiveDue)) return false;
+                      if (ledgerSearch) {
+                        const s = ledgerSearch.toLowerCase();
+                        const flatNo = String(r.flatId?.flatNumber || '').toLowerCase();
+                        const oName = String(r.ownerId?.name || r.rentBack?.ownerName || '').toLowerCase();
+                        if (!flatNo.includes(s) && !oName.includes(s)) return false;
+                      }
+                      return true;
+                    });
+
+                    const exportRows = filtered.map((r, i) => {
+                      const rb = r.rentBack || {};
+                      const ledger = r.rentBackLedger || {};
+                      const mRent = ledger.monthlyRent || rb.monthlyRent || 0;
+                      const totalCommitment = ledger.totalTenureAmount || (mRent * 36);
+                      const totalPaid = ledger.totalPaidToOwner || 0;
+                      const remainingBal = ledger.remainingPayableToOwner !== undefined ? ledger.remainingPayableToOwner : Math.max(0, totalCommitment - totalPaid);
+                      const due = ledger.dueDay || rb.rentDueDay || 25;
+                      const paidMonths = (ledger.entries || []).filter((e) => e.status === 'paid' || (e.netAmountPaid > 0)).length;
+
+                      return {
+                        'S.No': i + 1,
+                        'Flat No': r.flatId?.flatNumber || '001',
+                        'Tower': r.projectId?.projectName || 'Krishna Valley',
+                        'Owner Name': r.ownerId?.name || rb.ownerName || 'Property Owner',
+                        'Mobile': r.ownerId?.mobileNo || rb.ownerPhone || 'On File',
+                        'Due Day': `${due}th of every month`,
+                        'Monthly Rent (₹)': mRent,
+                        '36-Mo Commitment (₹)': totalCommitment,
+                        'Total Paid (₹)': totalPaid,
+                        'Remaining Balance (₹)': remainingBal,
+                        'Months Disbursed': `${paidMonths} / 36`,
+                        'Status': 'ACTIVE'
+                      };
+                    });
+
+                    const ws = XLSX.utils.json_to_sheet(exportRows);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, 'Payout_List');
+                    XLSX.writeFile(wb, `Owner_Rental_Payout_Schedule_Due_${effectiveDue}_Day.xlsx`);
+                  }}
+                  style={{
+                    padding: '7px 14px',
+                    background: '#0284c7',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Download size={15} /> Export Excel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsImportLedgerModalOpen(true)}
+                  style={{ padding: '7px 14px', background: '#16a34a', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <FileSpreadsheet size={14} /> Upload Passbook Excel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={fetchRentals}
+                  style={{ padding: '7px 12px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <RefreshCw size={13} className={loading ? 'spin' : ''} /> Refresh
+                </button>
+              </div>
+            </div>
+
+            {/* Payout Schedule Due Day Filter Ribbon */}
+            <div style={{
+              background: '#f8fafc',
+              borderBottom: '1px solid #e2e8f0',
+              padding: '12px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '12px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <Filter size={15} color="#0284c7" /> Filter by Due Day:
+                </span>
+
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {[
+                    { label: 'All Dates', value: 'all' },
+                    { label: '5th of Month', value: '5' },
+                    { label: '10th of Month', value: '10' },
+                    { label: '15th of Month', value: '15' },
+                    { label: '20th of Month', value: '20' },
+                    { label: '25th of Month', value: '25' },
+                    { label: 'Custom Day', value: 'custom' }
+                  ].map((btn) => (
+                    <button
+                      key={btn.value}
+                      type="button"
+                      onClick={() => setDueDayFilter(btn.value)}
+                      style={{
+                        padding: '5px 12px',
+                        borderRadius: '20px',
+                        border: '1px solid',
+                        borderColor: dueDayFilter === btn.value ? '#0284c7' : '#cbd5e1',
+                        background: dueDayFilter === btn.value ? '#e0f2fe' : '#ffffff',
+                        color: dueDayFilter === btn.value ? '#0369a1' : '#475569',
+                        fontWeight: dueDayFilter === btn.value ? '800' : '600',
+                        fontSize: '0.78rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      {btn.label}
+                    </button>
+                  ))}
+                </div>
+
+                {dueDayFilter === 'custom' && (
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    placeholder="Day (1-31)"
+                    value={customDueDay}
+                    onChange={(e) => setCustomDueDay(e.target.value)}
+                    style={{
+                      width: '100px',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      border: '1px solid #94a3b8',
+                      fontSize: '0.8rem',
+                      fontWeight: '700'
+                    }}
+                  />
+                )}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input
+                  type="text"
+                  placeholder="Search flat # or owner name..."
+                  value={ledgerSearch}
+                  onChange={(e) => setLedgerSearch(e.target.value)}
+                  style={{
+                    padding: '5px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.8rem',
+                    width: '210px'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* PRINT HEADER ONLY VISIBLE DURING PRINT */}
+            <div className="print-only" style={{ display: 'none', padding: '16px 20px', borderBottom: '2px solid #000000', marginBottom: '16px' }}>
+              <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#000000' }}>
+                KRISHNA VALLEY TOWNSHIP & RESORT
+              </div>
+              <div style={{ fontSize: '1rem', fontWeight: '800', marginTop: '4px', color: '#111827' }}>
+                MONTHLY OWNER GUARANTEED RENTAL PAYOUT DISBURSEMENT SCHEDULE
+              </div>
+              <div style={{ fontSize: '0.82rem', color: '#374151', marginTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                <span><strong>Filter:</strong> {dueDayFilter === 'all' ? 'All Scheduled Due Dates' : `Due on ${dueDayFilter === 'custom' ? customDueDay : dueDayFilter}th of every month`}</span>
+                <span><strong>Generated On:</strong> {new Date().toLocaleDateString('en-GB')}</span>
+              </div>
             </div>
 
             <div style={{ overflowX: 'auto' }}>
               <table>
                 <thead>
                   <tr>
-                    <th>Contract & Unit</th>
-                    <th>Investor / Owner</th>
-                    <th>Assured Monthly Payout</th>
-                    <th>Tenant Inflow</th>
-                    <th>Net Spread</th>
-                    <th>Lease Tenure</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th>Unit & Building</th>
+                    <th>Property Owner</th>
+                    <th>Assured Monthly Rent</th>
+                    <th>Payout Due Day</th>
+                    <th>Total 3-Yr Commitment</th>
+                    <th>Total Disbursed</th>
+                    <th>Remaining Balance</th>
+                    <th>Progress</th>
+                    <th className="no-print">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rentals.filter((r) => r.rentBack?.enabled).length === 0 ? (
-                    <tr>
-                      <td colSpan="8" style={{ textAlign: 'center', padding: '36px', color: '#4b5563' }}>
-                        No guaranteed rent-back units found in the system.
-                      </td>
-                    </tr>
-                  ) : (
-                    rentals.filter((r) => r.rentBack?.enabled).map((r) => {
-                      const rb = r.rentBack || {};
-                      const tenant = r.tenantAgreement || {};
-                      const spread = (tenant.monthlyRent || 0) - (rb.monthlyRent || 0);
+                  {(() => {
+                    const rentBackList = rentals.filter((r) => r.rentBack?.enabled);
+                    const effectiveDue = dueDayFilter === 'custom' ? customDueDay : dueDayFilter;
+                    const filtered = rentBackList.filter((r) => {
+                      const dueDay = r.rentBackLedger?.dueDay || r.rentBack?.rentDueDay || 25;
+                      if (effectiveDue !== 'all' && String(dueDay) !== String(effectiveDue)) return false;
+                      if (ledgerSearch) {
+                        const s = ledgerSearch.toLowerCase();
+                        const flatNo = String(r.flatId?.flatNumber || '').toLowerCase();
+                        const oName = String(r.ownerId?.name || r.rentBack?.ownerName || '').toLowerCase();
+                        const oPhone = String(r.ownerId?.mobileNo || r.rentBack?.ownerPhone || '').toLowerCase();
+                        if (!flatNo.includes(s) && !oName.includes(s) && !oPhone.includes(s)) return false;
+                      }
+                      return true;
+                    });
 
+                    if (filtered.length === 0) {
                       return (
-                        <tr key={r._id}>
-                          <td>
-                            <div style={{ fontWeight: '700', color: '#111827' }}>
-                              {r.contractCode || `RENT-${r._id.slice(-6).toUpperCase()}`}
-                            </div>
-                            <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                              <Building2 size={12} />
-                              {r.flatId?.unitNumber || (r.flatIds && r.flatIds.length > 1 ? `${r.flatIds.length} Bundled Units` : 'Assigned Unit')} • {r.projectId?.name || 'Krishna Valley'}
-                            </div>
-                          </td>
-                          <td>
-                            <div style={{ fontWeight: '700', color: '#111827' }}>
-                              {rb.ownerName || r.customerId?.name || 'Property Investor'}
-                            </div>
-                            <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>
-                              {rb.ownerPhone || r.customerId?.mobileNo || 'Contact on File'}
-                            </div>
-                          </td>
-                          <td style={{ fontWeight: '800', color: '#b06000', fontSize: '0.92rem' }}>
-                            {formatINR(rb.monthlyRent || 0)}
-                            <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>
-                              Day {rb.payoutDayOfMonth || 5} of every month
-                            </div>
-                          </td>
-                          <td style={{ fontWeight: '800', color: '#137333', fontSize: '0.92rem' }}>
-                            {formatINR(tenant.monthlyRent || 0)}
-                            <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>
-                              {tenant.tenantName ? `Tenant: ${tenant.tenantName}` : 'Vacant Unit'}
-                            </div>
-                          </td>
-                          <td style={{ fontWeight: '800', color: spread >= 0 ? '#137333' : '#ba1a1a', fontSize: '0.92rem' }}>
-                            {spread >= 0 ? `+${formatINR(spread)}` : formatINR(spread)}
-                            <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>
-                              Margin / mo
-                            </div>
-                          </td>
-                          <td>
-                            <div style={{ fontSize: '0.78rem', color: '#111827', fontWeight: '600' }}>
-                              {rb.startDate ? new Date(rb.startDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'Jan 2026'} ➔ {rb.endDate ? new Date(rb.endDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'Dec 2028'}
-                            </div>
-                            <div style={{ fontSize: '0.7rem', color: '#8b5cf6', fontWeight: '700', marginTop: '2px' }}>
-                              Assured Lock-in
-                            </div>
-                          </td>
-                          <td>
-                            <StatusBadge status={r.status || 'active'} />
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedContract(r);
-                                setIsDetailModalOpen(true);
-                              }}
-                              style={{
-                                padding: '6px 12px',
-                                background: '#1a73e8',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '6px',
-                                fontSize: '0.76rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                              }}
-                            >
-                              Manage Lease <ArrowRight size={13} />
-                            </button>
+                        <tr>
+                          <td colSpan="9" style={{ textAlign: 'center', padding: '36px', color: '#64748b' }}>
+                            No rental units found matching the selected due date filter ({effectiveDue === 'all' ? 'All' : `${effectiveDue}th`}).
                           </td>
                         </tr>
                       );
-                    })
-                  )}
+                    }
+
+                    const batchTotalMonthly = filtered.reduce((s, r) => s + (r.rentBackLedger?.monthlyRent || r.rentBack?.monthlyRent || 0), 0);
+                    const batchTotalCommitment = filtered.reduce((s, r) => s + (r.rentBackLedger?.totalTenureAmount || ((r.rentBackLedger?.monthlyRent || r.rentBack?.monthlyRent || 0) * 36)), 0);
+                    const batchTotalPaid = filtered.reduce((s, r) => s + (r.rentBackLedger?.totalPaidToOwner || 0), 0);
+                    const batchTotalRemaining = Math.max(0, batchTotalCommitment - batchTotalPaid);
+
+                    return (
+                      <>
+                        {filtered.map((r) => {
+                          const rb = r.rentBack || {};
+                          const ledger = r.rentBackLedger || {};
+                          const mRent = ledger.monthlyRent || rb.monthlyRent || 0;
+                          const totalCommitment = ledger.totalTenureAmount || (mRent * 36);
+                          const totalPaid = ledger.totalPaidToOwner || 0;
+                          const remainingBal = ledger.remainingPayableToOwner !== undefined ? ledger.remainingPayableToOwner : Math.max(0, totalCommitment - totalPaid);
+                          const dueDay = ledger.dueDay || rb.rentDueDay || 25;
+                          const paidMonths = (ledger.entries || []).filter((e) => e.status === 'paid' || (e.netAmountPaid > 0)).length;
+                          const progress = Math.round((paidMonths / 36) * 100);
+
+                          return (
+                            <tr key={r._id}>
+                              <td>
+                                <div style={{ fontWeight: '800', color: '#111827', fontSize: '0.95rem' }}>
+                                  Flat {r.flatId?.flatNumber || '001'}
+                                </div>
+                                <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                                  <Building2 size={12} />
+                                  {r.projectId?.projectName || 'Krishna Valley'}
+                                </div>
+                              </td>
+                              <td>
+                                <div style={{ fontWeight: '700', color: '#111827' }}>
+                                  {r.ownerId?.name || rb.ownerName || 'Property Owner'}
+                                </div>
+                                <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>
+                                  {r.ownerId?.mobileNo || 'Contact on File'}
+                                </div>
+                              </td>
+                              <td style={{ fontWeight: '800', color: '#111827', fontSize: '0.92rem' }}>
+                                {formatINR(mRent)}
+                                <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '500' }}>
+                                  / month
+                                </div>
+                              </td>
+                              <td>
+                                <span style={{
+                                  background: dueDay === 10 ? '#fef3c7' : (dueDay === 20 ? '#e0f2fe' : '#f0fdf4'),
+                                  color: dueDay === 10 ? '#92400e' : (dueDay === 20 ? '#0369a1' : '#166534'),
+                                  padding: '3px 8px',
+                                  borderRadius: '6px',
+                                  fontWeight: '800',
+                                  fontSize: '0.76rem'
+                                }}>
+                                  {dueDay}th of month
+                                </span>
+                              </td>
+                              <td style={{ fontWeight: '700', color: '#1e293b' }}>
+                                {formatINR(totalCommitment)}
+                                <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                                  36 Months
+                                </div>
+                              </td>
+                              <td style={{ fontWeight: '800', color: '#16a34a' }}>
+                                {formatINR(totalPaid)}
+                                <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: '700' }}>
+                                  {paidMonths} / 36 Mos
+                                </div>
+                              </td>
+                              <td style={{ fontWeight: '800', color: '#b45309' }}>
+                                {formatINR(remainingBal)}
+                                <div style={{ fontSize: '0.7rem', color: '#92400e' }}>
+                                  {36 - paidMonths} Mos Left
+                                </div>
+                              </td>
+                              <td>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ width: '70px', height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                                    <div style={{ width: `${progress}%`, height: '100%', background: progress >= 100 ? '#16a34a' : '#3b82f6' }} />
+                                  </div>
+                                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155' }}>{progress}%</span>
+                                </div>
+                              </td>
+                              <td className="no-print">
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setLedgerContract(r);
+                                      setIsLedgerModalOpen(true);
+                                    }}
+                                    style={{
+                                      padding: '6px 12px',
+                                      background: '#16a34a',
+                                      color: '#ffffff',
+                                      border: 'none',
+                                      borderRadius: '6px',
+                                      fontSize: '0.76rem',
+                                      fontWeight: '700',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '4px',
+                                      boxShadow: '0 1px 2px rgba(22,163,74,0.3)'
+                                    }}
+                                  >
+                                    <BookOpen size={13} /> Open Passbook
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedContract(r);
+                                      setIsDetailModalOpen(true);
+                                    }}
+                                    style={{
+                                      padding: '6px 10px',
+                                      background: '#f1f5f9',
+                                      color: '#334155',
+                                      border: '1px solid #cbd5e1',
+                                      borderRadius: '6px',
+                                      fontSize: '0.76rem',
+                                      fontWeight: '600',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Manage
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+
+                        {/* Batch Total Summary Row */}
+                        <tr style={{ background: '#f8fafc', fontWeight: '800', borderTop: '2px solid #cbd5e1' }}>
+                          <td colSpan="2" style={{ padding: '10px 14px', color: '#1e293b' }}>
+                            BATCH TOTAL ({filtered.length} Units Due on {effectiveDue === 'all' ? 'All Dates' : `${effectiveDue}th`})
+                          </td>
+                          <td style={{ padding: '10px 14px', color: '#111827', fontSize: '0.95rem' }}>
+                            {formatINR(batchTotalMonthly)}/mo
+                          </td>
+                          <td style={{ padding: '10px 14px', color: '#64748b' }}>—</td>
+                          <td style={{ padding: '10px 14px', color: '#1e293b' }}>{formatINR(batchTotalCommitment)}</td>
+                          <td style={{ padding: '10px 14px', color: '#16a34a' }}>{formatINR(batchTotalPaid)}</td>
+                          <td style={{ padding: '10px 14px', color: '#b45309' }}>{formatINR(batchTotalRemaining)}</td>
+                          <td colSpan="2"></td>
+                        </tr>
+                      </>
+                    );
+                  })()}
                 </tbody>
               </table>
             </div>
@@ -980,6 +1320,21 @@ export const RentalsPage = () => {
         onUpdateRentBack={handleUpdateRentBack}
         onAddPenalty={handleAddPenalty}
         onProcessTermination={handleProcessTermination}
+      />
+
+      {/* 36-MONTH OWNER RENTAL LEDGER PASSBOOK MODAL */}
+      <RentalLedgerModal
+        isOpen={isLedgerModalOpen}
+        onClose={() => setIsLedgerModalOpen(false)}
+        rentalContract={ledgerContract}
+        onUpdate={fetchRentals}
+      />
+
+      {/* IMPORT RENTAL LEDGER EXCEL MODAL */}
+      <ImportRentalLedgerModal
+        isOpen={isImportLedgerModalOpen}
+        onClose={() => setIsImportLedgerModalOpen(false)}
+        onSuccess={fetchRentals}
       />
 
       {/* QUICK MESSAGE MODAL */}
