@@ -155,6 +155,16 @@ const RentalManagementSchema = new mongoose.Schema(
         max: 31,
       },
 
+      applyTds: {
+        type: Boolean,
+        default: true,
+      },
+
+      tdsPercentage: {
+        type: Number,
+        default: 10,
+      },
+
       agreementDocument: {
         fileUrl: String,
         fileName: String,

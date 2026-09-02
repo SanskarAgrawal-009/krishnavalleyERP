@@ -168,6 +168,8 @@ export const FlatDetailModal = ({
 
       setRentalForm({
         guaranteedMonthlyRent: r.rentBack?.monthlyRent || r.guaranteedMonthlyRent || 31000,
+        applyTds: r.rentBack?.applyTds !== undefined ? r.rentBack.applyTds : (r.applyTds !== undefined ? r.applyTds : true),
+        tdsPercentage: r.rentBack?.tdsPercentage !== undefined ? r.rentBack.tdsPercentage : (r.tdsPercentage !== undefined ? r.tdsPercentage : 10),
         tenureMonths: r.rentBack?.tenureMonths || r.tenureMonths || 36,
         dueDayOfMonth: r.rentBack?.rentDueDay || r.dueDayOfMonth || 25,
         startDate: r.rentBack?.startDate ? new Date(r.rentBack.startDate).toISOString().slice(0, 10) : (r.startDate ? new Date(r.startDate).toISOString().slice(0, 10) : ''),
@@ -284,7 +286,9 @@ export const FlatDetailModal = ({
         prePossessionMonthlyRent: rentalForm.prePossessionMonthlyRent,
         prePossessionTenureMonths: rentalForm.prePossessionTenureMonths,
         prePossessionTotalPaid: rentalForm.prePossessionTotalPaid,
-        isPossessionRenewal: rentalForm.isPossessionRenewal
+        isPossessionRenewal: rentalForm.isPossessionRenewal,
+        applyTds: rentalForm.applyTds,
+        tdsPercentage: rentalForm.applyTds ? Number(rentalForm.tdsPercentage || 10) : 0
       };
       const res = await projectService.updateFlat(flatId, payload);
       if (res.data) {
@@ -1470,6 +1474,64 @@ export const FlatDetailModal = ({
                         </div>
                       </div>
 
+                      {/* Optional TDS Deduction Controls */}
+                      <div style={{
+                        background: rentalForm.applyTds ? '#f5f3ff' : '#f8fafc',
+                        border: `1.5px solid ${rentalForm.applyTds ? '#ddd6fe' : '#e2e8f0'}`,
+                        borderRadius: '8px',
+                        padding: '12px 14px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <input
+                              type="checkbox"
+                              id="modalApplyTds"
+                              checked={rentalForm.applyTds}
+                              onChange={(e) => setRentalForm({ ...rentalForm, applyTds: e.target.checked })}
+                              style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                            />
+                            <label htmlFor="modalApplyTds" style={{ fontSize: '0.84rem', fontWeight: '800', color: '#1e293b', cursor: 'pointer', margin: 0 }}>
+                              Apply Statutory TDS Deduction (Section 194I)
+                            </label>
+                          </div>
+
+                          {rentalForm.applyTds && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#6b21a8' }}>TDS RATE (%):</label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.5"
+                                style={{ ...inputStyle, width: '80px', padding: '4px 8px', fontWeight: '800', color: '#6b21a8', textAlign: 'center' }}
+                                value={rentalForm.tdsPercentage}
+                                onChange={(e) => setRentalForm({ ...rentalForm, tdsPercentage: e.target.value })}
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Live calculation breakdown */}
+                        {(() => {
+                          const gRent = Number(rentalForm.guaranteedMonthlyRent || 0);
+                          const isTds = Boolean(rentalForm.applyTds);
+                          const tRate = isTds ? (Number(rentalForm.tdsPercentage || 10) / 100) : 0;
+                          const tAmt = Math.round(gRent * tRate);
+                          const nRent = gRent - tAmt;
+
+                          return (
+                            <div style={{ fontSize: '0.76rem', color: isTds ? '#581c87' : '#475569', display: 'flex', gap: '14px', flexWrap: 'wrap', borderTop: '1px dashed #cbd5e1', paddingTop: '6px' }}>
+                              <span>Gross: <strong>{formatINR(gRent)}</strong></span>
+                              <span>TDS Deduction: <strong style={{ color: isTds ? '#ef4444' : '#059669' }}>{isTds ? `- ${formatINR(tAmt)} (${rentalForm.tdsPercentage || 10}%)` : '₹0 (0% TDS / Exempt)'}</strong></span>
+                              <span>Net Payout to Owner: <strong style={{ color: '#16a34a' }}>{formatINR(nRent)} / mo</strong></span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                         <input
                           type="checkbox"
@@ -1551,7 +1613,9 @@ export const FlatDetailModal = ({
 
                         {(() => {
                           const grossMonthly = rental?.rentBack?.monthlyRent || flat.rentalDetails?.guaranteedMonthlyRent || (flat.basePrice ? Math.round(flat.basePrice * 0.006) : 31000);
-                          const tdsAmount = Math.round(grossMonthly * 0.1);
+                          const isTds = rental?.rentBack?.applyTds !== undefined ? rental.rentBack.applyTds : (flat.rentalDetails?.applyTds !== false);
+                          const tdsPercent = isTds ? (rental?.rentBack?.tdsPercentage !== undefined ? rental.rentBack.tdsPercentage : (flat.rentalDetails?.tdsPercentage !== undefined ? flat.rentalDetails.tdsPercentage : 10)) : 0;
+                          const tdsAmount = Math.round(grossMonthly * (tdsPercent / 100));
                           const netMonthly = grossMonthly - tdsAmount;
                           const tenureMo = rental?.rentBack?.tenureMonths || flat.rentalDetails?.tenureMonths || 36;
                           const totalTenureCommitment = flat.rentalDetails?.total36MonthCommitment || (netMonthly * tenureMo);
@@ -1566,8 +1630,10 @@ export const FlatDetailModal = ({
                               </div>
 
                               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ color: '#64748b' }}>TDS Deducted (10% Sec 194I):</span>
-                                <strong style={{ color: '#ef4444' }}>- {formatINR(tdsAmount)} / mo</strong>
+                                <span style={{ color: '#64748b' }}>TDS Deduction:</span>
+                                <strong style={{ color: isTds && tdsAmount > 0 ? '#ef4444' : '#059669' }}>
+                                  {isTds && tdsAmount > 0 ? `- ${formatINR(tdsAmount)} (${tdsPercent}% Sec 194I)` : '0% (Optional / No TDS)'}
+                                </strong>
                               </div>
 
                               <div style={{ display: 'flex', justifyContent: 'space-between', background: '#f8fafc', padding: '6px 8px', borderRadius: '6px' }}>

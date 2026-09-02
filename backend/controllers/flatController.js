@@ -452,10 +452,15 @@ export const updateFlat = async (req, res) => {
       if (data.prePossessionTotalPaid !== undefined) flat.rentalDetails.prePossessionTotalPaid = Number(data.prePossessionTotalPaid);
       if (data.prePossessionTenureMonths !== undefined) flat.rentalDetails.prePossessionTenureMonths = Number(data.prePossessionTenureMonths);
       if (data.isPossessionRenewal !== undefined) flat.rentalDetails.isPossessionRenewal = Boolean(data.isPossessionRenewal);
+      if (data.applyTds !== undefined) flat.rentalDetails.applyTds = Boolean(data.applyTds);
+      if (data.tdsPercentage !== undefined) flat.rentalDetails.tdsPercentage = Number(data.tdsPercentage);
 
       const mRent = flat.rentalDetails.guaranteedMonthlyRent || 0;
       const tMonths = flat.rentalDetails.tenureMonths || 36;
-      flat.rentalDetails.total36MonthCommitment = flat.rentalDetails.total36MonthCommitment || (mRent * 0.9 * tMonths);
+      const applyTds = flat.rentalDetails.applyTds !== false;
+      const tdsRate = applyTds ? (flat.rentalDetails.tdsPercentage !== undefined ? flat.rentalDetails.tdsPercentage / 100 : 0.1) : 0;
+      const netMonthly = mRent * (1 - tdsRate);
+      flat.rentalDetails.total36MonthCommitment = netMonthly * tMonths;
 
       // Sync with RentalManagement
       await RentalManagement.findOneAndUpdate(
@@ -466,7 +471,9 @@ export const updateFlat = async (req, res) => {
             'rentBack.tenureMonths': tMonths,
             'rentBack.rentDueDay': flat.rentalDetails.dueDayOfMonth || 25,
             'rentBack.startDate': flat.rentalDetails.startDate,
-            'rentBack.endDate': flat.rentalDetails.endDate
+            'rentBack.endDate': flat.rentalDetails.endDate,
+            'rentBack.applyTds': applyTds,
+            'rentBack.tdsPercentage': flat.rentalDetails.tdsPercentage !== undefined ? flat.rentalDetails.tdsPercentage : (applyTds ? 10 : 0)
           }
         }
       );

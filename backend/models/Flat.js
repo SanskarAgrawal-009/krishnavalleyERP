@@ -271,6 +271,14 @@ const FlatSchema = new mongoose.Schema(
         type: Boolean,
         default: false,
       },
+      applyTds: {
+        type: Boolean,
+        default: true,
+      },
+      tdsPercentage: {
+        type: Number,
+        default: 10,
+      },
       prePossessionMonthlyRent: {
         type: Number,
         default: 0,

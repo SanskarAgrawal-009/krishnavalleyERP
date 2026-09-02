@@ -566,8 +566,10 @@ export const RentalsPage = () => {
                 const floorNumber = r.floorNum !== undefined ? r.floorNum : (flat.floor !== undefined ? flat.floor : (parseInt(flatNumber.replace(/\D/g, ''), 10) >= 100 ? Math.floor(parseInt(flatNumber.replace(/\D/g, ''), 10) / 100) : 0));
                 const towerName = r.towerName || r.projectId?.buildings?.[0]?.buildingName || 'Tower A';
 
+                const isTdsEnabled = rentBack.applyTds !== undefined ? rentBack.applyTds : (flat.rentalDetails?.applyTds !== false);
+                const tdsPercentage = isTdsEnabled ? (rentBack.tdsPercentage !== undefined ? rentBack.tdsPercentage : (flat.rentalDetails?.tdsPercentage !== undefined ? flat.rentalDetails.tdsPercentage : 10)) : 0;
                 const grossRent = rentBack.monthlyRent || r.tenantAgreement?.monthlyRent || 31000;
-                const tds = Math.round(grossRent * 0.1);
+                const tds = Math.round(grossRent * (tdsPercentage / 100));
                 const netRent = grossRent - tds;
                 const tenure = rentBack.tenureMonths || 36;
                 const totalTenure = r.rentBackLedger?.totalTenureAmount || (netRent * tenure);
@@ -684,9 +686,11 @@ export const RentalsPage = () => {
                       </div>
 
                       <div>
-                        <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>TDS Deducted (10%)</span>
-                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ef4444', marginTop: '2px' }}>
-                          - {formatINR(tds)}
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>
+                          {isTdsEnabled && tds > 0 ? `TDS Deducted (${tdsPercentage}%)` : 'TDS Deduction'}
+                        </span>
+                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: isTdsEnabled && tds > 0 ? '#ef4444' : '#059669', marginTop: '2px' }}>
+                          {isTdsEnabled && tds > 0 ? `- ${formatINR(tds)}` : '0% (No TDS / Exempt)'}
                         </div>
                       </div>
 
