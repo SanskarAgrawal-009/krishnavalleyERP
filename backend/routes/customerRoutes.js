@@ -8,10 +8,11 @@ import {
   uploadCustomerDocument,
   verifyCustomerDocument,
   logCustomerCommunication,
-  deleteCustomer
+  deleteCustomer,
+  wipeAllCustomers
 } from '../controllers/customerController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
-import { authorizePermission } from '../middleware/roleMiddleware.js';
+import { authorizePermission, authorizeRoles } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ router.post('/', authorizePermission('customers:manage', 'sales:create'), create
 router.get('/', authorizePermission('customers:view'), getCustomers);
 router.get('/:id', authorizePermission('customers:view'), getCustomerById);
 router.put('/:id', authorizePermission('customers:manage'), updateCustomer);
+router.delete('/wipe-all', authorizeRoles('super_admin'), wipeAllCustomers);
 router.delete('/:id', authorizePermission('customers:manage'), deleteCustomer);
 
 // Document Management (S3 Upload & Verification)

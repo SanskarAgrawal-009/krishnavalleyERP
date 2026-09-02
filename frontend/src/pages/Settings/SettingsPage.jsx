@@ -14,6 +14,7 @@ import {
   Sliders,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   Save,
   RefreshCw,
   Download,
@@ -74,6 +75,11 @@ export const SettingsPage = () => {
   const [testWaLoading, setTestWaLoading] = useState(false);
 
   const [backupLoading, setBackupLoading] = useState(false);
+
+  // Danger Zone States
+  const [wipeConfirmModal, setWipeConfirmModal] = useState(false);
+  const [wipeConfirmPhrase, setWipeConfirmPhrase] = useState('');
+  const [wipeLoading, setWipeLoading] = useState(false);
 
   // Fetch Settings
   const loadSettings = async () => {
@@ -186,6 +192,7 @@ export const SettingsPage = () => {
     { id: 'whatsappApi', label: 'WhatsApp API', icon: MessageSquare, desc: 'Meta Cloud API & webhook' },
     { id: 'backup', label: 'Backup', icon: HardDrive, desc: 'Database snapshots & S3 sync' },
     { id: 'systemPreferences', label: 'System Preferences', icon: Sliders, desc: 'Currency, 5-day agent window & formats' },
+    ...(isSuperAdmin ? [{ id: 'dangerZone', label: 'Danger Zone', icon: AlertTriangle, desc: 'Destructive operations — Super Admin only', danger: true }] : []),
   ];
 
   if (loading) {
@@ -326,12 +333,17 @@ export const SettingsPage = () => {
                   gap: '12px',
                   padding: '12px 14px',
                   borderRadius: '12px',
-                  border: 'none',
-                  backgroundColor: isActive ? '#e8f5e9' : 'transparent',
-                  color: isActive ? '#1b5e20' : '#475569',
+                  border: tab.danger ? '1px solid #fecaca' : 'none',
+                  backgroundColor: isActive
+                    ? (tab.danger ? '#fef2f2' : '#e8f5e9')
+                    : 'transparent',
+                  color: isActive
+                    ? (tab.danger ? '#991b1b' : '#1b5e20')
+                    : (tab.danger ? '#dc2626' : '#475569'),
                   textAlign: 'left',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
+                  marginTop: tab.danger ? '8px' : '0',
                 }}
               >
                 <div
@@ -339,8 +351,12 @@ export const SettingsPage = () => {
                     width: '36px',
                     height: '36px',
                     borderRadius: '10px',
-                    backgroundColor: isActive ? '#2e7d32' : '#f1f5f9',
-                    color: isActive ? '#ffffff' : '#64748b',
+                    backgroundColor: isActive
+                      ? (tab.danger ? '#dc2626' : '#2e7d32')
+                      : (tab.danger ? '#fef2f2' : '#f1f5f9'),
+                    color: isActive
+                      ? '#ffffff'
+                      : (tab.danger ? '#dc2626' : '#64748b'),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -353,7 +369,7 @@ export const SettingsPage = () => {
                   <div style={{ fontSize: '0.9rem', fontWeight: isActive ? '800' : '600' }}>
                     {tab.label}
                   </div>
-                  <div style={{ fontSize: '0.74rem', color: isActive ? '#2e7d32' : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '0.74rem', color: isActive ? (tab.danger ? '#b91c1c' : '#2e7d32') : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {tab.desc}
                   </div>
                 </div>
@@ -1267,6 +1283,71 @@ export const SettingsPage = () => {
         </div>
       </div>
 
+          {/* ===== DANGER ZONE TAB (Super Admin Only) ===== */}
+          {activeTab === 'dangerZone' && isSuperAdmin && (
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '2px solid #dc2626', overflow: 'hidden' }}>
+              <div style={{ padding: '24px 28px', background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)' }}>
+                <h2 style={{ margin: 0, color: '#ffffff', fontWeight: '800', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <AlertTriangle size={24} /> Danger Zone
+                </h2>
+                <p style={{ margin: '6px 0 0', color: '#fca5a5', fontSize: '0.85rem' }}>
+                  Irreversible destructive operations. Proceed with extreme caution.
+                </p>
+              </div>
+
+              <div style={{ padding: '28px' }}>
+                {/* Wipe All Customers */}
+                <div style={{
+                  border: '1px solid #fecaca',
+                  borderRadius: '12px',
+                  padding: '20px 24px',
+                  backgroundColor: '#fef2f2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '20px'
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: '800', color: '#991b1b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Trash2 size={18} /> Wipe All Customer Data
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#7f1d1d', lineHeight: '1.5' }}>
+                      Permanently deletes <strong>ALL customers</strong>, <strong>ALL sales leads</strong>, and clears ownership references from all flats.
+                      This action <strong>cannot be undone</strong>.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => { setWipeConfirmModal(true); setWipeConfirmPhrase(''); }}
+                    style={{
+                      padding: '10px 22px',
+                      borderRadius: '10px',
+                      border: '2px solid #dc2626',
+                      backgroundColor: '#dc2626',
+                      color: '#ffffff',
+                      fontWeight: '800',
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => { e.target.style.backgroundColor = '#b91c1c'; }}
+                    onMouseLeave={(e) => { e.target.style.backgroundColor = '#dc2626'; }}
+                  >
+                    Wipe All Customers
+                  </button>
+                </div>
+
+                <div style={{ marginTop: '20px', padding: '14px 18px', backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                  <AlertTriangle size={18} style={{ color: '#d97706', flexShrink: 0, marginTop: '2px' }} />
+                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#92400e', lineHeight: '1.5' }}>
+                    <strong>Warning:</strong> These operations are restricted to Super Admin accounts only.
+                    All destructive actions are logged in the audit trail and require a typed confirmation phrase.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
       {/* Test Email Modal */}
       {testEmailModal && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
@@ -1315,6 +1396,93 @@ export const SettingsPage = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Wipe All Customers Confirmation Modal */}
+      {wipeConfirmModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #dc2626' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <AlertTriangle size={22} style={{ color: '#dc2626' }} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#991b1b' }}>Confirm: Wipe All Customers</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#b91c1c' }}>This action is permanent and irreversible</p>
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: '#fef2f2', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', border: '1px solid #fecaca' }}>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#7f1d1d', lineHeight: '1.6' }}>
+                This will permanently delete:
+              </p>
+              <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontSize: '0.85rem', color: '#991b1b', lineHeight: '1.8' }}>
+                <li>All customer records</li>
+                <li>All sales lead records</li>
+                <li>All flat ownership references & history</li>
+              </ul>
+            </div>
+
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '8px' }}>
+              Type <span style={{ color: '#dc2626', fontFamily: 'monospace', fontSize: '0.9rem' }}>DELETE ALL CUSTOMERS</span> to confirm:
+            </label>
+            <input
+              type="text"
+              value={wipeConfirmPhrase}
+              onChange={(e) => setWipeConfirmPhrase(e.target.value)}
+              placeholder="Type the confirmation phrase..."
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '2px solid #dc2626' : '1px solid #cbd5e1',
+                fontSize: '0.9rem',
+                fontFamily: 'monospace',
+                marginBottom: '20px',
+                backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#fef2f2' : '#ffffff'
+              }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => { setWipeConfirmModal(false); setWipeConfirmPhrase(''); }}
+                style={{ padding: '9px 18px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', fontWeight: '600', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={wipeConfirmPhrase !== 'DELETE ALL CUSTOMERS' || wipeLoading}
+                onClick={async () => {
+                  setWipeLoading(true);
+                  try {
+                    const result = await settingsService.wipeAllCustomers(wipeConfirmPhrase);
+                    showToast(result.message || 'All customers wiped successfully.', 'success');
+                    setWipeConfirmModal(false);
+                    setWipeConfirmPhrase('');
+                  } catch (err) {
+                    showToast(err.message || 'Failed to wipe customers.', 'error');
+                  } finally {
+                    setWipeLoading(false);
+                  }
+                }}
+                style={{
+                  padding: '9px 22px',
+                  borderRadius: '8px',
+                  backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#dc2626' : '#e5e7eb',
+                  color: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#ffffff' : '#9ca3af',
+                  border: 'none',
+                  fontWeight: '800',
+                  cursor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? 'pointer' : 'not-allowed',
+                  opacity: wipeLoading ? 0.7 : 1,
+                }}
+              >
+                {wipeLoading ? 'Wiping...' : 'Permanently Delete All'}
+              </button>
+            </div>
           </div>
         </div>
       )}

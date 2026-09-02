@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { customerService } from '../../services/customerService.js';
 import { ManualCustomerModal } from '../../components/customers/ManualCustomerModal.jsx';
 import { CustomerDetailModal } from '../../components/customers/CustomerDetailModal.jsx';
@@ -28,10 +29,12 @@ import {
   Check,
   Download,
   Mail,
-  ExternalLink
+  ExternalLink,
+  AlertTriangle
 } from 'lucide-react';
 
 export const CustomersPage = () => {
+  const { isSuperAdmin } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -66,6 +69,11 @@ export const CustomersPage = () => {
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  // Super Admin Wipe Modal
+  const [isWipeModalOpen, setIsWipeModalOpen] = useState(false);
+  const [wipeConfirmPhrase, setWipeConfirmPhrase] = useState('');
+  const [isWiping, setIsWiping] = useState(false);
 
   const fetchCustomers = async () => {
     setLoading(true);
@@ -277,6 +285,32 @@ export const CustomersPage = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {isSuperAdmin && (
+            <button
+              onClick={() => {
+                setWipeConfirmPhrase('');
+                setIsWipeModalOpen(true);
+              }}
+              style={{
+                padding: '9px 16px',
+                fontSize: '0.84rem',
+                backgroundColor: '#fef2f2',
+                color: '#dc2626',
+                border: '1px solid #fecaca',
+                borderRadius: '8px',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              title="Wipe all customer records (Super Admin Only)"
+            >
+              <Trash2 size={15} /> Wipe All Customers
+            </button>
+          )}
+
           <button
             onClick={handleExportCSV}
             className="btn-secondary"
@@ -1218,6 +1252,94 @@ export const CustomersPage = () => {
         onLogCommunication={handleLogCommunication}
         onRefresh={() => refreshActiveCustomer(selectedCustomer?._id)}
       />
+
+      {/* SUPER ADMIN WIPE ALL CUSTOMERS MODAL */}
+      {isWipeModalOpen && isSuperAdmin && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #dc2626', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <AlertTriangle size={22} style={{ color: '#dc2626' }} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#991b1b' }}>Danger Zone: Wipe All Customers</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#b91c1c' }}>Super Admin Authorization Required</p>
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: '#fef2f2', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', border: '1px solid #fecaca' }}>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#7f1d1d', lineHeight: '1.6' }}>
+                This operation will permanently delete:
+              </p>
+              <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontSize: '0.85rem', color: '#991b1b', lineHeight: '1.8' }}>
+                <li>All customer profiles (Owners and Tenants)</li>
+                <li>All sales lead history and buyer associations</li>
+                <li>All flat ownership & Chain of Title records</li>
+              </ul>
+            </div>
+
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '8px' }}>
+              Type <span style={{ color: '#dc2626', fontFamily: 'monospace', fontSize: '0.9rem' }}>DELETE ALL CUSTOMERS</span> to confirm:
+            </label>
+            <input
+              type="text"
+              value={wipeConfirmPhrase}
+              onChange={(e) => setWipeConfirmPhrase(e.target.value)}
+              placeholder="Type DELETE ALL CUSTOMERS..."
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '2px solid #dc2626' : '1px solid #cbd5e1',
+                fontSize: '0.9rem',
+                fontFamily: 'monospace',
+                marginBottom: '20px',
+                backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#fef2f2' : '#ffffff'
+              }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => { setIsWipeModalOpen(false); setWipeConfirmPhrase(''); }}
+                style={{ padding: '9px 18px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', fontWeight: '600', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={wipeConfirmPhrase !== 'DELETE ALL CUSTOMERS' || isWiping}
+                onClick={async () => {
+                  setIsWiping(true);
+                  try {
+                    const result = await customerService.wipeAllCustomers(wipeConfirmPhrase);
+                    alert(result.message || 'All customers wiped successfully.');
+                    setIsWipeModalOpen(false);
+                    setWipeConfirmPhrase('');
+                    fetchCustomers();
+                  } catch (err) {
+                    alert(err.message || 'Failed to wipe customers.');
+                  } finally {
+                    setIsWiping(false);
+                  }
+                }}
+                style={{
+                  padding: '9px 22px',
+                  borderRadius: '8px',
+                  backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#dc2626' : '#e5e7eb',
+                  color: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#ffffff' : '#9ca3af',
+                  border: 'none',
+                  fontWeight: '800',
+                  cursor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? 'pointer' : 'not-allowed',
+                  opacity: isWiping ? 0.7 : 1,
+                }}
+              >
+                {isWiping ? 'Wiping...' : 'Permanently Delete All'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

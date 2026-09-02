@@ -72,5 +72,10 @@ export const customerService = {
 
   deleteCustomer: (id) => request(`/customers/${id}`, {
     method: 'DELETE'
+  }),
+
+  wipeAllCustomers: (confirmationPhrase) => request('/customers/wipe-all', {
+    method: 'DELETE',
+    body: JSON.stringify({ confirmationPhrase })
   })
 };

@@ -44,6 +44,13 @@ export const settingsService = {
     const token = localStorage.getItem('kv_token');
     return `${BASE_URL}/settings/backup/export?token=${token || ''}`;
   },
+  // Wipe All Customers (Super Admin Only - Danger Zone)
+  wipeAllCustomers: async (confirmationPhrase) => {
+    return await request('/customers/wipe-all', {
+      method: 'DELETE',
+      body: JSON.stringify({ confirmationPhrase }),
+    });
+  },
 };
 
 export default settingsService;

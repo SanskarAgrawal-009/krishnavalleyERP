@@ -642,3 +642,67 @@ export const deleteCustomer = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// =========================================================================
+// WIPE ALL CUSTOMERS (SUPER ADMIN ONLY - DANGER ZONE)
+// =========================================================================
+export const wipeAllCustomers = async (req, res) => {
+  try {
+    // Double-safety: verify confirmation phrase
+    const { confirmationPhrase } = req.body;
+    if (confirmationPhrase !== 'DELETE ALL CUSTOMERS') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid confirmation phrase. You must type "DELETE ALL CUSTOMERS" to proceed.'
+      });
+    }
+
+    // Count before deletion for audit trail
+    const totalCustomers = await Customer.countDocuments();
+
+    if (totalCustomers === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No customers found in the database to delete.'
+      });
+    }
+
+    // Step 1: Clear all customer references from Flats
+    await Flat.updateMany(
+      {},
+      {
+        $set: {
+          'currentOwner.customerId': null,
+          'currentOwner.name': '',
+          'currentOwner.mobileNo': '',
+          'currentOwner.email': '',
+          'currentOwner.panNumber': '',
+        },
+        $unset: {
+          ownershipHistory: 1
+        }
+      }
+    );
+
+    // Step 2: Delete all SalesLeads tied to customers
+    const salesLeadsDeleted = await SalesLead.deleteMany({});
+
+    // Step 3: Delete all customers
+    const result = await Customer.deleteMany({});
+
+    console.log(`[DANGER ZONE] WIPE ALL CUSTOMERS executed by ${req.user?.name || req.user?.email || 'Unknown'} (Role: ${req.user?.role}). Deleted: ${result.deletedCount} customers, ${salesLeadsDeleted.deletedCount} sales leads.`);
+
+    return res.json({
+      success: true,
+      message: `Successfully wiped ${result.deletedCount} customer(s), ${salesLeadsDeleted.deletedCount} sales lead(s), and cleared all flat ownership references.`,
+      data: {
+        customersDeleted: result.deletedCount,
+        salesLeadsDeleted: salesLeadsDeleted.deletedCount,
+        flatsCleared: 'All ownership references cleared'
+      }
+    });
+  } catch (error) {
+    console.error('Error in wipeAllCustomers:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
