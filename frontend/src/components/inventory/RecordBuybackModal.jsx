@@ -20,6 +20,16 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat, onSuccess }) => {
   const [transferDate, setTransferDate] = useState(new Date().toISOString().slice(0, 10));
   const [remarks, setRemarks] = useState('');
 
+  // Rent Given to Previous Owner Archive Fields
+  const [rentPaidToPreviousOwner, setRentPaidToPreviousOwner] = useState(
+    flat?.rentalDetails?.totalRentPaid || flat?.rentalDetails?.prePossessionTotalPaid || 0
+  );
+  const [monthlyRent, setMonthlyRent] = useState(flat?.rentalDetails?.monthlyRent || 0);
+  const [paidMonths, setPaidMonths] = useState(0);
+  const [prevPan, setPrevPan] = useState('');
+  const [prevBankName, setPrevBankName] = useState('');
+  const [prevAccountNo, setPrevAccountNo] = useState('');
+
   // New Buyer Details (if direct resale)
   const [newOwnerName, setNewOwnerName] = useState('');
   const [newOwnerPhone, setNewOwnerPhone] = useState('');
@@ -42,6 +52,13 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat, onSuccess }) => {
         transferType,
         transferDealValue: Number(transferDealValue) || 0,
         transferDate,
+        rentPaidToPreviousOwner: Number(rentPaidToPreviousOwner) || 0,
+        totalRentPaid: Number(rentPaidToPreviousOwner) || 0,
+        monthlyRent: Number(monthlyRent) || 0,
+        paidMonths: Number(paidMonths) || 0,
+        panNumber: prevPan.trim(),
+        bankName: prevBankName.trim(),
+        accountNumber: prevAccountNo.trim(),
         remarks: remarks || (transferType === 'buyback' ? 'Repurchased by Company' : `Transferred to ${newOwnerName}`),
         ...(transferType === 'resale' ? {
           newOwner: {
@@ -182,6 +199,108 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat, onSuccess }) => {
               onChange={(e) => setTransferDate(e.target.value)}
               style={{ width: '100%', fontSize: '0.84rem' }}
             />
+          </div>
+        </div>
+
+        {/* Rent Given to Outgoing / Previous Owner */}
+        <div style={{
+          background: '#fefce8',
+          border: '1px solid #fef08a',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#854d0e' }}>
+              💰 Rent Disbursed to Outgoing / Previous Owner
+            </span>
+            <span style={{ fontSize: '0.72rem', color: '#a16207' }}>
+              Archive payout history for this titleholder
+            </span>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
+                Total Rent Paid (₹)
+              </label>
+              <input
+                type="number"
+                placeholder="e.g. 1600000"
+                value={rentPaidToPreviousOwner}
+                onChange={(e) => setRentPaidToPreviousOwner(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem', fontWeight: '700' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+                Monthly Rent (₹/mo)
+              </label>
+              <input
+                type="number"
+                placeholder="e.g. 16000"
+                value={monthlyRent}
+                onChange={(e) => setMonthlyRent(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+                Paid Months Count
+              </label>
+              <input
+                type="number"
+                placeholder="e.g. 100"
+                value={paidMonths}
+                onChange={(e) => setPaidMonths(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+                Previous Owner PAN
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. ABCDE1234F"
+                value={prevPan}
+                onChange={(e) => setPrevPan(e.target.value.toUpperCase())}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+                Bank Name
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. PNB / SBI"
+                value={prevBankName}
+                onChange={(e) => setPrevBankName(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+                Account Number
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. 0983000100..."
+                value={prevAccountNo}
+                onChange={(e) => setPrevAccountNo(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
           </div>
         </div>
 

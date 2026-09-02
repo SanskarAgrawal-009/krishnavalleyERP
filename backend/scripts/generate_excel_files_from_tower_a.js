@@ -165,6 +165,10 @@ for (let r = 7; r < masterRaw.length; r++) {
 
   // Previous Owners Dossier record
   if (prePoss || isResell || isRenewal) {
+    const rentPaid = prePoss ? prePoss.totalPaid : (isRenewal ? amountPaid : 0);
+    const mRentPaid = prePoss ? prePoss.monthlyRent : (isRenewal ? monthlyRent : 0);
+    const pMonths = prePoss ? prePoss.paidMonths : (isRenewal ? paidMonths : 0);
+
     previousOwnerRows.push({
       'Flat No': flatNoClean,
       'Tower': 'Tower A',
@@ -178,13 +182,16 @@ for (let r = 7; r < masterRaw.length; r++) {
       'Transfer Reason': isResell ? 'Resale' : (isRenewal ? 'Possession Renewal' : 'Buy Back'),
       'Historical Valuation': prePoss ? prePoss.assuredTotal : 1600000,
       'Historical Paid Amount': prePoss ? prePoss.totalPaid : 1600000,
-      'Pre-Possession Rent Paid': prePoss ? prePoss.totalPaid : (isRenewal ? amountPaid : 0),
+      'Total Rent Paid to Previous Owner (₹)': rentPaid,
+      'Previous Owner Monthly Rent (₹)': mRentPaid,
+      'Previous Owner Paid Months': pMonths,
+      'Pre-Possession Rent Paid (₹)': rentPaid,
       'Current Owner Name': customerName,
       'Current Owner Phone': '+91 98' + flatNoClean.padStart(8, '0').slice(0, 8),
       'Bank Name': bank.bankName,
       'Account Number': bank.accountNo,
       'IFSC Code': bank.ifsc,
-      'Remarks': prePoss ? `100-Mo Pre-Possession Contract (@ ₹${prePoss.monthlyRent}/mo, Total Paid ₹${prePoss.totalPaid}) - ${prePoss.remarks || 'Completed'}` : (isResell ? `Resold title to ${customerName}` : 'Historical title archive')
+      'Remarks': prePoss ? `100-Mo Pre-Possession Contract (@ ₹${prePoss.monthlyRent}/mo, Total Rent Paid ₹${prePoss.totalPaid}) - ${prePoss.remarks || 'Completed'}` : (isResell ? `Resold title to ${customerName}` : 'Historical title archive')
     });
   }
 }

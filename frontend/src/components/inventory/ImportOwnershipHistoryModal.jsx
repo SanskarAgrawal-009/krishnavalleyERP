@@ -48,10 +48,12 @@ export const ImportOwnershipHistoryModal = ({ isOpen, onClose, onSuccess }) => {
         'Transfer Reason': 'Resale',
         'Historical Valuation': 1600000,
         'Historical Paid Amount': 1600000,
-        'Pre-Possession Rent Paid': 0,
+        'Total Rent Paid to Previous Owner (₹)': 1600000,
+        'Previous Owner Monthly Rent (₹)': 16000,
+        'Previous Owner Paid Months': 100,
         'Current Owner Name': 'MADAN GOPAL SARASWAT',
         'Current Owner Mobile': '+91 9800000105',
-        'Remarks': 'Flat A-105: Prior owner Shakuntla Gupta held title from 2014 until secondary market resale to Madan Gopal Saraswat in Oct 2025'
+        'Remarks': 'Flat A-105: Prior owner Shakuntla Gupta received 100-Mo Rent (₹16,00,000) prior to resale to Madan Gopal Saraswat'
       },
       {
         'Flat No': '612',
@@ -67,7 +69,9 @@ export const ImportOwnershipHistoryModal = ({ isOpen, onClose, onSuccess }) => {
         'Transfer Reason': 'Possession Renewal',
         'Historical Valuation': 2150000,
         'Historical Paid Amount': 5500000,
-        'Pre-Possession Rent Paid': 2150000,
+        'Total Rent Paid to Previous Owner (₹)': 2150000,
+        'Previous Owner Monthly Rent (₹)': 21500,
+        'Previous Owner Paid Months': 100,
         'Current Owner Name': 'Uma Shankar Prasad Singh',
         'Current Owner Mobile': '+91 9800000612',
         'Remarks': 'Flat A-612: Pre-Possession Guaranteed Rent (100mo @ ₹21,500/mo, Total: ₹21,50,000) expired/renewed to Post-Possession Rate (@ ₹11,000/mo)'
@@ -86,10 +90,12 @@ export const ImportOwnershipHistoryModal = ({ isOpen, onClose, onSuccess }) => {
         'Transfer Reason': 'Buy Back',
         'Historical Valuation': 5000000,
         'Historical Paid Amount': 5000000,
-        'Pre-Possession Rent Paid': 0,
+        'Total Rent Paid to Previous Owner (₹)': 310000,
+        'Previous Owner Monthly Rent (₹)': 31000,
+        'Previous Owner Paid Months': 10,
         'Current Owner Name': 'Suresh Mehta',
         'Current Owner Mobile': '+91 9811223344',
-        'Remarks': 'Flat A-001: Repurchased by developer under guaranteed buyback terms and transferred to Suresh Mehta'
+        'Remarks': 'Flat A-001: Repurchased by developer after 10 months rent payout (₹3,10,000) and transferred to Suresh Mehta'
       }
     ];
 
@@ -108,7 +114,9 @@ export const ImportOwnershipHistoryModal = ({ isOpen, onClose, onSuccess }) => {
       { wch: 22 }, // Transfer Reason
       { wch: 18 }, // Historical Valuation
       { wch: 18 }, // Historical Paid Amount
-      { wch: 22 }, // Pre-Possession Rent Paid
+      { wch: 30 }, // Total Rent Paid to Previous Owner
+      { wch: 22 }, // Monthly Rent
+      { wch: 16 }, // Paid Months
       { wch: 28 }, // Current Owner Name
       { wch: 18 }, // Current Owner Mobile
       { wch: 55 }  // Remarks

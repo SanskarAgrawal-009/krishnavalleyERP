@@ -1861,49 +1861,97 @@ export const FlatDetailModal = ({
                         No historical transfers recorded yet. The initial owner is the current titleholder.
                       </div>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {flat.ownershipHistory.map((h, idx) => (
                           <div
                             key={h._id || idx}
                             style={{
-                              background: '#f8fafc',
+                              background: '#ffffff',
                               border: '1px solid #e2e8f0',
-                              borderRadius: '8px',
-                              padding: '12px 16px',
+                              borderRadius: '10px',
+                              padding: '16px 18px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '12px',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                              <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.92rem' }}>
+                                    {h.previousOwnerName || h.name || 'Prior Owner'}
+                                  </span>
+                                  <span style={{
+                                    fontSize: '0.68rem',
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    background: (h.transferReason === 'possession_renewal' || (h.totalRentPaid > 0 && !h.transferDealValue)) ? '#ecfdf5' : '#e0e7ff',
+                                    color: (h.transferReason === 'possession_renewal' || (h.totalRentPaid > 0 && !h.transferDealValue)) ? '#047857' : '#3730a3',
+                                    fontWeight: '800'
+                                  }}>
+                                    {(h.transferReason || 'RESALE').replace(/_/g, ' ').toUpperCase()}
+                                  </span>
+                                </div>
+
+                                <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '4px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                  {h.mobileNo && <span>📞 {h.mobileNo}</span>}
+                                  {h.panNumber && <span>💳 PAN: <strong>{h.panNumber}</strong></span>}
+                                  {h.aadhaarNumber && <span>🆔 Aadhaar: <strong>{h.aadhaarNumber}</strong></span>}
+                                </div>
+                              </div>
+
+                              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', textAlign: 'right' }}>
+                                {(h.totalRentPaid > 0 || h.prePossessionRentPaid > 0) && (
+                                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '6px 12px', borderRadius: '6px' }}>
+                                    <span style={{ fontSize: '0.68rem', color: '#166534', fontWeight: '700', display: 'block' }}>
+                                      RENT GIVEN TO THIS OWNER:
+                                    </span>
+                                    <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#15803d' }}>
+                                      {formatINR(h.totalRentPaid || h.prePossessionRentPaid)}
+                                    </div>
+                                    {h.paidMonths > 0 && h.monthlyRent > 0 && (
+                                      <div style={{ fontSize: '0.68rem', color: '#16a34a' }}>
+                                        {h.paidMonths} Mo @ {formatINR(h.monthlyRent)}/mo
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {h.transferDealValue > 0 && (
+                                  <div>
+                                    <span style={{ fontSize: '0.68rem', color: '#64748b', display: 'block' }}>HISTORICAL VALUATION:</span>
+                                    <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#1e293b' }}>
+                                      {formatINR(h.transferDealValue)}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Additional metadata & bank info */}
+                            <div style={{
+                              background: '#f8fafc',
+                              borderRadius: '6px',
+                              padding: '8px 12px',
+                              fontSize: '0.74rem',
+                              color: '#475569',
                               display: 'flex',
                               justifyContent: 'space-between',
                               alignItems: 'center',
                               flexWrap: 'wrap',
-                              gap: '10px'
-                            }}
-                          >
-                            <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.88rem' }}>
-                                  {h.previousOwnerName || 'Prior Owner'} ➔ {h.newOwnerName || 'New Owner'}
-                                </span>
-                                <span style={{
-                                  fontSize: '0.68rem',
-                                  padding: '2px 6px',
-                                  borderRadius: '4px',
-                                  background: '#e0e7ff',
-                                  color: '#3730a3',
-                                  fontWeight: '800'
-                                }}>
-                                  {(h.transferReason || 'RESALE').replace(/_/g, ' ').toUpperCase()}
-                                </span>
+                              gap: '8px'
+                            }}>
+                              <div>
+                                <span>📅 Period: <strong>{formatDate(h.ownershipStartDate || h.transferDate)}</strong> ➔ <strong>{formatDate(h.transferDate || h.ownershipEndDate)}</strong></span>
+                                {h.remarks && <span style={{ marginLeft: '10px', color: '#64748b' }}>• {h.remarks}</span>}
                               </div>
-                              <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '3px' }}>
-                                Transferred on: {formatDate(h.transferDate)}
-                                {h.remarks && ` • ${h.remarks}`}
-                              </div>
-                            </div>
 
-                            <div style={{ textAlign: 'right' }}>
-                              <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Transfer Valuation:</span>
-                              <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
-                                {formatINR(h.transferDealValue)}
-                              </div>
+                              {(h.bankName || h.accountNumber) && (
+                                <div style={{ color: '#334155' }}>
+                                  🏦 {h.bankName} {h.branch ? `(${h.branch})` : ''} | A/C: <strong>{h.accountNumber || '—'}</strong> | IFSC: <strong>{h.ifscCode || '—'}</strong>
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))}

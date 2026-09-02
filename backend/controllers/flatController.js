@@ -1552,7 +1552,8 @@ export const recordFlatBuybackOrResale = async (req, res) => {
       transferDealValue,
       transferDate,
       remarks,
-      newOwner // { name, mobileNo, email, agreedDealPrice, bookingAmountPaid, paymentPlanType }
+      newOwner, // { name, mobileNo, email, agreedDealPrice, bookingAmountPaid, paymentPlanType }
+      newRental // { monthlyRent, tenureMonths, startDate, applyTds, tdsPercentage }
     } = req.body;
 
     const flat = await Flat.findById(id);
@@ -1561,6 +1562,16 @@ export const recordFlatBuybackOrResale = async (req, res) => {
     const effDate = transferDate ? new Date(transferDate) : new Date();
     const effDealValue = Number(transferDealValue) || 0;
 
+    let rentPaidToArchivedOwner = Number(req.body.rentPaidToPreviousOwner || req.body.totalRentPaid || req.body.prePossessionRentPaid) || 0;
+    let monthlyRentArchived = Number(req.body.monthlyRent || req.body.prePossessionMonthlyRent) || 0;
+    let paidMonthsArchived = Number(req.body.paidMonths) || 0;
+
+    // Auto-calculate from active contract if not provided
+    if (!rentPaidToArchivedOwner && flat.rentalDetails) {
+      rentPaidToArchivedOwner = Number(flat.rentalDetails.totalRentPaid || flat.rentalDetails.prePossessionTotalPaid) || 0;
+      monthlyRentArchived = Number(flat.rentalDetails.monthlyRent) || monthlyRentArchived;
+    }
+
     // 1. Archive Current Owner into ownershipHistory if owner exists
     if (flat.currentOwner && flat.currentOwner.name) {
       if (!flat.ownershipHistory) flat.ownershipHistory = [];
@@ -1568,13 +1579,24 @@ export const recordFlatBuybackOrResale = async (req, res) => {
       flat.ownershipHistory.push({
         previousOwnerId: flat.currentOwner.customerId,
         name: flat.currentOwner.name,
+        previousOwnerName: flat.currentOwner.name,
         mobileNo: flat.currentOwner.mobileNo,
         email: flat.currentOwner.email,
+        panNumber: req.body.panNumber || '',
+        aadhaarNumber: req.body.aadhaarNumber || '',
+        bankName: req.body.bankName || '',
+        branch: req.body.branch || '',
+        ifscCode: req.body.ifscCode || '',
+        accountNumber: req.body.accountNumber || '',
         ownershipStartDate: flat.currentOwner.ownershipStartDate || flat.createdAt,
         ownershipEndDate: effDate,
         transferDate: effDate,
         transferReason: transferType || 'buyback',
         transferDealValue: effDealValue,
+        totalRentPaid: rentPaidToArchivedOwner,
+        prePossessionRentPaid: rentPaidToArchivedOwner,
+        monthlyRent: monthlyRentArchived,
+        paidMonths: paidMonthsArchived,
         remarks: remarks || `Flat ${transferType || 'transferred'} on ${effDate.toLocaleDateString()}`
       });
     }
@@ -1621,7 +1643,7 @@ export const recordFlatBuybackOrResale = async (req, res) => {
       newCustomer = new Customer({
         name: newOwner.name.trim(),
         mobileNo: newOwner.mobileNo.trim(),
-        email: newOwner.email || '',
+        email: newOwner.email ? newOwner.email.trim() : undefined,
         customerType: 'owner',
         ownerDetails: {
           propertyIds: [flat._id],
@@ -1631,14 +1653,13 @@ export const recordFlatBuybackOrResale = async (req, res) => {
       });
       await newCustomer.save();
     } else {
-      if (!newCustomer.ownerDetails?.propertyIds?.some((p) => p.toString() === flat._id.toString())) {
-        if (!newCustomer.ownerDetails) newCustomer.ownerDetails = { propertyIds: [] };
+      if (!newCustomer.ownerDetails.propertyIds.includes(flat._id)) {
         newCustomer.ownerDetails.propertyIds.push(flat._id);
         await newCustomer.save();
       }
     }
 
-    // Set new active owner
+    // Set Flat Active Owner to New Buyer
     flat.currentOwner = {
       customerId: newCustomer._id,
       name: newCustomer.name,
@@ -1648,125 +1669,187 @@ export const recordFlatBuybackOrResale = async (req, res) => {
       ownershipType: 'individual'
     };
 
-    const newDealPrice = Number(newOwner.agreedDealPrice) || effDealValue || flat.basePrice;
-    const newPaidAmount = Number(newOwner.bookingAmountPaid) || 0;
-    const isFull = newPaidAmount >= newDealPrice && newDealPrice > 0;
+    flat.status = 'sold';
+    flat.isSold = true;
+
+    // Setup New Sales Breakdown for New Buyer
+    const newPrice = Number(newOwner.dealPrice) || flat.basePrice || 0;
+    const newPaid = Number(newOwner.paidAmount) || 0;
+    const isFullyPaid = newPaid >= newPrice && newPrice > 0;
 
     flat.salesDetails = {
       buyerName: newCustomer.name,
       bookingDate: effDate,
-      agreedDealPrice: newDealPrice,
-      bookingAmountPaid: newPaidAmount,
-      totalAmountPaid: newPaidAmount,
-      balanceAmountDue: Math.max(0, newDealPrice - newPaidAmount),
-      paymentPlanType: newOwner.paymentPlanType || (isFull ? 'full_payment' : 'installment'),
+      agreedDealPrice: newPrice,
+      bookingAmountPaid: newPaid,
+      totalAmountPaid: newPaid,
+      balanceAmountDue: Math.max(0, newPrice - newPaid),
+      paymentPlanType: isFullyPaid ? 'full_payment' : 'installment',
       agreementDate: effDate,
-      salesStatus: isFull ? 'fully_paid' : 'agreement_completed'
+      salesStatus: isFullyPaid ? 'fully_paid' : 'agreement_completed'
     };
 
-    flat.status = 'sold';
-    flat.isSold = true;
+    // Close any prior active rental contract
+    await RentalManagement.updateMany(
+      { flatId: flat._id, status: { $ne: 'terminated' } },
+      { status: 'terminated', remarks: `Ownership transferred to ${newCustomer.name} on ${effDate.toLocaleDateString()}` }
+    );
+
+    // If new rental terms are provided, enroll the new buyer
+    if (newRental && newRental.monthlyRent > 0) {
+      const tenure = Number(newRental.tenureMonths) || 36;
+      const mRent = Number(newRental.monthlyRent);
+      const applyTds = newRental.applyTds !== undefined ? Boolean(newRental.applyTds) : true;
+      const tdsRate = applyTds ? ((Number(newRental.tdsPercentage) >= 0 ? Number(newRental.tdsPercentage) : 10) / 100) : 0;
+      const tdsAmount = Math.round(mRent * tdsRate);
+      const netMonthly = mRent - tdsAmount;
+      const rStart = newRental.startDate ? new Date(newRental.startDate) : effDate;
+      const rEnd = new Date(rStart);
+      rEnd.setMonth(rEnd.getMonth() + tenure);
+
+      flat.takenForRental = true;
+      flat.rentalDetails = {
+        monthlyRent: mRent,
+        applyTds,
+        tdsPercentage: applyTds ? ((Number(newRental.tdsPercentage) >= 0 ? Number(newRental.tdsPercentage) : 10)) : 0,
+        tdsAmount,
+        netMonthlyAmount: netMonthly,
+        tenureMonths: tenure,
+        startDate: rStart,
+        endDate: rEnd,
+        total36MonthCommitment: netMonthly * tenure,
+        prePossessionTotalPaid: rentPaidToArchivedOwner > 0 ? rentPaidToArchivedOwner : undefined
+      };
+
+      const building = await Building.findById(flat.buildingId);
+      const newContract = new RentalManagement({
+        flatId: flat._id,
+        ownerId: newCustomer._id,
+        agreementType: 'rent_back',
+        propertyDetails: {
+          tower: building?.buildingName || 'Tower A',
+          floor: flat.floorNumber,
+          flatNumber: flat.flatNumber
+        },
+        rentBack: {
+          monthlyRent: mRent,
+          applyTds,
+          tdsPercentage: applyTds ? ((Number(newRental.tdsPercentage) >= 0 ? Number(newRental.tdsPercentage) : 10)) : 0,
+          tdsAmount,
+          netMonthlyAmount: netMonthly,
+          tenureMonths: tenure,
+          startDate: rStart,
+          endDate: rEnd,
+          total36MonthCommitment: netMonthly * tenure,
+          prePossessionTotalPaid: rentPaidToArchivedOwner > 0 ? rentPaidToArchivedOwner : undefined
+        },
+        status: 'active'
+      });
+      await newContract.save();
+    } else {
+      flat.takenForRental = false;
+      flat.rentalDetails = undefined;
+    }
+
     await flat.save();
 
     return res.json({
       success: true,
-      message: `Flat ${flat.flatNumber} resold to ${newCustomer.name}. Previous ownership recorded in Chain of Title.`,
+      message: `Flat ${flat.flatNumber} transferred successfully to new owner ${newCustomer.name}. Previous owner archived with rent history in Chain of Title.`,
       data: flat
     });
 
   } catch (error) {
-    console.error('Error in recordFlatBuybackOrResale:', error);
+    console.error('Error recording transfer/buyback:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// =========================================================================
-// BULK IMPORT OWNERSHIP & RESALE HISTORY (CHAIN OF TITLE) FROM EXCEL
-// =========================================================================
+// Import Ownership History & Resale Archive from Excel
 export const importOwnershipHistoryFromExcel = async (req, res) => {
   try {
     let rows = [];
 
-    if (req.file && req.file.buffer) {
-      const workbook = XLSX.read(req.file.buffer, { type: 'buffer', cellDates: true });
-      const historySheetName = workbook.SheetNames.find(
-        (n) => n.toLowerCase().includes('history') || n.toLowerCase().includes('resale') || n.toLowerCase().includes('ownership')
-      ) || workbook.SheetNames[0];
-      const sheet = workbook.Sheets[historySheetName];
-      rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-    } else if (req.body.items && Array.isArray(req.body.items)) {
-      rows = req.body.items;
+    if (req.file) {
+      const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames.find(s => s.toLowerCase().includes('ownership') || s.toLowerCase().includes('history') || s.toLowerCase().includes('previous')) || workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      rows = XLSX.utils.sheet_to_json(worksheet);
+    } else if (req.body && req.body.items) {
+      rows = Array.isArray(req.body.items) ? req.body.items : [req.body.items];
     } else {
-      return res.status(400).json({ success: false, message: 'No Excel file or data rows provided' });
+      return res.status(400).json({ success: false, message: 'No file or data provided for import.' });
     }
 
     if (!rows || rows.length === 0) {
-      return res.status(400).json({ success: false, message: 'The uploaded file is empty' });
+      return res.status(400).json({ success: false, message: 'The uploaded file contains no data.' });
     }
+
+    const targetProjectId = req.body.projectId;
+    let defaultProj = targetProjectId ? await Project.findById(targetProjectId) : await Project.findOne();
+    if (!defaultProj) {
+      defaultProj = await Project.findOne();
+    }
+
+    let defaultTower = defaultProj?.buildings?.[0]?.buildingName || 'Tower A';
 
     const summary = {
       totalRows: rows.length,
       historyRecordsAppended: 0,
       activeOwnersUpdated: 0,
       flatsUpdated: 0,
-      errors: [],
-      processedFlats: []
+      processedFlats: [],
+      errors: []
     };
-
-    // Resolve default project if needed
-    let defaultProj = await Project.findOne().sort({ createdAt: -1 });
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const rowNum = i + 2;
 
       try {
-        const rawFlatNo = getRowVal(row, 'flat no', 'flat_no', 'flat number', 'unit no', 'unit', 'flat');
+        const rawFlatNo = getRowVal(row, 'flat no', 'flat_no', 'flat no.', 'flat number', 'unit no', 'unit', 'flat');
         if (!rawFlatNo) {
           summary.errors.push(`Row ${rowNum}: Missing Flat No.`);
           continue;
         }
 
-        const flatNumber = String(rawFlatNo).trim();
-        const rawBuilding = getRowVal(row, 'tower', 'building', 'building name', 'block', 'wing');
-        const buildingName = String(rawBuilding || 'Tower A').trim();
+        const flatNumber = String(rawFlatNo).replace(/^A\s*-\s*/i, '').trim();
+        const rawTower = getRowVal(row, 'tower', 'building', 'building name', 'block', 'wing');
+        const towerName = (rawTower && String(rawTower).trim()) ? String(rawTower).trim() : defaultTower;
 
-        let flat = await Flat.findOne({ flatNumber });
+        // Find Project & Building
+        let project = defaultProj;
+        let building = project ? project.buildings.find(b => b.buildingName && b.buildingName.toLowerCase() === towerName.toLowerCase()) : null;
+
+        if (!building && project && project.buildings && project.buildings.length > 0) {
+          building = project.buildings[0];
+        }
+
+        // Find Flat
+        let flat = await Flat.findOne({
+          flatNumber,
+          ...(building ? { buildingId: building._id } : {})
+        });
+
         if (!flat) {
-          if (!defaultProj) {
-            defaultProj = await Project.create({
-              projectName: 'Krishna Valley Township',
-              projectCode: 'KV-MATHURA',
-              status: 'ongoing',
-              buildings: []
-            });
-          }
+          flat = await Flat.findOne({ flatNumber });
+        }
 
-          if (!defaultProj.buildings) defaultProj.buildings = [];
-          let building = defaultProj.buildings.find(
-            (b) => b.buildingName && b.buildingName.toLowerCase() === buildingName.toLowerCase()
-          );
-
-          if (!building) {
-            defaultProj.buildings.push({
-              buildingName,
-              buildingCode: buildingName.toUpperCase().slice(0, 8),
-              numberOfFloors: 5,
-              flats: [],
-              status: 'completed'
-            });
-            await defaultProj.save();
-            building = defaultProj.buildings[defaultProj.buildings.length - 1];
-          }
+        // Auto-create flat if not found
+        if (!flat && project && building) {
+          const rawFloor = getRowVal(row, 'floor', 'floor no', 'floor_no');
+          const floorNumber = (rawFloor !== '' && rawFloor !== undefined && rawFloor !== null)
+            ? cleanNumeric(rawFloor, 0)
+            : inferFloorFromFlat(flatNumber);
 
           flat = new Flat({
-            projectId: defaultProj._id,
+            projectId: project._id,
             buildingId: building._id,
             flatNumber,
-            floor: inferFloorFromFlat(flatNumber),
-            bhkType: 'Service Apartment',
+            floorNumber,
+            flatType: '2BHK',
+            basePrice: 5500000,
             status: 'available',
-            basePrice: 5000000,
             facing: 'East'
           });
           await flat.save();
@@ -1785,15 +1868,24 @@ export const importOwnershipHistoryFromExcel = async (req, res) => {
         const rawTransferDate = getRowVal(row, 'transfer date', 'exit date', 'buyback date', 'resale date', 'end date', 'ownership transfer date', 'date of transfer');
         const rawReason = getRowVal(row, 'transfer reason', 'reason', 'type', 'event', 'transfer type');
         const rawTransferValue = getRowVal(row, 'transfer deal value', 'buyback price', 'resale price', 'deal value', 'transfer value', 'historical deal value', 'historical valuation');
-        const rawPrePossessionPaid = getRowVal(row, 'pre-possession rent paid', 'pre possession rent paid', 'pre possession total paid', 'prepossession amount', 'pre possession paid');
-        const rawPrePossessionRent = getRowVal(row, 'pre-possession monthly rent', 'pre possession monthly rent', 'prepossession rent per month');
+        
+        // Total Rent given to Previous Owner
+        const rawTotalRentPaid = getRowVal(row, 'total rent paid to previous owner', 'rent given to previous owner', 'rent paid to previous owner', 'total rent paid', 'pre-possession rent paid', 'pre possession rent paid', 'pre possession total paid', 'prepossession amount', 'pre possession paid', 'amount paid');
+        const rawMonthlyRent = getRowVal(row, 'previous owner monthly rent', 'monthly rent', 'installment amount', 'amount per month', 'rent per month', 'pre-possession monthly rent', 'pre possession monthly rent');
+        const rawPaidMonths = getRowVal(row, 'previous owner paid months', 'paid months', 'months paid', 'tenure paid', 'paid');
+        const bankName = getRowVal(row, 'bank name', 'bank');
+        const branch = getRowVal(row, 'branch', 'bank branch');
+        const ifscCode = getRowVal(row, 'ifsc code', 'ifsc');
+        const accountNumber = getRowVal(row, 'account number', 'account no', 'account no.', 'a/c no');
+
         const remarks = getRowVal(row, 'remarks', 'notes', 'comments', 'transfer remarks', 'transfer audit remarks');
 
         const purchaseDate = parseExcelDate(rawPurchaseDate) || new Date('2024-01-01');
         const transferDate = parseExcelDate(rawTransferDate) || new Date();
         const transferDealValue = cleanNumeric(rawTransferValue, 0);
-        const prePossessionPaid = cleanNumeric(rawPrePossessionPaid, 0);
-        const prePossessionMonthlyRent = cleanNumeric(rawPrePossessionRent, 0);
+        const totalRentPaid = cleanNumeric(rawTotalRentPaid, 0);
+        const monthlyRent = cleanNumeric(rawMonthlyRent, 0);
+        const paidMonths = cleanNumeric(rawPaidMonths, 0);
         
         const cleanReason = String(rawReason || '').toLowerCase().replace(/[^a-z_]/g, '');
         let transferReason = 'resale';
@@ -1822,12 +1914,19 @@ export const importOwnershipHistoryFromExcel = async (req, res) => {
               email: prevEmail ? String(prevEmail).trim() : '',
               panNumber: prevPan ? String(prevPan).trim() : '',
               aadhaarNumber: prevAadhaar ? String(prevAadhaar).trim() : '',
+              bankName: bankName ? String(bankName).trim() : '',
+              branch: branch ? String(branch).trim() : '',
+              ifscCode: ifscCode ? String(ifscCode).trim() : '',
+              accountNumber: accountNumber ? String(accountNumber).trim() : '',
               ownershipStartDate: purchaseDate,
               ownershipEndDate: transferDate,
               transferDate,
               transferReason,
-              transferDealValue: transferDealValue || prePossessionPaid || 0,
-              prePossessionRentPaid: prePossessionPaid,
+              transferDealValue: transferDealValue || 0,
+              totalRentPaid: totalRentPaid || 0,
+              prePossessionRentPaid: totalRentPaid || 0,
+              monthlyRent,
+              paidMonths,
               remarks: remarks || `Imported historical owner dossier`
             });
             flat.buybackCount = (flat.buybackCount || 0) + 1;
@@ -1835,11 +1934,11 @@ export const importOwnershipHistoryFromExcel = async (req, res) => {
           }
 
           // If possession renewal record or pre-possession rent is logged, update rentalDetails
-          if (transferReason === 'possession_renewal' || prePossessionPaid > 0) {
+          if (transferReason === 'possession_renewal' || totalRentPaid > 0) {
             if (!flat.rentalDetails) flat.rentalDetails = {};
             flat.rentalDetails.isPossessionRenewal = true;
-            if (prePossessionPaid > 0) flat.rentalDetails.prePossessionTotalPaid = prePossessionPaid;
-            if (prePossessionMonthlyRent > 0) flat.rentalDetails.prePossessionMonthlyRent = prePossessionMonthlyRent;
+            if (totalRentPaid > 0) flat.rentalDetails.prePossessionTotalPaid = totalRentPaid;
+            if (monthlyRent > 0) flat.rentalDetails.prePossessionMonthlyRent = monthlyRent;
           }
         }
 
