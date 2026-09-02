@@ -235,7 +235,7 @@ function convertTowerA() {
       });
 
       // Archive the Pre-Possession Initial Contract in Ownership & Contract History
-      const initAssured = initialRec.totalAssured || (initialRec.monthlyRent * (initialRec.tenureMonths || 100));
+      const initPaid = initialRec.amountPaid || initialRec.totalAssured || (initialRec.monthlyRent * (initialRec.tenureMonths || 100));
       historyRows.push({
         'Flat No': flatNum,
         'Tower': 'Tower A',
@@ -244,12 +244,12 @@ function convertTowerA() {
         'Purchase Date': initialRec.mouDate || initialRec.startDate || '01/01/2015',
         'Transfer Date': initialRec.endDate || '01/01/2025',
         'Transfer Reason': 'possession_renewal',
-        'Transfer Deal Value': initAssured || 2150000,
+        'Transfer Deal Value': initPaid || 2150000,
         'Current Owner Name': initialRec.customer,
         'Current Owner Phone': phone,
         'Current Deal Price': dealPrice,
         'Current Paid Amount': dealPrice,
-        'Remarks': `Flat A-${flatNum}: Pre-Possession Contract (${initialRec.tenureMonths || 100}mo @ ₹${initialRec.monthlyRent}/mo, Total: ₹${initAssured.toLocaleString('en-IN')}) expired/renewed to Post-Possession Rate (@ ₹${renewalRent.toLocaleString('en-IN')}/mo)`
+        'Remarks': `Flat A-${flatNum}: Pre-Possession Contract (${initialRec.tenureMonths || 100}mo @ ₹${initialRec.monthlyRent}/mo, Total Disbursed: ₹${initPaid.toLocaleString('en-IN')}) renewed to Post-Possession Rate (@ ₹${renewalRent.toLocaleString('en-IN')}/mo)`
       });
 
     } else {

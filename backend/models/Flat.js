@@ -188,7 +188,7 @@ const FlatSchema = new mongoose.Schema(
         transferDate: Date,
         transferReason: {
           type: String,
-          enum: ['resale', 'buyback', 'inheritance', 'family_transfer', 'surrender'],
+          enum: ['resale', 'buyback', 'possession_renewal', 'inheritance', 'family_transfer', 'surrender'],
           default: 'resale',
         },
         transferDealValue: Number,
@@ -256,7 +256,7 @@ const FlatSchema = new mongoose.Schema(
     },
 
     // =========================================================
-    // 4. 36-MONTH OWNER RENT-BACK PROGRAM & RENTAL LEDGER
+    // 4. OWNER RENT-BACK PROGRAM, PRE-POSSESSION & RENEWAL LEDGER
     // =========================================================
     rentalDetails: {
       rentalContractId: {
@@ -266,6 +266,22 @@ const FlatSchema = new mongoose.Schema(
       isRentBackActive: {
         type: Boolean,
         default: false,
+      },
+      isPossessionRenewal: {
+        type: Boolean,
+        default: false,
+      },
+      prePossessionMonthlyRent: {
+        type: Number,
+        default: 0,
+      },
+      prePossessionTenureMonths: {
+        type: Number,
+        default: 0,
+      },
+      prePossessionTotalPaid: {
+        type: Number,
+        default: 0,
       },
       mouNumber: String,
       mouDate: Date,

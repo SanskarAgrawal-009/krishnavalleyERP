@@ -481,6 +481,77 @@ export const FlatDetailModal = ({
                       </div>
                     </div>
                   </div>
+
+                  {/* PRE-POSSESSION VS POST-POSSESSION RENEWAL DOSSIER */}
+                  {((flat.status || '').toLowerCase() === 'possession_renewal' || flat.rentalDetails?.isPossessionRenewal || (flat.ownershipHistory || []).some(h => h.transferReason === 'possession_renewal')) && (() => {
+                    const renewalHistory = (flat.ownershipHistory || []).find(h => h.transferReason === 'possession_renewal');
+                    const preRent = flat.rentalDetails?.prePossessionMonthlyRent || (renewalHistory?.transferDealValue ? Math.round(renewalHistory.transferDealValue / 100) : 16000);
+                    const preTenure = flat.rentalDetails?.prePossessionTenureMonths || 100;
+                    const prePaid = flat.rentalDetails?.prePossessionTotalPaid || renewalHistory?.transferDealValue || 2150000;
+                    const curRent = rental?.rentBack?.monthlyRent || flat.rentalDetails?.guaranteedMonthlyRent || 11000;
+                    const curNet = curRent > 0 ? (curRent * 0.9) : 9900;
+
+                    return (
+                      <div style={{
+                        background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
+                        border: '1.5px solid #a7f3d0',
+                        borderRadius: '12px',
+                        padding: '16px 20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#065f46', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <RefreshCw size={18} color="#059669" /> Post-Possession Renewal & Pre-Possession Yield Dossier
+                          </h4>
+                          <span style={{
+                            background: '#059669',
+                            color: '#ffffff',
+                            fontSize: '0.72rem',
+                            fontWeight: '800',
+                            padding: '3px 10px',
+                            borderRadius: '12px',
+                            letterSpacing: '0.02em'
+                          }}>
+                            POSSESSION RENEWAL
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                          <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                            <div style={{ fontSize: '0.72rem', color: '#047857', fontWeight: '700' }}>Initial Pre-Possession Rent</div>
+                            <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+                              {formatINR(preRent)} <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#64748b' }}>/ mo</span>
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#059669', marginTop: '2px' }}>{preTenure}-Month Initial Term</div>
+                          </div>
+
+                          <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                            <div style={{ fontSize: '0.72rem', color: '#047857', fontWeight: '700' }}>Total Rent Paid So Far</div>
+                            <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#16a34a', marginTop: '2px' }}>
+                              {formatINR(prePaid)}
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#15803d', marginTop: '2px' }}>Disbursed to Owner</div>
+                          </div>
+
+                          <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                            <div style={{ fontSize: '0.72rem', color: '#047857', fontWeight: '700' }}>Active Post-Possession Rate</div>
+                            <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#7c3aed', marginTop: '2px' }}>
+                              {formatINR(curRent)} <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#64748b' }}>/ mo</span>
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#6b21a8', marginTop: '2px' }}>Net: {formatINR(curNet)} (after TDS)</div>
+                          </div>
+                        </div>
+
+                        {renewalHistory?.remarks && (
+                          <div style={{ fontSize: '0.76rem', color: '#064e3b', fontStyle: 'italic', background: 'rgba(255,255,255,0.6)', padding: '6px 10px', borderRadius: '6px' }}>
+                            {renewalHistory.remarks}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
