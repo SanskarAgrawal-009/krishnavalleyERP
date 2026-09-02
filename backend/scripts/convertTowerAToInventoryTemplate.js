@@ -135,15 +135,6 @@ function convertTowerA() {
     const floor = inferFloor(flatNum);
     const bankInfo = bankMap.get(flatNum) || {};
 
-    // Determine current (active) owner: last record in the group
-    // and previous owners: all earlier records
-    let currentRec = records[records.length - 1];
-    let prevRecs = records.slice(0, records.length - 1);
-
-    // For units with single record - no history needed
-    // For multi-record units - the last entry is the active owner,
-    // all prior entries go into ownership history
-
     if (isVacant) {
       // Vacant unit
       inventoryRows.push({
@@ -169,62 +160,155 @@ function convertTowerA() {
       return;
     }
 
-    // Active current owner
-    const rent = currentRec.monthlyRent || 31000;
-    const tenure = currentRec.tenureMonths || 36;
-    const totalAssured = currentRec.totalAssured || (rent * tenure);
     const dealPrice = 5500000;
-    const mouDate = currentRec.mouDate || currentRec.startDate || '';
-    const startDate = currentRec.startDate || currentRec.mouDate || '';
+    const phone = `+91 98${flatNum.padStart(8, '0').slice(0, 8)}`;
 
-    const tds = currentRec.tds || 0;
-    const netAmount = tds > 0 ? (rent - tds) : (currentRec.netRent || rent);
+    if (records.length === 1) {
+      // Single contract flat
+      const r = records[0];
+      const rent = r.monthlyRent || 31000;
+      const tenure = r.tenureMonths || 36;
+      const tds = r.tds || (rent > 0 ? rent * 0.1 : 0);
+      const netAmount = tds > 0 ? (rent - tds) : (r.netRent || rent);
+      const mouDate = r.mouDate || r.startDate || '';
+      const startDate = r.startDate || r.mouDate || '';
 
-    inventoryRows.push({
-      'Flat No': flatNum,
-      'Tower': 'Tower A',
-      'Floor': floor,
-      'Owner Name': currentRec.customer,
-      'Owner Mobile': `+91 98${flatNum.padStart(8, '0').slice(0, 8)}`,
-      'Flat Type': 'Service Apartment',
-      'Carpet Area': 850,
-      'Super Builtup Area': 1150,
-      'Agreed Deal Price': dealPrice,
-      'Previous Payments': dealPrice,
-      'Date of Agreement': mouDate,
-      'Date of the Rental Starts': startDate,
-      'Tenure (Months)': tenure,
-      'Amount Per Month': rent,
-      'TDS': tds,
-      'Net Amount': netAmount,
-      'Amount for the Total Tenure': netAmount * tenure,
-      'Status': 'Sold'
-    });
+      inventoryRows.push({
+        'Flat No': flatNum,
+        'Tower': 'Tower A',
+        'Floor': floor,
+        'Owner Name': r.customer,
+        'Owner Mobile': phone,
+        'Flat Type': 'Service Apartment',
+        'Carpet Area': 850,
+        'Super Builtup Area': 1150,
+        'Agreed Deal Price': dealPrice,
+        'Previous Payments': dealPrice,
+        'Date of Agreement': mouDate,
+        'Date of the Rental Starts': startDate,
+        'Tenure (Months)': tenure,
+        'Amount Per Month': rent,
+        'TDS': tds,
+        'Net Amount': netAmount,
+        'Amount for the Total Tenure': netAmount * tenure,
+        'Status': 'Sold'
+      });
+      return;
+    }
 
-    // History records: each previous owner → ownership history
-    prevRecs.forEach((pr) => {
-      if (!pr.customer || pr.customer.toLowerCase().includes('vacant')) return;
-      // Skip if same name as current (just a renewal/extension, not a real transfer)
-      if (pr.customer.toLowerCase() === currentRec.customer.toLowerCase()) return;
+    // MULTI-ROW FLATS: Check if same owner (Renewal/Post-Possession) or different owners (Resale)
+    const isSameOwner = records.every(r => r.customer.toLowerCase().trim() === records[0].customer.toLowerCase().trim());
 
-      const prAssured = pr.totalAssured || (pr.monthlyRent * (pr.tenureMonths || 36));
+    if (isSameOwner) {
+      // --- SAME OWNER: RENEWAL / POST-POSSESSION RATE ---
+      const initialRec = records[0];
+      const validRenewal = records.slice(1).reverse().find(r => r.monthlyRent > 0) || initialRec;
 
+      const renewalRent = validRenewal.monthlyRent || initialRec.monthlyRent || 11000;
+      const renewalTenure = validRenewal.tenureMonths || (initialRec.tenureMonths > 36 ? 36 : initialRec.tenureMonths) || 36;
+      const renewalTds = validRenewal.tds || (renewalRent > 0 ? renewalRent * 0.1 : 0);
+      const renewalNet = renewalTds > 0 ? (renewalRent - renewalTds) : (validRenewal.netRent || renewalRent);
+
+      const mouDate = initialRec.mouDate || initialRec.startDate || '';
+      const startDate = validRenewal.startDate || initialRec.endDate || initialRec.startDate || '';
+
+      // Active inventory gets the post-possession / renewal rate
+      inventoryRows.push({
+        'Flat No': flatNum,
+        'Tower': 'Tower A',
+        'Floor': floor,
+        'Owner Name': initialRec.customer,
+        'Owner Mobile': phone,
+        'Flat Type': 'Service Apartment',
+        'Carpet Area': 850,
+        'Super Builtup Area': 1150,
+        'Agreed Deal Price': dealPrice,
+        'Previous Payments': dealPrice,
+        'Date of Agreement': mouDate,
+        'Date of the Rental Starts': startDate,
+        'Tenure (Months)': renewalTenure,
+        'Amount Per Month': renewalRent,
+        'TDS': renewalTds,
+        'Net Amount': renewalNet,
+        'Amount for the Total Tenure': renewalNet * renewalTenure,
+        'Status': 'Sold'
+      });
+
+      // Archive the Pre-Possession Initial Contract in Ownership & Contract History
+      const initAssured = initialRec.totalAssured || (initialRec.monthlyRent * (initialRec.tenureMonths || 100));
       historyRows.push({
         'Flat No': flatNum,
         'Tower': 'Tower A',
-        'Previous Owner Name': pr.customer,
-        'Previous Owner Phone': `+91 98${flatNum.padStart(8, '0').slice(0, 8)}`,
-        'Purchase Date': pr.mouDate || pr.startDate || '01/01/2020',
-        'Transfer Date': currentRec.mouDate || currentRec.startDate || '01/01/2025',
-        'Transfer Reason': 'resale',
-        'Transfer Deal Value': prAssured || 5000000,
-        'Current Owner Name': currentRec.customer,
-        'Current Owner Phone': `+91 98${flatNum.padStart(8, '0').slice(0, 8)}`,
+        'Previous Owner Name': initialRec.customer,
+        'Previous Owner Phone': phone,
+        'Purchase Date': initialRec.mouDate || initialRec.startDate || '01/01/2015',
+        'Transfer Date': initialRec.endDate || '01/01/2025',
+        'Transfer Reason': 'pre_possession_contract',
+        'Transfer Deal Value': initAssured || 2150000,
+        'Current Owner Name': initialRec.customer,
+        'Current Owner Phone': phone,
         'Current Deal Price': dealPrice,
         'Current Paid Amount': dealPrice,
-        'Remarks': `Flat A-${flatNum}: Previous owner ${pr.customer} transferred to ${currentRec.customer}`
+        'Remarks': `Flat A-${flatNum}: Pre-Possession Contract (${initialRec.tenureMonths || 100}mo @ ₹${initialRec.monthlyRent}/mo, Total: ₹${initAssured.toLocaleString('en-IN')}) expired/renewed to Post-Possession Rate (@ ₹${renewalRent.toLocaleString('en-IN')}/mo)`
       });
-    });
+
+    } else {
+      // --- GENUINE RESALE (DIFFERENT OWNERS) ---
+      const activeRec = records[records.length - 1];
+      const prevRecs = records.slice(0, records.length - 1);
+
+      const rent = activeRec.monthlyRent || 31000;
+      const tenure = activeRec.tenureMonths || 36;
+      const tds = activeRec.tds || 0;
+      const netAmount = tds > 0 ? (rent - tds) : (activeRec.netRent || rent);
+      const mouDate = activeRec.mouDate || activeRec.startDate || '';
+      const startDate = activeRec.startDate || activeRec.mouDate || '';
+
+      inventoryRows.push({
+        'Flat No': flatNum,
+        'Tower': 'Tower A',
+        'Floor': floor,
+        'Owner Name': activeRec.customer,
+        'Owner Mobile': phone,
+        'Flat Type': 'Service Apartment',
+        'Carpet Area': 850,
+        'Super Builtup Area': 1150,
+        'Agreed Deal Price': dealPrice,
+        'Previous Payments': dealPrice,
+        'Date of Agreement': mouDate,
+        'Date of the Rental Starts': startDate,
+        'Tenure (Months)': tenure,
+        'Amount Per Month': rent,
+        'TDS': tds,
+        'Net Amount': netAmount,
+        'Amount for the Total Tenure': netAmount * tenure,
+        'Status': 'Sold'
+      });
+
+      // Add all previous owners to history
+      prevRecs.forEach((pr) => {
+        if (!pr.customer || pr.customer.toLowerCase().includes('vacant')) return;
+        if (pr.customer.toLowerCase() === activeRec.customer.toLowerCase()) return;
+
+        const prAssured = pr.totalAssured || (pr.monthlyRent * (pr.tenureMonths || 36));
+
+        historyRows.push({
+          'Flat No': flatNum,
+          'Tower': 'Tower A',
+          'Previous Owner Name': pr.customer,
+          'Previous Owner Phone': phone,
+          'Purchase Date': pr.mouDate || pr.startDate || '01/01/2015',
+          'Transfer Date': activeRec.mouDate || activeRec.startDate || '01/01/2025',
+          'Transfer Reason': 'resale',
+          'Transfer Deal Value': prAssured || 5000000,
+          'Current Owner Name': activeRec.customer,
+          'Current Owner Phone': phone,
+          'Current Deal Price': dealPrice,
+          'Current Paid Amount': dealPrice,
+          'Remarks': `Flat A-${flatNum}: Prior owner ${pr.customer} resold to ${activeRec.customer}`
+        });
+      });
+    }
   });
 
   // Sort by flat number
