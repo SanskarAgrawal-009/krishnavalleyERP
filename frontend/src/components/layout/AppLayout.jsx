@@ -48,7 +48,8 @@ import {
   KeyRound,
   Sparkles,
   AlertTriangle,
-  Clock
+  Clock,
+  BookOpen
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -144,11 +145,12 @@ const NAV_ITEMS = [
     path: '/rentals',
     label: 'Rental & Rent-Back',
     icon: Repeat,
+    badge: '36-Mo Ledger',
     permission: 'rentals:view',
     subItems: [
-      { path: '/rentals?tab=contracts', label: 'Rental Contracts', icon: Repeat },
-      { path: '/rentals?tab=rentback', label: 'Guaranteed Yields', icon: DollarSign },
-      { path: '/rentals?tab=messaging', label: 'Tenant Messaging', icon: MessageSquare }
+      { path: '/rentals?tab=rentback', label: '36-Month Rental Ledger', icon: BookOpen },
+      { path: '/rentals?tab=contracts', label: 'Rental Contracts & Leases', icon: Repeat },
+      { path: '/rentals?tab=messaging', label: 'Owner & Tenant Notices', icon: MessageSquare }
     ]
   },
   {
