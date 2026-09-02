@@ -146,7 +146,7 @@ export const RentalDetailModal = ({
               </span>
               <span>•</span>
               <span style={{ color: '#475569' }}>
-                Floor Level: Floor {floorNumber}
+                Floor Level: <strong>{floorNumber === 0 ? 'Ground Floor' : `Floor ${floorNumber}`}</strong>
               </span>
             </div>
           </div>

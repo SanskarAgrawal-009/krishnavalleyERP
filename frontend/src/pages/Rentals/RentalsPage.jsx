@@ -654,7 +654,7 @@ export const RentalsPage = () => {
                           <span>{towerName}</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: '#475569', fontWeight: '600' }}>
-                          <span>Floor Level: <strong>Floor {floorNumber}</strong></span>
+                          <span>Floor Level: <strong>{floorNumber === 0 ? 'Ground Floor' : `Floor ${floorNumber}`}</strong></span>
                         </div>
                         <div style={{ fontSize: '0.76rem', color: '#64748b', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px' }}>
                           {flat.bhkType || 'Service Apartment'}
@@ -1217,7 +1217,7 @@ export const RentalsPage = () => {
                                 </div>
                                 <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
                                   <Building2 size={12} />
-                                  {towerName} • Floor {floorNumber}
+                                  {towerName} • {floorNumber === 0 ? 'Ground Floor' : `Floor ${floorNumber}`}
                                 </div>
                               </td>
                               <td>

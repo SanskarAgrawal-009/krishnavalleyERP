@@ -120,15 +120,18 @@ export const ImportInventoryModal = ({
   };
 
   const inferFloorFromFlat = (flatStr) => {
-    if (!flatStr) return 1;
-    const digits = flatStr.toString().replace(/\D/g, '');
-    if (!digits) return 1;
+    if (!flatStr) return 0;
+    const s = flatStr.toString().trim();
+    if (/^G/i.test(s) || /ground/i.test(s)) return 0;
+    const digits = s.replace(/\D/g, '');
+    if (!digits) return 0;
+    if (digits.startsWith('0')) return 0;
     if (digits.length >= 3) {
       const fl = parseInt(digits.slice(0, -2), 10);
-      return isNaN(fl) || fl === 0 ? 1 : fl;
+      return isNaN(fl) ? 0 : fl;
     }
     const single = parseInt(digits[0], 10);
-    return isNaN(single) || single === 0 ? 1 : single;
+    return isNaN(single) ? 0 : single;
   };
 
   // Process File Selection
@@ -145,18 +148,16 @@ export const ImportInventoryModal = ({
     setImportResult(null);
 
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = (e) => {
       try {
-        const data = new Uint8Array(evt.target.result);
+        const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array', cellDates: true });
         const firstSheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[firstSheetName];
-        const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+        const worksheet = workbook.Sheets[firstSheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
         if (!rows || rows.length === 0) {
-          setErrorMsg('The selected spreadsheet has no rows or is empty.');
-          setPreviewRows([]);
-          setRawRows([]);
+          setErrorMsg('The selected spreadsheet contains no data rows.');
           return;
         }
 
@@ -166,7 +167,7 @@ export const ImportInventoryModal = ({
         const normalized = rows.map((r, i) => {
           const flatNo = String(getRowVal(r, 'flat no', 'flat_no', 'flat no.', 'flat number', 'unit no', 'unit', 'flat')).trim();
           const rawFloor = getRowVal(r, 'floor', 'floor no', 'floor_no', 'floor number');
-          const floor = rawFloor !== '' ? cleanNumeric(rawFloor, 1) : inferFloorFromFlat(flatNo);
+          const floor = (rawFloor !== '' && rawFloor !== undefined && rawFloor !== null) ? cleanNumeric(rawFloor, 0) : inferFloorFromFlat(flatNo);
           const building = String(getRowVal(r, 'building', 'tower', 'building name', 'block', 'wing') || 'Tower A').trim();
           const ownerName = String(getRowVal(r, 'owner name', 'owner_name', 'owner', 'buyer name', 'customer name', 'name')).trim();
           const ownerMobile = String(getRowVal(r, 'owner mobile', 'owner phone', 'mobile', 'phone', 'contact')).trim();

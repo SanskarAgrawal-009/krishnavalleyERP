@@ -401,7 +401,7 @@ export const FlatDetailModal = ({
                     <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px' }}>
                       <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Floor Level</div>
                       <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
-                        Floor {flat.floor || 1}
+                        {flat.floor === 0 ? 'Ground Floor' : `Floor ${flat.floor || 1}`}
                       </div>
                       <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>{buildingName || flat.buildingName || 'Tower'}</div>
                     </div>

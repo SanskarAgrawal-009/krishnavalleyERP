@@ -743,7 +743,7 @@ export const CustomersPage = () => {
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', alignItems: 'center' }}>
                               {units.slice(0, 2).map((flat, idx) => {
                                 const fNum = flat.flatNumber || (typeof flat === 'string' ? `Flat ${flat.slice(-3)}` : `Unit ${idx + 1}`);
-                                const flr = flat.floor !== undefined && flat.floor !== null ? `Flr ${flat.floor}` : '';
+                                const flr = flat.floor !== undefined && flat.floor !== null ? (flat.floor === 0 ? 'Ground Flr' : `Flr ${flat.floor}`) : '';
                                 return (
                                   <span
                                     key={flat._id || idx}
@@ -919,7 +919,7 @@ export const CustomersPage = () => {
                                   {units.map((flat, idx) => {
                                     const fNum = flat.flatNumber || (typeof flat === 'string' ? `Flat ${flat.slice(-3)}` : `Unit ${idx + 1}`);
                                     const proj = flat.projectId?.projectName || flat.projectId?.projectCode || 'Krishna Valley';
-                                    const flr = flat.floor !== undefined && flat.floor !== null ? `Floor ${flat.floor}` : '';
+                                    const flr = flat.floor !== undefined && flat.floor !== null ? (flat.floor === 0 ? 'Ground Floor' : `Floor ${flat.floor}`) : '';
                                     const bhk = flat.bhkType || '';
                                     return (
                                       <div key={flat._id || idx} style={{ fontSize: '0.78rem', background: '#f8f9fa', padding: '6px 10px', borderRadius: '4px', border: '1px solid #edeef0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

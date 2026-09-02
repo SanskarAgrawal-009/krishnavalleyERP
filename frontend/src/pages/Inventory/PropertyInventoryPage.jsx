@@ -1464,7 +1464,7 @@ export const PropertyInventoryPage = () => {
                       >
                         <option value="all">All Floors ({uniqueFloors.length})</option>
                         {uniqueFloors.map((floor) => (
-                          <option key={floor} value={floor}>Floor {floor}</option>
+                          <option key={floor} value={floor}>{Number(floor) === 0 ? 'Ground Floor' : `Floor ${floor}`}</option>
                         ))}
                       </select>
                     </div>
@@ -1660,7 +1660,7 @@ export const PropertyInventoryPage = () => {
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span>Floor:</span>
-                        <strong style={{ color: '#191c1d' }}>Floor {flat.floor || 1}</strong>
+                        <strong style={{ color: '#191c1d' }}>{flat.floor === 0 ? 'Ground Floor' : `Floor ${flat.floor || 1}`}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span>Configuration:</span>

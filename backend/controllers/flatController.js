@@ -8,16 +8,23 @@ import { uploadFileToS3 } from '../config/s3.js';
 import * as XLSX from 'xlsx';
 
 // Helper to parse floor number from flat string if not set
-const inferFloorFromFlat = (flatStr) => {
-  if (!flatStr) return 1;
-  const digits = flatStr.toString().replace(/\D/g, '');
-  if (!digits) return 1;
+export const inferFloorFromFlat = (flatStr) => {
+  if (!flatStr) return 0;
+  const s = flatStr.toString().trim();
+  if (/^G/i.test(s) || /ground/i.test(s)) return 0;
+  
+  const digits = s.replace(/\D/g, '');
+  if (!digits) return 0;
+
+  // Flats starting with '0' like 001, 014, 05 are on Floor 0 (Ground Floor)
+  if (digits.startsWith('0')) return 0;
+
   if (digits.length >= 3) {
     const fl = parseInt(digits.slice(0, -2), 10);
-    return isNaN(fl) || fl === 0 ? 1 : fl;
+    return isNaN(fl) ? 0 : fl;
   }
   const single = parseInt(digits[0], 10);
-  return isNaN(single) || single === 0 ? 1 : single;
+  return isNaN(single) ? 0 : single;
 };
 
 // Get Flats from MongoDB with Floor & Building Enrichment
@@ -37,7 +44,7 @@ export const getFlats = async (req, res) => {
         const obj = f.toObject();
         let needsSave = false;
 
-        if (obj.floor === undefined || obj.floor === null || obj.floor === 0) {
+        if (obj.floor === undefined || obj.floor === null) {
           obj.floor = inferFloorFromFlat(obj.flatNumber);
           f.floor = obj.floor;
           needsSave = true;
@@ -633,7 +640,7 @@ export const importFlatsFromExcel = async (req, res) => {
 
         const flatNumber = String(rawFlatNo).trim();
         const rawFloor = getRowVal(row, 'floor', 'floor no', 'floor_no', 'floor number');
-        const floor = rawFloor !== '' ? cleanNumeric(rawFloor, 1) : inferFloorFromFlat(flatNumber);
+        const floor = (rawFloor !== '' && rawFloor !== undefined && rawFloor !== null) ? cleanNumeric(rawFloor, 0) : inferFloorFromFlat(flatNumber);
         
         const rawBuilding = getRowVal(row, 'building', 'tower', 'building name', 'block', 'wing');
         const buildingName = String(rawBuilding || 'Tower A').trim();

@@ -27,3 +27,13 @@ export const formatDate = (dateStr) => {
     year: 'numeric'
   });
 };
+
+export const formatFloor = (floor) => {
+  if (floor === undefined || floor === null || floor === '') return 'Ground Floor';
+  const f = Number(floor);
+  if (isNaN(f) || f === 0) return 'Ground Floor';
+  if (f === 1) return '1st Floor';
+  if (f === 2) return '2nd Floor';
+  if (f === 3) return '3rd Floor';
+  return `Floor ${f}`;
+};
