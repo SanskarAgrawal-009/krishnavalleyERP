@@ -63,6 +63,7 @@ export const PropertyInventoryPage = () => {
   const [selectedFlatForDetail, setSelectedFlatForDetail] = useState(null);
   const [isFlatDetailOpen, setIsFlatDetailOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importCategory, setImportCategory] = useState('sold');
   const [isImportHistoryModalOpen, setIsImportHistoryModalOpen] = useState(false);
   const [selectedFlatIds, setSelectedFlatIds] = useState([]);
   const [isBulkEnrollModalOpen, setIsBulkEnrollModalOpen] = useState(false);
