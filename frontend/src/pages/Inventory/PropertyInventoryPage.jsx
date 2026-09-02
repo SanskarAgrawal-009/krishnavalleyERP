@@ -7,6 +7,7 @@ import { ManualFloorModal } from '../../components/manual/ManualFloorModal.jsx';
 import { ManualFlatModal } from '../../components/manual/ManualFlatModal.jsx';
 import { FlatDetailModal } from '../../components/inventory/FlatDetailModal.jsx';
 import { ImportInventoryModal } from '../../components/inventory/ImportInventoryModal.jsx';
+import { ImportOwnershipHistoryModal } from '../../components/inventory/ImportOwnershipHistoryModal.jsx';
 import { BulkEnrollRentalSalesModal } from '../../components/inventory/BulkEnrollRentalSalesModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 
@@ -61,6 +62,7 @@ export const PropertyInventoryPage = () => {
   const [selectedFlatForDetail, setSelectedFlatForDetail] = useState(null);
   const [isFlatDetailOpen, setIsFlatDetailOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isImportHistoryModalOpen, setIsImportHistoryModalOpen] = useState(false);
   const [selectedFlatIds, setSelectedFlatIds] = useState([]);
   const [isBulkEnrollModalOpen, setIsBulkEnrollModalOpen] = useState(false);
 
@@ -616,25 +618,47 @@ export const PropertyInventoryPage = () => {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setIsImportModalOpen(true)}
-              style={{
-                background: '#16a34a',
-                color: '#ffffff',
-                border: 'none',
-                padding: '9px 18px',
-                borderRadius: '8px',
-                fontWeight: '700',
-                fontSize: '0.86rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                boxShadow: '0 2px 4px rgba(22,163,74,0.3)'
-              }}
-            >
-              <FileSpreadsheet size={16} /> Upload Excel File
-            </button>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setIsImportModalOpen(true)}
+                style={{
+                  background: '#16a34a',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  fontWeight: '700',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 4px rgba(22,163,74,0.3)'
+                }}
+              >
+                <FileSpreadsheet size={16} /> Upload Inventory Excel
+              </button>
+
+              <button
+                onClick={() => setIsImportHistoryModalOpen(true)}
+                style={{
+                  background: '#0284c7',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  fontWeight: '700',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 4px rgba(2,132,199,0.3)'
+                }}
+              >
+                <FileSpreadsheet size={16} /> Upload Resale History Excel
+              </button>
+            </div>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -1681,6 +1705,16 @@ export const PropertyInventoryPage = () => {
         onImportSuccess={() => {
           fetchProjects();
           if (selectedBuilding) fetchFlats();
+        }}
+      />
+
+      {/* OWNERSHIP & RESALE HISTORY EXCEL IMPORT MODAL */}
+      <ImportOwnershipHistoryModal
+        isOpen={isImportHistoryModalOpen}
+        onClose={() => setIsImportHistoryModalOpen(false)}
+        onSuccess={() => {
+          fetchProjects();
+          fetchFlats();
         }}
       />
 

@@ -44,5 +44,21 @@ export const projectService = {
   }),
   deleteAllFlats: () => request('/flats/delete-all-flats', {
     method: 'DELETE'
+  }),
+  importOwnershipHistory: (formDataOrJson) => {
+    if (formDataOrJson instanceof FormData) {
+      return request('/flats/import-ownership-history', {
+        method: 'POST',
+        body: formDataOrJson
+      });
+    }
+    return request('/flats/import-ownership-history', {
+      method: 'POST',
+      body: JSON.stringify(formDataOrJson)
+    });
+  },
+  recordFlatBuybackOrResale: (flatId, data) => request(`/flats/${flatId}/buyback-or-resale`, {
+    method: 'POST',
+    body: JSON.stringify(data)
   })
 };

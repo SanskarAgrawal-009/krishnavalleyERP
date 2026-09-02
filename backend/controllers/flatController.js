@@ -1342,14 +1342,366 @@ export const bulkEnrollRentalSales = async (req, res) => {
       success: true,
       message: `Enrolled ${updatedFlats.length} flat(s) under 3-Year Rental Management and Sales Allotments with ₹${paidAmount.toLocaleString('en-IN')} payment credited.`,
       data: {
+        customer,
         updatedFlatsCount: updatedFlats.length,
         createdSalesCount: createdSales.length,
-        createdRentalsCount: createdRentals.length,
-        customer
+        createdRentalsCount: createdRentals.length
       }
     });
+
   } catch (error) {
     console.error('Error in bulkEnrollRentalSales:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// =========================================================================
+// RECORD BUYBACK / RESALE / TRANSFER FOR SINGLE FLAT
+// =========================================================================
+export const recordFlatBuybackOrResale = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      transferType, // 'buyback' | 'resale' | 'surrender'
+      transferDealValue,
+      transferDate,
+      remarks,
+      newOwner // { name, mobileNo, email, agreedDealPrice, bookingAmountPaid, paymentPlanType }
+    } = req.body;
+
+    const flat = await Flat.findById(id);
+    if (!flat) return res.status(404).json({ success: false, message: 'Flat not found' });
+
+    const effDate = transferDate ? new Date(transferDate) : new Date();
+    const effDealValue = Number(transferDealValue) || 0;
+
+    // 1. Archive Current Owner into ownershipHistory if owner exists
+    if (flat.currentOwner && flat.currentOwner.name) {
+      if (!flat.ownershipHistory) flat.ownershipHistory = [];
+
+      flat.ownershipHistory.push({
+        previousOwnerId: flat.currentOwner.customerId,
+        name: flat.currentOwner.name,
+        mobileNo: flat.currentOwner.mobileNo,
+        email: flat.currentOwner.email,
+        ownershipStartDate: flat.currentOwner.ownershipStartDate || flat.createdAt,
+        ownershipEndDate: effDate,
+        transferDate: effDate,
+        transferReason: transferType || 'buyback',
+        transferDealValue: effDealValue,
+        remarks: remarks || `Flat ${transferType || 'transferred'} on ${effDate.toLocaleDateString()}`
+      });
+    }
+
+    flat.buybackCount = (flat.buybackCount || 0) + 1;
+
+    // 2. Branch: If Buyback (Company repurchased flat)
+    if (transferType === 'buyback' || !newOwner || !newOwner.name) {
+      flat.currentOwner = undefined;
+      flat.status = 'available';
+      flat.isSold = false;
+      flat.takenForRental = false;
+      flat.salesDetails = undefined;
+      flat.rentalDetails = undefined;
+
+      // Mark active sales lead as archived_buyback
+      await SalesLead.updateMany(
+        { flatId: flat._id, salesStatus: { $ne: 'cancelled' } },
+        { salesStatus: 'cancelled', remarks: `Buyback completed on ${effDate.toLocaleDateString()}` }
+      );
+
+      // Terminate active rental contract
+      await RentalManagement.updateMany(
+        { flatId: flat._id, status: { $ne: 'terminated' } },
+        { status: 'terminated', remarks: `Buyback completed. Rental terminated on ${effDate.toLocaleDateString()}` }
+      );
+
+      await flat.save();
+
+      return res.json({
+        success: true,
+        message: `Flat ${flat.flatNumber} bought back by company. Previous owner archived in Chain of Title. Flat is now AVAILABLE for new sale.`,
+        data: flat
+      });
+    }
+
+    // 3. Branch: If Resold to New Buyer (Owner B)
+    let newCustomer = await Customer.findOne({
+      customerType: 'owner',
+      mobileNo: newOwner.mobileNo.trim()
+    });
+
+    if (!newCustomer) {
+      newCustomer = new Customer({
+        name: newOwner.name.trim(),
+        mobileNo: newOwner.mobileNo.trim(),
+        email: newOwner.email || '',
+        customerType: 'owner',
+        ownerDetails: {
+          propertyIds: [flat._id],
+          ownershipType: 'individual',
+          ownershipPercentage: 100
+        }
+      });
+      await newCustomer.save();
+    } else {
+      if (!newCustomer.ownerDetails?.propertyIds?.some((p) => p.toString() === flat._id.toString())) {
+        if (!newCustomer.ownerDetails) newCustomer.ownerDetails = { propertyIds: [] };
+        newCustomer.ownerDetails.propertyIds.push(flat._id);
+        await newCustomer.save();
+      }
+    }
+
+    // Set new active owner
+    flat.currentOwner = {
+      customerId: newCustomer._id,
+      name: newCustomer.name,
+      mobileNo: newCustomer.mobileNo,
+      email: newCustomer.email,
+      ownershipStartDate: effDate,
+      ownershipType: 'individual'
+    };
+
+    const newDealPrice = Number(newOwner.agreedDealPrice) || effDealValue || flat.basePrice;
+    const newPaidAmount = Number(newOwner.bookingAmountPaid) || 0;
+    const isFull = newPaidAmount >= newDealPrice && newDealPrice > 0;
+
+    flat.salesDetails = {
+      buyerName: newCustomer.name,
+      bookingDate: effDate,
+      agreedDealPrice: newDealPrice,
+      bookingAmountPaid: newPaidAmount,
+      totalAmountPaid: newPaidAmount,
+      balanceAmountDue: Math.max(0, newDealPrice - newPaidAmount),
+      paymentPlanType: newOwner.paymentPlanType || (isFull ? 'full_payment' : 'installment'),
+      agreementDate: effDate,
+      salesStatus: isFull ? 'fully_paid' : 'agreement_completed'
+    };
+
+    flat.status = 'sold';
+    flat.isSold = true;
+    await flat.save();
+
+    return res.json({
+      success: true,
+      message: `Flat ${flat.flatNumber} resold to ${newCustomer.name}. Previous ownership recorded in Chain of Title.`,
+      data: flat
+    });
+
+  } catch (error) {
+    console.error('Error in recordFlatBuybackOrResale:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// =========================================================================
+// BULK IMPORT OWNERSHIP & RESALE HISTORY (CHAIN OF TITLE) FROM EXCEL
+// =========================================================================
+export const importOwnershipHistoryFromExcel = async (req, res) => {
+  try {
+    let rows = [];
+
+    if (req.file && req.file.buffer) {
+      const workbook = XLSX.read(req.file.buffer, { type: 'buffer', cellDates: true });
+      const firstSheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[firstSheetName];
+      rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    } else if (req.body.items && Array.isArray(req.body.items)) {
+      rows = req.body.items;
+    } else {
+      return res.status(400).json({ success: false, message: 'No Excel file or data rows provided' });
+    }
+
+    if (!rows || rows.length === 0) {
+      return res.status(400).json({ success: false, message: 'The uploaded file is empty' });
+    }
+
+    const summary = {
+      totalRows: rows.length,
+      historyRecordsAppended: 0,
+      activeOwnersUpdated: 0,
+      flatsUpdated: 0,
+      errors: [],
+      processedFlats: []
+    };
+
+    // Resolve default project if needed
+    let defaultProj = await Project.findOne().sort({ createdAt: -1 });
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const rowNum = i + 2;
+
+      try {
+        const rawFlatNo = getRowVal(row, 'flat no', 'flat_no', 'flat number', 'unit no', 'unit', 'flat');
+        if (!rawFlatNo) {
+          summary.errors.push(`Row ${rowNum}: Missing Flat No.`);
+          continue;
+        }
+
+        const flatNumber = String(rawFlatNo).trim();
+        const rawBuilding = getRowVal(row, 'tower', 'building', 'building name', 'block', 'wing');
+        const buildingName = String(rawBuilding || 'Tower A').trim();
+
+        let flat = await Flat.findOne({ flatNumber });
+        if (!flat) {
+          if (!defaultProj) {
+            defaultProj = await Project.create({
+              projectName: 'Krishna Valley Township',
+              projectCode: 'KV-MATHURA',
+              status: 'ongoing',
+              buildings: []
+            });
+          }
+
+          if (!defaultProj.buildings) defaultProj.buildings = [];
+          let building = defaultProj.buildings.find(
+            (b) => b.buildingName && b.buildingName.toLowerCase() === buildingName.toLowerCase()
+          );
+
+          if (!building) {
+            defaultProj.buildings.push({
+              buildingName,
+              buildingCode: buildingName.toUpperCase().slice(0, 8),
+              numberOfFloors: 5,
+              flats: [],
+              status: 'completed'
+            });
+            await defaultProj.save();
+            building = defaultProj.buildings[defaultProj.buildings.length - 1];
+          }
+
+          flat = new Flat({
+            projectId: defaultProj._id,
+            buildingId: building._id,
+            flatNumber,
+            floor: inferFloorFromFlat(flatNumber),
+            bhkType: 'Service Apartment',
+            status: 'available',
+            basePrice: 5000000,
+            facing: 'East'
+          });
+          await flat.save();
+          building.flats.push(flat._id);
+          await defaultProj.save();
+        }
+
+        // Previous / Historical Owner Fields
+        const prevOwnerName = getRowVal(row, 'previous owner name', 'old owner', 'seller name', 'previous owner', 'seller', 'old owner name');
+        const prevPhone = getRowVal(row, 'previous owner phone', 'old phone', 'seller phone', 'previous mobile', 'old mobile');
+        const rawPurchaseDate = getRowVal(row, 'previous purchase date', 'original date', 'start date', 'old agreement date', 'purchase date');
+        const rawTransferDate = getRowVal(row, 'transfer date', 'exit date', 'buyback date', 'resale date', 'end date');
+        const rawReason = getRowVal(row, 'transfer reason', 'reason', 'type', 'event');
+        const rawTransferValue = getRowVal(row, 'transfer deal value', 'buyback price', 'resale price', 'deal value', 'transfer value');
+        const remarks = getRowVal(row, 'remarks', 'notes', 'comments');
+
+        const purchaseDate = parseExcelDate(rawPurchaseDate) || new Date('2024-01-01');
+        const transferDate = parseExcelDate(rawTransferDate) || new Date();
+        const transferDealValue = cleanNumeric(rawTransferValue, 0);
+        const transferReason = ['resale', 'buyback', 'surrender', 'inheritance', 'family_transfer'].includes(String(rawReason).toLowerCase().trim())
+          ? String(rawReason).toLowerCase().trim()
+          : 'resale';
+
+        if (prevOwnerName) {
+          if (!flat.ownershipHistory) flat.ownershipHistory = [];
+
+          // Avoid duplicate history entries
+          const isDup = flat.ownershipHistory.some(
+            (h) => h.name && h.name.toLowerCase() === prevOwnerName.toLowerCase() &&
+                   Math.abs(new Date(h.transferDate).getTime() - transferDate.getTime()) < 86400000
+          );
+
+          if (!isDup) {
+            flat.ownershipHistory.push({
+              name: prevOwnerName.trim(),
+              mobileNo: prevPhone ? String(prevPhone).trim() : '+91 9800000000',
+              ownershipStartDate: purchaseDate,
+              ownershipEndDate: transferDate,
+              transferDate,
+              transferReason,
+              transferDealValue,
+              remarks: remarks || `Imported historical owner record`
+            });
+            flat.buybackCount = (flat.buybackCount || 0) + 1;
+            summary.historyRecordsAppended++;
+          }
+        }
+
+        // Optional: Current / Active Owner Fields (New Buyer)
+        const currentOwnerName = getRowVal(row, 'current owner name', 'new owner', 'buyer name', 'active owner', 'new owner name', 'current owner');
+        const currentPhone = getRowVal(row, 'current owner phone', 'new phone', 'buyer phone', 'current mobile', 'new mobile');
+        const rawCurrentPrice = getRowVal(row, 'current deal price', 'new deal price', 'current price', 'new price');
+        const rawCurrentPaid = getRowVal(row, 'current paid amount', 'new paid amount', 'current paid');
+
+        if (currentOwnerName) {
+          let currentCust = await Customer.findOne({
+            customerType: 'owner',
+            $or: [{ name: currentOwnerName.trim() }, ...(currentPhone ? [{ mobileNo: String(currentPhone).trim() }] : [])]
+          });
+
+          if (!currentCust) {
+            currentCust = new Customer({
+              name: currentOwnerName.trim(),
+              mobileNo: currentPhone ? String(currentPhone).trim() : `+91 98${flatNumber.padStart(8, '0').slice(0, 8)}`,
+              customerType: 'owner',
+              ownerDetails: {
+                propertyIds: [flat._id],
+                ownershipType: 'individual',
+                ownershipPercentage: 100
+              }
+            });
+            await currentCust.save();
+          }
+
+          flat.currentOwner = {
+            customerId: currentCust._id,
+            name: currentCust.name,
+            mobileNo: currentCust.mobileNo,
+            email: currentCust.email,
+            ownershipStartDate: transferDate,
+            ownershipType: 'individual'
+          };
+
+          const currentPrice = cleanNumeric(rawCurrentPrice, flat.basePrice);
+          const currentPaid = cleanNumeric(rawCurrentPaid, currentPrice);
+          const isFull = currentPaid >= currentPrice && currentPrice > 0;
+
+          flat.salesDetails = {
+            buyerName: currentCust.name,
+            bookingDate: transferDate,
+            agreedDealPrice: currentPrice,
+            bookingAmountPaid: currentPaid,
+            totalAmountPaid: currentPaid,
+            balanceAmountDue: Math.max(0, currentPrice - currentPaid),
+            paymentPlanType: isFull ? 'full_payment' : 'installment',
+            agreementDate: transferDate,
+            salesStatus: isFull ? 'fully_paid' : 'agreement_completed'
+          };
+
+          flat.status = 'sold';
+          flat.isSold = true;
+          summary.activeOwnersUpdated++;
+        }
+
+        await flat.save();
+        summary.flatsUpdated++;
+        if (!summary.processedFlats.includes(flat.flatNumber)) {
+          summary.processedFlats.push(flat.flatNumber);
+        }
+
+      } catch (rowErr) {
+        summary.errors.push(`Row ${rowNum}: ${rowErr.message}`);
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: `Processed ${summary.flatsUpdated} flat(s). Appended ${summary.historyRecordsAppended} historical ownership record(s) and updated ${summary.activeOwnersUpdated} active owner(s).`,
+      data: summary
+    });
+
+  } catch (error) {
+    console.error('Error importing ownership history:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -23,10 +23,15 @@ import {
   Lock,
   Unlock,
   Percent,
-  Receipt
+  Receipt,
+  History,
+  RotateCcw,
+  Upload
 } from 'lucide-react';
 import { projectService } from '../../services/projectService.js';
 import { StatusBadge } from '../common/StatusBadge.jsx';
+import { RecordBuybackModal } from './RecordBuybackModal.jsx';
+import { ImportOwnershipHistoryModal } from './ImportOwnershipHistoryModal.jsx';
 
 export const FlatDetailModal = ({
   isOpen,
@@ -40,7 +45,9 @@ export const FlatDetailModal = ({
   const [flatData, setFlatData] = useState(initialFlat || null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'owner' | 'rental' | 'possession' | 'blueprints'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'owner' | 'rental' | 'history' | 'possession' | 'blueprints'
+  const [isBuybackModalOpen, setIsBuybackModalOpen] = useState(false);
+  const [isImportHistoryModalOpen, setIsImportHistoryModalOpen] = useState(false);
 
   const formatINR = (val) => {
     if (val === undefined || val === null || isNaN(val)) return '₹0';
@@ -333,6 +340,7 @@ export const FlatDetailModal = ({
             { id: 'overview', label: 'Unit Specifications', icon: Layers },
             { id: 'owner', label: isSold ? 'Owner & Purchase Dossier' : 'Sale Status', icon: User },
             { id: 'rental', label: 'Rental & Leases (3-Yr)', icon: Key },
+            { id: 'history', label: `Chain of Title (${flat.ownershipHistory?.length || 0})`, icon: History },
             { id: 'possession', label: 'Possession Timeline', icon: Clock },
             { id: 'blueprints', label: `Blueprints (${flat.blueprints?.length || 0})`, icon: FileText }
           ].map((tab) => {
@@ -939,43 +947,44 @@ export const FlatDetailModal = ({
 
               {/* TAB 5: BLUEPRINTS */}
               {activeTab === 'blueprints' && (
-                <div>
-                  {(!flat.blueprints || flat.blueprints.length === 0) ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#0f172a' }}>
+                      Blueprints & Architectural Layouts ({flat.blueprints?.length || 0})
+                    </h4>
+                  </div>
+
+                  {!flat.blueprints || flat.blueprints.length === 0 ? (
                     <div style={{
-                      textAlign: 'center',
                       padding: '40px 20px',
                       background: '#f8fafc',
+                      border: '1px dashed #cbd5e1',
                       borderRadius: '12px',
-                      border: '1px dashed #cbd5e1'
+                      textAlign: 'center',
+                      color: '#64748b'
                     }}>
-                      <FileText size={36} style={{ color: '#94a3b8', margin: '0 auto 10px' }} />
-                      <h4 style={{ fontSize: '1rem', fontWeight: '700', color: '#0f172a', margin: '0 0 6px' }}>
+                      <FileText size={32} style={{ margin: '0 auto 8px', color: '#94a3b8' }} />
+                      <p style={{ margin: '0 0 4px', fontSize: '0.88rem', fontWeight: '600', color: '#334155' }}>
                         No Blueprints Uploaded
-                      </h4>
-                      <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0 }}>
-                        Architectural floor plans and 3D renders can be uploaded via the Document Management vault.
                       </p>
+                      <span style={{ fontSize: '0.78rem' }}>
+                        Upload 2D/3D floor layouts and architectural drawings to attach to this unit.
+                      </span>
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
-                      {flat.blueprints.map((bp, idx) => (
-                        <div
-                          key={bp._id || idx}
-                          style={{
-                            background: '#ffffff',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '10px',
-                            padding: '14px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '10px'
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <FileText size={18} color="#1a73e8" />
-                            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#0f172a' }}>
-                              {bp.title || bp.fileName || 'Architectural Plan'}
-                            </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
+                      {flat.blueprints.map((bp, i) => (
+                        <div key={i} style={{
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '10px',
+                          padding: '16px',
+                          background: '#ffffff',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '8px'
+                        }}>
+                          <div style={{ fontWeight: '700', fontSize: '0.86rem', color: '#1e293b' }}>
+                            {bp.title || `Drawing #${i + 1}`}
                           </div>
 
                           <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
@@ -1007,6 +1016,224 @@ export const FlatDetailModal = ({
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* TAB: CHAIN OF TITLE & RESALE ARCHIVE */}
+              {activeTab === 'history' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: '#f8fafc',
+                    padding: '14px 18px',
+                    borderRadius: '10px',
+                    border: '1px solid #e2e8f0',
+                    flexWrap: 'wrap',
+                    gap: '10px'
+                  }}>
+                    <div>
+                      <h4 style={{ margin: '0 0 2px', fontSize: '0.95rem', fontWeight: '800', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <History size={18} color="#1a73e8" /> Chain of Title & Resale Archive
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>
+                        Chronological record of past owners, company buybacks, deal valuations, and ownership transfers.
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setIsImportHistoryModalOpen(true)}
+                        style={{
+                          padding: '6px 12px',
+                          background: '#ffffff',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '6px',
+                          color: '#0284c7',
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <Upload size={14} /> Import History Excel
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsBuybackModalOpen(true)}
+                        style={{
+                          padding: '6px 14px',
+                          background: '#16a34a',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          boxShadow: '0 1px 3px rgba(22,163,74,0.3)'
+                        }}
+                      >
+                        <RotateCcw size={14} /> Record Buyback / Resale
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Active Registered Owner Card */}
+                  <div style={{
+                    background: '#f0fdf4',
+                    border: '1.5px solid #86efac',
+                    borderRadius: '10px',
+                    padding: '16px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '12px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '50%',
+                        background: '#dcfce7',
+                        color: '#16a34a',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <ShieldCheck size={22} />
+                      </div>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <strong style={{ fontSize: '0.96rem', color: '#14532d' }}>
+                            {flat.currentOwner?.name || flat.salesDetails?.buyerName || 'Unassigned / Available'}
+                          </strong>
+                          <span style={{
+                            fontSize: '0.68rem',
+                            background: '#16a34a',
+                            color: '#ffffff',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            fontWeight: '800'
+                          }}>
+                            ACTIVE OWNER (CURRENT)
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#166534', marginTop: '3px', display: 'flex', gap: '12px' }}>
+                          <span>Mobile: {flat.currentOwner?.mobileNo || 'On File'}</span>
+                          <span>•</span>
+                          <span>Since: {formatDate(flat.currentOwner?.ownershipStartDate || flat.salesDetails?.bookingDate)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '600' }}>Active Deal Value:</span>
+                      <div style={{ fontSize: '1.15rem', fontWeight: '900', color: '#15803d' }}>
+                        {formatINR(flat.salesDetails?.agreedDealPrice || flat.basePrice)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Historical Ownership Trail */}
+                  <div>
+                    <h5 style={{ margin: '14px 0 10px', fontSize: '0.84rem', color: '#334155', fontWeight: '800' }}>
+                      Historical Owners & Buybacks ({flat.ownershipHistory?.length || 0})
+                    </h5>
+
+                    {!flat.ownershipHistory || flat.ownershipHistory.length === 0 ? (
+                      <div style={{
+                        padding: '30px 16px',
+                        background: '#f8fafc',
+                        border: '1px dashed #cbd5e1',
+                        borderRadius: '10px',
+                        textAlign: 'center',
+                        color: '#64748b'
+                      }}>
+                        <p style={{ margin: '0 0 4px', fontSize: '0.84rem', fontWeight: '600', color: '#334155' }}>
+                          First-Hand Unit (No Previous Resale Records)
+                        </p>
+                        <span style={{ fontSize: '0.76rem' }}>
+                          Any future buybacks or transfers will be automatically archived here.
+                        </span>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {flat.ownershipHistory.map((h, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '8px',
+                              padding: '12px 16px',
+                              background: '#ffffff',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              gap: '10px'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                background: '#f1f5f9',
+                                color: '#475569',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.78rem',
+                                fontWeight: '800'
+                              }}>
+                                #{i + 1}
+                              </div>
+                              <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <strong style={{ fontSize: '0.88rem', color: '#1e293b' }}>{h.name}</strong>
+                                  <span style={{
+                                    fontSize: '0.68rem',
+                                    background: h.transferReason === 'buyback' ? '#fef3c7' : '#e0f2fe',
+                                    color: h.transferReason === 'buyback' ? '#92400e' : '#0369a1',
+                                    padding: '1px 6px',
+                                    borderRadius: '4px',
+                                    fontWeight: '700',
+                                    textTransform: 'uppercase'
+                                  }}>
+                                    {h.transferReason || 'RESALE'}
+                                  </span>
+                                </div>
+                                <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>
+                                  {formatDate(h.ownershipStartDate)} ➔ {formatDate(h.ownershipEndDate || h.transferDate)} ({h.mobileNo})
+                                </div>
+                                {h.remarks && (
+                                  <div style={{ fontSize: '0.72rem', color: '#475569', fontStyle: 'italic', marginTop: '2px' }}>
+                                    "{h.remarks}"
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div style={{ textAlign: 'right' }}>
+                              <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Transfer Valuation:</span>
+                              <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                                {formatINR(h.transferDealValue)}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </>
@@ -1070,6 +1297,30 @@ export const FlatDetailModal = ({
           </div>
         </div>
       </div>
+
+      {/* SUB-MODALS */}
+      {isBuybackModalOpen && (
+        <RecordBuybackModal
+          isOpen={isBuybackModalOpen}
+          onClose={() => setIsBuybackModalOpen(false)}
+          flat={flat}
+          onSuccess={() => {
+            loadFlatDetail();
+            setIsBuybackModalOpen(false);
+          }}
+        />
+      )}
+
+      {isImportHistoryModalOpen && (
+        <ImportOwnershipHistoryModal
+          isOpen={isImportHistoryModalOpen}
+          onClose={() => setIsImportHistoryModalOpen(false)}
+          onSuccess={() => {
+            loadFlatDetail();
+            setIsImportHistoryModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 };
