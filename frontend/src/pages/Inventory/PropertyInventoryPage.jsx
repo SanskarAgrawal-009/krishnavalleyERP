@@ -627,23 +627,75 @@ export const PropertyInventoryPage = () => {
             </div>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <button
-                onClick={() => setIsImportModalOpen(true)}
+                onClick={() => {
+                  setImportCategory('sold');
+                  setIsImportModalOpen(true);
+                }}
                 style={{
                   background: '#16a34a',
                   color: '#ffffff',
                   border: 'none',
-                  padding: '9px 18px',
+                  padding: '9px 16px',
                   borderRadius: '8px',
                   fontWeight: '700',
-                  fontSize: '0.86rem',
+                  fontSize: '0.84rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
                   boxShadow: '0 2px 4px rgba(22,163,74,0.3)'
                 }}
+                title="Upload 1. Standard Sold Inventory Excel"
               >
-                <FileSpreadsheet size={16} /> Upload Inventory Excel
+                <FileSpreadsheet size={15} /> Upload Sold Units
+              </button>
+
+              <button
+                onClick={() => {
+                  setImportCategory('resell');
+                  setIsImportModalOpen(true);
+                }}
+                style={{
+                  background: '#7c3aed',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '9px 16px',
+                  borderRadius: '8px',
+                  fontWeight: '700',
+                  fontSize: '0.84rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 4px rgba(124,58,237,0.3)'
+                }}
+                title="Upload 2. Resell Inventory & History Excel"
+              >
+                <Repeat size={15} /> Upload Resell Units
+              </button>
+
+              <button
+                onClick={() => {
+                  setImportCategory('possession_renewal');
+                  setIsImportModalOpen(true);
+                }}
+                style={{
+                  background: '#059669',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '9px 16px',
+                  borderRadius: '8px',
+                  fontWeight: '700',
+                  fontSize: '0.84rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 4px rgba(5,150,105,0.3)'
+                }}
+                title="Upload 3. Post-Possession Renewal Inventory & Prior Contracts Excel"
+              >
+                <RefreshCw size={15} /> Upload Renewal Units
               </button>
 
               <button
@@ -652,18 +704,19 @@ export const PropertyInventoryPage = () => {
                   background: '#0284c7',
                   color: '#ffffff',
                   border: 'none',
-                  padding: '9px 18px',
+                  padding: '9px 16px',
                   borderRadius: '8px',
                   fontWeight: '700',
-                  fontSize: '0.86rem',
+                  fontSize: '0.84rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
                   boxShadow: '0 2px 4px rgba(2,132,199,0.3)'
                 }}
+                title="Upload Resale & Chain of Title History Excel"
               >
-                <FileSpreadsheet size={16} /> Upload Resale History Excel
+                <FileSpreadsheet size={15} /> Upload Resale History
               </button>
             </div>
           </div>
@@ -1805,6 +1858,7 @@ export const PropertyInventoryPage = () => {
         onClose={() => setIsImportModalOpen(false)}
         projects={projects}
         defaultProjectId={selectedProject?._id || selectedProject?.id || ''}
+        initialCategory={importCategory}
         onImportSuccess={() => {
           fetchProjects();
           if (selectedBuilding) fetchFlats();

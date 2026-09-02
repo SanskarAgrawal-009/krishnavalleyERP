@@ -27,9 +27,11 @@ export const ImportInventoryModal = ({
   onClose,
   projects = [],
   defaultProjectId = '',
+  initialCategory = 'sold',
   onImportSuccess
 }) => {
   const [selectedProjectId, setSelectedProjectId] = useState(defaultProjectId || (projects[0]?._id || projects[0]?.id || ''));
+  const [activeCategory, setActiveCategory] = useState(initialCategory || 'sold');
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [previewRows, setPreviewRows] = useState([]);
@@ -51,6 +53,7 @@ export const ImportInventoryModal = ({
   // Reset state on modal open
   React.useEffect(() => {
     if (isOpen) {
+      setActiveCategory(initialCategory || 'sold');
       setFile(null);
       setFileName('');
       setPreviewRows([]);
@@ -58,7 +61,7 @@ export const ImportInventoryModal = ({
       setImportResult(null);
       setErrorMsg('');
     }
-  }, [isOpen]);
+  }, [isOpen, initialCategory]);
 
   const formatINR = (val) => {
     if (val === undefined || val === null || isNaN(val)) return '₹0';
@@ -233,82 +236,174 @@ export const ImportInventoryModal = ({
     reader.readAsArrayBuffer(selectedFile);
   };
 
-  // Download Sample Template
+  // Download Sample Template for Selected Category
   const handleDownloadTemplate = () => {
-    const sampleData = [
-      {
-        'flat no': '101',
-        'floor': 1,
-        'building': 'Tower A',
-        'owner name': 'Aditya Pratap Singh',
-        'owner mobile': '9810112233',
-        'agreed deal price': 4500000,
-        'previous payment': 1000000, // advance already paid by buyer
-        'date of aggreement': '2024-01-15',
-        'date of the rental starts': '2024-02-01',
-        'tenure': 36,
-        'amount per month': 25000,
-        'amount for the total tenure': 900000,
-        'flat type': '2BHK',
-        'carpet area': 950
-      },
-      {
-        'flat no': '102',
-        'floor': 1,
-        'building': 'Tower A',
-        'owner name': 'Rajeshwari Sharma',
-        'owner mobile': '9876543210',
-        'agreed deal price': 5500000,
-        'previous payment': 5500000, // fully paid
-        'date of aggreement': '2024-03-10',
-        'date of the rental starts': '2024-04-01',
-        'tenure': '', // left blank to test default 36
-        'amount per month': 30000,
-        'amount for the total tenure': '', // left blank to test auto-calculation (30000 * 36)
-        'flat type': 'Service Apartment',
-        'carpet area': 1150
-      },
-      {
-        'flat no': '201',
-        'floor': 2,
-        'building': 'Tower B',
-        'owner name': 'Vikram Mehra',
-        'owner mobile': '9988776655',
-        'agreed deal price': 4800000,
-        'previous payment': 1500000,
-        'date of aggreement': '2024-05-01',
-        'date of the rental starts': '2024-06-01',
-        'tenure': 36,
-        'amount per month': 28000,
-        'amount for the total tenure': 1008000,
-        'flat type': '3BHK',
-        'carpet area': 1450
-      }
+    const invCols = [
+      { wch: 10 }, // Flat No
+      { wch: 12 }, // Tower
+      { wch: 8 },  // Floor
+      { wch: 28 }, // Owner Name
+      { wch: 16 }, // Owner Mobile
+      { wch: 18 }, // Flat Type
+      { wch: 14 }, // Carpet Area
+      { wch: 18 }, // Super Builtup Area
+      { wch: 18 }, // Agreed Deal Price
+      { wch: 18 }, // Previous Payments
+      { wch: 18 }, // Date of Agreement
+      { wch: 22 }, // Date of the Rental Starts
+      { wch: 16 }, // Tenure (Months)
+      { wch: 18 }, // Amount Per Month
+      { wch: 12 }, // TDS
+      { wch: 14 }, // Net Amount
+      { wch: 24 }, // Amount for the Total Tenure
+      { wch: 20 }  // Status
     ];
 
-    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const histCols = [
+      { wch: 10 }, // Flat No
+      { wch: 12 }, // Tower
+      { wch: 28 }, // Previous Owner Name
+      { wch: 18 }, // Previous Owner Phone
+      { wch: 16 }, // Purchase Date
+      { wch: 16 }, // Transfer Date
+      { wch: 22 }, // Transfer Reason
+      { wch: 18 }, // Transfer Deal Value
+      { wch: 28 }, // Current Owner Name
+      { wch: 18 }, // Current Owner Phone
+      { wch: 18 }, // Current Deal Price
+      { wch: 18 }, // Current Paid Amount
+      { wch: 55 }  // Remarks
+    ];
+
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventory_Template');
 
-    // Auto-fit column widths
-    worksheet['!cols'] = [
-      { wch: 10 }, // flat no
-      { wch: 8 },  // floor
-      { wch: 14 }, // building
-      { wch: 24 }, // owner name
-      { wch: 15 }, // owner mobile
-      { wch: 18 }, // agreed deal price
-      { wch: 18 }, // previous payment
-      { wch: 20 }, // date of aggreement
-      { wch: 26 }, // date of the rental starts
-      { wch: 10 }, // tenure
-      { wch: 18 }, // amount per month
-      { wch: 26 }, // amount for the total tenure
-      { wch: 18 }, // flat type
-      { wch: 12 }  // carpet area
-    ];
+    if (activeCategory === 'resell') {
+      const invData = [
+        {
+          'Flat No': '105',
+          'Tower': 'Tower A',
+          'Floor': 1,
+          'Owner Name': 'MADAN GOPAL SARASWAT',
+          'Owner Mobile': '+91 9800000105',
+          'Flat Type': 'Service Apartment',
+          'Carpet Area': 850,
+          'Super Builtup Area': 1150,
+          'Agreed Deal Price': 5500000,
+          'Previous Payments': 5500000,
+          'Date of Agreement': '14/10/2025',
+          'Date of the Rental Starts': '25/11/2025',
+          'Tenure (Months)': 48,
+          'Amount Per Month': 31000,
+          'TDS': 0,
+          'Net Amount': 31000,
+          'Amount for the Total Tenure': 1488000,
+          'Status': 'Resell'
+        }
+      ];
+      const histData = [
+        {
+          'Flat No': '105',
+          'Tower': 'Tower A',
+          'Previous Owner Name': 'Shakuntla Gupta',
+          'Previous Owner Phone': '+91 9800000105',
+          'Purchase Date': '13/03/2014',
+          'Transfer Date': '14/10/2025',
+          'Transfer Reason': 'resale',
+          'Transfer Deal Value': 1600000,
+          'Current Owner Name': 'MADAN GOPAL SARASWAT',
+          'Current Owner Phone': '+91 9800000105',
+          'Current Deal Price': 5500000,
+          'Current Paid Amount': 5500000,
+          'Remarks': 'Flat A-105: Prior owner Shakuntla Gupta resold to MADAN GOPAL SARASWAT'
+        }
+      ];
+      const wsInv = XLSX.utils.json_to_sheet(invData);
+      wsInv['!cols'] = invCols;
+      XLSX.utils.book_append_sheet(workbook, wsInv, 'Site_Inventory');
 
-    XLSX.writeFile(workbook, 'Krishna_Valley_Inventory_Import_Template.xlsx');
+      const wsHist = XLSX.utils.json_to_sheet(histData);
+      wsHist['!cols'] = histCols;
+      XLSX.utils.book_append_sheet(workbook, wsHist, 'Ownership_History');
+      XLSX.writeFile(workbook, 'Krishna_Valley_Resell_Inventory_Template.xlsx');
+
+    } else if (activeCategory === 'possession_renewal') {
+      const invData = [
+        {
+          'Flat No': '612',
+          'Tower': 'Tower A',
+          'Floor': 6,
+          'Owner Name': 'Uma Shankar Prasad Singh',
+          'Owner Mobile': '+91 9800000612',
+          'Flat Type': 'Service Apartment',
+          'Carpet Area': 850,
+          'Super Builtup Area': 1150,
+          'Agreed Deal Price': 5500000,
+          'Previous Payments': 5500000,
+          'Date of Agreement': '15/06/2015',
+          'Date of the Rental Starts': '10/06/2025',
+          'Tenure (Months)': 36,
+          'Amount Per Month': 11000,
+          'TDS': 1100,
+          'Net Amount': 9900,
+          'Amount for the Total Tenure': 356400,
+          'Status': 'Possession Renewal'
+        }
+      ];
+      const histData = [
+        {
+          'Flat No': '612',
+          'Tower': 'Tower A',
+          'Previous Owner Name': 'Uma Shankar Prasad Singh',
+          'Previous Owner Phone': '+91 9800000612',
+          'Purchase Date': '15/06/2015',
+          'Transfer Date': '10/06/2025',
+          'Transfer Reason': 'possession_renewal',
+          'Transfer Deal Value': 2150000,
+          'Current Owner Name': 'Uma Shankar Prasad Singh',
+          'Current Owner Phone': '+91 9800000612',
+          'Current Deal Price': 5500000,
+          'Current Paid Amount': 5500000,
+          'Remarks': 'Flat A-612: Pre-Possession Contract (100mo @ ₹21,500/mo, Total: ₹21,50,000) expired/renewed to Post-Possession Rate (@ ₹11,000/mo)'
+        }
+      ];
+      const wsInv = XLSX.utils.json_to_sheet(invData);
+      wsInv['!cols'] = invCols;
+      XLSX.utils.book_append_sheet(workbook, wsInv, 'Site_Inventory');
+
+      const wsHist = XLSX.utils.json_to_sheet(histData);
+      wsHist['!cols'] = histCols;
+      XLSX.utils.book_append_sheet(workbook, wsHist, 'Ownership_History');
+      XLSX.writeFile(workbook, 'Krishna_Valley_Possession_Renewal_Template.xlsx');
+
+    } else {
+      // Standard Sold Inventory
+      const invData = [
+        {
+          'Flat No': '001',
+          'Tower': 'Tower A',
+          'Floor': 0,
+          'Owner Name': 'Ved Prakash Agarwal',
+          'Owner Mobile': '+91 9897123456',
+          'Flat Type': 'Service Apartment',
+          'Carpet Area': 850,
+          'Super Builtup Area': 1150,
+          'Agreed Deal Price': 5500000,
+          'Previous Payments': 5500000,
+          'Date of Agreement': '14/06/2025',
+          'Date of the Rental Starts': '25/07/2025',
+          'Tenure (Months)': 36,
+          'Amount Per Month': 31000,
+          'TDS': 3100,
+          'Net Amount': 27900,
+          'Amount for the Total Tenure': 1004400,
+          'Status': 'Sold'
+        }
+      ];
+      const wsInv = XLSX.utils.json_to_sheet(invData);
+      wsInv['!cols'] = invCols;
+      XLSX.utils.book_append_sheet(workbook, wsInv, 'Site_Inventory');
+      XLSX.writeFile(workbook, 'Krishna_Valley_Sold_Inventory_Template.xlsx');
+    }
   };
 
   // Submit Import to Backend
@@ -360,10 +455,53 @@ export const ImportInventoryModal = ({
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
+        {/* Type Selector Tabs */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          background: '#f1f5f9',
+          padding: '6px',
+          borderRadius: '10px'
+        }}>
+          {[
+            { id: 'sold', label: '1. Standard Sold Inventory', color: '#16a34a', bg: '#dcfce7' },
+            { id: 'resell', label: '2. Resell Inventory & History', color: '#7c3aed', bg: '#f3e8ff' },
+            { id: 'possession_renewal', label: '3. Possession Renewal & Prior Contracts', color: '#059669', bg: '#ecfdf5' },
+          ].map((cat) => {
+            const isSelected = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setActiveCategory(cat.id)}
+                style={{
+                  flex: 1,
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  border: isSelected ? `2px solid ${cat.color}` : '1px solid transparent',
+                  background: isSelected ? '#ffffff' : 'transparent',
+                  color: isSelected ? cat.color : '#64748b',
+                  fontWeight: isSelected ? '800' : '600',
+                  fontSize: '0.84rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  transition: 'all 0.15s ease',
+                  boxShadow: isSelected ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'
+                }}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Top Instructions Banner */}
         <div style={{
-          background: '#f0fdf4',
-          border: '1px solid #bbf7d0',
+          background: activeCategory === 'resell' ? '#fbf7ff' : (activeCategory === 'possession_renewal' ? '#f0fdf9' : '#f0fdf4'),
+          border: `1px solid ${activeCategory === 'resell' ? '#ddd6fe' : (activeCategory === 'possession_renewal' ? '#a7f3d0' : '#bbf7d0')}`,
           borderRadius: '10px',
           padding: '14px 18px',
           display: 'flex',
@@ -373,13 +511,13 @@ export const ImportInventoryModal = ({
           gap: '12px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '280px' }}>
-            <FileSpreadsheet size={24} color="#16a34a" />
+            <FileSpreadsheet size={24} color={activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a')} />
             <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#166534' }}>
-                Bulk Import Past Units, Owner Registry & 3-Year Rent-Back Contracts
+              <div style={{ fontSize: '0.9rem', fontWeight: '800', color: activeCategory === 'resell' ? '#5b21b6' : (activeCategory === 'possession_renewal' ? '#065f46' : '#166534') }}>
+                {activeCategory === 'resell' ? 'Upload Resell Units & Prior Ownership Archive' : (activeCategory === 'possession_renewal' ? 'Upload Post-Possession Renewals & Initial 100-Mo Contracts' : 'Upload Standard Sold Units & 3-Year Rent-Backs')}
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#15803d', marginTop: '2px' }}>
-                Required columns: <strong>flat no</strong>, <strong>floor</strong>, <strong>building</strong>, <strong>owner name</strong>, <strong>date of aggreement</strong>, <strong>date of the rental starts</strong>, <strong>tenure</strong> (default: 36), <strong>amount per month</strong>, <strong>amount for total tenure</strong>.
+              <div style={{ fontSize: '0.78rem', color: activeCategory === 'resell' ? '#6b21a8' : (activeCategory === 'possession_renewal' ? '#047857' : '#15803d'), marginTop: '2px' }}>
+                Required columns: <strong>Flat No</strong>, <strong>Tower</strong>, <strong>Floor</strong>, <strong>Owner Name</strong>, <strong>Date of Agreement</strong>, <strong>Rental Starts</strong>, <strong>Tenure</strong>, <strong>Amount Per Month</strong>, <strong>TDS</strong>, <strong>Net Amount</strong>, <strong>Status</strong>.
               </div>
             </div>
           </div>
@@ -390,8 +528,8 @@ export const ImportInventoryModal = ({
             style={{
               padding: '8px 16px',
               background: '#ffffff',
-              color: '#16a34a',
-              border: '1.5px solid #16a34a',
+              color: activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a'),
+              border: `1.5px solid ${activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a')}`,
               borderRadius: '8px',
               fontWeight: '700',
               fontSize: '0.82rem',
@@ -402,7 +540,7 @@ export const ImportInventoryModal = ({
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
             }}
           >
-            <Download size={15} /> Download Sample Template
+            <Download size={15} /> Download {activeCategory === 'resell' ? 'Resell' : (activeCategory === 'possession_renewal' ? 'Renewal' : 'Sold')} Template
           </button>
         </div>
 
