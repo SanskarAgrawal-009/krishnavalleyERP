@@ -35,42 +35,88 @@ export const ImportOwnershipHistoryModal = ({ isOpen, onClose, onSuccess }) => {
   const downloadSampleTemplate = () => {
     const sampleData = [
       {
+        'Flat No': '105',
+        'Tower': 'Tower A',
+        'Floor': 1,
+        'Previous Owner Name': 'Shakuntla Gupta',
+        'Previous Owner Mobile': '+91 9800000105',
+        'Previous Owner Email': 'shakuntla.gupta@example.com',
+        'Previous Owner PAN': 'ABCDE1234F',
+        'Previous Owner Aadhaar': '123456789012',
+        'Original Purchase Date': '13/03/2014',
+        'Ownership Transfer Date': '14/10/2025',
+        'Transfer Reason': 'Resale',
+        'Historical Valuation': 1600000,
+        'Historical Paid Amount': 1600000,
+        'Pre-Possession Rent Paid': 0,
+        'Current Owner Name': 'MADAN GOPAL SARASWAT',
+        'Current Owner Mobile': '+91 9800000105',
+        'Remarks': 'Flat A-105: Prior owner Shakuntla Gupta held title from 2014 until secondary market resale to Madan Gopal Saraswat in Oct 2025'
+      },
+      {
+        'Flat No': '612',
+        'Tower': 'Tower A',
+        'Floor': 6,
+        'Previous Owner Name': 'Uma Shankar Prasad Singh',
+        'Previous Owner Mobile': '+91 9800000612',
+        'Previous Owner Email': 'umashankar@example.com',
+        'Previous Owner PAN': 'FGHIJ5678K',
+        'Previous Owner Aadhaar': '987654321098',
+        'Original Purchase Date': '15/06/2015',
+        'Ownership Transfer Date': '10/06/2025',
+        'Transfer Reason': 'Possession Renewal',
+        'Historical Valuation': 2150000,
+        'Historical Paid Amount': 5500000,
+        'Pre-Possession Rent Paid': 2150000,
+        'Current Owner Name': 'Uma Shankar Prasad Singh',
+        'Current Owner Mobile': '+91 9800000612',
+        'Remarks': 'Flat A-612: Pre-Possession Guaranteed Rent (100mo @ ₹21,500/mo, Total: ₹21,50,000) expired/renewed to Post-Possession Rate (@ ₹11,000/mo)'
+      },
+      {
         'Flat No': '001',
         'Tower': 'Tower A',
+        'Floor': 0,
         'Previous Owner Name': 'Ved Prakash Agarwal',
-        'Previous Owner Phone': '+91 9897123456',
-        'Purchase Date': '14/06/2024',
-        'Transfer Date': '20/07/2025',
-        'Transfer Reason': 'buyback',
-        'Transfer Deal Value': 5000000,
+        'Previous Owner Mobile': '+91 9897123456',
+        'Previous Owner Email': 'vedprakash@example.com',
+        'Previous Owner PAN': 'KLMNO9012P',
+        'Previous Owner Aadhaar': '456789012345',
+        'Original Purchase Date': '14/06/2024',
+        'Ownership Transfer Date': '20/07/2025',
+        'Transfer Reason': 'Buy Back',
+        'Historical Valuation': 5000000,
+        'Historical Paid Amount': 5000000,
+        'Pre-Possession Rent Paid': 0,
         'Current Owner Name': 'Suresh Mehta',
-        'Current Owner Phone': '+91 9811223344',
-        'Current Deal Price': 5500000,
-        'Current Paid Amount': 5500000,
-        'Remarks': 'Repurchased by company and resold to Suresh Mehta'
+        'Current Owner Mobile': '+91 9811223344',
+        'Remarks': 'Flat A-001: Repurchased by developer under guaranteed buyback terms and transferred to Suresh Mehta'
       }
     ];
 
     const ws = XLSX.utils.json_to_sheet(sampleData);
     ws['!cols'] = [
-      { wch: 10 },
-      { wch: 12 },
-      { wch: 24 },
-      { wch: 18 },
-      { wch: 16 },
-      { wch: 16 },
-      { wch: 16 },
-      { wch: 18 },
-      { wch: 22 },
-      { wch: 18 },
-      { wch: 18 },
-      { wch: 18 },
-      { wch: 35 }
+      { wch: 10 }, // Flat No
+      { wch: 12 }, // Tower
+      { wch: 8 },  // Floor
+      { wch: 28 }, // Previous Owner Name
+      { wch: 18 }, // Previous Owner Mobile
+      { wch: 24 }, // Previous Owner Email
+      { wch: 14 }, // Previous Owner PAN
+      { wch: 16 }, // Previous Owner Aadhaar
+      { wch: 16 }, // Original Purchase Date
+      { wch: 16 }, // Ownership Transfer Date
+      { wch: 22 }, // Transfer Reason
+      { wch: 18 }, // Historical Valuation
+      { wch: 18 }, // Historical Paid Amount
+      { wch: 22 }, // Pre-Possession Rent Paid
+      { wch: 28 }, // Current Owner Name
+      { wch: 18 }, // Current Owner Mobile
+      { wch: 55 }  // Remarks
     ];
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Ownership_History');
-    XLSX.writeFile(wb, 'Krishna_Valley_Ownership_History_Template.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'Previous_Owners');
+    XLSX.writeFile(wb, 'Krishna_Valley_Previous_Owners_Template.xlsx');
   };
 
   const handleUploadSubmit = async (e) => {

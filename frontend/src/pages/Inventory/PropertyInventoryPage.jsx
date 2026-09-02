@@ -700,7 +700,10 @@ export const PropertyInventoryPage = () => {
               </button>
 
               <button
-                onClick={() => setIsImportHistoryModalOpen(true)}
+                onClick={() => {
+                  setImportCategory('previous_owners');
+                  setIsImportModalOpen(true);
+                }}
                 style={{
                   background: '#0284c7',
                   color: '#ffffff',
@@ -715,9 +718,9 @@ export const PropertyInventoryPage = () => {
                   gap: '6px',
                   boxShadow: '0 2px 4px rgba(2,132,199,0.3)'
                 }}
-                title="Upload Resale & Chain of Title History Excel"
+                title="Upload 4. Previous Owners Dossier & Chain of Title Excel"
               >
-                <FileSpreadsheet size={15} /> Upload Resale History
+                <FileSpreadsheet size={15} /> Upload Previous Owners
               </button>
             </div>
           </div>

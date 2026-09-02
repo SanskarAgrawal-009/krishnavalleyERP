@@ -1776,19 +1776,34 @@ export const importOwnershipHistoryFromExcel = async (req, res) => {
 
         // Previous / Historical Owner Fields
         const prevOwnerName = getRowVal(row, 'previous owner name', 'old owner', 'seller name', 'previous owner', 'seller', 'old owner name');
-        const prevPhone = getRowVal(row, 'previous owner phone', 'old phone', 'seller phone', 'previous mobile', 'old mobile');
-        const rawPurchaseDate = getRowVal(row, 'previous purchase date', 'original date', 'start date', 'old agreement date', 'purchase date');
-        const rawTransferDate = getRowVal(row, 'transfer date', 'exit date', 'buyback date', 'resale date', 'end date');
-        const rawReason = getRowVal(row, 'transfer reason', 'reason', 'type', 'event');
-        const rawTransferValue = getRowVal(row, 'transfer deal value', 'buyback price', 'resale price', 'deal value', 'transfer value');
-        const remarks = getRowVal(row, 'remarks', 'notes', 'comments');
+        const prevPhone = getRowVal(row, 'previous owner phone', 'old phone', 'seller phone', 'previous mobile', 'old mobile', 'previous owner mobile');
+        const prevEmail = getRowVal(row, 'previous owner email', 'old email', 'seller email', 'previous email');
+        const prevPan = getRowVal(row, 'previous owner pan', 'old pan', 'seller pan', 'pan number', 'pan');
+        const prevAadhaar = getRowVal(row, 'previous owner aadhaar', 'old aadhaar', 'seller aadhaar', 'aadhaar');
+        
+        const rawPurchaseDate = getRowVal(row, 'previous purchase date', 'original date', 'start date', 'old agreement date', 'purchase date', 'original purchase date', 'date of agreement');
+        const rawTransferDate = getRowVal(row, 'transfer date', 'exit date', 'buyback date', 'resale date', 'end date', 'ownership transfer date', 'date of transfer');
+        const rawReason = getRowVal(row, 'transfer reason', 'reason', 'type', 'event', 'transfer type');
+        const rawTransferValue = getRowVal(row, 'transfer deal value', 'buyback price', 'resale price', 'deal value', 'transfer value', 'historical deal value', 'historical valuation');
+        const rawPrePossessionPaid = getRowVal(row, 'pre-possession rent paid', 'pre possession rent paid', 'pre possession total paid', 'prepossession amount', 'pre possession paid');
+        const rawPrePossessionRent = getRowVal(row, 'pre-possession monthly rent', 'pre possession monthly rent', 'prepossession rent per month');
+        const remarks = getRowVal(row, 'remarks', 'notes', 'comments', 'transfer remarks', 'transfer audit remarks');
 
         const purchaseDate = parseExcelDate(rawPurchaseDate) || new Date('2024-01-01');
         const transferDate = parseExcelDate(rawTransferDate) || new Date();
         const transferDealValue = cleanNumeric(rawTransferValue, 0);
-        const transferReason = ['resale', 'buyback', 'surrender', 'inheritance', 'family_transfer'].includes(String(rawReason).toLowerCase().trim())
-          ? String(rawReason).toLowerCase().trim()
-          : 'resale';
+        const prePossessionPaid = cleanNumeric(rawPrePossessionPaid, 0);
+        const prePossessionMonthlyRent = cleanNumeric(rawPrePossessionRent, 0);
+        
+        const cleanReason = String(rawReason || '').toLowerCase().replace(/[^a-z_]/g, '');
+        let transferReason = 'resale';
+        if (cleanReason.includes('renewal') || cleanReason.includes('possession')) {
+          transferReason = 'possession_renewal';
+        } else if (cleanReason.includes('buyback') || cleanReason.includes('buy_back')) {
+          transferReason = 'buyback';
+        } else if (['surrender', 'inheritance', 'family_transfer'].includes(cleanReason)) {
+          transferReason = cleanReason;
+        }
 
         if (prevOwnerName) {
           if (!flat.ownershipHistory) flat.ownershipHistory = [];
@@ -1802,16 +1817,29 @@ export const importOwnershipHistoryFromExcel = async (req, res) => {
           if (!isDup) {
             flat.ownershipHistory.push({
               name: prevOwnerName.trim(),
+              previousOwnerName: prevOwnerName.trim(),
               mobileNo: prevPhone ? String(prevPhone).trim() : '+91 9800000000',
+              email: prevEmail ? String(prevEmail).trim() : '',
+              panNumber: prevPan ? String(prevPan).trim() : '',
+              aadhaarNumber: prevAadhaar ? String(prevAadhaar).trim() : '',
               ownershipStartDate: purchaseDate,
               ownershipEndDate: transferDate,
               transferDate,
               transferReason,
-              transferDealValue,
-              remarks: remarks || `Imported historical owner record`
+              transferDealValue: transferDealValue || prePossessionPaid || 0,
+              prePossessionRentPaid: prePossessionPaid,
+              remarks: remarks || `Imported historical owner dossier`
             });
             flat.buybackCount = (flat.buybackCount || 0) + 1;
             summary.historyRecordsAppended++;
+          }
+
+          // If possession renewal record or pre-possession rent is logged, update rentalDetails
+          if (transferReason === 'possession_renewal' || prePossessionPaid > 0) {
+            if (!flat.rentalDetails) flat.rentalDetails = {};
+            flat.rentalDetails.isPossessionRenewal = true;
+            if (prePossessionPaid > 0) flat.rentalDetails.prePossessionTotalPaid = prePossessionPaid;
+            if (prePossessionMonthlyRent > 0) flat.rentalDetails.prePossessionMonthlyRent = prePossessionMonthlyRent;
           }
         }
 

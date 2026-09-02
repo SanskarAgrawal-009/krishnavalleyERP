@@ -169,8 +169,32 @@ export const ImportInventoryModal = ({
           const rawFloor = getRowVal(r, 'floor', 'floor no', 'floor_no', 'floor number');
           const floor = (rawFloor !== '' && rawFloor !== undefined && rawFloor !== null) ? cleanNumeric(rawFloor, 0) : inferFloorFromFlat(flatNo);
           const building = String(getRowVal(r, 'building', 'tower', 'building name', 'block', 'wing') || 'Tower A').trim();
-          const ownerName = String(getRowVal(r, 'owner name', 'owner_name', 'owner', 'buyer name', 'customer name', 'name')).trim();
-          const ownerMobile = String(getRowVal(r, 'owner mobile', 'owner phone', 'mobile', 'phone', 'contact')).trim();
+          
+          // Current / Primary Owner
+          const ownerName = String(getRowVal(r, 'owner name', 'owner_name', 'owner', 'buyer name', 'customer name', 'name', 'current owner name', 'new owner')).trim();
+          const ownerMobile = String(getRowVal(r, 'owner mobile', 'owner phone', 'mobile', 'phone', 'contact', 'current owner phone')).trim();
+
+          // Previous / Historical Owner Fields
+          const prevOwnerName = String(getRowVal(r, 'previous owner name', 'previous owner', 'old owner', 'seller name', 'old owner name')).trim();
+          const prevOwnerPhone = String(getRowVal(r, 'previous owner phone', 'previous mobile', 'old phone', 'seller phone')).trim();
+          const prevOwnerEmail = String(getRowVal(r, 'previous owner email', 'old email', 'seller email')).trim();
+          
+          const rawPurchaseDate = getRowVal(r, 'previous purchase date', 'original purchase date', 'purchase date', 'original date', 'start date', 'old agreement date');
+          const purchaseDate = parseExcelDate(rawPurchaseDate);
+
+          const rawTransferDate = getRowVal(r, 'transfer date', 'ownership transfer date', 'exit date', 'buyback date', 'resale date', 'end date', 'date of transfer');
+          const transferDate = parseExcelDate(rawTransferDate);
+
+          const rawReason = getRowVal(r, 'transfer reason', 'reason', 'type', 'event', 'transfer type');
+          const transferReason = String(rawReason || 'Resale').trim();
+
+          const rawTransferValue = getRowVal(r, 'transfer deal value', 'historical valuation', 'historical deal value', 'buyback price', 'resale price', 'deal value');
+          const transferDealValue = cleanNumeric(rawTransferValue, 0);
+
+          const rawPrePossessionPaid = getRowVal(r, 'pre-possession rent paid', 'pre possession rent paid', 'pre possession total paid', 'prepossession amount');
+          const prePossessionPaid = cleanNumeric(rawPrePossessionPaid, 0);
+
+          const remarks = String(getRowVal(r, 'remarks', 'notes', 'comments', 'transfer remarks', 'audit trail')).trim();
 
           const rawAgreementDate = getRowVal(r, 'date of aggreement', 'date of agreement', 'agreement date', 'booking date');
           const agreementDate = parseExcelDate(rawAgreementDate);
@@ -216,6 +240,15 @@ export const ImportInventoryModal = ({
             building,
             ownerName: ownerName || '—',
             ownerMobile: ownerMobile || '—',
+            prevOwnerName: prevOwnerName || '—',
+            prevOwnerPhone: prevOwnerPhone || '—',
+            prevOwnerEmail: prevOwnerEmail || '—',
+            purchaseDate: purchaseDate ? purchaseDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
+            transferDate: transferDate ? transferDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
+            transferReason: transferReason || 'Resale',
+            transferDealValue,
+            prePossessionPaid,
+            remarks: remarks || '—',
             agreementDate: agreementDate ? agreementDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
             rentalStartDate: rentalStartDate ? rentalStartDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
             tenure,
@@ -263,22 +296,92 @@ export const ImportInventoryModal = ({
     const histCols = [
       { wch: 10 }, // Flat No
       { wch: 12 }, // Tower
+      { wch: 8 },  // Floor
       { wch: 28 }, // Previous Owner Name
-      { wch: 18 }, // Previous Owner Phone
-      { wch: 16 }, // Purchase Date
-      { wch: 16 }, // Transfer Date
+      { wch: 18 }, // Previous Owner Mobile
+      { wch: 24 }, // Previous Owner Email
+      { wch: 14 }, // Previous Owner PAN
+      { wch: 16 }, // Previous Owner Aadhaar
+      { wch: 16 }, // Original Purchase Date
+      { wch: 16 }, // Ownership Transfer Date
       { wch: 22 }, // Transfer Reason
-      { wch: 18 }, // Transfer Deal Value
+      { wch: 18 }, // Historical Valuation
+      { wch: 18 }, // Historical Paid Amount
+      { wch: 22 }, // Pre-Possession Rent Paid
       { wch: 28 }, // Current Owner Name
-      { wch: 18 }, // Current Owner Phone
-      { wch: 18 }, // Current Deal Price
-      { wch: 18 }, // Current Paid Amount
+      { wch: 18 }, // Current Owner Mobile
       { wch: 55 }  // Remarks
     ];
 
     const workbook = XLSX.utils.book_new();
 
-    if (activeCategory === 'resell') {
+    if (activeCategory === 'previous_owners') {
+      const prevOwnerData = [
+        {
+          'Flat No': '105',
+          'Tower': 'Tower A',
+          'Floor': 1,
+          'Previous Owner Name': 'Shakuntla Gupta',
+          'Previous Owner Mobile': '+91 9800000105',
+          'Previous Owner Email': 'shakuntla.gupta@example.com',
+          'Previous Owner PAN': 'ABCDE1234F',
+          'Previous Owner Aadhaar': '123456789012',
+          'Original Purchase Date': '13/03/2014',
+          'Ownership Transfer Date': '14/10/2025',
+          'Transfer Reason': 'Resale',
+          'Historical Valuation': 1600000,
+          'Historical Paid Amount': 1600000,
+          'Pre-Possession Rent Paid': 0,
+          'Current Owner Name': 'MADAN GOPAL SARASWAT',
+          'Current Owner Mobile': '+91 9800000105',
+          'Remarks': 'Flat A-105: Prior owner Shakuntla Gupta held title from 2014 until secondary market resale to Madan Gopal Saraswat in Oct 2025'
+        },
+        {
+          'Flat No': '612',
+          'Tower': 'Tower A',
+          'Floor': 6,
+          'Previous Owner Name': 'Uma Shankar Prasad Singh',
+          'Previous Owner Mobile': '+91 9800000612',
+          'Previous Owner Email': 'umashankar@example.com',
+          'Previous Owner PAN': 'FGHIJ5678K',
+          'Previous Owner Aadhaar': '987654321098',
+          'Original Purchase Date': '15/06/2015',
+          'Ownership Transfer Date': '10/06/2025',
+          'Transfer Reason': 'Possession Renewal',
+          'Historical Valuation': 2150000,
+          'Historical Paid Amount': 5500000,
+          'Pre-Possession Rent Paid': 2150000,
+          'Current Owner Name': 'Uma Shankar Prasad Singh',
+          'Current Owner Mobile': '+91 9800000612',
+          'Remarks': 'Flat A-612: Pre-Possession Guaranteed Rent (100mo @ ₹21,500/mo, Total: ₹21,50,000) expired/renewed to Post-Possession Rate (@ ₹11,000/mo)'
+        },
+        {
+          'Flat No': '001',
+          'Tower': 'Tower A',
+          'Floor': 0,
+          'Previous Owner Name': 'Ved Prakash Agarwal',
+          'Previous Owner Mobile': '+91 9897123456',
+          'Previous Owner Email': 'vedprakash@example.com',
+          'Previous Owner PAN': 'KLMNO9012P',
+          'Previous Owner Aadhaar': '456789012345',
+          'Original Purchase Date': '14/06/2024',
+          'Ownership Transfer Date': '20/07/2025',
+          'Transfer Reason': 'Buy Back',
+          'Historical Valuation': 5000000,
+          'Historical Paid Amount': 5000000,
+          'Pre-Possession Rent Paid': 0,
+          'Current Owner Name': 'Suresh Mehta',
+          'Current Owner Mobile': '+91 9811223344',
+          'Remarks': 'Flat A-001: Repurchased by developer under guaranteed buyback terms and transferred to Suresh Mehta'
+        }
+      ];
+
+      const ws = XLSX.utils.json_to_sheet(prevOwnerData);
+      ws['!cols'] = histCols;
+      XLSX.utils.book_append_sheet(workbook, ws, 'Previous_Owners');
+      XLSX.writeFile(workbook, 'Krishna_Valley_Previous_Owners_Template.xlsx');
+
+    } else if (activeCategory === 'resell') {
       const invData = [
         {
           'Flat No': '105',
@@ -305,16 +408,20 @@ export const ImportInventoryModal = ({
         {
           'Flat No': '105',
           'Tower': 'Tower A',
+          'Floor': 1,
           'Previous Owner Name': 'Shakuntla Gupta',
-          'Previous Owner Phone': '+91 9800000105',
-          'Purchase Date': '13/03/2014',
-          'Transfer Date': '14/10/2025',
+          'Previous Owner Mobile': '+91 9800000105',
+          'Previous Owner Email': 'shakuntla.gupta@example.com',
+          'Previous Owner PAN': 'ABCDE1234F',
+          'Previous Owner Aadhaar': '123456789012',
+          'Original Purchase Date': '13/03/2014',
+          'Ownership Transfer Date': '14/10/2025',
           'Transfer Reason': 'resale',
-          'Transfer Deal Value': 1600000,
+          'Historical Valuation': 1600000,
+          'Historical Paid Amount': 1600000,
+          'Pre-Possession Rent Paid': 0,
           'Current Owner Name': 'MADAN GOPAL SARASWAT',
-          'Current Owner Phone': '+91 9800000105',
-          'Current Deal Price': 5500000,
-          'Current Paid Amount': 5500000,
+          'Current Owner Mobile': '+91 9800000105',
           'Remarks': 'Flat A-105: Prior owner Shakuntla Gupta resold to MADAN GOPAL SARASWAT'
         }
       ];
@@ -354,16 +461,20 @@ export const ImportInventoryModal = ({
         {
           'Flat No': '612',
           'Tower': 'Tower A',
+          'Floor': 6,
           'Previous Owner Name': 'Uma Shankar Prasad Singh',
-          'Previous Owner Phone': '+91 9800000612',
-          'Purchase Date': '15/06/2015',
-          'Transfer Date': '10/06/2025',
+          'Previous Owner Mobile': '+91 9800000612',
+          'Previous Owner Email': 'umashankar@example.com',
+          'Previous Owner PAN': 'FGHIJ5678K',
+          'Previous Owner Aadhaar': '987654321098',
+          'Original Purchase Date': '15/06/2015',
+          'Ownership Transfer Date': '10/06/2025',
           'Transfer Reason': 'possession_renewal',
-          'Transfer Deal Value': 2150000,
+          'Historical Valuation': 2150000,
+          'Historical Paid Amount': 5500000,
+          'Pre-Possession Rent Paid': 2150000,
           'Current Owner Name': 'Uma Shankar Prasad Singh',
-          'Current Owner Phone': '+91 9800000612',
-          'Current Deal Price': 5500000,
-          'Current Paid Amount': 5500000,
+          'Current Owner Mobile': '+91 9800000612',
           'Remarks': 'Flat A-612: Pre-Possession Contract (100mo @ ₹21,500/mo, Total: ₹21,50,000) expired/renewed to Post-Possession Rate (@ ₹11,000/mo)'
         }
       ];
@@ -418,16 +529,30 @@ export const ImportInventoryModal = ({
     setErrorMsg('');
     try {
       let res;
-      if (file) {
-        const formData = new FormData();
-        formData.append('excelFile', file);
-        if (selectedProjectId) formData.append('projectId', selectedProjectId);
-        res = await projectService.importFlatsExcel(formData);
+      if (activeCategory === 'previous_owners') {
+        if (file) {
+          const formData = new FormData();
+          formData.append('excelFile', file);
+          if (selectedProjectId) formData.append('projectId', selectedProjectId);
+          res = await projectService.importOwnershipHistory(formData);
+        } else {
+          res = await projectService.importOwnershipHistory({
+            projectId: selectedProjectId,
+            items: rawRows
+          });
+        }
       } else {
-        res = await projectService.importFlatsExcel({
-          projectId: selectedProjectId,
-          items: rawRows
-        });
+        if (file) {
+          const formData = new FormData();
+          formData.append('excelFile', file);
+          if (selectedProjectId) formData.append('projectId', selectedProjectId);
+          res = await projectService.importFlatsExcel(formData);
+        } else {
+          res = await projectService.importFlatsExcel({
+            projectId: selectedProjectId,
+            items: rawRows
+          });
+        }
       }
 
       if (res.success && res.data) {
@@ -462,12 +587,14 @@ export const ImportInventoryModal = ({
           gap: '8px',
           background: '#f1f5f9',
           padding: '6px',
-          borderRadius: '10px'
+          borderRadius: '10px',
+          flexWrap: 'wrap'
         }}>
           {[
             { id: 'sold', label: '1. Standard Sold Inventory', color: '#16a34a', bg: '#dcfce7' },
             { id: 'resell', label: '2. Resell Inventory & History', color: '#7c3aed', bg: '#f3e8ff' },
             { id: 'possession_renewal', label: '3. Possession Renewal & Prior Contracts', color: '#059669', bg: '#ecfdf5' },
+            { id: 'previous_owners', label: '4. Previous Owners Dossier', color: '#0284c7', bg: '#e0f2fe' },
           ].map((cat) => {
             const isSelected = activeCategory === cat.id;
             return (
@@ -476,7 +603,7 @@ export const ImportInventoryModal = ({
                 type="button"
                 onClick={() => setActiveCategory(cat.id)}
                 style={{
-                  flex: 1,
+                  flex: '1 1 200px',
                   padding: '9px 12px',
                   borderRadius: '8px',
                   border: isSelected ? `2px solid ${cat.color}` : '1px solid transparent',
@@ -501,8 +628,8 @@ export const ImportInventoryModal = ({
 
         {/* Top Instructions Banner */}
         <div style={{
-          background: activeCategory === 'resell' ? '#fbf7ff' : (activeCategory === 'possession_renewal' ? '#f0fdf9' : '#f0fdf4'),
-          border: `1px solid ${activeCategory === 'resell' ? '#ddd6fe' : (activeCategory === 'possession_renewal' ? '#a7f3d0' : '#bbf7d0')}`,
+          background: activeCategory === 'previous_owners' ? '#f0f9ff' : (activeCategory === 'resell' ? '#fbf7ff' : (activeCategory === 'possession_renewal' ? '#f0fdf9' : '#f0fdf4')),
+          border: `1px solid ${activeCategory === 'previous_owners' ? '#bae6fd' : (activeCategory === 'resell' ? '#ddd6fe' : (activeCategory === 'possession_renewal' ? '#a7f3d0' : '#bbf7d0'))}`,
           borderRadius: '10px',
           padding: '14px 18px',
           display: 'flex',
@@ -512,13 +639,21 @@ export const ImportInventoryModal = ({
           gap: '12px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '280px' }}>
-            <FileSpreadsheet size={24} color={activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a')} />
+            <FileSpreadsheet size={24} color={activeCategory === 'previous_owners' ? '#0284c7' : (activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a'))} />
             <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: '800', color: activeCategory === 'resell' ? '#5b21b6' : (activeCategory === 'possession_renewal' ? '#065f46' : '#166534') }}>
-                {activeCategory === 'resell' ? 'Upload Resell Units & Prior Ownership Archive' : (activeCategory === 'possession_renewal' ? 'Upload Post-Possession Renewals & Initial 100-Mo Contracts' : 'Upload Standard Sold Units & 3-Year Rent-Backs')}
+              <div style={{ fontSize: '0.9rem', fontWeight: '800', color: activeCategory === 'previous_owners' ? '#0369a1' : (activeCategory === 'resell' ? '#5b21b6' : (activeCategory === 'possession_renewal' ? '#065f46' : '#166534')) }}>
+                {activeCategory === 'previous_owners'
+                  ? 'Upload Previous Owners Dossier & Historical Title Transfers'
+                  : (activeCategory === 'resell'
+                    ? 'Upload Resell Units & Prior Ownership Archive'
+                    : (activeCategory === 'possession_renewal'
+                      ? 'Upload Post-Possession Renewals & Initial 100-Mo Contracts'
+                      : 'Upload Standard Sold Units & 3-Year Rent-Backs'))}
               </div>
-              <div style={{ fontSize: '0.78rem', color: activeCategory === 'resell' ? '#6b21a8' : (activeCategory === 'possession_renewal' ? '#047857' : '#15803d'), marginTop: '2px' }}>
-                Required columns: <strong>Flat No</strong>, <strong>Tower</strong>, <strong>Floor</strong>, <strong>Owner Name</strong>, <strong>Date of Agreement</strong>, <strong>Rental Starts</strong>, <strong>Tenure</strong>, <strong>Amount Per Month</strong>, <strong>TDS</strong>, <strong>Net Amount</strong>, <strong>Status</strong>.
+              <div style={{ fontSize: '0.78rem', color: activeCategory === 'previous_owners' ? '#0284c7' : (activeCategory === 'resell' ? '#6b21a8' : (activeCategory === 'possession_renewal' ? '#047857' : '#15803d')), marginTop: '2px' }}>
+                {activeCategory === 'previous_owners'
+                  ? 'Key columns: Flat No, Tower, Floor, Previous Owner Name, Phone, Purchase Date, Transfer Date, Reason, Historical Valuation, Pre-Possession Rent Paid, Remarks.'
+                  : 'Required columns: Flat No, Tower, Floor, Owner Name, Date of Agreement, Rental Starts, Tenure, Amount Per Month, TDS, Net Amount, Status.'}
               </div>
             </div>
           </div>
@@ -529,8 +664,8 @@ export const ImportInventoryModal = ({
             style={{
               padding: '8px 16px',
               background: '#ffffff',
-              color: activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a'),
-              border: `1.5px solid ${activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a')}`,
+              color: activeCategory === 'previous_owners' ? '#0284c7' : (activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a')),
+              border: `1.5px solid ${activeCategory === 'previous_owners' ? '#0284c7' : (activeCategory === 'resell' ? '#7c3aed' : (activeCategory === 'possession_renewal' ? '#059669' : '#16a34a'))}`,
               borderRadius: '8px',
               fontWeight: '700',
               fontSize: '0.82rem',
@@ -541,7 +676,7 @@ export const ImportInventoryModal = ({
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
             }}
           >
-            <Download size={15} /> Download {activeCategory === 'resell' ? 'Resell' : (activeCategory === 'possession_renewal' ? 'Renewal' : 'Sold')} Template
+            <Download size={15} /> Download {activeCategory === 'previous_owners' ? 'Previous Owners' : (activeCategory === 'resell' ? 'Resell' : (activeCategory === 'possession_renewal' ? 'Renewal' : 'Sold'))} Template
           </button>
         </div>
 
@@ -626,7 +761,7 @@ export const ImportInventoryModal = ({
             </div>
             <div>
               <div style={{ fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>
-                Click to browse or drag & drop your Excel sheet here
+                Click to browse or drag & drop your {activeCategory === 'previous_owners' ? 'Previous Owners Dossier' : 'Excel sheet'} here
               </div>
               <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
                 Supports <strong>.xlsx</strong>, <strong>.xls</strong>, and <strong>.csv</strong> spreadsheets
@@ -653,47 +788,77 @@ export const ImportInventoryModal = ({
           </div>
         )}
 
-        {/* Import Results Card */}
+        {/* Success Result Summary */}
         {importResult && (
           <div style={{
             background: '#f0fdf4',
             border: '1px solid #bbf7d0',
-            borderRadius: '10px',
+            borderRadius: '12px',
             padding: '20px',
             display: 'flex',
             flexDirection: 'column',
             gap: '16px'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <CheckCircle2 size={28} color="#16a34a" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                background: '#dcfce7',
+                color: '#16a34a',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <CheckCircle2 size={24} />
+              </div>
               <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#166534', margin: 0 }}>
-                  Import Completed Successfully!
-                </h3>
-                <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '2px' }}>
-                  Your previous inventory, owners, and 3-Year guaranteed rental programs have been saved in MongoDB.
+                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#166534' }}>
+                  {activeCategory === 'previous_owners' ? 'Previous Owners Dossier Successfully Imported!' : 'Inventory Import Successfully Completed!'}
+                </h4>
+                <div style={{ fontSize: '0.8rem', color: '#15803d', marginTop: '2px' }}>
+                  {importResult.totalRows} row(s) processed with complete database synchronization.
                 </div>
               </div>
             </div>
 
             {/* Metrics Chips */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
-              <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #dcfce7', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#166534' }}>{importResult.createdFlats}</div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>NEW FLATS CREATED</div>
-              </div>
-              <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #dcfce7', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#2563eb' }}>{importResult.updatedFlats}</div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>FLATS UPDATED</div>
-              </div>
-              <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #dcfce7', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#9333ea' }}>{importResult.createdOwners}</div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>OWNERS REGISTERED</div>
-              </div>
-              <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #dcfce7', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#d97706' }}>{importResult.createdRentals}</div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>RENT-BACK CONTRACTS</div>
-              </div>
+              {importResult.historyRecordsAppended !== undefined ? (
+                <>
+                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #bae6fd', textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0284c7' }}>{importResult.historyRecordsAppended}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>HISTORICAL RECORDS ADDED</div>
+                  </div>
+                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #bae6fd', textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#166534' }}>{importResult.flatsUpdated}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>FLATS PROCESSED</div>
+                  </div>
+                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #bae6fd', textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#7c3aed' }}>{importResult.activeOwnersUpdated || 0}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>ACTIVE OWNERS UPDATED</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #dcfce7', textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#166534' }}>{importResult.createdFlats}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>NEW FLATS CREATED</div>
+                  </div>
+                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #dcfce7', textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#2563eb' }}>{importResult.updatedFlats}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>FLATS UPDATED</div>
+                  </div>
+                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #dcfce7', textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#9333ea' }}>{importResult.createdOwners}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>OWNERS REGISTERED</div>
+                  </div>
+                  <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #dcfce7', textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#d97706' }}>{importResult.createdRentals}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>RENT-BACK CONTRACTS</div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Error logs if any */}
@@ -782,71 +947,144 @@ export const ImportInventoryModal = ({
               border: '1px solid #e2e8f0',
               borderRadius: '8px'
             }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
-                <thead style={{ background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
-                  <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>#</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Flat No</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Floor</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Building</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Owner Name</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Deal Price</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Previous Payment</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Agreement Date</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Rental Starts</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Tenure</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Monthly Rent</th>
-                    <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Total Revenue</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {previewRows.map((r, idx) => (
-                    <tr
-                      key={idx}
-                      style={{
-                        borderBottom: '1px solid #f1f5f9',
-                        background: idx % 2 === 0 ? '#ffffff' : '#f8fafc',
-                        opacity: r.isValid ? 1 : 0.5
-                      }}
-                    >
-                      <td style={{ padding: '8px 12px', color: '#94a3b8', fontWeight: '600' }}>{r.rowNumber}</td>
-                      <td style={{ padding: '8px 12px', fontWeight: '800', color: '#0f172a' }}>
-                        {r.flatNo || <span style={{ color: '#ef4444' }}>Missing</span>}
-                      </td>
-                      <td style={{ padding: '8px 12px', color: '#334155' }}>Floor {r.floor}</td>
-                      <td style={{ padding: '8px 12px', fontWeight: '600', color: '#2563eb' }}>{r.building}</td>
-                      <td style={{ padding: '8px 12px', color: '#0f172a', fontWeight: '600' }}>
-                        {r.ownerName}
-                        {r.ownerMobile !== '—' && (
-                          <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{r.ownerMobile}</div>
-                        )}
-                      </td>
-                      <td style={{ padding: '8px 12px', color: '#0f172a', fontWeight: '600' }}>
-                        {formatINR(r.agreedDealPrice)}
-                      </td>
-                      <td style={{ padding: '8px 12px', color: '#16a34a', fontWeight: '700' }}>
-                        {formatINR(r.previousPaidAmount)}
-                      </td>
-                      <td style={{ padding: '8px 12px', color: '#475569' }}>{r.agreementDate}</td>
-                      <td style={{ padding: '8px 12px', color: '#475569' }}>{r.rentalStartDate}</td>
-                      <td style={{ padding: '8px 12px', fontWeight: '700', color: '#7c3aed' }}>
-                        {r.tenure} Mo
-                        {r.tenure === 36 && (
-                          <span style={{ fontSize: '0.65rem', background: '#f3e8ff', color: '#7c3aed', padding: '1px 4px', borderRadius: '3px', marginLeft: '4px' }}>
-                            Default
-                          </span>
-                        )}
-                      </td>
-                      <td style={{ padding: '8px 12px', fontWeight: '800', color: '#16a34a' }}>
-                        {formatINR(r.monthlyRent)}/mo
-                      </td>
-                      <td style={{ padding: '8px 12px', fontWeight: '800', color: '#7e22ce' }}>
-                        {formatINR(r.totalTenureAmount)}
-                      </td>
+              {activeCategory === 'previous_owners' ? (
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
+                  <thead style={{ background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>#</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Flat No</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Floor</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Building</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Previous Owner</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Original Date</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Transfer Date</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Reason</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Historical Valuation</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Pre-Possession Rent</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Current Owner</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Remarks</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {previewRows.map((r, idx) => (
+                      <tr
+                        key={idx}
+                        style={{
+                          borderBottom: '1px solid #f1f5f9',
+                          background: idx % 2 === 0 ? '#ffffff' : '#f8fafc',
+                          opacity: r.isValid ? 1 : 0.5
+                        }}
+                      >
+                        <td style={{ padding: '8px 12px', color: '#94a3b8', fontWeight: '600' }}>{r.rowNumber}</td>
+                        <td style={{ padding: '8px 12px', fontWeight: '800', color: '#0f172a' }}>
+                          {r.flatNo || <span style={{ color: '#ef4444' }}>Missing</span>}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#334155' }}>Floor {r.floor}</td>
+                        <td style={{ padding: '8px 12px', fontWeight: '600', color: '#2563eb' }}>{r.building}</td>
+                        <td style={{ padding: '8px 12px', color: '#0f172a', fontWeight: '700' }}>
+                          {r.prevOwnerName !== '—' ? r.prevOwnerName : (r.ownerName || '—')}
+                          {r.prevOwnerPhone !== '—' && (
+                            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '500' }}>{r.prevOwnerPhone}</div>
+                          )}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#475569' }}>{r.purchaseDate}</td>
+                        <td style={{ padding: '8px 12px', color: '#475569' }}>{r.transferDate}</td>
+                        <td style={{ padding: '8px 12px' }}>
+                          <span style={{
+                            fontSize: '0.7rem',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            background: '#e0e7ff',
+                            color: '#3730a3',
+                            fontWeight: '700',
+                            textTransform: 'uppercase'
+                          }}>
+                            {r.transferReason}
+                          </span>
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#0f172a', fontWeight: '700' }}>
+                          {formatINR(r.transferDealValue)}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#059669', fontWeight: '700' }}>
+                          {r.prePossessionPaid > 0 ? formatINR(r.prePossessionPaid) : '—'}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#334155', fontWeight: '600' }}>
+                          {r.ownerName !== '—' ? r.ownerName : '—'}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#64748b', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {r.remarks}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
+                  <thead style={{ background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>#</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Flat No</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Floor</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Building</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Owner Name</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Deal Price</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Previous Payment</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Agreement Date</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Rental Starts</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Tenure</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Monthly Rent</th>
+                      <th style={{ padding: '10px 12px', color: '#475569', fontWeight: '700' }}>Total Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {previewRows.map((r, idx) => (
+                      <tr
+                        key={idx}
+                        style={{
+                          borderBottom: '1px solid #f1f5f9',
+                          background: idx % 2 === 0 ? '#ffffff' : '#f8fafc',
+                          opacity: r.isValid ? 1 : 0.5
+                        }}
+                      >
+                        <td style={{ padding: '8px 12px', color: '#94a3b8', fontWeight: '600' }}>{r.rowNumber}</td>
+                        <td style={{ padding: '8px 12px', fontWeight: '800', color: '#0f172a' }}>
+                          {r.flatNo || <span style={{ color: '#ef4444' }}>Missing</span>}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#334155' }}>Floor {r.floor}</td>
+                        <td style={{ padding: '8px 12px', fontWeight: '600', color: '#2563eb' }}>{r.building}</td>
+                        <td style={{ padding: '8px 12px', color: '#0f172a', fontWeight: '600' }}>
+                          {r.ownerName}
+                          {r.ownerMobile !== '—' && (
+                            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{r.ownerMobile}</div>
+                          )}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#0f172a', fontWeight: '600' }}>
+                          {formatINR(r.agreedDealPrice)}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#16a34a', fontWeight: '700' }}>
+                          {formatINR(r.previousPaidAmount)}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#475569' }}>{r.agreementDate}</td>
+                        <td style={{ padding: '8px 12px', color: '#475569' }}>{r.rentalStartDate}</td>
+                        <td style={{ padding: '8px 12px', fontWeight: '700', color: '#7c3aed' }}>
+                          {r.tenure} Mo
+                          {r.tenure === 36 && (
+                            <span style={{ fontSize: '0.65rem', background: '#f3e8ff', color: '#7c3aed', padding: '1px 4px', borderRadius: '3px', marginLeft: '4px' }}>
+                              Default
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '8px 12px', fontWeight: '800', color: '#16a34a' }}>
+                          {formatINR(r.monthlyRent)}/mo
+                        </td>
+                        <td style={{ padding: '8px 12px', fontWeight: '800', color: '#7e22ce' }}>
+                          {formatINR(r.totalTenureAmount)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             {/* Action Bar */}
