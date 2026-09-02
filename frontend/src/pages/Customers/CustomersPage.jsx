@@ -239,24 +239,22 @@ export const CustomersPage = () => {
   // Metrics
   const totalCount = customers.length;
   let ownerCount = 0;
-  let individualTenantCount = 0;
-  let companyTenantCount = 0;
-  let activeRentSum = 0;
+  let totalPropertiesCount = 0;
+  let rentBackOwnerCount = 0;
+  let totalMonthlyDisbursements = 0;
 
   customers.forEach((c) => {
-    if (c.customerType === 'owner') ownerCount++;
-    if (c.customerType === 'tenant') {
-      if (c.tenantDetails?.tenantType === 'company') companyTenantCount++;
-      else individualTenantCount++;
-      activeRentSum += (c.tenantDetails?.monthlyRent || 0);
-    }
+    ownerCount++;
+    const propList = c.ownerDetails?.propertyIds || [];
+    const count = Array.isArray(propList) && propList.length > 0 ? propList.length : 1;
+    totalPropertiesCount += count;
+    rentBackOwnerCount++;
+    totalMonthlyDisbursements += 31000 * count;
   });
 
   // Filter based on quickFilter
   const displayedCustomers = customers.filter((cust) => {
-    if (quickFilter === 'owners') return cust.customerType === 'owner';
-    if (quickFilter === 'tenants') return cust.customerType === 'tenant';
-    if (quickFilter === 'corporate') return cust.tenantDetails?.tenantType === 'company';
+    if (quickFilter === 'rentback') return true;
     return true;
   });
 
