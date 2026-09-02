@@ -31,7 +31,8 @@ import {
   FileSpreadsheet,
   ShieldCheck,
   CheckSquare,
-  Square
+  Square,
+  Repeat
 } from 'lucide-react';
 
 export const PropertyInventoryPage = () => {
@@ -158,6 +159,9 @@ export const PropertyInventoryPage = () => {
   // Flat Availability Counts
   const availableCount = flats.filter(f => (f.status || '').toLowerCase() === 'available').length;
   const soldCount = flats.filter(f => (f.status || '').toLowerCase() === 'sold').length;
+  const resellCount = flats.filter(f => ['resell', 'resold'].includes((f.status || '').toLowerCase())).length;
+  const buybackCount = flats.filter(f => ['buy_back', 'buyback'].includes((f.status || '').toLowerCase())).length;
+  const possessionRenewalCount = flats.filter(f => ['possession_renewal', 'renewal'].includes((f.status || '').toLowerCase())).length;
   const holdCount = flats.filter(f => ['hold', 'booked', 'on_hold', 'pending'].includes((f.status || '').toLowerCase())).length;
   const rentalCount = flats.filter(f => f.takenForRental || (f.status || '').toLowerCase() === 'leased').length;
 
@@ -170,6 +174,9 @@ export const PropertyInventoryPage = () => {
     const status = (flat.status || '').toLowerCase();
     if (availabilityFilter === 'available' && status !== 'available') return false;
     if (availabilityFilter === 'sold' && status !== 'sold') return false;
+    if (availabilityFilter === 'resell' && !['resell', 'resold'].includes(status)) return false;
+    if (availabilityFilter === 'buy_back' && !['buy_back', 'buyback'].includes(status)) return false;
+    if (availabilityFilter === 'possession_renewal' && !['possession_renewal', 'renewal'].includes(status)) return false;
     if (availabilityFilter === 'hold' && !['hold', 'booked', 'on_hold', 'pending'].includes(status)) return false;
     if (availabilityFilter === 'rental' && !flat.takenForRental && status !== 'leased') return false;
 
@@ -1146,6 +1153,102 @@ export const PropertyInventoryPage = () => {
                         fontWeight: '700'
                       }}>
                         {holdCount}
+                      </span>
+                    </button>
+
+                    {/* Resell */}
+                    <button
+                      onClick={() => setAvailabilityFilter('resell')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: availabilityFilter === 'resell' ? '700' : '600',
+                        background: availabilityFilter === 'resell' ? '#7c3aed' : '#f3e8ff',
+                        color: availabilityFilter === 'resell' ? '#ffffff' : '#7c3aed',
+                        border: availabilityFilter === 'resell' ? '1px solid #7c3aed' : '1px solid #ddd6fe',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <Repeat size={13} />
+                      <span>Resell</span>
+                      <span style={{
+                        background: availabilityFilter === 'resell' ? 'rgba(255,255,255,0.25)' : '#ddd6fe',
+                        color: availabilityFilter === 'resell' ? '#ffffff' : '#5b21b6',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700'
+                      }}>
+                        {resellCount}
+                      </span>
+                    </button>
+
+                    {/* Possession Renewal */}
+                    <button
+                      onClick={() => setAvailabilityFilter('possession_renewal')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: availabilityFilter === 'possession_renewal' ? '700' : '600',
+                        background: availabilityFilter === 'possession_renewal' ? '#059669' : '#ecfdf5',
+                        color: availabilityFilter === 'possession_renewal' ? '#ffffff' : '#059669',
+                        border: availabilityFilter === 'possession_renewal' ? '1px solid #059669' : '1px solid #a7f3d0',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <RefreshCw size={13} />
+                      <span>Possession Renewal</span>
+                      <span style={{
+                        background: availabilityFilter === 'possession_renewal' ? 'rgba(255,255,255,0.25)' : '#a7f3d0',
+                        color: availabilityFilter === 'possession_renewal' ? '#ffffff' : '#065f46',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700'
+                      }}>
+                        {possessionRenewalCount}
+                      </span>
+                    </button>
+
+                    {/* Buy Back */}
+                    <button
+                      onClick={() => setAvailabilityFilter('buy_back')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: availabilityFilter === 'buy_back' ? '700' : '600',
+                        background: availabilityFilter === 'buy_back' ? '#0284c7' : '#e0f2fe',
+                        color: availabilityFilter === 'buy_back' ? '#ffffff' : '#0284c7',
+                        border: availabilityFilter === 'buy_back' ? '1px solid #0284c7' : '1px solid #bae6fd',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <RotateCcw size={13} />
+                      <span>Buy Back</span>
+                      <span style={{
+                        background: availabilityFilter === 'buy_back' ? 'rgba(255,255,255,0.25)' : '#bae6fd',
+                        color: availabilityFilter === 'buy_back' ? '#ffffff' : '#0369a1',
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700'
+                      }}>
+                        {buybackCount}
                       </span>
                     </button>
 

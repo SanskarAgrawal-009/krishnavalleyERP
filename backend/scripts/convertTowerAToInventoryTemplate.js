@@ -231,7 +231,7 @@ function convertTowerA() {
         'TDS': renewalTds,
         'Net Amount': renewalNet,
         'Amount for the Total Tenure': renewalNet * renewalTenure,
-        'Status': 'Sold'
+        'Status': 'Possession Renewal'
       });
 
       // Archive the Pre-Possession Initial Contract in Ownership & Contract History
@@ -243,7 +243,7 @@ function convertTowerA() {
         'Previous Owner Phone': phone,
         'Purchase Date': initialRec.mouDate || initialRec.startDate || '01/01/2015',
         'Transfer Date': initialRec.endDate || '01/01/2025',
-        'Transfer Reason': 'pre_possession_contract',
+        'Transfer Reason': 'possession_renewal',
         'Transfer Deal Value': initAssured || 2150000,
         'Current Owner Name': initialRec.customer,
         'Current Owner Phone': phone,
@@ -282,7 +282,7 @@ function convertTowerA() {
         'TDS': tds,
         'Net Amount': netAmount,
         'Amount for the Total Tenure': netAmount * tenure,
-        'Status': 'Sold'
+        'Status': 'Resell'
       });
 
       // Add all previous owners to history

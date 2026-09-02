@@ -7,12 +7,15 @@ import {
   HelpCircle,
   ShieldCheck,
   Zap,
-  Check
+  Check,
+  Repeat,
+  RotateCcw,
+  RefreshCw
 } from 'lucide-react';
 
 export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
   const getStyle = () => {
-    switch ((status || '').toLowerCase()) {
+    switch ((status || '').toLowerCase().replace(/\s+/g, '_')) {
       case 'available':
       case 'on_track':
       case 'ontrack':
@@ -30,6 +33,36 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
           border: '#ceead6',
           label: status === 'on_track' ? 'On Track' : status?.replace(/_/g, ' ') || 'Active',
           Icon: CheckCircle
+        };
+
+      case 'resell':
+      case 'resold':
+        return {
+          bg: '#f3e8ff',
+          color: '#7c3aed',
+          border: '#ddd6fe',
+          label: 'Resell',
+          Icon: Repeat
+        };
+
+      case 'buy_back':
+      case 'buyback':
+        return {
+          bg: '#e0f2fe',
+          color: '#0284c7',
+          border: '#bae6fd',
+          label: 'Buy Back',
+          Icon: RotateCcw
+        };
+
+      case 'possession_renewal':
+      case 'renewal':
+        return {
+          bg: '#ecfdf5',
+          color: '#059669',
+          border: '#a7f3d0',
+          label: 'Possession Renewal',
+          Icon: RefreshCw
         };
 
       case 'hold':

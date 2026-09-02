@@ -197,9 +197,12 @@ export const ManualFlatModal = ({
               style={{ width: '100%', fontSize: '0.85rem' }}
             >
               <option value="available">Available</option>
-              <option value="hold">Hold</option>
               <option value="sold">Sold</option>
+              <option value="resell">Resell</option>
+              <option value="buy_back">Buy Back</option>
+              <option value="possession_renewal">Possession Renewal</option>
               <option value="leased">Leased</option>
+              <option value="hold">Hold</option>
             </select>
           </div>
         </div>

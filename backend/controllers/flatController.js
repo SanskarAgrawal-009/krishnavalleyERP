@@ -725,7 +725,24 @@ export const importFlatsFromExcel = async (req, res) => {
           flatNumber
         });
 
-        const hasOwner = !!ownerName;
+        // Determine flat status
+        const rawStatus = String(getRowVal(row, 'status', 'flat status', 'unit status') || '').toLowerCase().trim();
+        let targetStatus = 'available';
+        if (rawStatus.includes('resell') || rawStatus.includes('resold')) {
+          targetStatus = 'resell';
+        } else if (rawStatus.includes('buyback') || rawStatus.includes('buy_back') || rawStatus.includes('buy back')) {
+          targetStatus = 'buy_back';
+        } else if (rawStatus.includes('possession') || rawStatus.includes('renewal')) {
+          targetStatus = 'possession_renewal';
+        } else if (rawStatus.includes('leased')) {
+          targetStatus = 'leased';
+        } else if (rawStatus.includes('hold') || rawStatus.includes('booked')) {
+          targetStatus = 'hold';
+        } else if (rawStatus.includes('sold') || hasOwner) {
+          targetStatus = 'sold';
+        }
+
+        const isFlatSold = ['sold', 'resell', 'buy_back', 'possession_renewal', 'leased'].includes(targetStatus);
         const hasRental = monthlyRent > 0 || !!rawRentalStart;
         let isNewFlat = false;
 
@@ -739,7 +756,8 @@ export const importFlatsFromExcel = async (req, res) => {
             bhkType,
             carpetArea,
             basePrice: agreedDealPrice,
-            status: hasOwner ? 'sold' : 'available',
+            status: targetStatus,
+            isSold: isFlatSold,
             takenForRental: hasRental,
             facing: 'East'
           });
@@ -752,7 +770,8 @@ export const importFlatsFromExcel = async (req, res) => {
           if (bhkType) flat.bhkType = bhkType;
           if (carpetArea) flat.carpetArea = carpetArea;
           if (agreedDealPrice > 0) flat.basePrice = agreedDealPrice;
-          if (hasOwner) flat.status = 'sold';
+          flat.status = targetStatus;
+          flat.isSold = isFlatSold;
           if (hasRental) flat.takenForRental = true;
           await flat.save();
           summary.updatedFlats++;
