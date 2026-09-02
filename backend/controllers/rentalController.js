@@ -397,10 +397,10 @@ export const getRentalContracts = async (req, res) => {
     }
 
     let contracts = await RentalManagement.find(filter)
-      .populate('projectId', 'projectName projectCode')
-      .populate('flatId', 'flatNumber status takenForRental')
-      .populate('flatIds', 'flatNumber status takenForRental')
-      .populate('leasedUnits.flatId', 'flatNumber status')
+      .populate('projectId', 'projectName projectCode buildings')
+      .populate('flatId', 'flatNumber floor bhkType status takenForRental currentOwner buildingId basePrice')
+      .populate('flatIds', 'flatNumber floor bhkType status takenForRental currentOwner buildingId basePrice')
+      .populate('leasedUnits.flatId', 'flatNumber floor status buildingId')
       .populate('leasedUnits.ownerId', 'name mobileNo email')
       .populate('ownerId', 'name mobileNo email address')
       .populate('tenantId', 'name mobileNo email tenantDetails')
@@ -411,6 +411,7 @@ export const getRentalContracts = async (req, res) => {
       const s = search.toLowerCase();
       contracts = contracts.filter((c) => 
         (c.ownerId?.name && c.ownerId.name.toLowerCase().includes(s)) ||
+        (c.flatId?.currentOwner?.name && c.flatId.currentOwner.name.toLowerCase().includes(s)) ||
         (c.tenantId?.name && c.tenantId.name.toLowerCase().includes(s)) ||
         (c.flatId?.flatNumber && c.flatId.flatNumber.toLowerCase().includes(s)) ||
         (c.flatIds?.some(f => f.flatNumber && f.flatNumber.toLowerCase().includes(s))) ||
@@ -419,15 +420,38 @@ export const getRentalContracts = async (req, res) => {
       );
     }
 
-    // Ensure rentBackLedger is initialized for rentBack enabled contracts
-    for (const c of contracts) {
-      if (c.rentBack?.enabled && (!c.rentBackLedger || !c.rentBackLedger.entries || c.rentBackLedger.entries.length === 0)) {
-        c.rentBackLedger = generateDefaultRentBackLedger(c);
-        await c.save();
+    // Attach resolved tower and floor to each contract
+    const formattedContracts = contracts.map((c) => {
+      const doc = c.toObject();
+      const flat = doc.flatId || {};
+      const proj = doc.projectId || {};
+      
+      // Resolve building / tower name
+      let towerName = 'Tower A';
+      if (proj.buildings && flat.buildingId) {
+        const bld = proj.buildings.find(b => b._id.toString() === flat.buildingId.toString());
+        if (bld) towerName = bld.buildingName || bld.buildingCode || 'Tower A';
       }
-    }
+      
+      // Resolve floor
+      let floorNum = flat.floor;
+      if (floorNum === undefined || floorNum === null) {
+        const parsed = parseInt(String(flat.flatNumber || '').replace(/\D/g, ''), 10);
+        floorNum = !isNaN(parsed) && parsed >= 100 ? Math.floor(parsed / 100) : 0;
+      }
 
-    return res.json({ success: true, count: contracts.length, data: contracts });
+      // Resolve customer / owner name
+      const customerName = doc.ownerId?.name || flat.currentOwner?.name || doc.tenantAgreement?.tenantName || 'Registered Owner';
+      const customerMobile = doc.ownerId?.mobileNo || flat.currentOwner?.mobileNo || doc.tenantAgreement?.tenantPhone || '';
+
+      doc.towerName = towerName;
+      doc.floorNum = floorNum;
+      doc.customerName = customerName;
+      doc.customerMobile = customerMobile;
+      return doc;
+    });
+
+    return res.json({ success: true, count: formattedContracts.length, data: formattedContracts });
   } catch (error) {
     console.error('Error fetching rental contracts:', error);
     return res.status(500).json({ success: false, message: error.message });

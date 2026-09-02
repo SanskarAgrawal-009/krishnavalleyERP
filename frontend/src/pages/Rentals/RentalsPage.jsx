@@ -555,183 +555,208 @@ export const RentalsPage = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {rentals.map((r) => {
-                const tenant = r.tenantAgreement || {};
                 const rentBack = r.rentBack || {};
-                const cleanPhone = tenant.tenantPhone ? tenant.tenantPhone.replace(/[^0-9]/g, '') : '';
-                const penalties = r.penaltyRecords || [];
+                const flat = r.flatId || {};
+                const customerName = r.customerName || r.ownerId?.name || flat.currentOwner?.name || r.tenantAgreement?.tenantName || 'Registered Customer';
+                const customerMobile = r.customerMobile || r.ownerId?.mobileNo || flat.currentOwner?.mobileNo || r.tenantAgreement?.tenantPhone || '';
+                const cleanPhone = customerMobile ? customerMobile.replace(/[^0-9]/g, '') : '';
+                
+                // Resolve Tower, Floor, Flat Number
+                const flatNumber = flat.flatNumber || '001';
+                const floorNumber = r.floorNum !== undefined ? r.floorNum : (flat.floor !== undefined ? flat.floor : (parseInt(flatNumber.replace(/\D/g, ''), 10) >= 100 ? Math.floor(parseInt(flatNumber.replace(/\D/g, ''), 10) / 100) : 0));
+                const towerName = r.towerName || r.projectId?.buildings?.[0]?.buildingName || 'Tower A';
+
+                const grossRent = rentBack.monthlyRent || r.tenantAgreement?.monthlyRent || 31000;
+                const tds = Math.round(grossRent * 0.1);
+                const netRent = grossRent - tds;
+                const tenure = rentBack.tenureMonths || 36;
+                const totalTenure = r.rentBackLedger?.totalTenureAmount || (netRent * tenure);
 
                 return (
                   <div
                     key={r._id}
                     className="g-card"
                     style={{
-                      padding: '18px',
+                      padding: '18px 20px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '12px',
-                      position: 'relative'
+                      gap: '14px',
+                      position: 'relative',
+                      borderRadius: '12px',
+                      border: '1.5px solid #e2e8f0',
+                      background: '#ffffff',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
                     }}
                   >
-                    {/* Header: Contract Code & Status */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827' }}>
-                            {r.contractCode || `RENT-${r._id.slice(-6).toUpperCase()}`}
-                          </h3>
-                          {r.isMultiUnit || (r.flatIds && r.flatIds.length > 1) ? (
-                            <span style={{
-                              fontSize: '0.68rem',
-                              background: '#f3e8ff',
-                              color: '#8b5cf6',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              fontWeight: '800',
-                              border: '1px solid #e9d5ff',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '3px'
-                            }}>
-                              <Building2 size={11} /> {r.flatIds?.length || r.leasedUnits?.length || r.totalUnitsCount || 2} UNITS BUNDLE
-                            </span>
-                          ) : null}
-                          {rentBack.enabled && (
-                            <span style={{
-                              fontSize: '0.68rem',
-                              background: '#e8f0fe',
-                              color: '#1a73e8',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              fontWeight: '800',
-                              border: '1px solid #d2e3fc'
-                            }}>
-                              RENT-BACK
-                            </span>
-                          )}
+                    {/* Header: Customer Name & Status */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                          width: '42px',
+                          height: '42px',
+                          borderRadius: '10px',
+                          background: '#f3e8ff',
+                          color: '#7c3aed',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: '800',
+                          fontSize: '1.1rem',
+                          border: '1px solid #ddd6fe'
+                        }}>
+                          <User size={20} />
                         </div>
-                        <div style={{ fontSize: '0.74rem', color: '#4b5563', marginTop: '2px', fontWeight: '500' }}>
-                          Created: {new Date(r.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        <div>
+                          <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>
+                            {customerName}
+                          </h3>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '3px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
+                              Agreement: <strong>{r.contractCode || `RENT-${r._id.slice(-6).toUpperCase()}`}</strong>
+                            </span>
+                            <span style={{
+                              fontSize: '0.68rem',
+                              background: '#ecfdf5',
+                              color: '#059669',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              fontWeight: '800',
+                              border: '1px solid #a7f3d0'
+                            }}>
+                              3-YEAR RENT-BACK
+                            </span>
+                          </div>
                         </div>
                       </div>
 
                       <StatusBadge status={r.status} />
                     </div>
 
-                    {/* Property Unit Details */}
+                    {/* Property Unit Specification (Tower, Floor, Flat No) */}
                     <div style={{
-                      background: '#f8f9fa',
-                      border: '1px solid #dadce0',
-                      padding: '8px 10px',
-                      borderRadius: '6px',
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      padding: '10px 14px',
+                      borderRadius: '8px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      fontSize: '0.78rem'
+                      flexWrap: 'wrap',
+                      gap: '12px'
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#111827', fontWeight: '700', flexWrap: 'wrap' }}>
-                        {r.isMultiUnit || (r.flatIds && r.flatIds.length > 1) ? (
-                          <>
-                            <Building2 size={14} color="#8b5cf6" />
-                            <span>
-                              Flats: {r.flatIds?.map((f) => f.flatNumber || f).join(', ') || (r.leasedUnits?.map((u) => u.flatNumber).join(', ')) || `Flat ${r.flatId?.flatNumber}`}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <Home size={14} color="#1a73e8" />
-                            <span>Flat {r.flatId?.flatNumber || 'Unit'}</span>
-                          </>
-                        )}
-                        {r.projectId?.projectName && (
-                          <span style={{ color: '#4b5563', fontWeight: '600' }}>• {r.projectId.projectName}</span>
-                        )}
-                      </div>
-                      <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '600' }}>
-                        Due: {tenant.rentDueDay ? `Day ${tenant.rentDueDay}` : '1st of month'}
-                      </span>
-                    </div>
-
-                    {/* Tenant & Rent Breakdown */}
-                    <div style={{
-                      background: '#f8f9fa',
-                      border: '1px solid #dadce0',
-                      padding: '10px 12px',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '5px',
-                      fontSize: '0.78rem'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: '#4b5563', fontWeight: '600' }}>Tenant:</span>
-                        <strong style={{ color: '#111827' }}>{tenant.tenantName || 'Not Assigned'}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: '#4b5563', fontWeight: '600' }}>Monthly Rent:</span>
-                        <strong style={{ color: '#137333', fontSize: '0.88rem' }}>{formatINR(tenant.monthlyRent)}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: '#4b5563', fontWeight: '600' }}>Deposit Held:</span>
-                        <span style={{ color: '#111827', fontWeight: '700' }}>{formatINR(tenant.depositAmount)}</span>
-                      </div>
-                      {rentBack.enabled && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #dadce0', paddingTop: '4px', marginTop: '2px' }}>
-                          <span style={{ color: '#8b5cf6', fontWeight: '700' }}>Owner Payout:</span>
-                          <strong style={{ color: '#8b5cf6' }}>{formatINR(rentBack.monthlyRent)}</strong>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.86rem', color: '#0f172a', fontWeight: '800' }}>
+                          <Home size={16} color="#2563eb" />
+                          <span>Flat {flatNumber}</span>
                         </div>
-                      )}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: '#334155', fontWeight: '700' }}>
+                          <Building2 size={15} color="#7c3aed" />
+                          <span>{towerName}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: '#475569', fontWeight: '600' }}>
+                          <span>Floor Level: <strong>Floor {floorNumber}</strong></span>
+                        </div>
+                        <div style={{ fontSize: '0.76rem', color: '#64748b', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px' }}>
+                          {flat.bhkType || 'Service Apartment'}
+                        </div>
+                      </div>
+
+                      <div style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: '600' }}>
+                        Payout Due: <strong style={{ color: '#0f172a' }}>Day {rentBack.rentDueDay || r.tenantAgreement?.rentDueDay || 25} of month</strong>
+                      </div>
                     </div>
 
-                    {/* Direct Contact Actions */}
-                    {tenant.tenantPhone && (
+                    {/* Financial Payout Breakdown */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                      gap: '10px',
+                      background: '#fcfcfd',
+                      border: '1px solid #f1f5f9',
+                      padding: '12px',
+                      borderRadius: '8px'
+                    }}>
+                      <div>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Gross Monthly Rent</span>
+                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#7c3aed', marginTop: '2px' }}>
+                          {formatINR(grossRent)} <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>/ mo</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>TDS Deducted (10%)</span>
+                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ef4444', marginTop: '2px' }}>
+                          - {formatINR(tds)}
+                        </div>
+                      </div>
+
+                      <div>
+                        <span style={{ fontSize: '0.72rem', color: '#047857', fontWeight: '700', textTransform: 'uppercase' }}>Net Disbursed to Owner</span>
+                        <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#16a34a', marginTop: '2px' }}>
+                          {formatINR(netRent)} <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>/ mo</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>36-Mo Commitment</span>
+                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+                          {formatINR(totalTenure)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Customer Direct Contact Actions */}
+                    {customerMobile && (
                       <div style={{
                         display: 'flex',
                         gap: '8px',
-                        background: '#f8f9fa',
-                        padding: '6px 8px',
+                        background: '#f8fafc',
+                        padding: '6px 10px',
                         borderRadius: '6px',
-                        border: '1px solid #dadce0'
+                        border: '1px solid #e2e8f0'
                       }}>
                         <a
-                          href={`tel:${tenant.tenantPhone}`}
+                          href={`tel:${customerMobile}`}
                           style={{
                             flex: 1,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '5px',
-                            padding: '5px',
-                            background: '#e8f0fe',
-                            color: '#1a73e8',
-                            borderRadius: '4px',
+                            padding: '6px',
+                            background: '#ffffff',
+                            color: '#0284c7',
+                            borderRadius: '5px',
+                            border: '1px solid #cbd5e1',
                             textDecoration: 'none',
-                            fontSize: '0.75rem',
+                            fontSize: '0.76rem',
                             fontWeight: '700'
                           }}
                         >
-                          <User size={12} /> {tenant.tenantPhone}
+                          <User size={13} /> {customerMobile}
                         </a>
 
                         <a
                           href={`https://wa.me/${cleanPhone}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          title="WhatsApp Tenant"
+                          title="WhatsApp Customer"
                           style={{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '4px',
-                            padding: '5px 10px',
-                            background: '#e6f4ea',
-                            color: '#137333',
-                            borderRadius: '4px',
+                            padding: '6px 12px',
+                            background: '#ecfdf5',
+                            color: '#059669',
+                            borderRadius: '5px',
+                            border: '1px solid #a7f3d0',
                             textDecoration: 'none',
-                            fontSize: '0.75rem',
+                            fontSize: '0.76rem',
                             fontWeight: '700'
                           }}
                         >
-                          <MessageSquare size={12} /> WhatsApp
+                          <MessageSquare size={13} /> WhatsApp
                         </a>
                       </div>
                     )}
@@ -741,55 +766,82 @@ export const RentalsPage = () => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      borderTop: '1px solid #dadce0',
+                      borderTop: '1px solid #f1f5f9',
                       paddingTop: '10px',
-                      gap: '8px'
+                      gap: '8px',
+                      flexWrap: 'wrap'
                     }}>
                       <button
                         type="button"
                         onClick={() => {
-                          setQuickMsgRental(r);
-                          setIsQuickMsgModalOpen(true);
+                          setLedgerContract(r);
+                          setIsLedgerModalOpen(true);
                         }}
                         style={{
-                          padding: '6px 12px',
-                          background: '#e6f4ea',
-                          border: '1px solid #ceead6',
-                          color: '#137333',
-                          fontWeight: '700',
-                          borderRadius: '6px',
-                          fontSize: '0.76rem',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <Zap size={13} /> Send Notice
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedContract(r);
-                          setIsDetailModalOpen(true);
-                        }}
-                        style={{
-                          padding: '6px 14px',
-                          background: '#1a73e8',
-                          color: '#ffffff',
+                          padding: '7px 14px',
+                          background: '#ecfdf5',
+                          border: '1px solid #a7f3d0',
+                          color: '#047857',
                           fontWeight: '700',
                           borderRadius: '6px',
                           fontSize: '0.78rem',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '5px',
-                          cursor: 'pointer',
-                          border: 'none'
+                          gap: '6px',
+                          cursor: 'pointer'
                         }}
                       >
-                        Manage Lease <ArrowRight size={14} />
+                        <BookOpen size={14} /> 36-Mo Ledger Passbook
                       </button>
+
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setQuickMsgRental(r);
+                            setIsQuickMsgModalOpen(true);
+                          }}
+                          style={{
+                            padding: '7px 12px',
+                            background: '#f8fafc',
+                            border: '1px solid #cbd5e1',
+                            color: '#334155',
+                            fontWeight: '700',
+                            borderRadius: '6px',
+                            fontSize: '0.76rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Zap size={13} /> Send Notice
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedContract(r);
+                            setIsDetailModalOpen(true);
+                          }}
+                          style={{
+                            padding: '7px 16px',
+                            background: '#2563eb',
+                            color: '#ffffff',
+                            fontWeight: '700',
+                            borderRadius: '6px',
+                            fontSize: '0.78rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            cursor: 'pointer',
+                            border: 'none',
+                            boxShadow: '0 1px 3px rgba(37,99,235,0.3)'
+                          }}
+                        >
+                          View Contract <ArrowRight size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -1151,23 +1203,29 @@ export const RentalsPage = () => {
                           const paidMonths = (ledger.entries || []).filter((e) => e.status === 'paid' || (e.netAmountPaid > 0)).length;
                           const progress = Math.round((paidMonths / 36) * 100);
 
+                          const flatNumber = r.flatId?.flatNumber || '001';
+                          const floorNumber = r.floorNum !== undefined ? r.floorNum : (r.flatId?.floor !== undefined ? r.flatId.floor : (parseInt(flatNumber.replace(/\D/g, ''), 10) >= 100 ? Math.floor(parseInt(flatNumber.replace(/\D/g, ''), 10) / 100) : 0));
+                          const towerName = r.towerName || r.projectId?.buildings?.[0]?.buildingName || 'Tower A';
+                          const customerName = r.customerName || r.ownerId?.name || r.flatId?.currentOwner?.name || rb.ownerName || 'Property Owner';
+                          const customerMobile = r.customerMobile || r.ownerId?.mobileNo || r.flatId?.currentOwner?.mobileNo || rb.ownerPhone || 'On File';
+
                           return (
                             <tr key={r._id}>
                               <td>
                                 <div style={{ fontWeight: '800', color: '#111827', fontSize: '0.95rem' }}>
-                                  Flat {r.flatId?.flatNumber || '001'}
+                                  Flat {flatNumber}
                                 </div>
-                                <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                                <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
                                   <Building2 size={12} />
-                                  {r.projectId?.projectName || 'Krishna Valley'}
+                                  {towerName} • Floor {floorNumber}
                                 </div>
                               </td>
                               <td>
                                 <div style={{ fontWeight: '700', color: '#111827' }}>
-                                  {r.ownerId?.name || rb.ownerName || 'Property Owner'}
+                                  {customerName}
                                 </div>
                                 <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>
-                                  {r.ownerId?.mobileNo || 'Contact on File'}
+                                  {customerMobile}
                                 </div>
                               </td>
                               <td style={{ fontWeight: '800', color: '#111827', fontSize: '0.92rem' }}>

@@ -97,21 +97,27 @@ export const RentalDetailModal = ({
     }
   };
 
+  const customerName = contract.customerName || contract.ownerId?.name || contract.flatId?.currentOwner?.name || contract.tenantAgreement?.tenantName || 'Customer';
+  const customerMobile = contract.customerMobile || contract.ownerId?.mobileNo || contract.flatId?.currentOwner?.mobileNo || '';
+  const flatNumber = contract.flatId?.flatNumber || '001';
+  const floorNumber = contract.floorNum !== undefined ? contract.floorNum : (contract.flatId?.floor !== undefined ? contract.flatId.floor : 0);
+  const towerName = contract.towerName || contract.projectId?.buildings?.[0]?.buildingName || 'Tower A';
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Rental Lifecycle: Flat ${contract.flatId?.flatNumber || 'Unit'} (${contract.tenantId?.name || 'Tenant'})`}
+      title={`Rental Agreement: Flat ${flatNumber} — ${customerName}`}
       maxWidth="880px"
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         
-        {/* Top Hero Flow Card: Owner -> ERP -> Tenant */}
+        {/* Top Hero Card: Customer, Tower, Floor, Flat */}
         <div style={{
-          background: '#f8f9fa',
-          border: '1px solid #dadce0',
-          borderRadius: 'var(--radius-sm)',
-          padding: '14px 18px',
+          background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
+          border: '1.5px solid #e2e8f0',
+          borderRadius: '10px',
+          padding: '16px 20px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -120,46 +126,35 @@ export const RentalDetailModal = ({
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827' }}>
-                {contract.isMultiUnit || (contract.flatIds && contract.flatIds.length > 1) ? (
-                  `Flats: ${contract.flatIds?.map((f) => f.flatNumber || f).join(', ') || contract.leasedUnits?.map((u) => u.flatNumber).join(', ') || contract.flatId?.flatNumber}`
-                ) : (
-                  `Flat ${contract.flatId?.flatNumber || 'N/A'}`
-                )}
+              <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>
+                {customerName}
               </span>
               <StatusBadge status={contract.status} />
-              {contract.isMultiUnit && (
-                <span style={{ fontSize: '0.7rem', background: '#f3e8ff', color: '#8b5cf6', padding: '2px 8px', borderRadius: '4px', fontWeight: '800', border: '1px solid #e9d5ff' }}>
-                  {contract.flatIds?.length || contract.leasedUnits?.length || contract.totalUnitsCount || 2} Units Multi-Lease
-                </span>
-              )}
-              {rentBack.enabled && (
-                <span style={{ fontSize: '0.7rem', background: '#e8f0fe', color: '#1a73e8', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
-                  Rent-Back Enabled
-                </span>
-              )}
+              <span style={{ fontSize: '0.72rem', background: '#ecfdf5', color: '#059669', padding: '3px 8px', borderRadius: '4px', fontWeight: '800', border: '1px solid #a7f3d0' }}>
+                3-YEAR RENT-BACK
+              </span>
             </div>
 
-            {/* Parties Linkage */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#374151', marginTop: '6px', flexWrap: 'wrap' }}>
-              <span style={{ color: '#1a73e8', fontWeight: '600' }}>
-                {contract.isMultiUnit && contract.leasedUnits?.length > 1 ? `${contract.leasedUnits.length} Flat Owners` : `Owner: ${contract.ownerId?.name || 'Owner'}`}
+            {/* Property Unit Specification (Tower, Floor, Flat No) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.84rem', color: '#334155', marginTop: '6px', flexWrap: 'wrap', fontWeight: '700' }}>
+              <span style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Home size={15} /> Flat {flatNumber}
               </span>
-              <ArrowRight size={13} color="#9ca3af" />
-              <span style={{ color: '#111827', fontWeight: '700' }}>
-                Krishna Valley ERP
+              <span>•</span>
+              <span style={{ color: '#7c3aed', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Building2 size={15} /> {towerName}
               </span>
-              <ArrowRight size={13} color="#9ca3af" />
-              <span style={{ color: '#137333', fontWeight: '700' }}>
-                Tenant: {contract.tenantId?.name || 'Tenant'}
+              <span>•</span>
+              <span style={{ color: '#475569' }}>
+                Floor Level: Floor {floorNumber}
               </span>
             </div>
           </div>
 
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>NET MONTHLY SPREAD</div>
-            <div style={{ fontSize: '1.3rem', fontWeight: '800', color: netMonthlySpread >= 0 ? '#10b981' : '#ef4444' }}>
-              +{formatINR(netMonthlySpread)} / mo
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Monthly Guaranteed Rent</div>
+            <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#16a34a' }}>
+              {formatINR(rentBack.monthlyRent || tenantAgreement.monthlyRent || 31000)} <span style={{ fontSize: '0.8rem', fontWeight: '600' }}>/ mo</span>
             </div>
           </div>
         </div>
