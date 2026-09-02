@@ -9,8 +9,7 @@ const SalesLeadSchema = new mongoose.Schema(
     leadId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Lead",
-      required: true,
-      unique: true,
+      required: false,
       index: true,
     },
 

@@ -666,11 +666,21 @@ export const importFlatsFromExcel = async (req, res) => {
           totalTenureAmount = monthlyRent * tenure;
         }
 
+        const rawRentDueDay = getRowVal(row, 'rent due day', 'due day', 'due date', 'actual due date', 'due_date');
+        const parsedDueDay = rawRentDueDay ? parseInt(String(rawRentDueDay).replace(/\D/g, ''), 10) : 25;
+        const rentDueDay = parsedDueDay || 25;
+
+        const bankName = getRowVal(row, 'bank name', 'bank');
+        const bankBranch = getRowVal(row, 'bank branch', 'branch');
+        const ifscCode = getRowVal(row, 'ifsc code', 'ifsc');
+        const accountNumber = getRowVal(row, 'account number', 'account no', 'account no.', 'ac no');
+        const panNumber = getRowVal(row, 'pan number', 'pan', 'pan no');
+
         const rawBhk = getRowVal(row, 'flat type', 'bhk type', 'unit type', 'type', 'bhk');
-        const bhkType = String(rawBhk || '2BHK').trim();
+        const bhkType = String(rawBhk || 'Service Apartment').trim();
 
         const rawArea = getRowVal(row, 'carpet area', 'area', 'sqft', 'super builtup area');
-        const carpetArea = cleanNumeric(rawArea, 950);
+        const carpetArea = cleanNumeric(rawArea, 850);
 
         // Previous Payments & Deal Price Made by Buyer
         const rawDealPrice = getRowVal(row, 'agreed deal price', 'deal price', 'sale price', 'total price', 'flat price', 'base price');
@@ -768,6 +778,13 @@ export const importFlatsFromExcel = async (req, res) => {
               name: ownerName,
               mobileNo: ownerMobile,
               email: `${ownerName.toLowerCase().replace(/[^a-z0-9]/g, '.')}.${flatNumber}@krishnavalley.com`,
+              panNumber: panNumber || '',
+              bankingDetails: {
+                bankName: bankName || '',
+                branchName: bankBranch || '',
+                accountNumber: accountNumber || '',
+                ifscCode: ifscCode || ''
+              },
               ownerDetails: {
                 propertyIds: [flat._id],
                 ownershipType: 'individual',
@@ -781,8 +798,16 @@ export const importFlatsFromExcel = async (req, res) => {
             if (!ownerCustomer.ownerDetails.propertyIds) ownerCustomer.ownerDetails.propertyIds = [];
             if (!ownerCustomer.ownerDetails.propertyIds.some((pId) => pId.toString() === flat._id.toString())) {
               ownerCustomer.ownerDetails.propertyIds.push(flat._id);
-              await ownerCustomer.save();
             }
+            if (bankName || accountNumber) {
+              if (!ownerCustomer.bankingDetails) ownerCustomer.bankingDetails = {};
+              if (bankName) ownerCustomer.bankingDetails.bankName = bankName;
+              if (bankBranch) ownerCustomer.bankingDetails.branchName = bankBranch;
+              if (ifscCode) ownerCustomer.bankingDetails.ifscCode = ifscCode;
+              if (accountNumber) ownerCustomer.bankingDetails.accountNumber = accountNumber;
+            }
+            if (panNumber) ownerCustomer.panNumber = panNumber;
+            await ownerCustomer.save();
           }
 
           // Ensure Lead & SalesLead exist with full payment & booking history
@@ -934,7 +959,7 @@ export const importFlatsFromExcel = async (req, res) => {
                 endDate: rentalEndDate,
                 monthlyRent,
                 securityDeposit: monthlyRent * 2,
-                rentDueDay: 5,
+                rentDueDay,
                 status: 'active'
               },
               tenantAgreement: {
@@ -942,7 +967,7 @@ export const importFlatsFromExcel = async (req, res) => {
                 startDate: rentalStartDate,
                 endDate: rentalEndDate,
                 monthlyRent,
-                rentDueDay: 5,
+                rentDueDay,
                 status: 'active'
               },
               securityDeposit: {
@@ -1018,7 +1043,7 @@ export const importFlatsFromExcel = async (req, res) => {
             startDate: rentalStartDate,
             endDate: rentalEndDate,
             tenureMonths: tenure,
-            dueDayOfMonth: 25,
+            dueDayOfMonth: rentDueDay,
             guaranteedMonthlyRent: monthlyRent,
             total36MonthCommitment: totalCommitment,
             totalDisbursedToOwner: 0,
@@ -1503,8 +1528,10 @@ export const importOwnershipHistoryFromExcel = async (req, res) => {
 
     if (req.file && req.file.buffer) {
       const workbook = XLSX.read(req.file.buffer, { type: 'buffer', cellDates: true });
-      const firstSheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[firstSheetName];
+      const historySheetName = workbook.SheetNames.find(
+        (n) => n.toLowerCase().includes('history') || n.toLowerCase().includes('resale') || n.toLowerCase().includes('ownership')
+      ) || workbook.SheetNames[0];
+      const sheet = workbook.Sheets[historySheetName];
       rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
     } else if (req.body.items && Array.isArray(req.body.items)) {
       rows = req.body.items;
