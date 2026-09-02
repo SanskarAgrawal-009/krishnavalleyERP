@@ -639,10 +639,11 @@ export const importFlatsFromExcel = async (req, res) => {
         const buildingName = String(rawBuilding || 'Tower A').trim();
 
         const rawOwner = getRowVal(row, 'owner name', 'owner_name', 'owner', 'buyer name', 'customer name', 'name');
-        const ownerName = String(rawOwner).trim();
+        const ownerName = String(rawOwner || '').trim();
+        const hasOwner = !!ownerName && !ownerName.toLowerCase().includes('vacant');
 
         const rawPhone = getRowVal(row, 'owner mobile', 'owner phone', 'mobile', 'phone', 'contact', 'mobile no');
-        let ownerMobile = String(rawPhone).trim();
+        let ownerMobile = String(rawPhone || '').trim();
 
         const rawAgreementDate = getRowVal(row, 'date of aggreement', 'date of agreement', 'agreement date', 'booking date', 'agreement_date');
         const agreementDate = parseExcelDate(rawAgreementDate);
