@@ -78,6 +78,23 @@ export const FlatDetailModal = ({
     return `₹${Number(val).toLocaleString('en-IN')}`;
   };
 
+  const formatAddress = (addr) => {
+    if (!addr) return 'On File with Krishna Valley Registry';
+    if (typeof addr === 'string') return addr.trim() || 'On File with Krishna Valley Registry';
+    if (typeof addr === 'object') {
+      const parts = [
+        addr.addressLine1,
+        addr.addressLine2,
+        addr.locality,
+        addr.city,
+        addr.state,
+        addr.pincode
+      ].filter(Boolean);
+      return parts.length > 0 ? parts.join(', ') : 'On File with Krishna Valley Registry';
+    }
+    return 'On File with Krishna Valley Registry';
+  };
+
   const formatDate = (dateStr) => {
     if (!dateStr) return 'N/A';
     try {
@@ -148,7 +165,7 @@ export const FlatDetailModal = ({
         name: o.name || s.name || '',
         mobileNo: o.mobileNo || s.mobileNo || '',
         email: o.email || s.email || '',
-        address: o.address || (o.ownerDetails && o.ownerDetails.permanentAddress) || '',
+        address: typeof o.address === 'string' ? o.address : (o.address?.addressLine1 ? [o.address.addressLine1, o.address.city, o.address.state, o.address.pincode].filter(Boolean).join(', ') : ((o.ownerDetails && typeof o.ownerDetails.permanentAddress === 'string' ? o.ownerDetails.permanentAddress : ''))),
         panNumber: o.panNumber || o.panNo || (s.kyc && s.kyc.panNumber) || '',
         aadhaarNumber: o.aadhaarNumber || o.aadhaarNo || (s.kyc && s.kyc.aadhaarNumber) || '',
         ownershipType: (o.ownerDetails && o.ownerDetails.ownershipType) || o.ownershipType || 'individual',
@@ -1165,7 +1182,7 @@ export const FlatDetailModal = ({
                         <div style={{ gridColumn: 'span 2' }}>
                           <span style={{ color: '#64748b' }}>Permanent Address:</span>
                           <div style={{ fontWeight: '600', color: '#0f172a', marginTop: '2px' }}>
-                            {owner?.address || owner?.ownerDetails?.permanentAddress || 'On File with Krishna Valley Registry'}
+                            {formatAddress(owner?.address || owner?.ownerDetails?.permanentAddress)}
                           </div>
                         </div>
                       </div>
