@@ -209,12 +209,28 @@ export const getFlatById = async (req, res) => {
       actualPossession: salesLead?.possession || null
     };
 
-    // Resolve Owner Details
-    let resolvedOwner = ownerCustomer;
-    if (!resolvedOwner && activeRental?.ownerId) {
+    // Resolve Owner Details (Prioritize directly saved flat.currentOwner)
+    let resolvedOwner = null;
+    const flatCurrentOwner = flat.currentOwner ? (flat.currentOwner.toObject ? flat.currentOwner.toObject() : flat.currentOwner) : null;
+    const custOwner = ownerCustomer ? (ownerCustomer.toObject ? ownerCustomer.toObject() : ownerCustomer) : null;
+
+    if (flatCurrentOwner && (flatCurrentOwner.name || flatCurrentOwner.mobileNo)) {
+      resolvedOwner = {
+        ...(custOwner || {}),
+        ...flatCurrentOwner,
+        bankDetails: {
+          ...(custOwner?.ownerDetails?.bankDetails || custOwner?.bankDetails || {}),
+          ...(flatCurrentOwner.bankDetails || {})
+        }
+      };
+    } else if (custOwner) {
+      resolvedOwner = {
+        ...custOwner,
+        bankDetails: custOwner.ownerDetails?.bankDetails || custOwner.bankDetails || {}
+      };
+    } else if (activeRental?.ownerId) {
       resolvedOwner = typeof activeRental.ownerId === 'object' ? activeRental.ownerId : await Customer.findById(activeRental.ownerId);
-    }
-    if (!resolvedOwner && salesLead) {
+    } else if (salesLead) {
       resolvedOwner = {
         name: salesLead.name,
         mobileNo: salesLead.mobileNo,
@@ -300,40 +316,22 @@ export const createFlat = async (req, res) => {
       });
     }
 
-    const calculatedFloor = floor !== undefined && floor !== null ? Number(floor) : inferFloorFromFlat(flatNumber);
-
-    const flat = new Flat({
+    const newFlat = new Flat({
       flatNumber,
       buildingId,
       projectId,
-      floor: calculatedFloor,
+      floor: floor !== undefined ? floor : inferFloorFromFlat(flatNumber),
       bhkType: bhkType || '2BHK',
-      carpetArea: carpetArea ? Number(carpetArea) : 950,
-      basePrice: basePrice ? Number(basePrice) : 4500000,
+      carpetArea: carpetArea || 950,
+      basePrice: basePrice || 4500000,
       facing: facing || 'East',
       status: status || 'available',
-      buybackCount: buybackCount ? Number(buybackCount) : 0,
-      takenForRental: takenForRental === true || takenForRental === 'true',
-      blueprints: []
+      buybackCount: buybackCount || 0,
+      takenForRental: takenForRental || false
     });
 
-    const savedFlat = await flat.save();
-
-    // Push flat _id into the project's building.flats array and adjust floor count
-    const project = await Project.findById(projectId);
-    if (project) {
-      const bld = project.buildings.id(buildingId);
-      if (bld) {
-        bld.flats.push(savedFlat._id);
-        if (calculatedFloor > (bld.numberOfFloors || 0)) {
-          bld.numberOfFloors = calculatedFloor;
-        }
-        await project.save();
-      }
-    }
-
-    console.log(`[MongoDB] Flat "${flatNumber}" (Floor ${calculatedFloor}) created and linked to building ${buildingId} in project ${projectId}`);
-    return res.status(201).json({ success: true, data: savedFlat });
+    await newFlat.save();
+    return res.status(201).json({ success: true, data: newFlat });
   } catch (error) {
     console.error('Error creating flat in MongoDB:', error);
     return res.status(500).json({ success: false, message: error.message });
@@ -364,7 +362,7 @@ export const updateFlat = async (req, res) => {
     if (data.takenForRental !== undefined) flat.takenForRental = Boolean(data.takenForRental);
 
     // 2. Update Owner Details (and sync Customer collection)
-    if (data.currentOwner || data.ownerName || data.ownerMobile || data.name || data.mobileNo) {
+    if (data.currentOwner || data.ownerName || data.ownerMobile || data.name || data.mobileNo || data.bankName || data.accountNo || data.accountNumber) {
       const ownerData = data.currentOwner || {
         name: data.ownerName || data.name,
         mobileNo: data.ownerMobile || data.mobileNo,
@@ -378,15 +376,26 @@ export const updateFlat = async (req, res) => {
       if (!flat.currentOwner) flat.currentOwner = {};
       Object.assign(flat.currentOwner, ownerData);
 
-      if (data.bankName || data.accountNo || data.ifsc || data.bankBranch) {
+      const bName = data.bankName || data.currentOwner?.bankDetails?.bankName;
+      const bBranch = data.bankBranch || data.branch || data.currentOwner?.bankDetails?.branch;
+      const bAcc = data.accountNumber || data.accountNo || data.currentOwner?.bankDetails?.accountNumber || data.currentOwner?.bankDetails?.accountNo;
+      const bIfsc = data.ifscCode || data.ifsc || data.currentOwner?.bankDetails?.ifscCode || data.currentOwner?.bankDetails?.ifsc;
+
+      if (bName || bBranch || bAcc || bIfsc) {
         if (!flat.currentOwner.bankDetails) flat.currentOwner.bankDetails = {};
-        if (data.bankName) flat.currentOwner.bankDetails.bankName = data.bankName;
-        if (data.bankBranch) flat.currentOwner.bankDetails.branch = data.bankBranch;
-        if (data.accountNo) flat.currentOwner.bankDetails.accountNumber = data.accountNo;
-        if (data.ifsc) flat.currentOwner.bankDetails.ifscCode = data.ifsc;
+        if (bName) flat.currentOwner.bankDetails.bankName = bName;
+        if (bBranch) flat.currentOwner.bankDetails.branch = bBranch;
+        if (bAcc) {
+          flat.currentOwner.bankDetails.accountNumber = bAcc;
+          flat.currentOwner.bankDetails.accountNo = bAcc;
+        }
+        if (bIfsc) {
+          flat.currentOwner.bankDetails.ifscCode = bIfsc;
+          flat.currentOwner.bankDetails.ifsc = bIfsc;
+        }
       }
 
-      // Also sync Customer record if mobileNo or customerId exists
+      // Also sync / create Customer record
       let customer = null;
       if (flat.currentOwner.customerId) {
         customer = await Customer.findById(flat.currentOwner.customerId);
@@ -395,24 +404,55 @@ export const updateFlat = async (req, res) => {
         customer = await Customer.findOne({ mobileNo: flat.currentOwner.mobileNo });
       }
 
-      if (customer) {
-        if (ownerData.name) customer.name = ownerData.name;
-        if (ownerData.mobileNo) customer.mobileNo = ownerData.mobileNo;
-        if (ownerData.email) customer.email = ownerData.email;
-        if (ownerData.address) customer.address = ownerData.address;
-        if (ownerData.panNumber) customer.panNumber = ownerData.panNumber;
-        if (ownerData.aadhaarNumber) customer.aadhaarNumber = ownerData.aadhaarNumber;
-        if (data.bankName || data.accountNo || data.ifsc) {
-          if (!customer.ownerDetails) customer.ownerDetails = {};
-          if (!customer.ownerDetails.bankDetails) customer.ownerDetails.bankDetails = {};
-          if (data.bankName) customer.ownerDetails.bankDetails.bankName = data.bankName;
-          if (data.bankBranch) customer.ownerDetails.bankDetails.branch = data.bankBranch;
-          if (data.accountNo) customer.ownerDetails.bankDetails.accountNumber = data.accountNo;
-          if (data.ifsc) customer.ownerDetails.bankDetails.ifscCode = data.ifsc;
+      if (!customer && (flat.currentOwner.name || flat.currentOwner.mobileNo)) {
+        customer = new Customer({
+          customerType: 'owner',
+          name: flat.currentOwner.name || 'Property Owner',
+          mobileNo: flat.currentOwner.mobileNo || `+91-${Date.now().toString().slice(-10)}`,
+          email: flat.currentOwner.email || '',
+          panNumber: flat.currentOwner.panNumber || '',
+          aadhaarNumber: flat.currentOwner.aadhaarNumber || '',
+          address: flat.currentOwner.address || '',
+          ownerDetails: {
+            propertyIds: [flat._id],
+            ownershipType: flat.currentOwner.ownershipType || 'individual',
+            ownershipPercentage: 100,
+            bankDetails: {
+              bankName: bName || '',
+              branch: bBranch || '',
+              accountNumber: bAcc || '',
+              ifscCode: bIfsc || ''
+            }
+          },
+          status: 'active'
+        });
+        await customer.save();
+        flat.currentOwner.customerId = customer._id;
+      } else if (customer) {
+        if (flat.currentOwner.name) customer.name = flat.currentOwner.name;
+        if (flat.currentOwner.mobileNo) customer.mobileNo = flat.currentOwner.mobileNo;
+        if (flat.currentOwner.email) customer.email = flat.currentOwner.email;
+        if (flat.currentOwner.address) customer.address = flat.currentOwner.address;
+        if (flat.currentOwner.panNumber) customer.panNumber = flat.currentOwner.panNumber;
+        if (flat.currentOwner.aadhaarNumber) customer.aadhaarNumber = flat.currentOwner.aadhaarNumber;
+        
+        if (!customer.ownerDetails) customer.ownerDetails = {};
+        if (!customer.ownerDetails.propertyIds) customer.ownerDetails.propertyIds = [];
+        if (!customer.ownerDetails.propertyIds.map(p => p.toString()).includes(flat._id.toString())) {
+          customer.ownerDetails.propertyIds.push(flat._id);
         }
+        if (!customer.ownerDetails.bankDetails) customer.ownerDetails.bankDetails = {};
+        if (bName) customer.ownerDetails.bankDetails.bankName = bName;
+        if (bBranch) customer.ownerDetails.bankDetails.branch = bBranch;
+        if (bAcc) customer.ownerDetails.bankDetails.accountNumber = bAcc;
+        if (bIfsc) customer.ownerDetails.bankDetails.ifscCode = bIfsc;
+
         await customer.save();
         flat.currentOwner.customerId = customer._id;
       }
+
+      flat.markModified('currentOwner');
+      flat.markModified('currentOwner.bankDetails');
     }
 
     // 3. Update Sales Allotment (and sync SalesLead collection)
@@ -444,6 +484,8 @@ export const updateFlat = async (req, res) => {
           }
         }
       );
+
+      flat.markModified('salesDetails');
     }
 
     // 4. Update Rental / Rent-Back Details (and sync RentalManagement collection)
@@ -486,10 +528,14 @@ export const updateFlat = async (req, res) => {
           }
         }
       );
+
+      flat.markModified('rentalDetails');
     }
 
     await flat.save();
-    return res.json({ success: true, message: 'Flat and all associated records updated successfully', data: flat });
+
+    const populatedFlat = await Flat.findById(flat._id).populate('projectId', 'projectName projectCode');
+    return res.json({ success: true, message: 'Flat and all associated records updated successfully', data: populatedFlat });
   } catch (error) {
     console.error('Error updating flat in MongoDB:', error);
     return res.status(500).json({ success: false, message: error.message });

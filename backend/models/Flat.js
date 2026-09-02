@@ -171,6 +171,14 @@ const FlatSchema = new mongoose.Schema(
         enum: ['individual', 'joint', 'corporate'],
         default: 'individual',
       },
+      bankDetails: {
+        bankName: String,
+        branch: String,
+        accountNumber: String,
+        accountNo: String,
+        ifscCode: String,
+        ifsc: String,
+      },
     },
 
     // Ownership Trail (Past / Old Owners Archive)

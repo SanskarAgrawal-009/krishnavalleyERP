@@ -169,10 +169,10 @@ export const FlatDetailModal = ({
         panNumber: o.panNumber || o.panNo || (s.kyc && s.kyc.panNumber) || '',
         aadhaarNumber: o.aadhaarNumber || o.aadhaarNo || (s.kyc && s.kyc.aadhaarNumber) || '',
         ownershipType: (o.ownerDetails && o.ownerDetails.ownershipType) || o.ownershipType || 'individual',
-        bankName: (o.bankDetails && o.bankDetails.bankName) || '',
-        bankBranch: (o.bankDetails && o.bankDetails.branch) || '',
-        accountNumber: (o.bankDetails && o.bankDetails.accountNo) || '',
-        ifscCode: (o.bankDetails && o.bankDetails.ifsc) || ''
+        bankName: (o.bankDetails && o.bankDetails.bankName) || o.bankName || '',
+        bankBranch: (o.bankDetails && (o.bankDetails.branch || o.bankDetails.bankBranch)) || o.bankBranch || o.branch || '',
+        accountNumber: (o.bankDetails && (o.bankDetails.accountNumber || o.bankDetails.accountNo)) || o.accountNumber || o.accountNo || '',
+        ifscCode: (o.bankDetails && (o.bankDetails.ifscCode || o.bankDetails.ifsc)) || o.ifscCode || o.ifsc || ''
       });
 
       setSalesForm({
@@ -204,7 +204,18 @@ export const FlatDetailModal = ({
     e?.preventDefault();
     setIsSavingSpecs(true);
     try {
-      const res = await projectService.updateFlat(flatId, specsForm);
+      const payload = {
+        flatNumber: specsForm.flatNumber,
+        floor: Number(specsForm.floor),
+        bhkType: specsForm.bhkType,
+        carpetArea: Number(specsForm.carpetArea),
+        superBuiltupArea: Number(specsForm.superBuiltupArea),
+        basePrice: Number(specsForm.basePrice),
+        facing: specsForm.facing,
+        status: specsForm.status,
+        takenForRental: specsForm.takenForRental
+      };
+      const res = await projectService.updateFlat(flatId, payload);
       if (res.data) {
         setFlatData(res.data);
         onEditFlat?.(res.data);
@@ -232,7 +243,15 @@ export const FlatDetailModal = ({
           address: ownerForm.address,
           panNumber: ownerForm.panNumber,
           aadhaarNumber: ownerForm.aadhaarNumber,
-          ownershipType: ownerForm.ownershipType
+          ownershipType: ownerForm.ownershipType,
+          bankDetails: {
+            bankName: ownerForm.bankName,
+            branch: ownerForm.bankBranch,
+            accountNumber: ownerForm.accountNumber,
+            accountNo: ownerForm.accountNumber,
+            ifscCode: ownerForm.ifscCode,
+            ifsc: ownerForm.ifscCode
+          }
         },
         ownerName: ownerForm.name,
         ownerMobile: ownerForm.mobileNo,
@@ -243,7 +262,9 @@ export const FlatDetailModal = ({
         bankName: ownerForm.bankName,
         bankBranch: ownerForm.bankBranch,
         accountNo: ownerForm.accountNumber,
-        ifsc: ownerForm.ifscCode
+        accountNumber: ownerForm.accountNumber,
+        ifsc: ownerForm.ifscCode,
+        ifscCode: ownerForm.ifscCode
       };
       const res = await projectService.updateFlat(flatId, payload);
       if (res.data) {
@@ -251,6 +272,7 @@ export const FlatDetailModal = ({
         onEditFlat?.(res.data);
         setToastMessage({ type: 'success', text: 'Owner details updated successfully!' });
         setIsEditingOwner(false);
+        loadFlatDetail();
       }
     } catch (err) {
       console.error('Error updating owner details:', err);
