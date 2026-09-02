@@ -179,7 +179,7 @@ export const getSalesReport = async (req, res) => {
 };
 
 // ========================================================
-// 2. RENTAL REPORT
+// 2. RENTAL REPORT (36-Month Guaranteed Rent-Back to Owners)
 // ========================================================
 export const getRentalReport = async (req, res) => {
   try {
@@ -187,72 +187,69 @@ export const getRentalReport = async (req, res) => {
     const filter = getProjectFilter(projectId, getDateFilter(dateRange, customStart, customEnd));
 
     const rentals = await RentalManagement.find(filter)
-      .populate('projectId', 'projectName projectCode')
+      .populate('projectId', 'projectName projectCode buildings')
       .populate('flatId', 'flatNumber floor')
-      .populate('ownerId', 'name mobileNo')
-      .populate('tenantId', 'name mobileNo')
+      .populate('ownerId', 'name mobileNo email')
       .sort({ createdAt: -1 });
 
-    let totalMonthlyTenantInflow = 0;
-    let totalMonthlyOwnerOutflow = 0;
-    let rentBackUnitsCount = 0;
-    let activeTenanciesCount = 0;
-    let totalSecurityDeposits = 0;
-    let totalLatePenalties = 0;
+    let totalMonthlyGrossPayouts = 0;
+    let totalMonthlyTdsDeducted = 0;
+    let totalMonthlyNetDisbursed = 0;
+    let total36MonthCommitment = 0;
+    let activeRentBackCount = 0;
 
     const register = rentals.map((r) => {
-      const isRentBack = Boolean(r.rentBack?.enabled || r.rentBack?.monthlyRent);
-      const tRent = r.monthlyTenantRent || r.tenantAgreement?.monthlyRent || 0;
-      const oRent = isRentBack ? (r.monthlyRentBack || r.rentBack?.monthlyRent || 0) : 0;
-      const deposit = r.depositAmount || r.tenantAgreement?.depositAmount || 0;
-      const netSpread = tRent - oRent;
+      const rentBack = r.rentBack || {};
+      const grossRent = Number(rentBack.monthlyRent) || 31000;
+      const isTdsEnabled = rentBack.applyTds !== false;
+      const tdsRate = isTdsEnabled ? ((Number(rentBack.tdsPercentage) >= 0 ? Number(rentBack.tdsPercentage) : 10) / 100) : 0;
+      const tds = Math.round(grossRent * tdsRate);
+      const netRent = grossRent - tds;
+      const tenure = Number(rentBack.tenureMonths) || 36;
+      const totalTenure = netRent * tenure;
 
-      totalMonthlyTenantInflow += tRent;
-      totalMonthlyOwnerOutflow += oRent;
-      totalSecurityDeposits += deposit;
+      totalMonthlyGrossPayouts += grossRent;
+      totalMonthlyTdsDeducted += tds;
+      totalMonthlyNetDisbursed += netRent;
+      total36MonthCommitment += totalTenure;
+      activeRentBackCount++;
 
-      if (isRentBack) rentBackUnitsCount++;
-      if (r.status === 'active' || r.allocation?.status === 'occupied') activeTenanciesCount++;
-
-      const penalties = (r.penaltyRecords || []).reduce((acc, p) => acc + (p.penaltyAmount || 0), 0);
-      totalLatePenalties += penalties;
+      const ownerName = r.ownerId?.name || r.customerName || 'Registered Owner';
+      const ownerPhone = r.ownerId?.mobileNo || r.customerMobile || '';
+      const towerName = r.towerName || r.projectId?.buildings?.[0]?.buildingName || 'Tower A';
+      const flatNumber = r.flatId?.flatNumber || '001';
 
       return {
         id: r._id,
-        contractCode: r.contractCode || r.contractNumber || r._id.toString().substring(0, 8),
+        contractCode: r.contractCode || `RENT-${r._id.toString().substring(0, 8).toUpperCase()}`,
         projectName: r.projectId?.projectName || 'Krishna Valley Residency',
-        flatNumber: r.flatId?.flatNumber || r.leasedUnits?.[0]?.flatNumber || 'N/A',
+        towerName,
+        flatNumber,
         status: r.status || 'active',
-        isRentBack: !!isRentBack,
-        tenantName: r.tenantId?.name || r.tenantAgreement?.tenantName || 'Tenant Contact',
-        tenantPhone: r.tenantId?.mobileNo || r.tenantAgreement?.tenantPhone || '',
-        ownerName: r.ownerId?.name || r.rentBack?.ownerName || 'Direct / Allottee',
-        monthlyTenantRent: tRent,
-        monthlyOwnerPayout: oRent,
-        netMonthlySpread: netSpread,
-        securityDeposit: deposit,
-        leaseStartDate: r.tenantAgreement?.startDate ? new Date(r.tenantAgreement.startDate).toLocaleDateString('en-IN') : 'Active',
-        leaseEndDate: r.tenantAgreement?.endDate ? new Date(r.tenantAgreement.endDate).toLocaleDateString('en-IN') : 'Open Lease',
-        rentDueDay: r.tenantAgreement?.rentDueDay ? `Day ${r.tenantAgreement.rentDueDay}` : '5th of month'
+        ownerName,
+        ownerPhone,
+        monthlyGrossRent: grossRent,
+        tdsDeducted: tds,
+        tdsPercentage: isTdsEnabled ? (rentBack.tdsPercentage || 10) : 0,
+        netMonthlyPayout: netRent,
+        total36MonthCommitment: totalTenure,
+        tenureMonths: tenure,
+        startDate: rentBack.startDate ? new Date(rentBack.startDate).toLocaleDateString('en-IN') : 'Active',
+        endDate: rentBack.endDate ? new Date(rentBack.endDate).toLocaleDateString('en-IN') : '36 Months',
+        rentDueDay: `Day ${rentBack.rentDueDay || 25} of month`
       };
     });
-
-    const netMonthlyProfit = totalMonthlyTenantInflow - totalMonthlyOwnerOutflow;
-    const grossRentalYield = totalMonthlyTenantInflow * 12;
 
     return res.json({
       success: true,
       data: {
         summary: {
           totalManagedUnits: rentals.length,
-          activeTenanciesCount,
-          rentBackUnitsCount,
-          totalMonthlyTenantInflow,
-          totalMonthlyOwnerOutflow,
-          netMonthlyProfit,
-          annualizedGrossYield: grossRentalYield,
-          totalSecurityDeposits,
-          totalLatePenalties
+          activeRentBackCount,
+          totalMonthlyGrossPayouts,
+          totalMonthlyTdsDeducted,
+          totalMonthlyNetDisbursed,
+          total36MonthCommitment
         },
         register
       }

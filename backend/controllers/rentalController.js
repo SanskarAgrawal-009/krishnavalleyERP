@@ -95,7 +95,7 @@ export const getOwnerByFlat = async (req, res) => {
   }
 };
 
-// Create a new Rental Contract (with optional Rent-Back & Multi-Flat Support)
+// Create a new 36-Month Guaranteed Rent-Back Contract
 export const createRentalContract = async (req, res) => {
   try {
     let {
@@ -103,29 +103,24 @@ export const createRentalContract = async (req, res) => {
       buildingId,
       flatId,
       flatIds,
-      leasedUnits,
       ownerId,
-      tenantId,
       rentBack,
-      allocation,
-      tenantAgreement,
-      securityDeposit,
       status,
       remarks
     } = req.body;
 
-    // Resolve flat list (support multi-flat or single flat)
+    // Resolve flat list
     const allFlatIds = Array.isArray(flatIds) && flatIds.length > 0 
       ? flatIds 
-      : (flatId ? [flatId] : (Array.isArray(leasedUnits) && leasedUnits.length > 0 ? leasedUnits.map(u => u.flatId) : []));
+      : (flatId ? [flatId] : []);
 
     const primaryFlatId = flatId || allFlatIds[0];
-    const primaryOwnerId = ownerId || (Array.isArray(leasedUnits) && leasedUnits[0]?.ownerId) || null;
+    const primaryOwnerId = ownerId || null;
 
-    if (allFlatIds.length === 0 || !primaryOwnerId) {
+    if (!primaryFlatId || !primaryOwnerId) {
       return res.status(400).json({
         success: false,
-        message: 'At least one flat and registered owner are required'
+        message: 'Flat unit and registered property owner are required'
       });
     }
 
@@ -148,27 +143,14 @@ export const createRentalContract = async (req, res) => {
       });
     }
 
-    // Prepare deposit calculations
-    const tenantReq = Number(securityDeposit?.tenantDeposit?.requiredAmount) || 0;
-    const tenantPaid = Number(securityDeposit?.tenantDeposit?.paidAmount) || 0;
-    const tenantOut = Math.max(0, tenantReq - tenantPaid);
-    const tenantStatus = tenantOut === 0 && tenantReq > 0 ? 'paid' : (tenantPaid > 0 ? 'partially_paid' : 'pending');
+    const grossRent = Number(rentBack?.monthlyRent) || 31000;
+    const isTds = rentBack?.applyTds !== false;
+    const tdsPercentage = isTds ? (rentBack?.tdsPercentage !== undefined ? Number(rentBack.tdsPercentage) : 10) : 0;
+    const tdsAmount = Math.round(grossRent * (tdsPercentage / 100));
+    const netMonthlyAmount = grossRent - tdsAmount;
+    const tenureMonths = Number(rentBack?.tenureMonths) || 36;
+    const total36MonthCommitment = netMonthlyAmount * tenureMonths;
 
-    const ownerReq = Number(securityDeposit?.ownerDeposit?.requiredAmount) || 0;
-    const ownerPaid = Number(securityDeposit?.ownerDeposit?.paidAmount) || 0;
-    const ownerOut = Math.max(0, ownerReq - ownerPaid);
-    const ownerStatus = ownerOut === 0 && ownerReq > 0 ? 'paid' : (ownerPaid > 0 ? 'partially_paid' : 'pending');
-
-    // Auto determine status
-    let contractStatus = status || 'draft';
-    if (!status) {
-      if (allocation?.status === 'occupied') contractStatus = 'occupied';
-      else if (allocation?.status === 'allocated') contractStatus = 'tenant_allocated';
-      else if (rentBack?.enabled && rentBack?.status === 'active') contractStatus = 'rent_back_active';
-      else contractStatus = 'tenant_pending';
-    }
-
-    const isRentBackEnabled = Boolean(rentBack?.enabled);
     const uniqueSuffix = `${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
 
     const rentalContract = new RentalManagement({
@@ -176,128 +158,55 @@ export const createRentalContract = async (req, res) => {
       buildingId: resolvedBuildingId,
       flatId: primaryFlatId,
       flatIds: allFlatIds,
-      leasedUnits: Array.isArray(leasedUnits) ? leasedUnits : [],
       isMultiUnit: allFlatIds.length > 1,
       totalUnitsCount: allFlatIds.length || 1,
       ownerId: primaryOwnerId,
-      tenantId,
+      status: status || 'active',
       rentBack: {
-        enabled: isRentBackEnabled,
-        agreementNumber: isRentBackEnabled ? (rentBack?.agreementNumber || `RB-${uniqueSuffix}`) : undefined,
-        startDate: rentBack?.startDate ? new Date(rentBack.startDate) : null,
-        endDate: rentBack?.endDate ? new Date(rentBack.endDate) : null,
-        monthlyRent: Number(rentBack?.monthlyRent) || 0,
-        securityDeposit: Number(rentBack?.securityDeposit) || 0,
-        rentDueDay: Number(rentBack?.rentDueDay) || 5,
-        status: rentBack?.status || 'pending',
+        enabled: true,
+        agreementNumber: rentBack?.agreementNumber || `MOU-KV-${uniqueSuffix}`,
+        startDate: rentBack?.startDate ? new Date(rentBack.startDate) : new Date(),
+        endDate: rentBack?.endDate ? new Date(rentBack.endDate) : new Date(Date.now() + 36 * 30 * 24 * 60 * 60 * 1000),
+        monthlyRent: grossRent,
+        applyTds: isTds,
+        tdsPercentage,
+        tdsAmount,
+        netMonthlyAmount,
+        tenureMonths,
+        total36MonthCommitment,
+        rentDueDay: Number(rentBack?.rentDueDay) || 25,
+        status: rentBack?.status || 'active',
         agreementDocument: rentBack?.agreementDocument || { verificationStatus: 'pending' }
       },
       allocation: {
-        status: allocation?.status || 'allocated',
-        allocationDate: allocation?.allocationDate ? new Date(allocation.allocationDate) : new Date(),
-        moveInDate: allocation?.moveInDate ? new Date(allocation.moveInDate) : null,
-        moveOutDate: allocation?.moveOutDate ? new Date(allocation.moveOutDate) : null
+        status: 'occupied',
+        allocationDate: new Date()
       },
-      tenantAgreement: {
-        agreementNumber: tenantAgreement?.agreementNumber || `TA-${uniqueSuffix}`,
-        startDate: tenantAgreement?.startDate ? new Date(tenantAgreement.startDate) : null,
-        endDate: tenantAgreement?.endDate ? new Date(tenantAgreement.endDate) : null,
-        monthlyRent: Number(tenantAgreement?.monthlyRent) || 0,
-        rentDueDay: Number(tenantAgreement?.rentDueDay) || 5,
-        status: tenantAgreement?.status || 'active',
-        agreementDocument: tenantAgreement?.agreementDocument || { verificationStatus: 'pending' }
-      },
-      securityDeposit: {
-        tenantDeposit: {
-          requiredAmount: tenantReq,
-          paidAmount: tenantPaid,
-          outstandingAmount: tenantOut,
-          status: tenantStatus
-        },
-        ownerDeposit: {
-          requiredAmount: ownerReq,
-          paidAmount: ownerPaid,
-          outstandingAmount: ownerOut,
-          status: ownerStatus
-        }
-      },
-      status: contractStatus,
-      remarks: remarks || ''
+      remarks
     });
 
-    if (isRentBackEnabled && Number(rentBack?.monthlyRent) > 0) {
-      const mRent = Number(rentBack.monthlyRent);
-      const tenure = 36;
-      const totalAmount = mRent * tenure;
-      const startDate = rentBack.startDate ? new Date(rentBack.startDate) : new Date();
-      const dueDay = Number(rentBack.rentDueDay) || 25;
+    await rentalContract.save();
 
-      const entries = [];
-      for (let m = 1; m <= tenure; m++) {
-        const d = new Date(startDate);
-        d.setMonth(d.getMonth() + (m - 1));
-        d.setDate(dueDay);
+    // Mark flat as active in rental scheme
+    await Flat.findByIdAndUpdate(primaryFlatId, {
+      takenForRental: true,
+      'rentalDetails.guaranteedMonthlyRent': grossRent,
+      'rentalDetails.applyTds': isTds,
+      'rentalDetails.tdsPercentage': tdsPercentage,
+      'rentalDetails.rentalStartDate': rentBack?.startDate ? new Date(rentBack.startDate) : new Date(),
+      'rentalDetails.rentalEndDate': rentBack?.endDate ? new Date(rentBack.endDate) : new Date(Date.now() + 36 * 30 * 24 * 60 * 60 * 1000)
+    });
 
-        entries.push({
-          monthIndex: m,
-          dueDate: d,
-          payoutAmount: mRent,
-          tdsDeducted: 0,
-          netAmountPaid: 0,
-          status: 'due',
-          paymentReference: '',
-          remarks: ''
-        });
-      }
-
-      rentalContract.rentBackLedger = {
-        tenureMonths: tenure,
-        monthlyRent: mRent,
-        dueDay,
-        totalTenureAmount: totalAmount,
-        totalPaidToOwner: 0,
-        remainingPayableToOwner: totalAmount,
-        entries
-      };
-    }
-
-    const saved = await rentalContract.save();
-
-    // Mark ALL leased flats as taken for rental
-    await Flat.updateMany(
-      { _id: { $in: allFlatIds } },
-      { takenForRental: true, status: 'leased' }
-    );
-
-    // Auto-sync Tenant Customer record with leased flat and rental details
-    if (tenantId && primaryFlatId) {
-      try {
-        await Customer.findByIdAndUpdate(tenantId, {
-          customerType: 'tenant',
-          'tenantDetails.rentalDetails.flatId': primaryFlatId,
-          'tenantDetails.rentalDetails.monthlyRent': Number(tenantAgreement?.monthlyRent) || 0,
-          'tenantDetails.rentalDetails.securityDeposit': Number(tenantReq) || 0,
-          'tenantDetails.rentalDetails.rentDueDay': Number(tenantAgreement?.rentDueDay) || 5,
-          'tenantDetails.rentalDetails.leaseStartDate': tenantAgreement?.startDate ? new Date(tenantAgreement.startDate) : new Date(),
-          'tenantDetails.rentalDetails.leaseEndDate': tenantAgreement?.endDate ? new Date(tenantAgreement.endDate) : null
-        });
-        console.log(`[Customer Registry] Linked leased flat to tenant customer ID: ${tenantId}`);
-      } catch (custErr) {
-        console.error('Error linking leased flat to tenant customer:', custErr);
-      }
-    }
-
-    const populated = await RentalManagement.findById(saved._id)
+    const populatedContract = await RentalManagement.findById(rentalContract._id)
       .populate('projectId', 'projectName projectCode')
-      .populate('flatId', 'flatNumber status takenForRental')
-      .populate('flatIds', 'flatNumber status takenForRental')
-      .populate('leasedUnits.flatId', 'flatNumber status')
-      .populate('leasedUnits.ownerId', 'name mobileNo email')
-      .populate('ownerId', 'name mobileNo email address')
-      .populate('tenantId', 'name mobileNo email tenantDetails');
+      .populate('flatId', 'flatNumber floor status')
+      .populate('ownerId', 'name mobileNo email');
 
-    console.log(`[MongoDB] Rental contract created: ID ${saved._id} (Units: ${allFlatIds.length}, Rent-Back: ${saved.rentBack.enabled})`);
-    return res.status(201).json({ success: true, data: populated });
+    return res.status(201).json({
+      success: true,
+      data: populatedContract,
+      message: '36-Month Guaranteed Rent-Back Contract created successfully'
+    });
   } catch (error) {
     console.error('Error creating rental contract:', error);
     return res.status(500).json({ success: false, message: error.message });

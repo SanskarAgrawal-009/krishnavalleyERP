@@ -649,41 +649,41 @@ export const ReportsPage = () => {
           )}
 
           {/* ================================================================ */}
-          {/* 2. RENTAL REPORT VIEW */}
+          {/* 2. RENTAL REPORT VIEW (36-Month Guaranteed Rent-Back Payouts) */}
           {/* ================================================================ */}
           {activeReportTab === 'rental' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div className="grid-cols-4">
                 <div className="stat-card">
-                  <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>MONTHLY TENANT INFLOW</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
-                    {formatINR(summary.totalMonthlyTenantInflow)}
+                  <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>MONTHLY GROSS DISBURSEMENTS</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#7c3aed', marginTop: '4px' }}>
+                    {formatINR(summary.totalMonthlyGrossPayouts || summary.totalMonthlyOwnerOutflow)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#414754' }}>From {summary.activeTenanciesCount || 0} active tenants</div>
+                  <div style={{ fontSize: '0.72rem', color: '#414754' }}>{summary.activeRentBackCount || summary.totalManagedUnits || 0} Rent-Back Units</div>
                 </div>
 
                 <div className="stat-card">
-                  <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>OWNER RENT-BACK PAYOUT</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>
-                    {formatINR(summary.totalMonthlyOwnerOutflow)}
+                  <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>MONTHLY TDS DEDUCTIONS</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#ef4444', marginTop: '4px' }}>
+                    {formatINR(summary.totalMonthlyTdsDeducted)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#414754' }}>{summary.rentBackUnitsCount || 0} Guaranteed units</div>
+                  <div style={{ fontSize: '0.72rem', color: '#414754' }}>Tax Withholdings Ledger</div>
                 </div>
 
                 <div className="stat-card">
-                  <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>NET MONTHLY SPREAD PROFIT</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: (summary.netMonthlyProfit || 0) >= 0 ? '#137333' : '#ba1a1a', marginTop: '4px' }}>
-                    +{formatINR(summary.netMonthlyProfit)}
+                  <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>NET TRANSFERS TO OWNERS</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>
+                    {formatINR(summary.totalMonthlyNetDisbursed)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#414754' }}>Company net margin</div>
+                  <div style={{ fontSize: '0.72rem', color: '#15803d' }}>Monthly Bank NEFT Outflow</div>
                 </div>
 
                 <div className="stat-card">
-                  <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>SECURITY DEPOSITS HELD</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
-                    {formatINR(summary.totalSecurityDeposits)}
+                  <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>36-MONTH TOTAL COMMITMENT</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
+                    {formatINR(summary.total36MonthCommitment)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#414754' }}>Escrow balance</div>
+                  <div style={{ fontSize: '0.72rem', color: '#414754' }}>Total Contractual Assured Value</div>
                 </div>
               </div>
 
@@ -691,7 +691,7 @@ export const ReportsPage = () => {
               <div className="g-card" style={{ overflow: 'hidden' }}>
                 <div style={{ padding: '14px 18px', borderBottom: '1px solid #dadce0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#191c1d', margin: 0 }}>
-                    Rental Contracts Register ({(reportData?.register || []).length})
+                    36-Month Rent-Back Agreements Register ({(reportData?.register || []).length})
                   </h4>
                 </div>
 
@@ -699,40 +699,44 @@ export const ReportsPage = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>Unit & Project</th>
-                        <th>Tenant</th>
-                        <th>Owner</th>
-                        <th>Tenant Rent</th>
-                        <th>Owner Payout</th>
-                        <th>Net Spread</th>
-                        <th>Lease Expiry</th>
+                        <th>Unit & Tower</th>
+                        <th>Registered Owner</th>
+                        <th>Monthly Gross Rent</th>
+                        <th>TDS Rate</th>
+                        <th>Net Monthly Payout</th>
+                        <th>NEFT Payout Day</th>
+                        <th>36-Mo Commitment</th>
+                        <th>Contract Expiry</th>
                       </tr>
                     </thead>
                     <tbody>
                       {(reportData?.register || []).map((row) => (
                         <tr key={row.id || Math.random()}>
                           <td style={{ fontWeight: '700' }}>
-                            <div>{row.flatNumber}</div>
-                            <div style={{ fontSize: '0.72rem', color: '#727785' }}>{row.projectName}</div>
+                            <div>Flat {row.flatNumber}</div>
+                            <div style={{ fontSize: '0.72rem', color: '#727785' }}>{row.towerName || 'Tower A'}</div>
                           </td>
-                          <td style={{ color: '#1a73e8', fontWeight: '600' }}>
-                            <div>{row.tenantName}</div>
-                            <div style={{ fontSize: '0.72rem', color: '#727785' }}>{row.tenantPhone}</div>
+                          <td>
+                            <div style={{ fontWeight: '700', color: '#0f172a' }}>{row.ownerName}</div>
+                            <div style={{ fontSize: '0.72rem', color: '#727785' }}>{row.ownerPhone}</div>
                           </td>
-                          <td style={{ color: '#b06000' }}>
-                            {row.ownerName}
+                          <td style={{ color: '#7c3aed', fontWeight: '800' }}>
+                            {formatINR(row.monthlyGrossRent)}/mo
                           </td>
-                          <td style={{ color: '#137333', fontWeight: '700' }}>
-                            +{formatINR(row.monthlyTenantRent)}
+                          <td style={{ color: row.tdsDeducted > 0 ? '#ef4444' : '#059669', fontWeight: '700' }}>
+                            {row.tdsDeducted > 0 ? `${row.tdsPercentage || 10}% (-${formatINR(row.tdsDeducted)})` : '0% (Exempt)'}
                           </td>
-                          <td style={{ color: row.isRentBack ? '#8b5cf6' : '#727785' }}>
-                            {row.isRentBack ? `-${formatINR(row.monthlyOwnerPayout)}` : '₹0'}
+                          <td style={{ color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>
+                            {formatINR(row.netMonthlyPayout)}/mo
                           </td>
-                          <td style={{ color: row.netMonthlySpread >= 0 ? '#137333' : '#ba1a1a', fontWeight: '700' }}>
-                            +{formatINR(row.netMonthlySpread)}
+                          <td style={{ color: '#475569', fontWeight: '600' }}>
+                            {row.rentDueDay}
+                          </td>
+                          <td style={{ fontWeight: '800', color: '#0f172a' }}>
+                            {formatINR(row.total36MonthCommitment)}
                           </td>
                           <td style={{ color: '#727785', fontSize: '0.75rem' }}>
-                            {row.leaseEndDate}
+                            {row.endDate}
                           </td>
                         </tr>
                       ))}

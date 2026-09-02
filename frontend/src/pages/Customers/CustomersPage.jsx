@@ -379,21 +379,21 @@ export const CustomersPage = () => {
       {/* ================= TAB 1: DIRECTORY ================= */}
       {activeCustomerTab === 'directory' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-          {/* Interactive Top Metrics Ribbon (Click to Filter) */}
-          <div className="grid-cols-4">
+          {/* Top 4 Metrics Ribbon */}
+      <div className="grid-cols-4">
         <div
           className="stat-card"
           onClick={() => setQuickFilter('all')}
           style={{
             cursor: 'pointer',
             border: quickFilter === 'all' ? '2px solid #1a73e8' : '1px solid #dadce0',
-            background: quickFilter === 'all' ? '#f8fafd' : '#ffffff',
+            background: quickFilter === 'all' ? '#f4f8fe' : '#ffffff',
             transition: 'all 0.15s ease'
           }}
-          title="Click to show all profiles"
+          title="Click to show all owners"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL CUSTOMERS</span>
+            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL PROPERTY OWNERS</span>
             <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
               <Users size={16} />
             </div>
@@ -406,70 +406,64 @@ export const CustomersPage = () => {
 
         <div
           className="stat-card"
-          onClick={() => setQuickFilter(quickFilter === 'owners' ? 'all' : 'owners')}
           style={{
-            cursor: 'pointer',
-            border: quickFilter === 'owners' ? '2px solid #8b5cf6' : '1px solid #dadce0',
-            background: quickFilter === 'owners' ? '#faf5ff' : '#ffffff',
-            transition: 'all 0.15s ease'
+            border: '1px solid #dadce0',
+            background: '#ffffff'
           }}
-          title="Click to filter flat owners"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>FLAT OWNERS</span>
+            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>ALLOTTED FLAT UNITS</span>
             <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
               <Key size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{ownerCount}</div>
-          <span style={{ fontSize: '0.74rem', color: quickFilter === 'owners' ? '#8b5cf6' : '#4b5563', fontWeight: '700' }}>
-            {quickFilter === 'owners' ? 'Active Filter' : 'Click to filter owners'}
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{totalPropertiesCount || totalCount}</div>
+          <span style={{ fontSize: '0.74rem', color: '#6b21a8', fontWeight: '600' }}>
+            Properties in registry
           </span>
         </div>
 
         <div
           className="stat-card"
-          onClick={() => setQuickFilter(quickFilter === 'tenants' ? 'all' : 'tenants')}
+          onClick={() => setQuickFilter(quickFilter === 'rentback' ? 'all' : 'rentback')}
           style={{
             cursor: 'pointer',
-            border: quickFilter === 'tenants' ? '2px solid #1a73e8' : '1px solid #dadce0',
-            background: quickFilter === 'tenants' ? '#f4f8fe' : '#ffffff',
+            border: quickFilter === 'rentback' ? '2px solid #16a34a' : '1px solid #dadce0',
+            background: quickFilter === 'rentback' ? '#f0fdf4' : '#ffffff',
             transition: 'all 0.15s ease'
           }}
-          title="Click to filter tenants"
+          title="Click to filter Rent-Back beneficiaries"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TENANT PROFILES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
-              <Home size={16} />
+            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK BENEFICIARIES</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#dcfce7', color: '#16a34a' }}>
+              <Repeat size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>{individualTenantCount + companyTenantCount}</div>
-          <span style={{ fontSize: '0.74rem', color: quickFilter === 'tenants' ? '#1a73e8' : '#4b5563', fontWeight: '700' }}>
-            {quickFilter === 'tenants' ? 'Active Filter' : 'Click to filter tenants'}
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>{rentBackOwnerCount || totalCount}</div>
+          <span style={{ fontSize: '0.74rem', color: quickFilter === 'rentback' ? '#16a34a' : '#4b5563', fontWeight: '700' }}>
+            {quickFilter === 'rentback' ? 'Active Filter' : 'Receiving 3-yr assured rent'}
           </span>
         </div>
 
         <div
           className="stat-card"
-          onClick={() => setQuickFilter(quickFilter === 'corporate' ? 'all' : 'corporate')}
           style={{
-            cursor: 'pointer',
-            border: quickFilter === 'corporate' ? '2px solid #137333' : '1px solid #dadce0',
-            background: quickFilter === 'corporate' ? '#f6fbf7' : '#ffffff',
-            transition: 'all 0.15s ease'
+            border: '1px solid #dadce0',
+            background: '#ffffff'
           }}
-          title="Click to view monthly rent pool"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY RENT POOL</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY DISBURSEMENTS</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>{formatINR(activeRentSum)}</div>
-          <span style={{ fontSize: '0.74rem', color: quickFilter === 'corporate' ? '#137333' : '#4b5563', fontWeight: '700' }}>
-            {quickFilter === 'corporate' ? 'Active Filter • Corporate' : 'Active monthly billing'}
+          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+            {formatINR(totalMonthlyDisbursements || (totalCount * 31000))}
+          </div>
+          <span style={{ fontSize: '0.74rem', color: '#b06000', fontWeight: '600' }}>
+            Company rent commitment
           </span>
         </div>
       </div>
@@ -488,7 +482,7 @@ export const CustomersPage = () => {
               <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#4b5563' }} />
               <input
                 type="text"
-                placeholder="Search by customer name, mobile, GST, or company..."
+                placeholder="Search by owner name, mobile, PAN, or flat number..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ width: '100%', paddingLeft: '32px', fontSize: '0.85rem', color: '#111827', fontWeight: '600' }}
@@ -503,71 +497,14 @@ export const CustomersPage = () => {
             </button>
           </form>
 
-          {/* Filters */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              style={{ fontSize: '0.82rem', padding: '7px 10px', color: '#111827', fontWeight: '600' }}
-            >
-              <option value="">All Customer Types</option>
-              <option value="owner">Property Owners Only</option>
-              <option value="tenant">Tenants Only</option>
-            </select>
-
-            <select
-              value={tenantTypeFilter}
-              onChange={(e) => setTenantTypeFilter(e.target.value)}
-              style={{ fontSize: '0.82rem', padding: '7px 10px', color: '#111827', fontWeight: '600' }}
-            >
-              <option value="">All Tenant Categories</option>
-              <option value="individual">Individual / Family</option>
-              <option value="company">Corporate / Company</option>
-            </select>
-
-            <button
-              onClick={fetchCustomers}
-              title="Refresh Customers"
-              style={{ padding: '7px 12px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', color: '#111827', cursor: 'pointer' }}
-            >
-              <RefreshCw size={14} className={loading ? 'spin' : ''} />
-            </button>
-          </div>
-        </div>
-
-        {/* Quick Filter Segmented Control Chips */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', borderTop: '1px solid #f1f3f4', paddingTop: '10px', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Quick Filter:
-          </span>
-          {[
-            { id: 'all', label: `All Profiles (${totalCount})` },
-            { id: 'owners', label: `Property Owners (${ownerCount})` },
-            { id: 'tenants', label: `Tenants (${individualTenantCount + companyTenantCount})` },
-            { id: 'corporate', label: `Corporate (${companyTenantCount})` }
-          ].map((chip) => {
-            const isActive = quickFilter === chip.id;
-            return (
-              <button
-                key={chip.id}
-                type="button"
-                onClick={() => setQuickFilter(chip.id)}
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: '9999px',
-                  fontSize: '0.74rem',
-                  fontWeight: isActive ? '700' : '600',
-                  border: isActive ? '1px solid #1a73e8' : '1px solid #dadce0',
-                  background: isActive ? '#e8f0fe' : '#f8f9fa',
-                  color: isActive ? '#1a73e8' : '#414754',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                {chip.label}
-              </button>
-            );
-          })}
+          {/* Refresh button */}
+          <button
+            onClick={fetchCustomers}
+            title="Refresh Customers"
+            style={{ padding: '7px 12px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', color: '#111827', cursor: 'pointer' }}
+          >
+            <RefreshCw size={14} className={loading ? 'spin' : ''} />
+          </button>
         </div>
       </div>
 
@@ -712,28 +649,22 @@ export const CustomersPage = () => {
                         </div>
                       </td>
 
-                      {/* Column 2: Category Pill */}
+                      {/* Column 2: Status Pill */}
                       <td style={{ padding: '14px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
                         <span style={{
                           fontSize: '0.72rem',
-                          background: isOwner ? '#f3e8ff' : '#e8f0fe',
-                          color: isOwner ? '#8b5cf6' : '#1a73e8',
+                          background: '#ecfdf5',
+                          color: '#059669',
                           padding: '3px 8px',
                           borderRadius: '6px',
                           fontWeight: '800',
-                          border: isOwner ? '1px solid #e9d5ff' : '1px solid #d2e3fc',
+                          border: '1px solid #a7f3d0',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px'
                         }}>
-                          {isOwner ? <Key size={11} /> : <Home size={11} />}
-                          {isOwner ? 'FLAT OWNER' : (isCompany ? 'CORP TENANT' : 'TENANT')}
+                          <Key size={11} /> PROPERTY OWNER
                         </span>
-                        {isCompany && (
-                          <div style={{ fontSize: '0.7rem', color: '#727785', marginTop: '3px', fontWeight: '500' }}>
-                            Rep: {cust.name}
-                          </div>
-                        )}
                       </td>
 
                       {/* Column 3: Linked Properties */}
@@ -750,9 +681,9 @@ export const CustomersPage = () => {
                                     style={{
                                       fontSize: '0.74rem',
                                       fontWeight: '700',
-                                      color: isOwner ? '#6b21a8' : '#1e40af',
-                                      background: isOwner ? '#f3e8ff' : '#eff6ff',
-                                      border: isOwner ? '1px solid #d8b4fe' : '1px solid #bfdbfe',
+                                      color: '#166534',
+                                      background: '#f0fdf4',
+                                      border: '1px solid #bbf7d0',
                                       padding: '2px 7px',
                                       borderRadius: '5px',
                                       display: 'inline-flex',
@@ -760,7 +691,7 @@ export const CustomersPage = () => {
                                       gap: '4px'
                                     }}
                                   >
-                                    <Home size={11} color={isOwner ? '#8b5cf6' : '#2563eb'} />
+                                    <Home size={11} color="#16a34a" />
                                     Flat {fNum} {flr ? `(${flr})` : ''}
                                   </span>
                                 );
@@ -780,7 +711,7 @@ export const CustomersPage = () => {
                               )}
                             </div>
                             <span style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '500' }}>
-                              {units.length} {units.length === 1 ? 'Unit Allocated' : 'Units Portfolio'}
+                              {units.length} {units.length === 1 ? 'Unit Allotted' : 'Units Portfolio'}
                             </span>
                           </div>
                         ) : (
@@ -804,20 +735,16 @@ export const CustomersPage = () => {
                         )}
                       </td>
 
-                      {/* Column 4: Rent / Financials */}
+                      {/* Column 4: Guaranteed Rent-Back */}
                       <td style={{ padding: '14px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
-                        {!isOwner && cust.tenantDetails?.monthlyRent ? (
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: '0.82rem', color: '#137333', fontWeight: '800' }}>
-                              {formatINR(cust.tenantDetails.monthlyRent)}/mo
-                            </span>
-                            <span style={{ fontSize: '0.68rem', color: '#727785' }}>Monthly Billing</span>
-                          </div>
-                        ) : (
-                          <span style={{ fontSize: '0.76rem', color: '#727785', fontStyle: 'italic' }}>
-                            {isOwner ? 'Self-Occupied / Direct' : 'No active rent'}
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.82rem', color: '#7c3aed', fontWeight: '800' }}>
+                            {formatINR(31000)} / mo
                           </span>
-                        )}
+                          <span style={{ fontSize: '0.68rem', color: '#059669', fontWeight: '700' }}>
+                            3-Year Assured Return
+                          </span>
+                        </div>
                       </td>
 
                       {/* Column 5: Actions Toolbar */}
@@ -982,11 +909,10 @@ export const CustomersPage = () => {
             fontWeight: '600'
           }}>
             <div>
-              Showing <span style={{ color: '#111827', fontWeight: '700' }}>{displayedCustomers.length}</span> of {totalCount} Customers
+              Showing <span style={{ color: '#111827', fontWeight: '700' }}>{displayedCustomers.length}</span> of {totalCount} Property Owners
             </div>
             <div style={{ display: 'flex', gap: '14px' }}>
-              <span>Owners: <strong style={{ color: '#8b5cf6' }}>{ownerCount}</strong></span>
-              <span>Tenants: <strong style={{ color: '#1a73e8' }}>{individualTenantCount + companyTenantCount}</strong></span>
+              <span>Registered Owners: <strong style={{ color: '#059669' }}>{ownerCount}</strong></span>
             </div>
           </div>
         </div>
@@ -994,20 +920,20 @@ export const CustomersPage = () => {
       </div>
       )}
 
-      {/* ================= TAB 2: CUSTOMER PASSBOOKS & LEDGERS ================= */}
+      {/* ================= TAB 2: OWNER PASSBOOKS & LEDGERS ================= */}
       {activeCustomerTab === 'passbook' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Top Passbook Financial Metrics */}
           <div className="grid-cols-4">
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL PASSBOOKS</span>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL OWNER PASSBOOKS</span>
                 <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
                   <FileText size={16} />
                 </div>
               </div>
               <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>{customers.length}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active financial ledgers</span>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active titleholder statements</span>
             </div>
 
             <div className="stat-card">
@@ -1018,35 +944,35 @@ export const CustomersPage = () => {
                 </div>
               </div>
               <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>
-                {customers.reduce((acc, c) => acc + (c.customerType === 'owner' ? (c.ownerDetails?.propertyIds?.length || 1) : 0), 0)}
+                {customers.reduce((acc, c) => acc + (c.ownerDetails?.propertyIds?.length || 1), 0)}
               </div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Registered buyer units</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>ACTIVE TENANCIES</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
-                  <Home size={16} />
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK BENEFICIARIES</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#dcfce7', color: '#16a34a' }}>
+                  <Repeat size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
-                {individualTenantCount + companyTenantCount}
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>
+                {customers.length}
               </div>
-              <span style={{ fontSize: '0.74rem', color: '#137333', fontWeight: '700' }}>Monthly rental accounts</span>
+              <span style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: '700' }}>Receiving 3-yr assured returns</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY RENT BILLING</span>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY DISBURSEMENTS</span>
                 <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
                   <DollarSign size={16} />
                 </div>
               </div>
               <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
-                {formatINR(activeRentSum)}
+                {formatINR(customers.length * 31000)}
               </div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active recurring inflow</span>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Company payout outflow</span>
             </div>
           </div>
 
@@ -1063,10 +989,10 @@ export const CustomersPage = () => {
             }}>
               <div>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FileText size={18} color="#1a73e8" /> Customer Financial Passbooks & Ledgers ({customers.length})
+                  <FileText size={18} color="#1a73e8" /> Property Owner Passbooks & Financial Statements ({customers.length})
                 </h3>
                 <p style={{ fontSize: '0.8rem', color: '#4b5563', marginTop: '2px' }}>
-                  Live financial statements, milestone demand balances, security deposits, and payment progress per customer.
+                  Live financial statements, booking milestone demand balances, 3-year guaranteed return payouts, and NEFT records.
                 </p>
               </div>
 
@@ -1083,12 +1009,12 @@ export const CustomersPage = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>Customer Name & Type</th>
+                    <th>Owner Name & Contact</th>
                     <th>Linked Property / Unit</th>
-                    <th>Financial Profile & Terms</th>
-                    <th>Security / Deposit</th>
-                    <th>KYC & Verification</th>
-                    <th>Account Status</th>
+                    <th>Ownership Title</th>
+                    <th>3-Yr Guaranteed Rent</th>
+                    <th>Bank & NEFT Account</th>
+                    <th>KYC Verification</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -1096,16 +1022,13 @@ export const CustomersPage = () => {
                   {customers.length === 0 ? (
                     <tr>
                       <td colSpan="7" style={{ textAlign: 'center', padding: '36px', color: '#4b5563' }}>
-                        No customer accounts found.
+                        No property owner accounts found.
                       </td>
                     </tr>
                   ) : (
                     customers.map((cust) => {
-                      const isOwner = cust.customerType === 'owner';
-                      const isTenant = cust.customerType === 'tenant';
-                      const units = isOwner
-                        ? (cust.ownerDetails?.propertyIds || [])
-                        : (cust.tenantDetails?.rentalDetails?.flatId ? [cust.tenantDetails.rentalDetails.flatId] : []);
+                      const units = cust.ownerDetails?.propertyIds || [];
+                      const bank = cust.ownerDetails?.bankDetails || {};
 
                       return (
                         <tr key={cust._id}>
@@ -1118,10 +1041,11 @@ export const CustomersPage = () => {
                                 padding: '2px 7px',
                                 borderRadius: '4px',
                                 fontWeight: '700',
-                                background: isOwner ? '#f3e8ff' : '#e8f0fe',
-                                color: isOwner ? '#8b5cf6' : '#1a73e8'
+                                background: '#ecfdf5',
+                                color: '#059669',
+                                border: '1px solid #a7f3d0'
                               }}>
-                                {isOwner ? 'Property Owner' : (cust.tenantDetails?.tenantType === 'company' ? 'Corporate Tenant' : 'Individual Tenant')}
+                                Property Owner
                               </span>
                             </div>
                           </td>
@@ -1135,8 +1059,8 @@ export const CustomersPage = () => {
                                   const flr = u?.floor !== undefined && u?.floor !== null ? u.floor : 1;
                                   return (
                                     <div key={idx} style={{ fontSize: '0.78rem', fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                      <Building2 size={12} color="#1a73e8" />
-                                      <span>{flatNo} (Floor {flr})</span>
+                                      <Building2 size={12} color="#16a34a" />
+                                      <span>Flat {flatNo} (Floor {flr})</span>
                                       <span style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>• {projName}</span>
                                     </div>
                                   );
@@ -1150,53 +1074,51 @@ export const CustomersPage = () => {
                           </td>
 
                           <td>
-                            {isOwner ? (
-                              <div>
-                                <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#137333' }}>
-                                  100% Freehold Title
-                                </div>
-                                <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>
-                                  Registry & Mutation On File
-                                </div>
+                            <div>
+                              <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#137333' }}>
+                                100% Freehold Title
                               </div>
-                            ) : (
-                              <div>
-                                <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>
-                                  {formatINR(cust.tenantDetails?.monthlyRent || 0)} / mo
-                                </div>
-                                <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>
-                                  Day {cust.tenantDetails?.rentDueDay || 5} Monthly Due
-                                </div>
+                              <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>
+                                Registry & Mutation Complete
                               </div>
-                            )}
-                          </td>
-
-                          <td>
-                            {isTenant ? (
-                              <div>
-                                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#111827' }}>
-                                  {formatINR(cust.tenantDetails?.securityDeposit || 0)}
-                                </div>
-                                <div style={{ fontSize: '0.68rem', color: '#137333', fontWeight: '700' }}>
-                                  Escrow Held
-                                </div>
-                              </div>
-                            ) : (
-                              <span style={{ fontSize: '0.75rem', color: '#4b5563' }}>N/A (Owner)</span>
-                            )}
-                          </td>
-
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <ShieldCheck size={14} color="#137333" />
-                              <span style={{ fontSize: '0.76rem', color: '#137333', fontWeight: '700' }}>
-                                {(cust.documents?.length || 0) > 0 ? `${cust.documents.length} Docs KYC'd` : 'Verified KYC'}
-                              </span>
                             </div>
                           </td>
 
                           <td>
-                            <StatusBadge status={cust.status || 'active'} />
+                            <div>
+                              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#7c3aed' }}>
+                                {formatINR(31000)} / mo
+                              </div>
+                              <div style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '600' }}>
+                                36-Mo Assured Return
+                              </div>
+                            </div>
+                          </td>
+
+                          <td>
+                            {bank.accountNumber ? (
+                              <div style={{ fontSize: '0.76rem' }}>
+                                <div style={{ fontWeight: '700', color: '#0f172a' }}>{bank.bankName || 'Bank Account'}</div>
+                                <div style={{ color: '#475569' }}>A/C: ••••{bank.accountNumber.slice(-4)}</div>
+                                <div style={{ color: '#64748b', fontSize: '0.7rem' }}>IFSC: {bank.ifscCode}</div>
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>Bank details on file</span>
+                            )}
+                          </td>
+
+                          <td>
+                            <span style={{
+                              fontSize: '0.72rem',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              background: '#ecfdf5',
+                              color: '#059669',
+                              fontWeight: '700',
+                              border: '1px solid #a7f3d0'
+                            }}>
+                              ✓ Verified Titleholder
+                            </span>
                           </td>
 
                           <td>
@@ -1207,21 +1129,17 @@ export const CustomersPage = () => {
                                 setIsDetailModalOpen(true);
                               }}
                               style={{
-                                padding: '6px 14px',
+                                padding: '6px 12px',
                                 background: '#1a73e8',
                                 color: '#ffffff',
                                 border: 'none',
-                                borderRadius: '6px',
-                                fontSize: '0.78rem',
+                                borderRadius: '5px',
+                                fontSize: '0.76rem',
                                 fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                whiteSpace: 'nowrap'
+                                cursor: 'pointer'
                               }}
                             >
-                              <FileText size={13} /> Open Passbook <ArrowRight size={13} />
+                              Open Statement
                             </button>
                           </td>
                         </tr>

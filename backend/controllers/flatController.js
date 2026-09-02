@@ -378,6 +378,14 @@ export const updateFlat = async (req, res) => {
       if (!flat.currentOwner) flat.currentOwner = {};
       Object.assign(flat.currentOwner, ownerData);
 
+      if (data.bankName || data.accountNo || data.ifsc || data.bankBranch) {
+        if (!flat.currentOwner.bankDetails) flat.currentOwner.bankDetails = {};
+        if (data.bankName) flat.currentOwner.bankDetails.bankName = data.bankName;
+        if (data.bankBranch) flat.currentOwner.bankDetails.branch = data.bankBranch;
+        if (data.accountNo) flat.currentOwner.bankDetails.accountNumber = data.accountNo;
+        if (data.ifsc) flat.currentOwner.bankDetails.ifscCode = data.ifsc;
+      }
+
       // Also sync Customer record if mobileNo or customerId exists
       let customer = null;
       if (flat.currentOwner.customerId) {
@@ -395,11 +403,12 @@ export const updateFlat = async (req, res) => {
         if (ownerData.panNumber) customer.panNumber = ownerData.panNumber;
         if (ownerData.aadhaarNumber) customer.aadhaarNumber = ownerData.aadhaarNumber;
         if (data.bankName || data.accountNo || data.ifsc) {
-          if (!customer.bankDetails) customer.bankDetails = {};
-          if (data.bankName) customer.bankDetails.bankName = data.bankName;
-          if (data.bankBranch) customer.bankDetails.branch = data.bankBranch;
-          if (data.accountNo) customer.bankDetails.accountNo = data.accountNo;
-          if (data.ifsc) customer.bankDetails.ifsc = data.ifsc;
+          if (!customer.ownerDetails) customer.ownerDetails = {};
+          if (!customer.ownerDetails.bankDetails) customer.ownerDetails.bankDetails = {};
+          if (data.bankName) customer.ownerDetails.bankDetails.bankName = data.bankName;
+          if (data.bankBranch) customer.ownerDetails.bankDetails.branch = data.bankBranch;
+          if (data.accountNo) customer.ownerDetails.bankDetails.accountNumber = data.accountNo;
+          if (data.ifsc) customer.ownerDetails.bankDetails.ifscCode = data.ifsc;
         }
         await customer.save();
         flat.currentOwner.customerId = customer._id;

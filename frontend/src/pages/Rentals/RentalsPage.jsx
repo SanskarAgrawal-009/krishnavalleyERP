@@ -246,18 +246,25 @@ export const RentalsPage = () => {
   // Metrics
   const totalCount = rentals.length;
   let rentBackCount = 0;
-  let totalTenantMonthlyInflow = 0;
-  let totalOwnerMonthlyOutflow = 0;
+  let totalMonthlyGrossPayouts = 0;
+  let totalMonthlyTds = 0;
+  let totalMonthlyNetDisbursed = 0;
+  let total36MonthCommitment = 0;
 
   rentals.forEach((r) => {
-    if (r.rentBack?.enabled) {
-      rentBackCount++;
-      totalOwnerMonthlyOutflow += (r.rentBack?.monthlyRent || 0);
-    }
-    totalTenantMonthlyInflow += (r.tenantAgreement?.monthlyRent || 0);
-  });
+    rentBackCount++;
+    const gross = Number(r.rentBack?.monthlyRent || 31000);
+    const applyTds = r.rentBack?.applyTds !== false;
+    const tdsRate = applyTds ? ((Number(r.rentBack?.tdsPercentage) >= 0 ? Number(r.rentBack?.tdsPercentage) : 10) / 100) : 0;
+    const tds = Math.round(gross * tdsRate);
+    const net = gross - tds;
+    const tenure = Number(r.rentBack?.tenureMonths) || 36;
 
-  const netMonthlySpread = totalTenantMonthlyInflow - totalOwnerMonthlyOutflow;
+    totalMonthlyGrossPayouts += gross;
+    totalMonthlyTds += tds;
+    totalMonthlyNetDisbursed += net;
+    total36MonthCommitment += (net * tenure);
+  });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
@@ -273,13 +280,13 @@ export const RentalsPage = () => {
       }}>
         <div>
           <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            Rental Management & Guaranteed Rent-Back
-            <span style={{ fontSize: '0.74rem', background: '#e8f0fe', color: '#1a73e8', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
-              LEASE HUB
+            36-Month Guaranteed Rent-Back Hub
+            <span style={{ fontSize: '0.74rem', background: '#ecfdf5', color: '#059669', padding: '3px 10px', borderRadius: '6px', fontWeight: '700', border: '1px solid #a7f3d0' }}>
+              DEVELOPER DISBURSEMENTS
             </span>
           </div>
           <div style={{ fontSize: '0.88rem', color: '#4b5563', marginTop: '4px', fontWeight: '500' }}>
-            Manage tenancy agreements, assured return payouts to buyers, security deposits, and rent collection reminders.
+            Manage 3-year guaranteed return payouts to property owners, TDS withholdings, and monthly bank transfer ledgers.
           </div>
         </div>
 
@@ -331,7 +338,7 @@ export const RentalsPage = () => {
                 transition: 'all 0.15s ease'
               }}
             >
-              <Repeat size={14} /> All Lease Contracts ({rentals.length})
+              <Repeat size={14} /> All Rent-Back Agreements ({rentals.length})
             </button>
 
             <button
@@ -388,7 +395,7 @@ export const RentalsPage = () => {
             className="btn-primary"
             style={{ padding: '9px 18px', fontSize: '0.82rem' }}
           >
-            <Plus size={16} /> New Rental Contract
+            <Plus size={16} /> New Rent-Back Agreement
           </button>
         </div>
       </div>
@@ -400,59 +407,59 @@ export const RentalsPage = () => {
           <div className="grid-cols-5">
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>ACTIVE CONTRACTS</span>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK UNITS</span>
                 <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
                   <Repeat size={16} />
                 </div>
               </div>
               <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>{totalCount}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Units in rental pool</span>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active 3-year commitments</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK UNITS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
-                  <ShieldCheck size={16} />
-                </div>
-              </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{rentBackCount}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Guaranteed investor payout</span>
-            </div>
-
-            <div className="stat-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TENANT RENT INFLOW</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY GROSS DISBURSEMENTS</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#7c3aed' }}>
                   <DollarSign size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>{formatINR(totalTenantMonthlyInflow)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#137333', fontWeight: '700' }}>Monthly gross collection</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#7c3aed', marginTop: '4px' }}>{formatINR(totalMonthlyGrossPayouts)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#6b21a8', fontWeight: '600' }}>Total developer rent commitment</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>OWNER RENT-BACK PAYOUT</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY TDS DEDUCTED</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#fee2e2', color: '#ef4444' }}>
                   <TrendingUp size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>{formatINR(totalOwnerMonthlyOutflow)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Monthly assured returns</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#ef4444', marginTop: '4px' }}>{formatINR(totalMonthlyTds)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#b91c1c', fontWeight: '600' }}>Tax withholdings</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>NET SPREAD MARGIN</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: netMonthlySpread >= 0 ? '#e6f4ea' : '#ffdad6', color: netMonthlySpread >= 0 ? '#137333' : '#ba1a1a' }}>
-                  <DollarSign size={16} />
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>NET TRANSFERS TO OWNERS</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+                  <ShieldCheck size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: netMonthlySpread >= 0 ? '#137333' : '#ba1a1a', marginTop: '4px' }}>
-                {netMonthlySpread >= 0 ? `+${formatINR(netMonthlySpread)}` : formatINR(netMonthlySpread)}
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>{formatINR(totalMonthlyNetDisbursed)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#137333', fontWeight: '700' }}>Direct bank NEFT transfers</span>
+            </div>
+
+            <div className="stat-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>36-MONTH COMMITMENT</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#0f172a' }}>
+                  <TrendingUp size={16} />
+                </div>
               </div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Company net monthly yield</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
+                {formatINR(total36MonthCommitment)}
+              </div>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Total assured return across pool</span>
             </div>
           </div>
 
