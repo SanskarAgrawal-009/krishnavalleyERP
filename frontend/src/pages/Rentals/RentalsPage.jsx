@@ -880,6 +880,7 @@ export const RentalsPage = () => {
             }, 0);
 
             const totalRemaining = Math.max(0, totalTenureCommitment - totalDisbursed);
+            const monthlyRentPool = rentBackList.reduce((sum, r) => sum + (r.rentBack?.monthlyRent || 31000), 0);
 
             return (
               <div className="grid-cols-4">
@@ -923,7 +924,7 @@ export const RentalsPage = () => {
                       <ShieldCheck size={16} />
                     </div>
                   </div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{formatINR(totalOwnerMonthlyOutflow)}</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{formatINR(monthlyRentPool || totalMonthlyGrossPayouts)}</div>
                   <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Monthly assured payout</span>
                 </div>
               </div>

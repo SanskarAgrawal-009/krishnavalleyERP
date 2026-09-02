@@ -30,7 +30,8 @@ import {
   Download,
   Mail,
   ExternalLink,
-  AlertTriangle
+  AlertTriangle,
+  Repeat
 } from 'lucide-react';
 
 export const CustomersPage = () => {
