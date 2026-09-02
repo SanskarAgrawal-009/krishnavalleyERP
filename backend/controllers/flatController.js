@@ -340,13 +340,140 @@ export const createFlat = async (req, res) => {
   }
 };
 
-// Update Flat in MongoDB
+// Update Flat in MongoDB (Comprehensive Unit Specs, Owner, Sales, and Rental Sync)
 export const updateFlat = async (req, res) => {
   try {
     const { id } = req.params;
-    const flat = await Flat.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    const flat = await Flat.findById(id);
     if (!flat) return res.status(404).json({ success: false, message: 'Flat not found' });
-    return res.json({ success: true, data: flat });
+
+    const data = req.body;
+
+    // 1. Update Unit Specifications
+    if (data.flatNumber !== undefined) flat.flatNumber = String(data.flatNumber).trim();
+    if (data.floor !== undefined) flat.floor = Number(data.floor);
+    if (data.bhkType !== undefined) flat.bhkType = data.bhkType;
+    if (data.carpetArea !== undefined) flat.carpetArea = Number(data.carpetArea);
+    if (data.superBuiltupArea !== undefined) flat.superBuiltupArea = Number(data.superBuiltupArea);
+    if (data.basePrice !== undefined) flat.basePrice = Number(data.basePrice);
+    if (data.facing !== undefined) flat.facing = data.facing;
+    if (data.status !== undefined) {
+      flat.status = data.status;
+      flat.isSold = ['sold', 'resell', 'buy_back', 'possession_renewal', 'leased'].includes(data.status);
+    }
+    if (data.takenForRental !== undefined) flat.takenForRental = Boolean(data.takenForRental);
+
+    // 2. Update Owner Details (and sync Customer collection)
+    if (data.currentOwner || data.ownerName || data.ownerMobile || data.name || data.mobileNo) {
+      const ownerData = data.currentOwner || {
+        name: data.ownerName || data.name,
+        mobileNo: data.ownerMobile || data.mobileNo,
+        email: data.ownerEmail || data.email,
+        panNumber: data.ownerPan || data.panNumber,
+        aadhaarNumber: data.ownerAadhaar || data.aadhaarNumber,
+        address: data.ownerAddress || data.address,
+        ownershipType: data.ownershipType || 'individual'
+      };
+
+      if (!flat.currentOwner) flat.currentOwner = {};
+      Object.assign(flat.currentOwner, ownerData);
+
+      // Also sync Customer record if mobileNo or customerId exists
+      let customer = null;
+      if (flat.currentOwner.customerId) {
+        customer = await Customer.findById(flat.currentOwner.customerId);
+      }
+      if (!customer && flat.currentOwner.mobileNo) {
+        customer = await Customer.findOne({ mobileNo: flat.currentOwner.mobileNo });
+      }
+
+      if (customer) {
+        if (ownerData.name) customer.name = ownerData.name;
+        if (ownerData.mobileNo) customer.mobileNo = ownerData.mobileNo;
+        if (ownerData.email) customer.email = ownerData.email;
+        if (ownerData.address) customer.address = ownerData.address;
+        if (ownerData.panNumber) customer.panNumber = ownerData.panNumber;
+        if (ownerData.aadhaarNumber) customer.aadhaarNumber = ownerData.aadhaarNumber;
+        if (data.bankName || data.accountNo || data.ifsc) {
+          if (!customer.bankDetails) customer.bankDetails = {};
+          if (data.bankName) customer.bankDetails.bankName = data.bankName;
+          if (data.bankBranch) customer.bankDetails.branch = data.bankBranch;
+          if (data.accountNo) customer.bankDetails.accountNo = data.accountNo;
+          if (data.ifsc) customer.bankDetails.ifsc = data.ifsc;
+        }
+        await customer.save();
+        flat.currentOwner.customerId = customer._id;
+      }
+    }
+
+    // 3. Update Sales Allotment (and sync SalesLead collection)
+    if (data.salesDetails || data.agreedDealPrice !== undefined || data.bookingAmountPaid !== undefined) {
+      if (!flat.salesDetails) flat.salesDetails = {};
+      if (data.salesDetails) {
+        Object.assign(flat.salesDetails, data.salesDetails);
+      }
+      if (data.agreedDealPrice !== undefined) flat.salesDetails.agreedDealPrice = Number(data.agreedDealPrice);
+      if (data.bookingAmountPaid !== undefined) {
+        flat.salesDetails.bookingAmountPaid = Number(data.bookingAmountPaid);
+        flat.salesDetails.totalAmountPaid = Number(data.bookingAmountPaid);
+        flat.salesDetails.balanceAmountDue = Math.max(0, (flat.salesDetails.agreedDealPrice || 0) - Number(data.bookingAmountPaid));
+      }
+      if (data.salesStatus !== undefined) flat.salesDetails.salesStatus = data.salesStatus;
+      if (data.agreementDate !== undefined) flat.salesDetails.agreementDate = new Date(data.agreementDate);
+      if (data.paymentPlanType !== undefined) flat.salesDetails.paymentPlanType = data.paymentPlanType;
+
+      // Sync with SalesLead
+      await SalesLead.findOneAndUpdate(
+        { flatId: flat._id },
+        {
+          $set: {
+            name: flat.currentOwner?.name || flat.salesDetails.buyerName,
+            mobileNo: flat.currentOwner?.mobileNo,
+            'booking.agreedDealPrice': flat.salesDetails.agreedDealPrice,
+            'booking.bookingAmount': flat.salesDetails.bookingAmountPaid,
+            salesStatus: flat.salesDetails.salesStatus || 'agreement_completed'
+          }
+        }
+      );
+    }
+
+    // 4. Update Rental / Rent-Back Details (and sync RentalManagement collection)
+    if (data.rentalDetails || data.guaranteedMonthlyRent !== undefined || data.prePossessionMonthlyRent !== undefined) {
+      if (!flat.rentalDetails) flat.rentalDetails = {};
+      if (data.rentalDetails) {
+        Object.assign(flat.rentalDetails, data.rentalDetails);
+      }
+      if (data.guaranteedMonthlyRent !== undefined) flat.rentalDetails.guaranteedMonthlyRent = Number(data.guaranteedMonthlyRent);
+      if (data.tenureMonths !== undefined) flat.rentalDetails.tenureMonths = Number(data.tenureMonths);
+      if (data.dueDayOfMonth !== undefined) flat.rentalDetails.dueDayOfMonth = Number(data.dueDayOfMonth);
+      if (data.startDate !== undefined) flat.rentalDetails.startDate = new Date(data.startDate);
+      if (data.endDate !== undefined) flat.rentalDetails.endDate = new Date(data.endDate);
+      if (data.prePossessionMonthlyRent !== undefined) flat.rentalDetails.prePossessionMonthlyRent = Number(data.prePossessionMonthlyRent);
+      if (data.prePossessionTotalPaid !== undefined) flat.rentalDetails.prePossessionTotalPaid = Number(data.prePossessionTotalPaid);
+      if (data.prePossessionTenureMonths !== undefined) flat.rentalDetails.prePossessionTenureMonths = Number(data.prePossessionTenureMonths);
+      if (data.isPossessionRenewal !== undefined) flat.rentalDetails.isPossessionRenewal = Boolean(data.isPossessionRenewal);
+
+      const mRent = flat.rentalDetails.guaranteedMonthlyRent || 0;
+      const tMonths = flat.rentalDetails.tenureMonths || 36;
+      flat.rentalDetails.total36MonthCommitment = flat.rentalDetails.total36MonthCommitment || (mRent * 0.9 * tMonths);
+
+      // Sync with RentalManagement
+      await RentalManagement.findOneAndUpdate(
+        { $or: [{ flatId: flat._id }, { flatIds: flat._id }] },
+        {
+          $set: {
+            'rentBack.monthlyRent': mRent,
+            'rentBack.tenureMonths': tMonths,
+            'rentBack.rentDueDay': flat.rentalDetails.dueDayOfMonth || 25,
+            'rentBack.startDate': flat.rentalDetails.startDate,
+            'rentBack.endDate': flat.rentalDetails.endDate
+          }
+        }
+      );
+    }
+
+    await flat.save();
+    return res.json({ success: true, message: 'Flat and all associated records updated successfully', data: flat });
   } catch (error) {
     console.error('Error updating flat in MongoDB:', error);
     return res.status(500).json({ success: false, message: error.message });
