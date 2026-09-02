@@ -713,10 +713,10 @@ export const FlatDetailModal = ({
                 </div>
               )}
 
-              {/* TAB 3: RENTAL & LEASES (3-YEAR) */}
+              {/* TAB 3: COMPANY GUARANTEED RENT-BACK PROGRAM */}
               {activeTab === 'rental' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                  {/* 3-Year Rental Policy Highlight Box */}
+                  {/* Company Guaranteed Rent-Back Policy Highlight Box */}
                   <div style={{
                     background: 'linear-gradient(135deg, #f5f3ff, #ede9fe)',
                     border: '1px solid #ddd6fe',
@@ -728,16 +728,16 @@ export const FlatDetailModal = ({
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b21a8', fontWeight: '800', fontSize: '0.95rem' }}>
                       <ShieldCheck size={20} />
-                      <span>Guaranteed 3-Year Rental Program (36-Month Lock-in)</span>
+                      <span>Company Guaranteed Rent-Back Program (Lock-in Term)</span>
                     </div>
                     <p style={{ margin: 0, fontSize: '0.82rem', color: '#581c87', lineHeight: '1.45' }}>
-                      Under Krishna Valley township covenants, all units placed in the rental pool are contractually leased for a <strong>mandatory 3-year term</strong>. During these 36 months, the property owner receives guaranteed monthly rent-back payouts. Physical possession is only handed over once the 3-year term is fulfilled.
+                      Under Krishna Valley covenants, the monthly rent is directly disbursed by <strong>Krishna Valley Developer / Treasury</strong> to the property owner. <strong>No tenant collections are involved</strong> for these investor units—all payouts are guaranteed and funded directly by the company.
                     </p>
                   </div>
 
-                  {rental ? (
+                  {(rental || flat.takenForRental || flat.rentalDetails?.isRentBackActive || flat.rentalDetails?.guaranteedMonthlyRent > 0) ? (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                      {/* Dual-Sided Lease: 1. Owner Rent-Back Side */}
+                      {/* 1. Company Rent-Back Yield Payout Side */}
                       <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
                         <div style={{
                           display: 'flex',
@@ -748,53 +748,68 @@ export const FlatDetailModal = ({
                           marginBottom: '12px'
                         }}>
                           <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <DollarSign size={16} color="#7c3aed" /> Side A: Owner Rent-Back Yield
+                            <DollarSign size={16} color="#7c3aed" /> Assured Rent Disbursement
                           </h5>
                           <span style={{
                             fontSize: '0.72rem',
                             padding: '2px 8px',
                             borderRadius: '12px',
-                            background: rental.rentBack?.enabled ? '#f3e8ff' : '#f1f5f9',
-                            color: rental.rentBack?.enabled ? '#7c3aed' : '#64748b',
+                            background: '#f3e8ff',
+                            color: '#7c3aed',
                             fontWeight: '700'
                           }}>
-                            {rental.rentBack?.enabled ? 'Active Yield' : 'Not Active'}
+                            Company Payout Active
                           </span>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.82rem' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Guaranteed Rent to Owner:</span>
-                            <strong style={{ color: '#7c3aed', fontSize: '1rem' }}>
-                              {formatINR(rental.rentBack?.monthlyRent || 0)} / mo
-                            </strong>
-                          </div>
+                        {(() => {
+                          const grossMonthly = rental?.rentBack?.monthlyRent || flat.rentalDetails?.guaranteedMonthlyRent || (flat.basePrice ? Math.round(flat.basePrice * 0.006) : 31000);
+                          const tdsAmount = Math.round(grossMonthly * 0.1);
+                          const netMonthly = grossMonthly - tdsAmount;
+                          const tenureMo = rental?.rentBack?.tenureMonths || flat.rentalDetails?.tenureMonths || 36;
+                          const totalTenureCommitment = flat.rentalDetails?.total36MonthCommitment || (netMonthly * tenureMo);
 
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Payout Due Day:</span>
-                            <strong style={{ color: '#0f172a' }}>Day {rental.rentBack?.rentDueDay || 5} of every month</strong>
-                          </div>
+                          return (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.82rem' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: '#64748b' }}>Gross Guaranteed Rent:</span>
+                                <strong style={{ color: '#7c3aed', fontSize: '1rem' }}>
+                                  {formatINR(grossMonthly)} / mo
+                                </strong>
+                              </div>
 
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Agreement Number:</span>
-                            <span style={{ fontWeight: '600', color: '#0f172a' }}>{rental.rentBack?.agreementNumber || 'RB-AUTO'}</span>
-                          </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: '#64748b' }}>TDS Deducted (10% Sec 194I):</span>
+                                <strong style={{ color: '#ef4444' }}>- {formatINR(tdsAmount)} / mo</strong>
+                              </div>
 
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Lease Period:</span>
-                            <span style={{ fontWeight: '600', color: '#0f172a' }}>
-                              {formatDate(rental.rentBack?.startDate)} ➔ {formatDate(rental.rentBack?.endDate)}
-                            </span>
-                          </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', background: '#f8fafc', padding: '6px 8px', borderRadius: '6px' }}>
+                                <span style={{ color: '#166534', fontWeight: '700' }}>Net Disbursed to Owner:</span>
+                                <strong style={{ color: '#16a34a', fontSize: '1rem' }}>{formatINR(netMonthly)} / mo</strong>
+                              </div>
 
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Owner Security Deposit:</span>
-                            <strong style={{ color: '#0f172a' }}>{formatINR(rental.securityDeposit?.ownerDeposit?.paidAmount || rental.rentBack?.securityDeposit || 0)}</strong>
-                          </div>
-                        </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: '#64748b' }}>Payout Due Day:</span>
+                                <strong style={{ color: '#0f172a' }}>Day {flat.rentalDetails?.dueDayOfMonth || rental?.rentBack?.rentDueDay || 25} of every month</strong>
+                              </div>
+
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: '#64748b' }}>Tenure & Commitment:</span>
+                                <strong style={{ color: '#0f172a' }}>{tenureMo} Months ({formatINR(totalTenureCommitment)})</strong>
+                              </div>
+
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: '#64748b' }}>Disbursement Period:</span>
+                                <span style={{ fontWeight: '600', color: '#0f172a' }}>
+                                  {formatDate(flat.rentalDetails?.startDate || rental?.rentBack?.startDate || flat.salesDetails?.agreementDate)} ➔ {formatDate(flat.rentalDetails?.endDate || rental?.rentBack?.endDate)}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
 
-                      {/* Dual-Sided Lease: 2. Tenant Occupancy Side */}
+                      {/* 2. Beneficiary Owner & Settlement Details */}
                       <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
                         <div style={{
                           display: 'flex',
@@ -805,7 +820,7 @@ export const FlatDetailModal = ({
                           marginBottom: '12px'
                         }}>
                           <h5 style={{ margin: 0, fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <User size={16} color="#0284c7" /> Side B: Tenant Lease Contract
+                            <Building2 size={16} color="#0284c7" /> Beneficiary Owner & Treasury Settlement
                           </h5>
                           <span style={{
                             fontSize: '0.72rem',
@@ -815,38 +830,34 @@ export const FlatDetailModal = ({
                             color: '#0284c7',
                             fontWeight: '700'
                           }}>
-                            {rental.allocation?.status?.toUpperCase() || 'OCCUPIED'}
+                            Direct Disbursed
                           </span>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.82rem' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Tenant Name:</span>
-                            <strong style={{ color: '#0f172a' }}>{rental.tenantId?.name || 'Company Assigned Tenant'}</strong>
+                            <span style={{ color: '#64748b' }}>Beneficiary Owner:</span>
+                            <strong style={{ color: '#0f172a' }}>{owner?.name || flat.currentOwner?.name || flat.salesDetails?.buyerName || 'Registered Owner'}</strong>
                           </div>
 
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Tenant Contact:</span>
-                            <span style={{ fontWeight: '600', color: '#0f172a' }}>{rental.tenantId?.mobileNo || 'Confidential'}</span>
+                            <span style={{ color: '#64748b' }}>Beneficiary Mobile:</span>
+                            <span style={{ fontWeight: '600', color: '#0f172a' }}>{owner?.mobileNo || flat.currentOwner?.mobileNo || 'N/A'}</span>
                           </div>
 
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Monthly Rent Collected:</span>
-                            <strong style={{ color: '#0284c7', fontSize: '1rem' }}>
-                              {formatINR(rental.tenantAgreement?.monthlyRent || 0)} / mo
-                            </strong>
+                            <span style={{ color: '#64748b' }}>Disbursing Source:</span>
+                            <strong style={{ color: '#0284c7' }}>Krishna Valley Developer Treasury</strong>
                           </div>
 
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Tenant Lease Term:</span>
-                            <span style={{ fontWeight: '600', color: '#0f172a' }}>
-                              {formatDate(rental.tenantAgreement?.startDate)} ➔ {formatDate(rental.tenantAgreement?.endDate)}
-                            </span>
+                            <span style={{ color: '#64748b' }}>Settlement Mode:</span>
+                            <span style={{ fontWeight: '600', color: '#0f172a' }}>Bank NEFT / RTGS Monthly Transfer</span>
                           </div>
 
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#64748b' }}>Tenant Security Deposit:</span>
-                            <strong style={{ color: '#0f172a' }}>{formatINR(rental.securityDeposit?.tenantDeposit?.paidAmount || 0)}</strong>
+                            <span style={{ color: '#64748b' }}>TDS Certificate:</span>
+                            <strong style={{ color: '#0f172a' }}>Form 16A Issued Annually</strong>
                           </div>
                         </div>
                       </div>
