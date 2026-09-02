@@ -77,14 +77,45 @@ export const createCustomer = async (req, res) => {
       }
     }
 
+    const bName = req.body.bankName || req.body.bankDetails?.bankName || req.body.ownerDetails?.bankDetails?.bankName || '';
+    const bBranch = req.body.bankBranch || req.body.bankDetails?.branch || req.body.ownerDetails?.bankDetails?.branch || '';
+    const bAcc = req.body.accountNumber || req.body.accountNo || req.body.bankDetails?.accountNumber || req.body.bankDetails?.accountNo || req.body.ownerDetails?.bankDetails?.accountNumber || req.body.ownerDetails?.bankDetails?.accountNo || '';
+    const bIfsc = req.body.ifscCode || req.body.ifsc || req.body.bankDetails?.ifscCode || req.body.bankDetails?.ifsc || req.body.ownerDetails?.bankDetails?.ifscCode || req.body.ownerDetails?.bankDetails?.ifsc || '';
+
+    const pan = req.body.panNumber || req.body.panNo || req.body.ownerDetails?.panNumber || '';
+    const aadhaar = req.body.aadhaarNumber || req.body.aadhaarNo || req.body.ownerDetails?.aadhaarNumber || '';
+    const permAddr = req.body.permanentAddress || req.body.addressText || req.body.ownerDetails?.permanentAddress || (typeof req.body.address === 'string' ? req.body.address : '');
+
+    const bankObj = {
+      bankName: bName,
+      branch: bBranch,
+      accountNumber: bAcc,
+      accountNo: bAcc,
+      ifscCode: bIfsc,
+      ifsc: bIfsc
+    };
+
     const customer = new Customer({
       customerType,
       name,
       mobileNo,
       alternateMobileNo: alternateMobileNo || '',
       email: email || '',
-      address: address || {},
-      ownerDetails: customerType === 'owner' ? (ownerDetails || { propertyIds: [], ownershipType: 'individual', ownershipPercentage: 100 }) : undefined,
+      panNumber: pan,
+      aadhaarNumber: aadhaar,
+      permanentAddress: permAddr,
+      bankDetails: bankObj,
+      address: typeof address === 'object' ? address : { addressLine1: typeof address === 'string' ? address : '' },
+      ownerDetails: customerType === 'owner' ? {
+        ...(ownerDetails || {}),
+        propertyIds: ownerDetails?.propertyIds || [],
+        ownershipType: ownerDetails?.ownershipType || 'individual',
+        ownershipPercentage: ownerDetails?.ownershipPercentage || 100,
+        panNumber: pan,
+        aadhaarNumber: aadhaar,
+        permanentAddress: permAddr,
+        bankDetails: bankObj
+      } : undefined,
       tenantDetails: customerType === 'tenant' ? (tenantDetails || { tenantType: 'individual' }) : undefined,
       status: status || 'active',
       documents: [],
@@ -385,12 +416,57 @@ export const updateCustomer = async (req, res) => {
     if (updates.mobileNo) customer.mobileNo = updates.mobileNo;
     if (updates.alternateMobileNo !== undefined) customer.alternateMobileNo = updates.alternateMobileNo;
     if (updates.email !== undefined) customer.email = updates.email;
+    if (updates.panNumber !== undefined) customer.panNumber = updates.panNumber;
+    if (updates.aadhaarNumber !== undefined) customer.aadhaarNumber = updates.aadhaarNumber;
+    if (updates.permanentAddress !== undefined) customer.permanentAddress = updates.permanentAddress;
+
+    const bName = updates.bankName || updates.bankDetails?.bankName || updates.ownerDetails?.bankDetails?.bankName;
+    const bBranch = updates.bankBranch || updates.branch || updates.bankDetails?.branch || updates.ownerDetails?.bankDetails?.branch;
+    const bAcc = updates.accountNumber || updates.accountNo || updates.bankDetails?.accountNumber || updates.bankDetails?.accountNo || updates.ownerDetails?.bankDetails?.accountNumber || updates.ownerDetails?.bankDetails?.accountNo;
+    const bIfsc = updates.ifscCode || updates.ifsc || updates.bankDetails?.ifscCode || updates.bankDetails?.ifsc || updates.ownerDetails?.bankDetails?.ifscCode || updates.ownerDetails?.bankDetails?.ifsc;
+
+    if (bName || bBranch || bAcc || bIfsc) {
+      if (!customer.bankDetails) customer.bankDetails = {};
+      if (bName) customer.bankDetails.bankName = bName;
+      if (bBranch) customer.bankDetails.branch = bBranch;
+      if (bAcc) {
+        customer.bankDetails.accountNumber = bAcc;
+        customer.bankDetails.accountNo = bAcc;
+      }
+      if (bIfsc) {
+        customer.bankDetails.ifscCode = bIfsc;
+        customer.bankDetails.ifsc = bIfsc;
+      }
+      customer.markModified('bankDetails');
+    }
+
     if (updates.address) customer.address = { ...customer.address, ...updates.address };
     if (updates.status) customer.status = updates.status;
 
-    if (customer.customerType === 'owner' && updates.ownerDetails) {
-      customer.ownerDetails = { ...customer.ownerDetails, ...updates.ownerDetails };
-      if (updates.ownerDetails.propertyIds && Array.isArray(updates.ownerDetails.propertyIds)) {
+    if (customer.customerType === 'owner') {
+      if (!customer.ownerDetails) customer.ownerDetails = {};
+      if (updates.ownerDetails) {
+        customer.ownerDetails = { ...customer.ownerDetails, ...updates.ownerDetails };
+      }
+      if (updates.panNumber) customer.ownerDetails.panNumber = updates.panNumber;
+      if (updates.aadhaarNumber) customer.ownerDetails.aadhaarNumber = updates.aadhaarNumber;
+      if (updates.permanentAddress) customer.ownerDetails.permanentAddress = updates.permanentAddress;
+      if (bName || bBranch || bAcc || bIfsc) {
+        if (!customer.ownerDetails.bankDetails) customer.ownerDetails.bankDetails = {};
+        if (bName) customer.ownerDetails.bankDetails.bankName = bName;
+        if (bBranch) customer.ownerDetails.bankDetails.branch = bBranch;
+        if (bAcc) {
+          customer.ownerDetails.bankDetails.accountNumber = bAcc;
+          customer.ownerDetails.bankDetails.accountNo = bAcc;
+        }
+        if (bIfsc) {
+          customer.ownerDetails.bankDetails.ifscCode = bIfsc;
+          customer.ownerDetails.bankDetails.ifsc = bIfsc;
+        }
+      }
+      customer.markModified('ownerDetails');
+      customer.markModified('ownerDetails.bankDetails');
+      if (updates.ownerDetails?.propertyIds && Array.isArray(updates.ownerDetails.propertyIds)) {
         const validFlatIds = updates.ownerDetails.propertyIds.filter(id => mongoose.Types.ObjectId.isValid(id));
         if (validFlatIds.length > 0) {
           await Flat.updateMany({ _id: { $in: validFlatIds } }, { status: 'sold' });

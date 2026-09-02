@@ -50,6 +50,33 @@ const CustomerSchema = new mongoose.Schema(
       index: true,
     },
 
+    // Identification & KYC
+    panNumber: {
+      type: String,
+      trim: true,
+      uppercase: true,
+    },
+
+    aadhaarNumber: {
+      type: String,
+      trim: true,
+    },
+
+    permanentAddress: {
+      type: String,
+      trim: true,
+    },
+
+    // Bank Account Details (For Assured Rent Payouts & Transfers)
+    bankDetails: {
+      bankName: { type: String, trim: true },
+      branch: { type: String, trim: true },
+      accountNumber: { type: String, trim: true },
+      accountNo: { type: String, trim: true },
+      ifscCode: { type: String, trim: true, uppercase: true },
+      ifsc: { type: String, trim: true, uppercase: true },
+    },
+
     address: {
       addressLine1: String,
       addressLine2: String,
@@ -90,6 +117,38 @@ const CustomerSchema = new mongoose.Schema(
         min: 0,
         max: 100,
         default: 100,
+      },
+
+      panNumber: {
+        type: String,
+        trim: true,
+        uppercase: true,
+      },
+
+      aadhaarNumber: {
+        type: String,
+        trim: true,
+      },
+
+      permanentAddress: {
+        type: String,
+        trim: true,
+      },
+
+      bankDetails: {
+        bankName: { type: String, trim: true },
+        branch: { type: String, trim: true },
+        accountNumber: { type: String, trim: true },
+        accountNo: { type: String, trim: true },
+        ifscCode: { type: String, trim: true, uppercase: true },
+        ifsc: { type: String, trim: true, uppercase: true },
+      },
+
+      nominee: {
+        name: { type: String, trim: true },
+        relationship: { type: String, trim: true },
+        mobileNo: { type: String, trim: true },
+        aadhaarNumber: { type: String, trim: true },
       },
 
       salesAllotment: {

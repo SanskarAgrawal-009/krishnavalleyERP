@@ -432,20 +432,49 @@ export const updateFlat = async (req, res) => {
         if (flat.currentOwner.name) customer.name = flat.currentOwner.name;
         if (flat.currentOwner.mobileNo) customer.mobileNo = flat.currentOwner.mobileNo;
         if (flat.currentOwner.email) customer.email = flat.currentOwner.email;
-        if (flat.currentOwner.address) customer.address = flat.currentOwner.address;
+        if (flat.currentOwner.address) {
+          customer.permanentAddress = flat.currentOwner.address;
+          customer.address = { addressLine1: flat.currentOwner.address };
+        }
         if (flat.currentOwner.panNumber) customer.panNumber = flat.currentOwner.panNumber;
         if (flat.currentOwner.aadhaarNumber) customer.aadhaarNumber = flat.currentOwner.aadhaarNumber;
         
+        if (!customer.bankDetails) customer.bankDetails = {};
+        if (bName) customer.bankDetails.bankName = bName;
+        if (bBranch) customer.bankDetails.branch = bBranch;
+        if (bAcc) {
+          customer.bankDetails.accountNumber = bAcc;
+          customer.bankDetails.accountNo = bAcc;
+        }
+        if (bIfsc) {
+          customer.bankDetails.ifscCode = bIfsc;
+          customer.bankDetails.ifsc = bIfsc;
+        }
+
         if (!customer.ownerDetails) customer.ownerDetails = {};
         if (!customer.ownerDetails.propertyIds) customer.ownerDetails.propertyIds = [];
         if (!customer.ownerDetails.propertyIds.map(p => p.toString()).includes(flat._id.toString())) {
           customer.ownerDetails.propertyIds.push(flat._id);
         }
+        if (flat.currentOwner.panNumber) customer.ownerDetails.panNumber = flat.currentOwner.panNumber;
+        if (flat.currentOwner.aadhaarNumber) customer.ownerDetails.aadhaarNumber = flat.currentOwner.aadhaarNumber;
+        if (flat.currentOwner.address) customer.ownerDetails.permanentAddress = flat.currentOwner.address;
+
         if (!customer.ownerDetails.bankDetails) customer.ownerDetails.bankDetails = {};
         if (bName) customer.ownerDetails.bankDetails.bankName = bName;
         if (bBranch) customer.ownerDetails.bankDetails.branch = bBranch;
-        if (bAcc) customer.ownerDetails.bankDetails.accountNumber = bAcc;
-        if (bIfsc) customer.ownerDetails.bankDetails.ifscCode = bIfsc;
+        if (bAcc) {
+          customer.ownerDetails.bankDetails.accountNumber = bAcc;
+          customer.ownerDetails.bankDetails.accountNo = bAcc;
+        }
+        if (bIfsc) {
+          customer.ownerDetails.bankDetails.ifscCode = bIfsc;
+          customer.ownerDetails.bankDetails.ifsc = bIfsc;
+        }
+
+        customer.markModified('bankDetails');
+        customer.markModified('ownerDetails');
+        customer.markModified('ownerDetails.bankDetails');
 
         await customer.save();
         flat.currentOwner.customerId = customer._id;
