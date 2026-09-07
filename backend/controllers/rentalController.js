@@ -313,7 +313,8 @@ export const getRentalContracts = async (req, res) => {
       .populate('leasedUnits.ownerId', 'name mobileNo email')
       .populate('ownerId', 'name mobileNo email address')
       .populate('tenantId', 'name mobileNo email tenantDetails')
-      .sort({ updatedAt: -1 });
+      .sort({ updatedAt: -1 })
+      .lean();
 
     // In-memory customer name search fallback
     if (search) {
@@ -331,7 +332,7 @@ export const getRentalContracts = async (req, res) => {
 
     // Attach resolved tower and floor to each contract
     const formattedContracts = contracts.map((c) => {
-      const doc = c.toObject();
+      const doc = { ...c };
       const flat = doc.flatId || {};
       const proj = doc.projectId || {};
       

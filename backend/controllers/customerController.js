@@ -316,7 +316,8 @@ export const getCustomers = async (req, res) => {
         select: 'flatNumber status projectId buildingId takenForRental floor bhkType carpetArea basePrice',
         populate: { path: 'projectId', select: 'projectName projectCode' }
       })
-      .sort({ updatedAt: -1 });
+      .sort({ updatedAt: -1 })
+      .lean();
 
     return res.json({ success: true, count: customers.length, data: customers });
   } catch (error) {

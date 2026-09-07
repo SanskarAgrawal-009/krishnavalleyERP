@@ -27,7 +27,18 @@ export const getFileUrl = (filePath) => {
   return `${BACKEND_URL}${cleanPath}`;
 };
 
+// DSA In-Flight Promise Cache (O(1) Map for deduplicating concurrent GET requests)
+const inFlightGetRequests = new Map();
+
 export const request = async (endpoint, options = {}) => {
+  const method = (options.method || 'GET').toUpperCase();
+  const isGet = method === 'GET' && !options.body;
+
+  // If duplicate GET is already in-flight, reuse existing Promise (O(1) lookup)
+  if (isGet && inFlightGetRequests.has(endpoint)) {
+    return inFlightGetRequests.get(endpoint);
+  }
+
   const token = localStorage.getItem('kv_token');
   const isFormData = options.body instanceof FormData;
 
@@ -37,29 +48,43 @@ export const request = async (endpoint, options = {}) => {
     ...options.headers
   };
 
-  try {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
-      ...options,
-      headers
-    });
-
-    const text = await res.text();
-    let data;
+  const executeRequest = async () => {
     try {
-      data = text ? JSON.parse(text) : {};
-    } catch {
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${text || res.statusText || 'Request failed'}`);
-      }
-      data = { message: text };
-    }
+      const res = await fetch(`${BASE_URL}${endpoint}`, {
+        ...options,
+        headers
+      });
 
-    if (!res.ok) {
-      throw new Error(data.message || `API Request failed (${res.status})`);
+      const text = await res.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${text || res.statusText || 'Request failed'}`);
+        }
+        data = { message: text };
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || `API Request failed (${res.status})`);
+      }
+      return data;
+    } catch (error) {
+      console.error(`API Error on [${endpoint}]:`, error.message);
+      throw error;
+    } finally {
+      if (isGet) {
+        inFlightGetRequests.delete(endpoint);
+      }
     }
-    return data;
-  } catch (error) {
-    console.error(`API Error on [${endpoint}]:`, error.message);
-    throw error;
+  };
+
+  if (isGet) {
+    const promise = executeRequest();
+    inFlightGetRequests.set(endpoint, promise);
+    return promise;
   }
+
+  return executeRequest();
 };

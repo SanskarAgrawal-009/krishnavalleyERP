@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { rentalService } from '../../services/rentalService.js';
+import { projectService } from '../../services/projectService.js';
 import { ManualRentalModal } from '../../components/rentals/ManualRentalModal.jsx';
 import { RentalDetailModal } from '../../components/rentals/RentalDetailModal.jsx';
 import { RentalLedgerModal } from '../../components/rentals/RentalLedgerModal.jsx';
 import { ImportRentalLedgerModal } from '../../components/rentals/ImportRentalLedgerModal.jsx';
+import { BulkEnrollRentalModal } from '../../components/rentals/BulkEnrollRentalModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { ModuleMessagingCenter } from '../../components/notifications/ModuleMessagingCenter.jsx';
 import { QuickMessageModal } from '../../components/notifications/QuickMessageModal.jsx';
+import { TableSkeleton, CardGridSkeleton } from '../../components/common/SkeletonLoader.jsx';
+import { EmptyState } from '../../components/common/EmptyState.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
 
 import * as XLSX from 'xlsx';
 import {
@@ -34,7 +39,10 @@ import {
   BookOpen,
   Printer,
   Download,
-  Filter
+  Filter,
+  Sparkles,
+  Layers,
+  CheckCircle2
 } from 'lucide-react';
 
 export const RentalsPage = () => {
@@ -44,6 +52,7 @@ export const RentalsPage = () => {
   const getTabFromParam = (param) => {
     if (param === 'messaging') return 'messaging';
     if (param === 'rentback') return 'rentback';
+    if (param === 'units' || param === 'pool') return 'units';
     return 'contracts';
   };
 
@@ -58,6 +67,7 @@ export const RentalsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [rentBackFilter, setRentBackFilter] = useState('');
+  const toast = useToast();
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -82,6 +92,38 @@ export const RentalsPage = () => {
   const [quickMsgRental, setQuickMsgRental] = useState(null);
   const [isQuickMsgModalOpen, setIsQuickMsgModalOpen] = useState(false);
 
+  // 3-Year Rental Units Pool State
+  const [rentalFlats, setRentalFlats] = useState([]);
+  const [loadingRentalFlats, setLoadingRentalFlats] = useState(false);
+  const [unitsSearchTerm, setUnitsSearchTerm] = useState('');
+  const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+
+  const fetchRentalUnits = async () => {
+    setLoadingRentalFlats(true);
+    try {
+      const res = await projectService.getFlats();
+      const allFlats = res.data || (Array.isArray(res) ? res : []);
+      const pool = allFlats.filter(f =>
+        f.takenForRental ||
+        (f.status || '').toLowerCase() === 'leased' ||
+        Boolean(f.rentalContract) ||
+        Boolean(f.rentalDetails?.monthlyRent)
+      );
+      setRentalFlats(pool.length > 0 ? pool : allFlats);
+    } catch (err) {
+      console.error('Error loading rental flats:', err);
+      toast.error('Failed to load rental units pool');
+    } finally {
+      setLoadingRentalFlats(false);
+    }
+  };
+
+  useEffect(() => {
+    if (rentalViewTab === 'units') {
+      fetchRentalUnits();
+    }
+  }, [rentalViewTab]);
+
   const fetchRentals = async () => {
     setLoading(true);
     try {
@@ -94,6 +136,7 @@ export const RentalsPage = () => {
       if (res.data) setRentals(res.data);
     } catch (error) {
       console.error('Error fetching rentals:', error);
+      toast.error('Failed to fetch rental contracts');
     } finally {
       setLoading(false);
     }
@@ -117,16 +160,16 @@ export const RentalsPage = () => {
     try {
       if (editingContract) {
         await rentalService.updateRental(editingContract._id, data);
-        alert('Rental contract updated successfully!');
+        toast.success('Rental contract updated successfully!');
       } else {
         await rentalService.createRental(data);
-        alert('Rental contract initialized & unit reserved!');
+        toast.success('Rental contract initialized & unit reserved!');
       }
       setIsCreateModalOpen(false);
       setEditingContract(null);
       fetchRentals();
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message || 'Failed to save rental contract');
     }
   };
 
@@ -134,9 +177,10 @@ export const RentalsPage = () => {
     if (window.confirm(`Delete rental contract for "${contract.tenantAgreement?.tenantName || 'Unit'}"?`)) {
       try {
         await rentalService.deleteRental(contract._id);
+        toast.success('Rental contract deleted successfully');
         fetchRentals();
       } catch (err) {
-        alert(err.message);
+        toast.error(err.message || 'Failed to delete contract');
       }
     }
   };
@@ -344,6 +388,30 @@ export const RentalsPage = () => {
             <button
               type="button"
               onClick={() => {
+                setRentalViewTab('units');
+                setSearchParams({ tab: 'units' });
+              }}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                background: rentalViewTab === 'units' ? '#1a73e8' : 'transparent',
+                color: rentalViewTab === 'units' ? '#ffffff' : '#4b5563',
+                fontWeight: rentalViewTab === 'units' ? '800' : '600',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <Sparkles size={14} /> Rental Units Pool ({rentalFlats.length || '•'})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
                 setRentalViewTab('messaging');
                 setSearchParams({ tab: 'messaging' });
               }}
@@ -533,32 +601,21 @@ export const RentalsPage = () => {
             </div>
           </div>
 
-          {/* Rental Cards Grid */}
-          {rentals.length === 0 ? (
-            <div className="g-card" style={{ textAlign: 'center', padding: '50px 20px' }}>
-              <Repeat size={40} style={{ opacity: 0.3, margin: '0 auto 12px', color: '#4b5563' }} />
-              <h3 style={{ color: '#111827', marginBottom: '6px', fontWeight: '800' }}>No Rental Contracts Found</h3>
-              <p style={{ fontSize: '0.85rem', color: '#4b5563', marginBottom: '16px', fontWeight: '500' }}>
-                Create your first rental management contract to assign tenants and configure Rent-Back guaranteed returns.
-              </p>
-              <button
-                onClick={() => {
-                  setEditingContract(null);
-                  setIsCreateModalOpen(true);
-                }}
-                style={{
-                  padding: '9px 18px',
-                  background: '#1a73e8',
-                  color: '#ffffff',
-                  fontWeight: '700',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
-              >
-                <Plus size={14} /> Add First Contract
-              </button>
-            </div>
+          {/* Rental Cards Grid / Skeletons / Empty State */}
+          {loading ? (
+            <TableSkeleton rows={6} columns={6} />
+          ) : rentals.length === 0 ? (
+            <EmptyState
+              icon={Repeat}
+              title="No Rental Contracts Found"
+              description="Create your first rental management contract to assign units and configure 3-Year Rent-Back guaranteed payouts."
+              primaryAction={() => {
+                setEditingContract(null);
+                setIsCreateModalOpen(true);
+              }}
+              primaryActionLabel="Add First Contract"
+              primaryActionIcon={Plus}
+            />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {rentals.map((r) => {
@@ -1359,7 +1416,313 @@ export const RentalsPage = () => {
         </div>
       )}
 
-      {/* ================= TAB 3: TENANT MESSAGING HUB ================= */}
+      {/* ================= TAB: 3-YEAR RENTAL UNITS POOL ================= */}
+      {rentalViewTab === 'units' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Subheader and Actions Bar */}
+          <div className="g-card" style={{
+            padding: '18px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Sparkles size={20} color="#7c3aed" /> 3-Year Rental Units Pool &amp; Asset Management
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                Manage all property units committed to the 36-month guaranteed rent-back program, track owner yield allocations, and monitor tenant occupancy.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setIsEnrollModalOpen(true)}
+                style={{
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  background: '#7c3aed',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 6px rgba(124, 58, 237, 0.3)'
+                }}
+              >
+                <ShieldCheck size={16} /> + Enroll Flats in 3-Year Rental
+              </button>
+
+              <button
+                type="button"
+                onClick={fetchRentalUnits}
+                style={{
+                  padding: '9px 14px',
+                  borderRadius: '8px',
+                  background: '#ffffff',
+                  border: '1px solid #dadce0',
+                  color: '#475569',
+                  fontSize: '0.84rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <RefreshCw size={15} className={loadingRentalFlats ? 'spin' : ''} /> Refresh Pool
+              </button>
+            </div>
+          </div>
+
+          {/* Metric KPI Cards */}
+          {(() => {
+            let totalYield = 0;
+            let leasedCount = 0;
+            let vacantPoolCount = 0;
+
+            rentalFlats.forEach(f => {
+              const rent = f.rentalDetails?.monthlyRent || f.rentalContract?.rentBack?.monthlyRent || 25000;
+              totalYield += Number(rent) || 0;
+              const isLeased = (f.status || '').toLowerCase() === 'leased' || Boolean(f.rentalContract?.tenantAgreement?.tenantName);
+              if (isLeased) leasedCount++;
+              else vacantPoolCount++;
+            });
+
+            return (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #7c3aed' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>UNITS IN RENTAL POOL</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
+                    {rentalFlats.length} Flats
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: '#7c3aed', fontWeight: '600' }}>Committed to 3-Yr Scheme</span>
+                </div>
+
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #16a34a' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>MONTHLY GUARANTEED YIELD</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>
+                    {formatINR(totalYield)}/mo
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: '600' }}>Total owner disbursements</span>
+                </div>
+
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #0284c7' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>LEASED &amp; OCCUPIED</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0284c7', marginTop: '4px' }}>
+                    {leasedCount} Units
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: '#0369a1', fontWeight: '600' }}>Tenants generating revenue</span>
+                </div>
+
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #d97706' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>VACANT IN RENTAL POOL</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#d97706', marginTop: '4px' }}>
+                    {vacantPoolCount} Units
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: '#b45309', fontWeight: '600' }}>Ready for tenant allotment</span>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Search Bar */}
+          <div className="g-card" style={{ padding: '14px 20px', display: 'flex', gap: '14px', alignItems: 'center' }}>
+            <div style={{ flex: 1, position: 'relative' }}>
+              <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                type="text"
+                placeholder="Search flat number, tower, owner name..."
+                value={unitsSearchTerm}
+                onChange={(e) => setUnitsSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  paddingLeft: '36px',
+                  paddingRight: '12px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.84rem'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Table of Units in Rental Pool */}
+          {loadingRentalFlats ? (
+            <TableSkeleton rows={6} columns={7} />
+          ) : (
+            <div className="g-card" style={{ padding: 0, overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
+                    <th style={{ padding: '12px 16px' }}>Unit &amp; Tower</th>
+                    <th style={{ padding: '12px 16px' }}>Floor / BHK</th>
+                    <th style={{ padding: '12px 16px' }}>Registered Owner</th>
+                    <th style={{ padding: '12px 16px' }}>Monthly Guaranteed Yield</th>
+                    <th style={{ padding: '12px 16px' }}>Tenure</th>
+                    <th style={{ padding: '12px 16px' }}>Occupancy Status</th>
+                    <th style={{ padding: '12px 16px' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const filtered = rentalFlats.filter(f => {
+                      if (!unitsSearchTerm.trim()) return true;
+                      const q = unitsSearchTerm.toLowerCase();
+                      const matchFlat = (f.flatNumber || '').toLowerCase().includes(q);
+                      const matchTower = (f.buildingName || '').toLowerCase().includes(q);
+                      const matchOwner = (f.currentOwner?.name || f.owner?.name || '').toLowerCase().includes(q);
+                      return matchFlat || matchTower || matchOwner;
+                    });
+
+                    if (filtered.length === 0) {
+                      return (
+                        <tr>
+                          <td colSpan="7" style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b' }}>
+                            <Home size={32} color="#cbd5e1" style={{ margin: '0 auto 8px', display: 'block' }} />
+                            <div style={{ fontWeight: '700', fontSize: '0.95rem', color: '#1e293b' }}>No Units in Rental Pool</div>
+                            <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>Click "+ Enroll Flats in 3-Year Rental" to commit units to guaranteed rental management.</div>
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    return filtered.map((f) => {
+                      const monthlyRent = f.rentalDetails?.monthlyRent || f.rentalContract?.rentBack?.monthlyRent || 25000;
+                      const isLeased = (f.status || '').toLowerCase() === 'leased' || Boolean(f.rentalContract?.tenantAgreement?.tenantName);
+                      const matchedContract = rentals.find(r => r.flatId?._id === (f._id || f.id) || r.flatNumber === f.flatNumber);
+
+                      return (
+                        <tr key={f._id || f.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#0f172a' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <Building2 size={14} color="#7c3aed" /> Flat {f.flatNumber}
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
+                              {f.buildingName || 'Tower A'}
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: '700', color: '#334155' }}>
+                              Floor {f.floor === 0 ? 'Ground' : f.floor}
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                              {f.bhkType || '2BHK'} ({f.carpetArea || 950} sqft)
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: '800', color: '#1e293b' }}>
+                              {f.currentOwner?.name || f.owner?.name || 'Assigned Titleholder'}
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                              {f.currentOwner?.mobileNo || f.owner?.mobileNo || 'Contact on file'}
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#166534' }}>
+                            {formatINR(monthlyRent)}/mo
+                            <div style={{ fontSize: '0.7rem', color: '#7c3aed', fontWeight: '700' }}>
+                              3-Year Guaranteed
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 16px', fontWeight: '600', color: '#475569' }}>
+                            36 Months
+                            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                              Rent-Back Yield
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            <span style={{
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              fontSize: '0.74rem',
+                              fontWeight: '700',
+                              background: isLeased ? '#ecfdf5' : '#fef3c7',
+                              color: isLeased ? '#065f46' : '#92400e',
+                              border: isLeased ? '1px solid #a7f3d0' : '1px solid #fde68a'
+                            }}>
+                              {isLeased ? '✓ LEASED TO TENANT' : 'VACANT IN POOL'}
+                            </span>
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                              {matchedContract && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setLedgerContract(matchedContract);
+                                    setIsLedgerModalOpen(true);
+                                  }}
+                                  style={{
+                                    padding: '5px 10px',
+                                    background: '#7c3aed',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                  }}
+                                >
+                                  <BookOpen size={12} /> Ledger
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (matchedContract) {
+                                    setSelectedContract(matchedContract);
+                                    setIsDetailModalOpen(true);
+                                  } else {
+                                    alert(`Unit ${f.flatNumber} is enrolled in the 3-Year Rental Pool. Creating or syncing lease contract...`);
+                                  }
+                                }}
+                                style={{
+                                  padding: '5px 10px',
+                                  background: '#f8fafc',
+                                  border: '1px solid #cbd5e1',
+                                  color: '#334155',
+                                  borderRadius: '6px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: '600',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                Details
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          )}
+        </div>
+      )}
+
+      {/* ================= TAB 4: TENANT MESSAGING HUB ================= */}
       {rentalViewTab === 'messaging' && (
         <ModuleMessagingCenter
           module="rentals"
@@ -1405,6 +1768,17 @@ export const RentalsPage = () => {
         isOpen={isImportLedgerModalOpen}
         onClose={() => setIsImportLedgerModalOpen(false)}
         onSuccess={fetchRentals}
+      />
+
+      {/* BULK ENROLL FLATS IN 3-YEAR RENTAL MODAL */}
+      <BulkEnrollRentalModal
+        isOpen={isEnrollModalOpen}
+        onClose={() => setIsEnrollModalOpen(false)}
+        selectedFlats={[]}
+        onSuccess={() => {
+          fetchRentalUnits();
+          fetchRentals();
+        }}
       />
 
       {/* QUICK MESSAGE MODAL */}

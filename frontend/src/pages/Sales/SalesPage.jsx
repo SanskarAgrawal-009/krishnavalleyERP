@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { salesService } from '../../services/salesService.js';
+import { projectService } from '../../services/projectService.js';
 import { SalesDetailModal } from '../../components/sales/SalesDetailModal.jsx';
+import { RecordBuybackModal } from '../../components/sales/RecordBuybackModal.jsx';
+import { ImportOwnershipHistoryModal } from '../../components/sales/ImportOwnershipHistoryModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { ModuleMessagingCenter } from '../../components/notifications/ModuleMessagingCenter.jsx';
 import { QuickMessageModal } from '../../components/notifications/QuickMessageModal.jsx';
 import { ConvertLeadModal } from '../../components/sales/ConvertLeadModal.jsx';
 import { ImportPaymentsModal } from '../../components/sales/ImportPaymentsModal.jsx';
+import * as XLSX from 'xlsx';
 
 import {
   ShoppingBag,
@@ -29,7 +33,14 @@ import {
   Send,
   Zap,
   FileSpreadsheet,
-  Trash2
+  Trash2,
+  History,
+  RotateCcw,
+  Download,
+  ShieldCheck,
+  UserCheck,
+  Tag,
+  ExternalLink
 } from 'lucide-react';
 
 export const SalesPage = () => {
@@ -39,6 +50,7 @@ export const SalesPage = () => {
   const getTabFromParam = (param) => {
     if (param === 'messaging') return 'messaging';
     if (param === 'lifecycle') return 'lifecycle';
+    if (param === 'resale' || param === 'history') return 'resale';
     return 'pipeline';
   };
 
@@ -78,6 +90,37 @@ export const SalesPage = () => {
 
   // New Booking Modal State
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  // Resale & Ownership History Submodule State
+  const [allFlats, setAllFlats] = useState([]);
+  const [resaleSearchTerm, setResaleSearchTerm] = useState('');
+  const [resaleFilterReason, setResaleFilterReason] = useState('all');
+  const [isBuybackModalOpen, setIsBuybackModalOpen] = useState(false);
+  const [buybackTargetFlat, setBuybackTargetFlat] = useState(null);
+  const [isImportHistoryModalOpen, setIsImportHistoryModalOpen] = useState(false);
+  const [loadingResale, setLoadingResale] = useState(false);
+
+  const fetchFlatsData = async () => {
+    setLoadingResale(true);
+    try {
+      const res = await projectService.getFlats();
+      if (res && res.data) {
+        setAllFlats(res.data);
+      } else if (Array.isArray(res)) {
+        setAllFlats(res);
+      }
+    } catch (err) {
+      console.error('Error loading flats in Sales:', err);
+    } finally {
+      setLoadingResale(false);
+    }
+  };
+
+  useEffect(() => {
+    if (salesViewTab === 'resale') {
+      fetchFlatsData();
+    }
+  }, [salesViewTab]);
 
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -390,6 +433,30 @@ export const SalesPage = () => {
               }}
             >
               <DollarSign size={14} /> Milestone Demands ({salesLeads.length})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSalesViewTab('resale');
+                setSearchParams({ tab: 'resale' });
+              }}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                background: salesViewTab === 'resale' ? '#1a73e8' : 'transparent',
+                color: salesViewTab === 'resale' ? '#ffffff' : '#4b5563',
+                fontWeight: salesViewTab === 'resale' ? '800' : '600',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <History size={14} /> Resale &amp; History
             </button>
 
             <button
@@ -1015,7 +1082,365 @@ export const SalesPage = () => {
         </div>
       )}
 
-      {/* ================= TAB 3: BUYER MESSAGING & REMINDERS CENTER ================= */}
+      {/* ================= TAB 3: RESALE, BUYBACKS & OWNERSHIP HISTORY ================= */}
+      {salesViewTab === 'resale' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Subheader and Actions Bar */}
+          <div className="g-card" style={{
+            padding: '18px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <History size={20} color="#2563eb" /> Resale, Buybacks &amp; Ownership Title Transfers
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                Track developer buybacks, secondary market resales, archived titleholders, and historical rent payouts.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setBuybackTargetFlat(null);
+                  setIsBuybackModalOpen(true);
+                }}
+                style={{
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 6px rgba(37, 99, 235, 0.3)'
+                }}
+              >
+                <RotateCcw size={16} /> + Record Buyback / Resale
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsImportHistoryModalOpen(true)}
+                style={{
+                  padding: '9px 16px',
+                  borderRadius: '8px',
+                  background: '#16a34a',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)'
+                }}
+              >
+                <FileSpreadsheet size={16} /> Import Ownership History Excel
+              </button>
+
+              <button
+                type="button"
+                onClick={fetchFlatsData}
+                style={{
+                  padding: '9px 14px',
+                  borderRadius: '8px',
+                  background: '#ffffff',
+                  border: '1px solid #dadce0',
+                  color: '#475569',
+                  fontSize: '0.84rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <RefreshCw size={15} className={loadingResale ? 'spin' : ''} /> Refresh
+              </button>
+            </div>
+          </div>
+
+          {/* Metric KPI Cards */}
+          {(() => {
+            const flatsWithHistory = allFlats.filter(f =>
+              (f.ownershipHistory && f.ownershipHistory.length > 0) ||
+              (f.buybackCount && f.buybackCount > 0) ||
+              ['resell', 'resold', 'buy_back', 'buyback', 'possession_renewal'].includes((f.status || '').toLowerCase())
+            );
+
+            let totalBuybacks = 0;
+            let totalResales = 0;
+            let totalValuation = 0;
+            let totalRentPaidToPrior = 0;
+
+            flatsWithHistory.forEach(f => {
+              if (f.buybackCount) totalBuybacks += f.buybackCount;
+              if (['buy_back', 'buyback'].includes((f.status || '').toLowerCase())) totalBuybacks += 1;
+              if (['resell', 'resold'].includes((f.status || '').toLowerCase())) totalResales += 1;
+              
+              if (f.ownershipHistory) {
+                f.ownershipHistory.forEach(h => {
+                  if ((h.transferReason || '').toLowerCase().includes('buy')) totalBuybacks++;
+                  if ((h.transferReason || '').toLowerCase().includes('resale')) totalResales++;
+                  totalValuation += Number(h.historicalValuation || h.historicalPaidAmount || 0);
+                  totalRentPaidToPrior += Number(h.totalRentPaidToPreviousOwner || h.rentPaidToPreviousOwner || 0);
+                });
+              }
+            });
+
+            return (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #2563eb' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>TOTAL TRANSFER AUDITS</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
+                    {flatsWithHistory.length} Units
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: '#2563eb', fontWeight: '600' }}>Active in resale ledger</span>
+                </div>
+
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #16a34a' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>DEVELOPER BUYBACKS</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>
+                    {totalBuybacks} Transactions
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: '600' }}>Repurchased under MOU</span>
+                </div>
+
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #0284c7' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>SECONDARY RESALES</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0284c7', marginTop: '4px' }}>
+                    {totalResales} Units
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: '#0369a1', fontWeight: '600' }}>Title transferred to buyer B</span>
+                </div>
+
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #d97706' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>RENT PAID TO PRIOR OWNERS</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#d97706', marginTop: '4px' }}>
+                    {formatINR(totalRentPaidToPrior)}
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: '#b45309', fontWeight: '600' }}>Archived payout ledger</span>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Search & Filter Bar */}
+          <div className="g-card" style={{ padding: '14px 20px', display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
+              <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                type="text"
+                placeholder="Search flat number, tower, owner name..."
+                value={resaleSearchTerm}
+                onChange={(e) => setResaleSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  paddingLeft: '36px',
+                  paddingRight: '12px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.84rem'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#475569' }}>Filter Type:</span>
+              <select
+                value={resaleFilterReason}
+                onChange={(e) => setResaleFilterReason(e.target.value)}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.84rem',
+                  background: '#ffffff',
+                  color: '#0f172a'
+                }}
+              >
+                <option value="all">All Transfer Types</option>
+                <option value="buyback">Buyback Repurchase</option>
+                <option value="resale">Direct Resale</option>
+                <option value="possession_renewal">Possession Renewal</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Resale & History Table */}
+          <div className="g-card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
+                    <th style={{ padding: '12px 16px' }}>Unit &amp; Tower</th>
+                    <th style={{ padding: '12px 16px' }}>Floor / BHK</th>
+                    <th style={{ padding: '12px 16px' }}>Current Titleholder</th>
+                    <th style={{ padding: '12px 16px' }}>Ownership Trail &amp; Prior Owners</th>
+                    <th style={{ padding: '12px 16px' }}>Status / Reason</th>
+                    <th style={{ padding: '12px 16px' }}>Prior Rent Paid (₹)</th>
+                    <th style={{ padding: '12px 16px' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const filtered = allFlats.filter(f => {
+                      const hasRecords = (f.ownershipHistory && f.ownershipHistory.length > 0) ||
+                        (f.buybackCount && f.buybackCount > 0) ||
+                        ['resell', 'resold', 'buy_back', 'buyback', 'possession_renewal'].includes((f.status || '').toLowerCase()) ||
+                        Boolean(f.currentOwner);
+
+                      if (!hasRecords) return false;
+
+                      if (resaleSearchTerm.trim()) {
+                        const q = resaleSearchTerm.toLowerCase();
+                        const matchFlat = (f.flatNumber || '').toLowerCase().includes(q);
+                        const matchTower = (f.buildingName || '').toLowerCase().includes(q);
+                        const matchOwner = (f.currentOwner?.name || '').toLowerCase().includes(q);
+                        const matchHist = f.ownershipHistory?.some(h => (h.previousOwnerName || '').toLowerCase().includes(q) || (h.currentOwnerName || '').toLowerCase().includes(q));
+                        if (!matchFlat && !matchTower && !matchOwner && !matchHist) return false;
+                      }
+
+                      if (resaleFilterReason !== 'all') {
+                        const status = (f.status || '').toLowerCase();
+                        const inHist = f.ownershipHistory?.some(h => (h.transferReason || '').toLowerCase().includes(resaleFilterReason));
+                        if (resaleFilterReason === 'buyback' && !status.includes('buy') && !inHist && (f.buybackCount || 0) === 0) return false;
+                        if (resaleFilterReason === 'resale' && !status.includes('resell') && !inHist) return false;
+                        if (resaleFilterReason === 'possession_renewal' && !status.includes('renewal') && !inHist) return false;
+                      }
+
+                      return true;
+                    });
+
+                    if (filtered.length === 0) {
+                      return (
+                        <tr>
+                          <td colSpan="7" style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b' }}>
+                            <History size={32} color="#cbd5e1" style={{ margin: '0 auto 8px', display: 'block' }} />
+                            <div style={{ fontWeight: '700', fontSize: '0.95rem', color: '#1e293b' }}>No Resale or Buyback Records Found</div>
+                            <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>Click "+ Record Buyback / Resale" or "Import Ownership History Excel" to record transfers.</div>
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    return filtered.map((f) => {
+                      const latestHist = f.ownershipHistory && f.ownershipHistory.length > 0
+                        ? f.ownershipHistory[f.ownershipHistory.length - 1]
+                        : null;
+                      const priorRent = latestHist?.totalRentPaidToPreviousOwner || f.rentalDetails?.totalRentPaid || 0;
+
+                      return (
+                        <tr key={f._id || f.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#0f172a' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <Building2 size={14} color="#2563eb" /> Flat {f.flatNumber}
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
+                              {f.buildingName || 'Tower A'}
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: '700', color: '#334155' }}>
+                              Floor {f.floor === 0 ? 'Ground' : f.floor}
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                              {f.bhkType || '2BHK'}
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: '800', color: '#1e293b' }}>
+                              {f.currentOwner?.name || latestHist?.currentOwnerName || 'Unassigned / Developer'}
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                              {f.currentOwner?.mobileNo || latestHist?.currentOwnerMobile || 'Contact on file'}
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            {f.ownershipHistory && f.ownershipHistory.length > 0 ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                                <span style={{ fontWeight: '700', color: '#475569' }}>
+                                  Prior: {latestHist?.previousOwnerName || 'Prior Owner'}
+                                </span>
+                                <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                                  {f.ownershipHistory.length} Previous Owner(s) on record
+                                </span>
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>First Registered Owner</span>
+                            )}
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            <span style={{
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              fontSize: '0.74rem',
+                              fontWeight: '700',
+                              background: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#dcfce7' : '#e0f2fe',
+                              color: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#166534' : '#0369a1',
+                              textTransform: 'uppercase'
+                            }}>
+                              {latestHist?.transferReason || (f.status ? f.status.replace(/_/g, ' ') : 'Allotted')}
+                            </span>
+                          </td>
+
+                          <td style={{ padding: '12px 16px', fontWeight: '700', color: '#b45309' }}>
+                            {formatINR(priorRent)}
+                          </td>
+
+                          <td style={{ padding: '12px 16px' }}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setBuybackTargetFlat(f);
+                                setIsBuybackModalOpen(true);
+                              }}
+                              style={{
+                                padding: '6px 12px',
+                                background: '#f8fafc',
+                                border: '1px solid #cbd5e1',
+                                borderRadius: '6px',
+                                color: '#0f172a',
+                                fontSize: '0.76rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <RotateCcw size={12} color="#2563eb" /> Record Transfer
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= TAB 4: BUYER MESSAGING & REMINDERS CENTER ================= */}
       {salesViewTab === 'messaging' && (
         <ModuleMessagingCenter
           module="sales"
@@ -1060,6 +1485,31 @@ export const SalesPage = () => {
         isOpen={isImportPaymentsModalOpen}
         onClose={() => setIsImportPaymentsModalOpen(false)}
         onSuccess={fetchSalesLeads}
+      />
+
+      {/* RECORD BUYBACK / RESALE MODAL */}
+      <RecordBuybackModal
+        isOpen={isBuybackModalOpen}
+        onClose={() => {
+          setIsBuybackModalOpen(false);
+          setBuybackTargetFlat(null);
+        }}
+        flat={buybackTargetFlat}
+        flatsList={allFlats}
+        onSuccess={() => {
+          fetchFlatsData();
+          fetchSalesLeads();
+        }}
+      />
+
+      {/* IMPORT OWNERSHIP HISTORY MODAL */}
+      <ImportOwnershipHistoryModal
+        isOpen={isImportHistoryModalOpen}
+        onClose={() => setIsImportHistoryModalOpen(false)}
+        onSuccess={() => {
+          fetchFlatsData();
+          fetchSalesLeads();
+        }}
       />
 
     </div>

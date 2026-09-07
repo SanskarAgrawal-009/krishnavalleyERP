@@ -49,7 +49,8 @@ import {
   Sparkles,
   AlertTriangle,
   Clock,
-  BookOpen
+  BookOpen,
+  History
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -69,7 +70,7 @@ const NAV_ITEMS = [
     subItems: [
       { path: '/inventory?view=projects', label: 'All Projects & Sites', icon: Building2 },
       { path: '/inventory?view=buildings', label: 'Buildings & Towers', icon: Layers },
-      { path: '/inventory?view=flats', label: 'Flats & Availability', icon: Building2 }
+      { path: '/inventory?view=flats', label: 'Flats & Availability Matrix', icon: Building2 }
     ]
   },
   {
@@ -128,6 +129,7 @@ const NAV_ITEMS = [
     subItems: [
       { path: '/sales?tab=deals', label: 'Sales Deals Register', icon: ShoppingBag },
       { path: '/sales?tab=lifecycle', label: 'Milestone Demands', icon: DollarSign },
+      { path: '/sales?tab=resale', label: 'Resale & Ownership History', icon: History },
       { path: '/sales?tab=messaging', label: 'Buyer Messaging Center', icon: MessageSquare }
     ]
   },
@@ -150,6 +152,7 @@ const NAV_ITEMS = [
     subItems: [
       { path: '/rentals?tab=rentback', label: '36-Month Rental Ledger', icon: BookOpen },
       { path: '/rentals?tab=contracts', label: 'Rental Contracts & Leases', icon: Repeat },
+      { path: '/rentals?tab=units', label: 'Rental Units Pool', icon: Sparkles },
       { path: '/rentals?tab=messaging', label: 'Owner & Tenant Notices', icon: MessageSquare }
     ]
   },

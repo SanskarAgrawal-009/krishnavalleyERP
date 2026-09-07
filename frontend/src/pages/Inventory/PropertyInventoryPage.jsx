@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { projectService } from '../../services/projectService.js';
 import { ManualProjectModal } from '../../components/manual/ManualProjectModal.jsx';
@@ -7,9 +7,10 @@ import { ManualFloorModal } from '../../components/manual/ManualFloorModal.jsx';
 import { ManualFlatModal } from '../../components/manual/ManualFlatModal.jsx';
 import { FlatDetailModal } from '../../components/inventory/FlatDetailModal.jsx';
 import { ImportInventoryModal } from '../../components/inventory/ImportInventoryModal.jsx';
-import { ImportOwnershipHistoryModal } from '../../components/inventory/ImportOwnershipHistoryModal.jsx';
-import { BulkEnrollRentalSalesModal } from '../../components/inventory/BulkEnrollRentalSalesModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
+import { TableSkeleton, CardGridSkeleton } from '../../components/common/SkeletonLoader.jsx';
+import { EmptyState } from '../../components/common/EmptyState.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
 
 import {
   Building2,
@@ -25,14 +26,13 @@ import {
   Filter,
   Search,
   X,
-  RotateCcw,
   CheckCircle2,
   Clock,
   FileSpreadsheet,
-  ShieldCheck,
   CheckSquare,
   Square,
-  Repeat
+  Repeat,
+  RotateCcw
 } from 'lucide-react';
 
 export const PropertyInventoryPage = () => {
@@ -41,6 +41,8 @@ export const PropertyInventoryPage = () => {
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingFlats, setLoadingFlats] = useState(false);
+  const toast = useToast();
 
   // Hierarchy Selection State
   const [selectedProject, setSelectedProject] = useState(null);
@@ -48,7 +50,7 @@ export const PropertyInventoryPage = () => {
   const [flats, setFlats] = useState([]);
 
   // Flat Filter States
-  const [availabilityFilter, setAvailabilityFilter] = useState('all'); // 'all' | 'available' | 'sold' | 'hold' | 'rental'
+  const [availabilityFilter, setAvailabilityFilter] = useState('all'); // 'all' | 'available' | 'sold' | 'hold'
   const [floorFilter, setFloorFilter] = useState('all');
   const [bhkFilter, setBhkFilter] = useState('all');
   const [flatSearchQuery, setFlatSearchQuery] = useState('');
@@ -64,9 +66,7 @@ export const PropertyInventoryPage = () => {
   const [isFlatDetailOpen, setIsFlatDetailOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importCategory, setImportCategory] = useState('sold');
-  const [isImportHistoryModalOpen, setIsImportHistoryModalOpen] = useState(false);
   const [selectedFlatIds, setSelectedFlatIds] = useState([]);
-  const [isBulkEnrollModalOpen, setIsBulkEnrollModalOpen] = useState(false);
 
   // Toggle Flat Selection
   const handleToggleSelectFlat = (flatId, e) => {
@@ -139,6 +139,7 @@ export const PropertyInventoryPage = () => {
   // Fetch Flats when building is selected
   const fetchFlats = async () => {
     if (!selectedBuilding || !selectedProject) return;
+    setLoadingFlats(true);
     try {
       const pId = selectedProject._id || selectedProject.id;
       const bId = selectedBuilding._id || selectedBuilding.id;
@@ -146,6 +147,9 @@ export const PropertyInventoryPage = () => {
       if (res.data) setFlats(res.data);
     } catch (error) {
       console.error('Error loading flats:', error);
+      toast.error('Failed to load flats for this building.');
+    } finally {
+      setLoadingFlats(false);
     }
   };
 
@@ -159,34 +163,31 @@ export const PropertyInventoryPage = () => {
 
   // Flat Availability Counts
   const availableCount = flats.filter(f => (f.status || '').toLowerCase() === 'available').length;
-  const soldCount = flats.filter(f => (f.status || '').toLowerCase() === 'sold').length;
-  const resellCount = flats.filter(f => ['resell', 'resold'].includes((f.status || '').toLowerCase())).length;
-  const buybackCount = flats.filter(f => ['buy_back', 'buyback'].includes((f.status || '').toLowerCase())).length;
-  const possessionRenewalCount = flats.filter(f => ['possession_renewal', 'renewal'].includes((f.status || '').toLowerCase())).length;
+  const soldCount = flats.filter(f => (f.status || '').toLowerCase() !== 'available' && !['hold', 'booked', 'on_hold', 'pending'].includes((f.status || '').toLowerCase())).length;
   const holdCount = flats.filter(f => ['hold', 'booked', 'on_hold', 'pending'].includes((f.status || '').toLowerCase())).length;
-  const rentalCount = flats.filter(f => f.takenForRental || (f.status || '').toLowerCase() === 'leased').length;
 
   const uniqueFloors = Array.from(new Set(flats.map(f => f.floor).filter(f => f !== undefined && f !== null))).sort((a, b) => a - b);
   const standardBhkOptions = ['1BHK', '2BHK', '3BHK', '4BHK', 'Service Apartment', 'Studio', 'Penthouse', 'Villa', 'Commercial'];
   const uniqueBhkTypes = Array.from(new Set([...standardBhkOptions, ...flats.map(f => f.bhkType).filter(Boolean)]));
 
-  // Filtered Flats List
-  const filteredFlats = flats.filter((flat) => {
-    const status = (flat.status || '').toLowerCase();
-    if (availabilityFilter === 'available' && status !== 'available') return false;
-    if (availabilityFilter === 'sold' && status !== 'sold') return false;
-    if (availabilityFilter === 'resell' && !['resell', 'resold'].includes(status)) return false;
-    if (availabilityFilter === 'buy_back' && !['buy_back', 'buyback'].includes(status)) return false;
-    if (availabilityFilter === 'possession_renewal' && !['possession_renewal', 'renewal'].includes(status)) return false;
-    if (availabilityFilter === 'hold' && !['hold', 'booked', 'on_hold', 'pending'].includes(status)) return false;
-    if (availabilityFilter === 'rental' && !flat.takenForRental && status !== 'leased') return false;
+  // DSA Memoization Optimization (O(N) filtered only on filter state change)
+  const filteredFlats = useMemo(() => {
+    return flats.filter((flat) => {
+      const status = (flat.status || '').toLowerCase();
+      if (availabilityFilter === 'available' && status !== 'available') return false;
+      if (availabilityFilter === 'sold' && (status === 'available' || ['hold', 'booked', 'on_hold', 'pending'].includes(status))) return false;
+      if (availabilityFilter === 'hold' && !['hold', 'booked', 'on_hold', 'pending'].includes(status)) return false;
 
-    if (floorFilter !== 'all' && String(flat.floor) !== String(floorFilter)) return false;
-    if (bhkFilter !== 'all' && (flat.bhkType || '').toLowerCase() !== bhkFilter.toLowerCase()) return false;
-    if (flatSearchQuery.trim() && !flat.flatNumber?.toLowerCase().includes(flatSearchQuery.trim().toLowerCase())) return false;
+      if (floorFilter !== 'all' && String(flat.floor) !== String(floorFilter)) return false;
+      if (bhkFilter !== 'all' && (flat.bhkType || '').toLowerCase() !== bhkFilter.toLowerCase()) return false;
+      if (flatSearchQuery.trim() && !flat.flatNumber?.toLowerCase().includes(flatSearchQuery.trim().toLowerCase())) return false;
 
-    return true;
-  });
+      return true;
+    });
+  }, [flats, availabilityFilter, floorFilter, bhkFilter, flatSearchQuery]);
+
+  // DSA O(1) Set lookup for flat selection
+  const selectedFlatIdSet = useMemo(() => new Set(selectedFlatIds), [selectedFlatIds]);
 
   const hasActiveFilters = availabilityFilter !== 'all' || floorFilter !== 'all' || bhkFilter !== 'all' || flatSearchQuery.trim() !== '';
 
@@ -731,28 +732,17 @@ export const PropertyInventoryPage = () => {
             </h3>
           </div>
 
-          {projects.length === 0 ? (
-            <div className="g-card" style={{ textAlign: 'center', padding: '50px 20px' }}>
-              <Building2 size={42} style={{ opacity: 0.3, margin: '0 auto 12px', color: '#727785' }} />
-              <h3 style={{ color: '#191c1d', marginBottom: '6px', fontWeight: '700' }}>No Projects Registered</h3>
-              <p style={{ fontSize: '0.85rem', color: '#414754', marginBottom: '16px' }}>
-                Add your first real estate development project to start configuring buildings and flats.
-              </p>
-              <button
-                onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
-                style={{
-                  background: '#1a73e8',
-                  color: '#ffffff',
-                  padding: '9px 18px',
-                  borderRadius: '6px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
-              >
-                <Plus size={15} /> Add First Project
-              </button>
-            </div>
+          {loading ? (
+            <CardGridSkeleton cards={3} height="190px" />
+          ) : projects.length === 0 ? (
+            <EmptyState
+              icon={Building2}
+              title="No Projects Registered"
+              description="Add your first real estate development project to start configuring buildings and flats."
+              primaryAction={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
+              primaryActionLabel="Add First Project"
+              primaryActionIcon={Plus}
+            />
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '18px' }}>
               {projects.map((proj) => {
@@ -1212,133 +1202,6 @@ export const PropertyInventoryPage = () => {
                         {holdCount}
                       </span>
                     </button>
-
-                    {/* Resell */}
-                    <button
-                      onClick={() => setAvailabilityFilter('resell')}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: '20px',
-                        fontSize: '0.8rem',
-                        fontWeight: availabilityFilter === 'resell' ? '700' : '600',
-                        background: availabilityFilter === 'resell' ? '#7c3aed' : '#f3e8ff',
-                        color: availabilityFilter === 'resell' ? '#ffffff' : '#7c3aed',
-                        border: availabilityFilter === 'resell' ? '1px solid #7c3aed' : '1px solid #ddd6fe',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <Repeat size={13} />
-                      <span>Resell</span>
-                      <span style={{
-                        background: availabilityFilter === 'resell' ? 'rgba(255,255,255,0.25)' : '#ddd6fe',
-                        color: availabilityFilter === 'resell' ? '#ffffff' : '#5b21b6',
-                        padding: '1px 6px',
-                        borderRadius: '10px',
-                        fontSize: '0.72rem',
-                        fontWeight: '700'
-                      }}>
-                        {resellCount}
-                      </span>
-                    </button>
-
-                    {/* Possession Renewal */}
-                    <button
-                      onClick={() => setAvailabilityFilter('possession_renewal')}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: '20px',
-                        fontSize: '0.8rem',
-                        fontWeight: availabilityFilter === 'possession_renewal' ? '700' : '600',
-                        background: availabilityFilter === 'possession_renewal' ? '#059669' : '#ecfdf5',
-                        color: availabilityFilter === 'possession_renewal' ? '#ffffff' : '#059669',
-                        border: availabilityFilter === 'possession_renewal' ? '1px solid #059669' : '1px solid #a7f3d0',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <RefreshCw size={13} />
-                      <span>Possession Renewal</span>
-                      <span style={{
-                        background: availabilityFilter === 'possession_renewal' ? 'rgba(255,255,255,0.25)' : '#a7f3d0',
-                        color: availabilityFilter === 'possession_renewal' ? '#ffffff' : '#065f46',
-                        padding: '1px 6px',
-                        borderRadius: '10px',
-                        fontSize: '0.72rem',
-                        fontWeight: '700'
-                      }}>
-                        {possessionRenewalCount}
-                      </span>
-                    </button>
-
-                    {/* Buy Back */}
-                    <button
-                      onClick={() => setAvailabilityFilter('buy_back')}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: '20px',
-                        fontSize: '0.8rem',
-                        fontWeight: availabilityFilter === 'buy_back' ? '700' : '600',
-                        background: availabilityFilter === 'buy_back' ? '#0284c7' : '#e0f2fe',
-                        color: availabilityFilter === 'buy_back' ? '#ffffff' : '#0284c7',
-                        border: availabilityFilter === 'buy_back' ? '1px solid #0284c7' : '1px solid #bae6fd',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <RotateCcw size={13} />
-                      <span>Buy Back</span>
-                      <span style={{
-                        background: availabilityFilter === 'buy_back' ? 'rgba(255,255,255,0.25)' : '#bae6fd',
-                        color: availabilityFilter === 'buy_back' ? '#ffffff' : '#0369a1',
-                        padding: '1px 6px',
-                        borderRadius: '10px',
-                        fontSize: '0.72rem',
-                        fontWeight: '700'
-                      }}>
-                        {buybackCount}
-                      </span>
-                    </button>
-
-                    {/* Rental Program */}
-                    <button
-                      onClick={() => setAvailabilityFilter('rental')}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: '20px',
-                        fontSize: '0.8rem',
-                        fontWeight: availabilityFilter === 'rental' ? '700' : '600',
-                        background: availabilityFilter === 'rental' ? '#7e22ce' : '#f3e8fd',
-                        color: availabilityFilter === 'rental' ? '#ffffff' : '#7e22ce',
-                        border: availabilityFilter === 'rental' ? '1px solid #7e22ce' : '1px solid #e9d5ff',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <span>Rental Program</span>
-                      <span style={{
-                        background: availabilityFilter === 'rental' ? 'rgba(255,255,255,0.25)' : '#e9d5ff',
-                        color: availabilityFilter === 'rental' ? '#ffffff' : '#6b21a8',
-                        padding: '1px 6px',
-                        borderRadius: '10px',
-                        fontSize: '0.72rem',
-                        fontWeight: '700'
-                      }}>
-                        {rentalCount}
-                      </span>
-                    </button>
                   </div>
 
                   {/* Summary & Selection Controls */}
@@ -1498,89 +1361,35 @@ export const PropertyInventoryPage = () => {
                 </div>
               </div>
 
-              {/* Flats Listing / Empty State */}
-              {flats.length === 0 ? (
-                <div className="g-card" style={{ textAlign: 'center', padding: '50px 20px', background: '#ffffff', borderRadius: '12px', border: '2px dashed #86efac' }}>
-                  <FileSpreadsheet size={48} style={{ margin: '0 auto 12px', color: '#16a34a' }} />
-                  <h4 style={{ color: '#0f172a', fontWeight: '800', marginBottom: '6px', fontSize: '1.15rem' }}>
-                    No Flats in {selectedBuilding.buildingName} Yet
-                  </h4>
-                  <p style={{ fontSize: '0.86rem', color: '#64748b', marginBottom: '20px', maxWidth: '480px', margin: '0 auto 20px' }}>
-                    Upload your inventory Excel sheet with flat numbers, floors, owner names, deal prices, and 3-Year rental terms to instantly populate everything!
-                  </p>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                    <button
-                      onClick={() => setIsImportModalOpen(true)}
-                      style={{
-                        background: '#16a34a',
-                        color: '#ffffff',
-                        padding: '10px 20px',
-                        borderRadius: '8px',
-                        fontWeight: '700',
-                        fontSize: '0.88rem',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        cursor: 'pointer',
-                        border: 'none',
-                        boxShadow: '0 2px 6px rgba(22,163,74,0.3)'
-                      }}
-                    >
-                      <FileSpreadsheet size={17} /> Upload Excel / Legacy Sheet
-                    </button>
-                    <button
-                      onClick={() => setIsFloorModalOpen(true)}
-                      style={{
-                        background: '#ffffff',
-                        color: '#1a73e8',
-                        border: '1px solid #1a73e8',
-                        padding: '10px 18px',
-                        borderRadius: '8px',
-                        fontWeight: '700',
-                        fontSize: '0.88rem',
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <Plus size={16} /> Add Floor &amp; Flats Manually
-                    </button>
-                  </div>
-                </div>
+              {/* Flats Listing / Skeletons / Empty State */}
+              {loadingFlats ? (
+                <TableSkeleton rows={7} columns={6} />
+              ) : flats.length === 0 ? (
+                <EmptyState
+                  icon={FileSpreadsheet}
+                  title={`No Flats in ${selectedBuilding.buildingName} Yet`}
+                  description="Upload your inventory Excel sheet with flat numbers, floors, owner names, deal prices, and 3-Year rental terms to instantly populate everything!"
+                  primaryAction={() => setIsImportModalOpen(true)}
+                  primaryActionLabel="Upload Excel / Legacy Sheet"
+                  primaryActionIcon={FileSpreadsheet}
+                  secondaryAction={() => setIsFloorModalOpen(true)}
+                  secondaryActionLabel="Add Floor & Flats Manually"
+                  secondaryActionIcon={Plus}
+                />
               ) : filteredFlats.length === 0 ? (
-                <div className="g-card" style={{ textAlign: 'center', padding: '50px 20px', background: '#ffffff', borderRadius: '12px', border: '1px solid #dadce0' }}>
-                  <Filter size={40} style={{ opacity: 0.35, margin: '0 auto 12px', color: '#727785' }} />
-                  <h4 style={{ color: '#191c1d', fontWeight: '700', marginBottom: '6px', fontSize: '1.05rem' }}>
-                    No Flats Match Your Filters
-                  </h4>
-                  <p style={{ fontSize: '0.84rem', color: '#5f6368', marginBottom: '16px', maxWidth: '400px', margin: '0 auto 16px' }}>
-                    There are no units matching the selected availability status or search terms in {selectedBuilding.buildingName}.
-                  </p>
-                  <button
-                    onClick={resetFlatFilters}
-                    style={{
-                      background: '#1a73e8',
-                      color: '#ffffff',
-                      padding: '8px 16px',
-                      borderRadius: '6px',
-                      fontSize: '0.82rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      border: 'none',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    <RotateCcw size={14} /> Show All Flats ({flats.length})
-                  </button>
-                </div>
+                <EmptyState
+                  icon={Filter}
+                  title="No Flats Match Your Filters"
+                  description={`There are no units matching the selected availability status or search terms in ${selectedBuilding.buildingName}.`}
+                  primaryAction={resetFlatFilters}
+                  primaryActionLabel={`Show All Flats (${flats.length})`}
+                  primaryActionIcon={RotateCcw}
+                />
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '14px' }}>
                   {filteredFlats.map((flat) => {
                     const fId = flat._id || flat.id;
-                    const isSelected = selectedFlatIds.includes(fId);
+                    const isSelected = selectedFlatIdSet.has(fId);
 
                     return (
                     <div
@@ -1816,30 +1625,11 @@ export const PropertyInventoryPage = () => {
               <Trash2 size={15} /> Delete Selected ({selectedFlatIds.length})
             </button>
 
-            <button
-              onClick={() => setIsBulkEnrollModalOpen(true)}
-              style={{
-                background: '#16a34a',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '9px 18px',
-                fontSize: '0.86rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 2px 8px rgba(22,163,74,0.4)'
-              }}
-            >
-              <ShieldCheck size={16} /> Enroll Selected in 3-Year Rental &amp; Sales Allotment
-            </button>
           </div>
         </div>
       )}
 
-      {/* COMPREHENSIVE FLAT DETAIL & 3-YEAR RENTAL LOCK-IN MODAL */}
+      {/* FLAT DETAIL & ARCHITECTURAL SPECIFICATIONS MODAL */}
       <FlatDetailModal
         isOpen={isFlatDetailOpen}
         onClose={() => {
@@ -1866,30 +1656,6 @@ export const PropertyInventoryPage = () => {
         onImportSuccess={() => {
           fetchProjects();
           if (selectedBuilding) fetchFlats();
-        }}
-      />
-
-      {/* OWNERSHIP & RESALE HISTORY EXCEL IMPORT MODAL */}
-      <ImportOwnershipHistoryModal
-        isOpen={isImportHistoryModalOpen}
-        onClose={() => setIsImportHistoryModalOpen(false)}
-        onSuccess={() => {
-          fetchProjects();
-          fetchFlats();
-        }}
-      />
-
-      {/* BULK ENROLL SELECTED FLATS MODAL */}
-      <BulkEnrollRentalSalesModal
-        isOpen={isBulkEnrollModalOpen}
-        onClose={() => setIsBulkEnrollModalOpen(false)}
-        selectedFlats={flats.filter((f) => selectedFlatIds.includes(f._id || f.id))}
-        building={selectedBuilding}
-        project={selectedProject}
-        onSuccess={() => {
-          setSelectedFlatIds([]);
-          fetchFlats();
-          fetchProjects();
         }}
       />
     </div>

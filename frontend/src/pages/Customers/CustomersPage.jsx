@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { customerService } from '../../services/customerService.js';
 import { ManualCustomerModal } from '../../components/customers/ManualCustomerModal.jsx';
 import { CustomerDetailModal } from '../../components/customers/CustomerDetailModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
+import { TableSkeleton, CardGridSkeleton } from '../../components/common/SkeletonLoader.jsx';
+import { EmptyState } from '../../components/common/EmptyState.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
 
 import {
   Users,
@@ -63,6 +66,7 @@ export const CustomersPage = () => {
   const [quickFilter, setQuickFilter] = useState('all');
   const [expandedCustomerId, setExpandedCustomerId] = useState(null);
   const [copiedText, setCopiedText] = useState('');
+  const toast = useToast();
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -88,6 +92,7 @@ export const CustomersPage = () => {
       if (res.data) setCustomers(res.data);
     } catch (error) {
       console.error('Error fetching customers:', error);
+      toast.error('Failed to fetch customer directory');
     } finally {
       setLoading(false);
     }
@@ -507,22 +512,24 @@ export const CustomersPage = () => {
         </div>
       </div>
 
-      {/* Customer Data Table */}
-      {displayedCustomers.length === 0 ? (
-        <div className="g-card" style={{ textAlign: 'center', padding: '60px 24px' }}>
-          <Users size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#1a73e8' }} />
-          <h3 style={{ color: '#111827', marginBottom: '8px', fontWeight: '800', fontSize: '1.2rem' }}>No Customer Profiles Match Filter</h3>
-          <p style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '20px', fontWeight: '500', maxWidth: '440px', margin: '0 auto 20px' }}>
-            No registered profiles match "{quickFilter}". Reset filters or register a new resident profile.
-          </p>
-          <button
-            onClick={() => setQuickFilter('all')}
-            className="btn-secondary"
-            style={{ padding: '9px 18px', fontSize: '0.84rem' }}
-          >
-            Reset Quick Filters
-          </button>
-        </div>
+      {/* Customer Data Table / Skeletons / Empty State */}
+      {loading ? (
+        <TableSkeleton rows={7} columns={5} />
+      ) : displayedCustomers.length === 0 ? (
+        <EmptyState
+          icon={Users}
+          title="No Customer Profiles Match Filter"
+          description={`No registered customer profiles match "${quickFilter}". Reset filters or register a new customer profile.`}
+          primaryAction={() => setQuickFilter('all')}
+          primaryActionLabel="Reset Quick Filters"
+          primaryActionIcon={RefreshCw}
+          secondaryAction={() => {
+            setEditingCustomer(null);
+            setIsCreateModalOpen(true);
+          }}
+          secondaryActionLabel="Add Customer"
+          secondaryActionIcon={UserPlus}
+        />
       ) : (
         <div className="g-card" style={{ padding: '0', borderRadius: '12px', overflow: 'hidden', width: '100%', boxSizing: 'border-box' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', textAlign: 'left' }}>

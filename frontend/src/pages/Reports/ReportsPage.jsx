@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { reportService } from '../../services/reportService.js';
 import { projectService } from '../../services/projectService.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
+import { TableSkeleton, CardGridSkeleton } from '../../components/common/SkeletonLoader.jsx';
+import { EmptyState } from '../../components/common/EmptyState.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
 
 import {
   BarChart3,
@@ -520,11 +523,11 @@ export const ReportsPage = () => {
         </div>
       )}
 
-      {/* Loading Indicator */}
+      {/* Skeletons & Resilient Loading State (Zero Layout Shift) */}
       {loading ? (
-        <div style={{ padding: '60px', textAlign: 'center', color: '#727785' }}>
-          <RefreshCw size={26} className="spin" style={{ margin: '0 auto 12px', color: '#1a73e8' }} />
-          <div style={{ fontWeight: '600', color: '#191c1d' }}>Aggregating {currentTabInfo?.name}...</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <CardGridSkeleton cards={4} height="110px" />
+          <TableSkeleton rows={8} columns={6} />
         </div>
       ) : (
         <>

@@ -6,6 +6,7 @@ import Lead from '../models/Lead.js';
 import RentalManagement from '../models/RentalManagement.js';
 import { uploadFileToS3 } from '../config/s3.js';
 import * as XLSX from 'xlsx';
+import apiCache from '../utils/cacheManager.js';
 
 // Helper to parse floor number from flat string if not set
 export const inferFloorFromFlat = (flatStr) => {
@@ -27,54 +28,88 @@ export const inferFloorFromFlat = (flatStr) => {
   return isNaN(single) ? 0 : single;
 };
 
-// Get Flats from MongoDB with Floor & Building Enrichment
+// Get Flats from MongoDB with Floor & Building Enrichment (DSA Optimized)
 export const getFlats = async (req, res) => {
   try {
     const { projectId, buildingId, status } = req.query;
+    const cacheKey = `flats:${projectId || 'all'}:${buildingId || 'all'}:${status || 'all'}`;
+
+    // 1. LRU Cache Hit Check: O(1) time
+    const cached = apiCache.get(cacheKey);
+    if (cached) {
+      return res.json({ success: true, count: cached.length, data: cached, source: 'cache' });
+    }
+
     const filter = {};
     if (projectId) filter.projectId = projectId;
     if (buildingId) filter.buildingId = buildingId;
     if (status) filter.status = status;
 
-    const flats = await Flat.find(filter).populate('projectId').sort({ floor: 1, flatNumber: 1 });
-    
-    // Enrich flats with resolved building details & guarantee floor is set
-    const enriched = await Promise.all(
-      flats.map(async (f) => {
-        const obj = f.toObject();
-        let needsSave = false;
+    // 2. Indexed Query with .lean() to prevent Mongoose document allocation overhead
+    const flats = await Flat.find(filter)
+      .populate('projectId', 'projectName projectCode buildings')
+      .sort({ floor: 1, flatNumber: 1 })
+      .lean();
 
-        if (obj.floor === undefined || obj.floor === null) {
-          obj.floor = inferFloorFromFlat(obj.flatNumber);
-          f.floor = obj.floor;
-          needsSave = true;
-        }
-
-        // If flat is taken for rental, it is sold
-        if (obj.takenForRental && obj.status === 'available') {
-          obj.status = 'sold';
-          f.status = 'sold';
-          needsSave = true;
-        }
-
-        if (f.projectId && f.projectId.buildings && f.buildingId) {
-          const bld = f.projectId.buildings.find(
-            (b) => b._id.toString() === f.buildingId.toString()
-          );
-          if (bld) {
-            obj.buildingName = bld.buildingName;
-            obj.buildingCode = bld.buildingCode;
-            obj.numberOfFloors = bld.numberOfFloors;
+    // 3. DSA Hash Map Optimization: Build an inverted index of buildings O(B) once
+    const buildingMap = new Map();
+    flats.forEach((f) => {
+      if (f.projectId && Array.isArray(f.projectId.buildings)) {
+        f.projectId.buildings.forEach((b) => {
+          const bIdStr = (b._id || b.id || '').toString();
+          if (bIdStr && !buildingMap.has(bIdStr)) {
+            buildingMap.set(bIdStr, b);
           }
-        }
+        });
+      }
+    });
 
-        if (needsSave) {
-          await Flat.findByIdAndUpdate(f._id, { floor: obj.floor, status: obj.status });
-        }
+    const bulkOps = [];
 
-        return obj;
-      })
-    );
+    // 4. Enrich flats in O(1) lookup per flat: O(N) total complexity
+    const enriched = flats.map((f) => {
+      const obj = { ...f };
+      let needsDbSync = false;
+
+      if (obj.floor === undefined || obj.floor === null) {
+        obj.floor = inferFloorFromFlat(obj.flatNumber);
+        needsDbSync = true;
+      }
+
+      if (obj.takenForRental && obj.status === 'available') {
+        obj.status = 'sold';
+        needsDbSync = true;
+      }
+
+      // O(1) Hash Map lookup instead of nested linear search
+      if (obj.buildingId) {
+        const bld = buildingMap.get(obj.buildingId.toString());
+        if (bld) {
+          obj.buildingName = bld.buildingName;
+          obj.buildingCode = bld.buildingCode;
+          obj.numberOfFloors = bld.numberOfFloors;
+        }
+      }
+
+      if (needsDbSync) {
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: obj._id },
+            update: { $set: { floor: obj.floor, status: obj.status } }
+          }
+        });
+      }
+
+      return obj;
+    });
+
+    // 5. Asynchronous background bulk write if any fields needed sync (non-blocking)
+    if (bulkOps.length > 0) {
+      Flat.bulkWrite(bulkOps).catch((err) => console.error('Background Flat bulk sync error:', err.message));
+    }
+
+    // 6. Store in LRU Cache for 30 seconds
+    apiCache.set(cacheKey, enriched, 30000);
 
     return res.json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
@@ -331,6 +366,8 @@ export const createFlat = async (req, res) => {
     });
 
     await newFlat.save();
+    apiCache.invalidatePrefix('flats');
+    apiCache.invalidatePrefix('reports');
     return res.status(201).json({ success: true, data: newFlat });
   } catch (error) {
     console.error('Error creating flat in MongoDB:', error);
@@ -562,8 +599,10 @@ export const updateFlat = async (req, res) => {
     }
 
     await flat.save();
+    apiCache.invalidatePrefix('flats');
+    apiCache.invalidatePrefix('reports');
 
-    const populatedFlat = await Flat.findById(flat._id).populate('projectId', 'projectName projectCode');
+    const populatedFlat = await Flat.findById(flat._id).populate('projectId', 'projectName projectCode').lean();
     return res.json({ success: true, message: 'Flat and all associated records updated successfully', data: populatedFlat });
   } catch (error) {
     console.error('Error updating flat in MongoDB:', error);
@@ -614,6 +653,8 @@ export const deleteFlat = async (req, res) => {
 
     // 5. Delete the flat record itself
     await Flat.findByIdAndDelete(id);
+    apiCache.invalidatePrefix('flats');
+    apiCache.invalidatePrefix('reports');
 
     console.log(`[MongoDB] Cascading delete for Flat ${flat.flatNumber}: ${salesDeleteRes.deletedCount} sales, ${rentalDeleteRes.deletedCount} rentals deleted.`);
 

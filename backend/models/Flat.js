@@ -425,5 +425,14 @@ const FlatSchema = new mongoose.Schema(
   }
 );
 
+// =========================================================
+// B-TREE INDEXING OPTIMIZATIONS (DSA O(log N) Performance)
+// =========================================================
+FlatSchema.index({ projectId: 1, buildingId: 1, status: 1 });
+FlatSchema.index({ takenForRental: 1, status: 1 });
+FlatSchema.index({ currentOwnerId: 1 });
+FlatSchema.index({ floor: 1, flatNumber: 1 });
+FlatSchema.index({ flatNumber: 1 });
+
 export const Flat = mongoose.models.Flat || mongoose.model('Flat', FlatSchema);
 export default Flat;

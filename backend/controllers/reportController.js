@@ -8,6 +8,7 @@ import Project from '../models/Project.js';
 import Lead from '../models/Lead.js';
 import Customer from '../models/Customer.js';
 import SiteVisit from '../models/SiteVisit.js';
+import apiCache from '../utils/cacheManager.js';
 
 // Optional models in subdirectories (safe imports with try/catch or dynamic resolution)
 let Employee, Material, Stock, PurchaseOrder;
@@ -72,12 +73,20 @@ const getProjectFilter = (projectId, filterObj = {}) => {
 export const getSalesReport = async (req, res) => {
   try {
     const { projectId, dateRange, customStart, customEnd } = req.query;
+    const cacheKey = `reports:sales:${projectId || 'all'}:${dateRange || 'all'}:${customStart || ''}:${customEnd || ''}`;
+
+    const cached = apiCache.get(cacheKey);
+    if (cached) {
+      return res.json({ success: true, data: cached, source: 'cache' });
+    }
+
     const filter = getProjectFilter(projectId, getDateFilter(dateRange, customStart, customEnd));
 
     const salesLeads = await SalesLead.find(filter)
       .populate('projectId', 'projectName projectCode')
       .populate('flatId', 'flatNumber floor basePrice bhkType')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     let totalContractValue = 0;
     let totalRealizedCollection = 0;
@@ -148,30 +157,29 @@ export const getSalesReport = async (req, res) => {
     const pendingCollection = Math.max(0, totalContractValue - totalRealizedCollection);
     const collectionEfficiency = totalContractValue > 0 ? Math.round((totalRealizedCollection / totalContractValue) * 100) : 0;
 
-    return res.json({
-      success: true,
-      data: {
-        summary: {
-          totalDeals: salesLeads.length,
-          totalContractValue,
-          totalRealizedCollection,
-          pendingCollection,
-          collectionEfficiency,
-          bookedCount,
-          agreementCompletedCount,
-          inPaymentProgressCount,
-          fullyPaidCount,
-          possessionReadyCount,
-          possessedCount,
-          cancelledCount
-        },
-        projectBreakdown: Object.keys(projectBreakdown).map((k) => ({
-          projectName: k,
-          ...projectBreakdown[k]
-        })),
-        register
-      }
-    });
+    const payload = {
+      summary: {
+        totalDeals: salesLeads.length,
+        totalContractValue,
+        totalRealizedCollection,
+        pendingCollection,
+        collectionEfficiency,
+        bookedCount,
+        agreementCompletedCount,
+        inPaymentProgressCount,
+        fullyPaidCount,
+        possessionReadyCount,
+        possessedCount,
+        cancelledCount
+      },
+      projectBreakdown: Object.keys(projectBreakdown).map((k) => ({
+        projectName: k,
+        ...projectBreakdown[k]
+      })),
+      register
+    };
+    apiCache.set(cacheKey, payload, 60000);
+    return res.json({ success: true, data: payload });
   } catch (error) {
     console.error('Error generating sales report:', error);
     return res.status(500).json({ success: false, message: error.message });
@@ -184,13 +192,21 @@ export const getSalesReport = async (req, res) => {
 export const getRentalReport = async (req, res) => {
   try {
     const { projectId, dateRange, customStart, customEnd } = req.query;
+    const cacheKey = `reports:rental:${projectId || 'all'}:${dateRange || 'all'}:${customStart || ''}:${customEnd || ''}`;
+
+    const cached = apiCache.get(cacheKey);
+    if (cached) {
+      return res.json({ success: true, data: cached, source: 'cache' });
+    }
+
     const filter = getProjectFilter(projectId, getDateFilter(dateRange, customStart, customEnd));
 
     const rentals = await RentalManagement.find(filter)
       .populate('projectId', 'projectName projectCode buildings')
       .populate('flatId', 'flatNumber floor')
       .populate('ownerId', 'name mobileNo email')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     let totalMonthlyGrossPayouts = 0;
     let totalMonthlyTdsDeducted = 0;
@@ -240,20 +256,19 @@ export const getRentalReport = async (req, res) => {
       };
     });
 
-    return res.json({
-      success: true,
-      data: {
-        summary: {
-          totalManagedUnits: rentals.length,
-          activeRentBackCount,
-          totalMonthlyGrossPayouts,
-          totalMonthlyTdsDeducted,
-          totalMonthlyNetDisbursed,
-          total36MonthCommitment
-        },
-        register
-      }
-    });
+    const payload = {
+      summary: {
+        totalManagedUnits: rentals.length,
+        activeRentBackCount,
+        totalMonthlyGrossPayouts,
+        totalMonthlyTdsDeducted,
+        totalMonthlyNetDisbursed,
+        total36MonthCommitment
+      },
+      register
+    };
+    apiCache.set(cacheKey, payload, 60000);
+    return res.json({ success: true, data: payload });
   } catch (error) {
     console.error('Error generating rental report:', error);
     return res.status(500).json({ success: false, message: error.message });

@@ -496,5 +496,12 @@ const RentalManagementSchema = new mongoose.Schema(
   }
 );
 
+// =========================================================
+// B-TREE INDEXING OPTIMIZATIONS (DSA O(log N) Performance)
+// =========================================================
+RentalManagementSchema.index({ status: 1, updatedAt: -1 });
+RentalManagementSchema.index({ flatId: 1 });
+RentalManagementSchema.index({ ownerId: 1 });
+
 export const RentalManagement = mongoose.models.RentalManagement || mongoose.model("RentalManagement", RentalManagementSchema);
 export default RentalManagement;

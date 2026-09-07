@@ -546,5 +546,12 @@ CustomerSchema.pre('validate', function () {
   }
 });
 
+// =========================================================
+// B-TREE INDEXING OPTIMIZATIONS (DSA O(log N) Performance)
+// =========================================================
+CustomerSchema.index({ customerType: 1, status: 1, updatedAt: -1 });
+CustomerSchema.index({ 'ownerDetails.propertyIds': 1 });
+CustomerSchema.index({ name: 1 });
+
 export const Customer = mongoose.models.Customer || mongoose.model("Customer", CustomerSchema);
 export default Customer;
