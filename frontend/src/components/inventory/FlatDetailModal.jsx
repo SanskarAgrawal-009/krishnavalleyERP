@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { projectService } from '../../services/projectService.js';
 import { StatusBadge } from '../common/StatusBadge.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 import { DetailModalSkeleton } from '../common/SkeletonLoader.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 
@@ -367,26 +368,17 @@ export const FlatDetailModal = ({
                     >
                       Cancel
                     </button>
-                    <button
+                    <LoadingButton
                       type="button"
                       onClick={handleSaveSpecs}
-                      disabled={isSavingSpecs}
-                      style={{
-                        padding: '6px 14px',
-                        background: '#16a34a',
-                        color: '#ffffff',
-                        border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '0.78rem',
-                        fontWeight: '700',
-                        cursor: isSavingSpecs ? 'not-allowed' : 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}
+                      loading={isSavingSpecs}
+                      loadingText="Saving..."
+                      icon={Check}
+                      variant="success"
+                      style={{ padding: '6px 14px', fontSize: '0.78rem' }}
                     >
-                      <Check size={14} /> {isSavingSpecs ? 'Saving...' : 'Save Changes'}
-                    </button>
+                      Save Changes
+                    </LoadingButton>
                   </div>
                 )}
               </div>

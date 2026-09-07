@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
+import { TopLoadingBar } from './components/common/TopLoadingBar.jsx';
 import { ProtectedRoute } from './components/auth/ProtectedRoute.jsx';
 import { AppLayout } from './components/layout/AppLayout.jsx';
 
@@ -33,6 +34,7 @@ import './styles/layout.css';
 export const App = () => {
   return (
     <ToastProvider>
+      <TopLoadingBar />
       <AuthProvider>
         <BrowserRouter>
         <Routes>

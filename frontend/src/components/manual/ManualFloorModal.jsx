@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 import { Layers, Plus, Home, Sparkles, CheckCircle } from 'lucide-react';
 
 export const ManualFloorModal = ({
@@ -222,6 +223,7 @@ export const ManualFloorModal = ({
           <button
             type="button"
             onClick={onClose}
+            disabled={loading}
             style={{
               padding: '9px 18px',
               background: '#f3f4f6',
@@ -229,31 +231,21 @@ export const ManualFloorModal = ({
               border: '1px solid #dadce0',
               borderRadius: '6px',
               fontWeight: '600',
-              cursor: 'pointer'
+              cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
             Cancel
           </button>
 
-          <button
+          <LoadingButton
             type="submit"
-            disabled={loading}
-            style={{
-              padding: '9px 22px',
-              background: '#1a73e8',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 2px 6px rgba(26, 115, 232, 0.3)'
-            }}
+            loading={loading}
+            loadingText="Creating Floor & Units..."
+            icon={Plus}
+            variant="primary"
           >
-            <Plus size={16} /> {loading ? 'Creating Floor...' : `Create Floor ${floorNumber} & Units`}
-          </button>
+            Create Floor {floorNumber} &amp; Units
+          </LoadingButton>
         </div>
 
       </form>

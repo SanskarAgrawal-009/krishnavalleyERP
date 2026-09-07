@@ -1386,7 +1386,7 @@ export const PropertyInventoryPage = () => {
                   primaryActionIcon={RotateCcw}
                 />
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '14px' }}>
+                <div className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '14px' }}>
                   {filteredFlats.map((flat) => {
                     const fId = flat._id || flat.id;
                     const isSelected = selectedFlatIdSet.has(fId);

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Modal } from '../common/Modal.jsx';
+import { UploadAnimation } from '../common/UploadAnimation.jsx';
 import { projectService } from '../../services/projectService.js';
 import * as XLSX from 'xlsx';
 import {
@@ -904,8 +905,17 @@ export const ImportInventoryModal = ({
           </div>
         )}
 
+        {/* Upload Animation during Processing */}
+        {loading && (
+          <UploadAnimation
+            category={activeCategory === 'previous_owners' ? 'owners' : (activeCategory === 'rentals' ? 'rentals' : 'inventory')}
+            fileName={fileName || 'Excel Inventory File'}
+            totalRecords={validRowCount}
+          />
+        )}
+
         {/* Data Preview Table */}
-        {previewRows.length > 0 && !importResult && (
+        {!loading && previewRows.length > 0 && !importResult && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

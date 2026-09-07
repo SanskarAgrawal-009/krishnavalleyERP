@@ -617,7 +617,7 @@ export const RentalsPage = () => {
               primaryActionIcon={Plus}
             />
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {rentals.map((r) => {
                 const rentBack = r.rentBack || {};
                 const flat = r.flatId || {};
@@ -1559,7 +1559,7 @@ export const RentalsPage = () => {
           {loadingRentalFlats ? (
             <TableSkeleton rows={6} columns={7} />
           ) : (
-            <div className="g-card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="g-card animate-fade-in" style={{ padding: 0, overflow: 'hidden' }}>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
                 <thead>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 import { projectService } from '../../services/projectService.js';
 import { customerService } from '../../services/customerService.js';
 import { rentalService } from '../../services/rentalService.js';
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 
 export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }) => {
+  const [submitting, setSubmitting] = useState(false);
   // Inventory & Customers List
   const [projects, setProjects] = useState([]);
   const [flats, setFlats] = useState([]);
@@ -222,7 +224,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
   const tenure = Number(rentBackForm.tenureMonths) || 36;
   const totalCommitment = netMonthlyPayout * tenure;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!selectedFlatId) {
@@ -258,7 +260,12 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
       remarks
     };
 
-    onSubmit(payload);
+    setSubmitting(true);
+    try {
+      await onSubmit(payload);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const formatINR = (val) => {
@@ -579,6 +586,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
           <button
             type="button"
             onClick={onClose}
+            disabled={submitting}
             style={{
               padding: '8px 18px',
               background: '#f8fafc',
@@ -587,28 +595,20 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
               color: '#334155',
               fontWeight: '700',
               fontSize: '0.82rem',
-              cursor: 'pointer'
+              cursor: submitting ? 'not-allowed' : 'pointer'
             }}
           >
             Cancel
           </button>
 
-          <button
+          <LoadingButton
             type="submit"
-            style={{
-              padding: '8px 24px',
-              background: '#16a34a',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: '800',
-              fontSize: '0.84rem',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(22, 163, 74, 0.25)'
-            }}
+            loading={submitting}
+            loadingText={contract ? 'Saving Agreement...' : 'Initializing Rent-Back...'}
+            variant="success"
           >
             {contract ? 'Save Agreement Changes' : 'Initialize Rent-Back Agreement'}
-          </button>
+          </LoadingButton>
         </div>
 
       </form>

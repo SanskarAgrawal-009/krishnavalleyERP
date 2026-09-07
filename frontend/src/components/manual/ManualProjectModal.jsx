@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 
 export const ManualProjectModal = ({ isOpen, onClose, onSubmit, project = null }) => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export const ManualProjectModal = ({ isOpen, onClose, onSubmit, project = null }
     },
     status: 'planning'
   });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (project) {
@@ -51,9 +53,14 @@ export const ManualProjectModal = ({ isOpen, onClose, onSubmit, project = null }
     }
   }, [project, isOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setSubmitting(true);
+    try {
+      await onSubmit(formData);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -221,22 +228,19 @@ export const ManualProjectModal = ({ isOpen, onClose, onSubmit, project = null }
           <button
             type="button"
             onClick={onClose}
-            style={{ padding: '8px 16px', background: '#f8f9fa', color: '#374151', borderRadius: 'var(--radius-sm)' }}
+            disabled={submitting}
+            style={{ padding: '8px 16px', background: '#f8f9fa', color: '#374151', borderRadius: 'var(--radius-sm)', cursor: submitting ? 'not-allowed' : 'pointer' }}
           >
             Cancel
           </button>
-          <button
+          <LoadingButton
             type="submit"
-            style={{
-              padding: '8px 20px',
-              background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
-              color: '#111827',
-              fontWeight: '700',
-              borderRadius: 'var(--radius-sm)'
-            }}
+            loading={submitting}
+            loadingText={project ? 'Saving Project...' : 'Creating Project...'}
+            variant="primary"
           >
             {project ? 'Save Project' : 'Create Project'}
-          </button>
+          </LoadingButton>
         </div>
       </form>
     </Modal>

@@ -30,6 +30,29 @@ export const getFileUrl = (filePath) => {
 // DSA In-Flight Promise Cache (O(1) Map for deduplicating concurrent GET requests)
 const inFlightGetRequests = new Map();
 
+// Global Network Activity Tracker & Observer Pattern
+let activeRequestsCount = 0;
+const apiLoadingSubscribers = new Set();
+
+const notifySubscribers = () => {
+  const isLoading = activeRequestsCount > 0;
+  apiLoadingSubscribers.forEach((fn) => {
+    try {
+      fn(isLoading, activeRequestsCount);
+    } catch (e) {
+      console.error('API subscriber error:', e);
+    }
+  });
+};
+
+export const subscribeToApiLoading = (callback) => {
+  apiLoadingSubscribers.add(callback);
+  callback(activeRequestsCount > 0, activeRequestsCount);
+  return () => {
+    apiLoadingSubscribers.delete(callback);
+  };
+};
+
 export const request = async (endpoint, options = {}) => {
   const method = (options.method || 'GET').toUpperCase();
   const isGet = method === 'GET' && !options.body;
@@ -49,6 +72,9 @@ export const request = async (endpoint, options = {}) => {
   };
 
   const executeRequest = async () => {
+    activeRequestsCount++;
+    notifySubscribers();
+
     try {
       const res = await fetch(`${BASE_URL}${endpoint}`, {
         ...options,
@@ -74,6 +100,9 @@ export const request = async (endpoint, options = {}) => {
       console.error(`API Error on [${endpoint}]:`, error.message);
       throw error;
     } finally {
+      activeRequestsCount = Math.max(0, activeRequestsCount - 1);
+      notifySubscribers();
+
       if (isGet) {
         inFlightGetRequests.delete(endpoint);
       }

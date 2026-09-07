@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 import { projectService } from '../../services/projectService.js';
 import { 
   Building2, 
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 
 export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null }) => {
+  const [submitting, setSubmitting] = useState(false);
   // Inventory
   const [projects, setProjects] = useState([]);
   const [flats, setFlats] = useState([]);
@@ -139,7 +141,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name.trim() || !mobileNo.trim()) {
@@ -169,7 +171,12 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
       notes
     };
 
-    onSubmit(payload);
+    setSubmitting(true);
+    try {
+      await onSubmit(payload);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -444,6 +451,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
           <button
             type="button"
             onClick={onClose}
+            disabled={submitting}
             style={{
               padding: '8px 18px',
               background: '#f8fafc',
@@ -452,28 +460,20 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
               color: '#334155',
               fontWeight: '700',
               fontSize: '0.82rem',
-              cursor: 'pointer'
+              cursor: submitting ? 'not-allowed' : 'pointer'
             }}
           >
             Cancel
           </button>
 
-          <button
+          <LoadingButton
             type="submit"
-            style={{
-              padding: '8px 24px',
-              background: '#1a73e8',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: '800',
-              fontSize: '0.84rem',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(26, 115, 232, 0.25)'
-            }}
+            loading={submitting}
+            loadingText={customer ? 'Updating Titleholder...' : 'Saving Owner Profile...'}
+            variant="primary"
           >
             {customer ? 'Update Titleholder' : 'Save Owner Profile'}
-          </button>
+          </LoadingButton>
         </div>
 
       </form>

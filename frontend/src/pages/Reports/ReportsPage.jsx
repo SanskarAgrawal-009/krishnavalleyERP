@@ -530,7 +530,7 @@ export const ReportsPage = () => {
           <TableSkeleton rows={8} columns={6} />
         </div>
       ) : (
-        <>
+        <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* ================================================================ */}
           {/* 1. SALES REPORT VIEW */}
           {/* ================================================================ */}
@@ -1186,7 +1186,7 @@ export const ReportsPage = () => {
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
 
       {/* ======================================================== */}

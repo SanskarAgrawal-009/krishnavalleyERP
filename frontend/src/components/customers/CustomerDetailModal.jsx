@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 import { StatusBadge } from '../common/StatusBadge.jsx';
 import { 
   User, 
@@ -380,21 +381,16 @@ export const CustomerDetailModal = ({
                   <Upload size={13} /> {selectedDocFile ? selectedDocFile.name : 'Choose Document File'}
                 </label>
 
-                <button
+                <LoadingButton
                   type="submit"
-                  disabled={uploadingDoc || !selectedDocFile}
-                  style={{
-                    padding: '6px 16px',
-                    background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
-                    color: '#111827',
-                    borderRadius: '4px',
-                    fontWeight: '700',
-                    fontSize: '0.78rem',
-                    cursor: uploadingDoc ? 'not-allowed' : 'pointer'
-                  }}
+                  disabled={!selectedDocFile}
+                  loading={uploadingDoc}
+                  loadingText="Uploading to S3..."
+                  variant="primary"
+                  style={{ padding: '6px 16px', fontSize: '0.78rem' }}
                 >
-                  {uploadingDoc ? 'Uploading to S3...' : 'Upload to AWS S3'}
-                </button>
+                  Upload to AWS S3
+                </LoadingButton>
               </div>
             </form>
 
@@ -576,21 +572,15 @@ export const CustomerDetailModal = ({
                   </label>
                 </div>
 
-                <button
+                <LoadingButton
                   type="submit"
-                  disabled={loggingComm}
-                  style={{
-                    padding: '6px 18px',
-                    background: 'linear-gradient(135deg, #10b981, var(--primary-700))',
-                    color: '#111827',
-                    borderRadius: '4px',
-                    fontWeight: '700',
-                    fontSize: '0.78rem',
-                    cursor: loggingComm ? 'not-allowed' : 'pointer'
-                  }}
+                  loading={loggingComm}
+                  loadingText="Saving Log..."
+                  variant="success"
+                  style={{ padding: '6px 18px', fontSize: '0.78rem' }}
                 >
-                  {loggingComm ? 'Saving Log...' : 'Save Communication Log'}
-                </button>
+                  Save Communication Log
+                </LoadingButton>
               </div>
             </form>
 

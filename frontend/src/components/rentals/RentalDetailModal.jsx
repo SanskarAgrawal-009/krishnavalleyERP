@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 import { StatusBadge } from '../common/StatusBadge.jsx';
 import { 
   Building2, 
@@ -317,13 +318,16 @@ export const RentalDetailModal = ({
                   >
                     <Upload size={13} /> {rentBackFile ? rentBackFile.name : 'Choose Rent-Back MOU Document (PDF)'}
                   </label>
-                  <button
+                  <LoadingButton
                     type="submit"
-                    disabled={!rentBackFile || uploadingRentBack}
-                    style={{ padding: '7px 16px', background: '#16a34a', color: '#ffffff', borderRadius: '6px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', border: 'none' }}
+                    disabled={!rentBackFile}
+                    loading={uploadingRentBack}
+                    loadingText="Uploading to S3..."
+                    variant="success"
+                    style={{ padding: '7px 16px', fontSize: '0.78rem' }}
                   >
-                    {uploadingRentBack ? 'Uploading...' : 'Upload MOU to S3'}
-                  </button>
+                    Upload MOU to S3
+                  </LoadingButton>
                 </form>
               )}
             </div>

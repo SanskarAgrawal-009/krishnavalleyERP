@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { Modal } from '../common/Modal.jsx';
+import { UploadAnimation } from '../common/UploadAnimation.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 import { rentalService } from '../../services/rentalService.js';
 import {
   FileSpreadsheet,
@@ -362,8 +364,17 @@ export const ImportRentalLedgerModal = ({
           </div>
         )}
 
+        {/* Upload Animation during Processing */}
+        {loading && (
+          <UploadAnimation
+            category="rentals"
+            fileName={fileName || 'Rental Passbook'}
+            totalRecords={parsedData?.entries?.length || 36}
+          />
+        )}
+
         {/* Parsed Preview Section */}
-        {!importResult && parsedData && (
+        {!loading && !importResult && parsedData && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {/* Metadata Badges */}
             <div style={{
@@ -500,27 +511,16 @@ export const ImportRentalLedgerModal = ({
           </button>
 
           {!importResult && parsedData && (
-            <button
+            <LoadingButton
               type="button"
               onClick={handleImportSubmit}
-              disabled={loading}
-              style={{
-                padding: '8px 20px',
-                background: '#16a34a',
-                border: 'none',
-                borderRadius: '6px',
-                fontSize: '0.85rem',
-                fontWeight: '700',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                boxShadow: '0 2px 4px rgba(22,163,74,0.25)'
-              }}
+              loading={loading}
+              loadingText="Synchronizing Ledger..."
+              variant="success"
+              style={{ padding: '8px 20px', fontSize: '0.85rem' }}
             >
-              {loading ? 'Synchronizing Ledger...' : `Save & Sync Flat ${parsedData.flatNo} Rental Passbook`}
-            </button>
+              Save &amp; Sync Flat {parsedData.flatNo} Rental Passbook
+            </LoadingButton>
           )}
         </div>
 

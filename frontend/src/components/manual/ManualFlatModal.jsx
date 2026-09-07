@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
+import { LoadingButton } from '../common/LoadingButton.jsx';
 
 export const ManualFlatModal = ({
   isOpen,
@@ -21,6 +22,7 @@ export const ManualFlatModal = ({
     buybackCount: 0,
     takenForRental: false
   });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (flat) {
@@ -64,17 +66,22 @@ export const ManualFlatModal = ({
     setFormData({ ...formData, flatNumber: val, floor: calculatedFloor });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({
-      projectId,
-      buildingId,
-      ...formData,
-      floor: Number(formData.floor),
-      carpetArea: Number(formData.carpetArea),
-      basePrice: Number(formData.basePrice),
-      buybackCount: Number(formData.buybackCount)
-    });
+    setSubmitting(true);
+    try {
+      await onSubmit({
+        projectId,
+        buildingId,
+        ...formData,
+        floor: Number(formData.floor),
+        carpetArea: Number(formData.carpetArea),
+        basePrice: Number(formData.basePrice),
+        buybackCount: Number(formData.buybackCount)
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -234,25 +241,19 @@ export const ManualFlatModal = ({
           <button
             type="button"
             onClick={onClose}
-            style={{ padding: '9px 18px', background: '#f3f4f6', color: '#374151', border: '1px solid #dadce0', borderRadius: '6px', fontWeight: '600', cursor: 'pointer' }}
+            disabled={submitting}
+            style={{ padding: '9px 18px', background: '#f3f4f6', color: '#374151', border: '1px solid #dadce0', borderRadius: '6px', fontWeight: '600', cursor: submitting ? 'not-allowed' : 'pointer' }}
           >
             Cancel
           </button>
-          <button
+          <LoadingButton
             type="submit"
-            style={{
-              padding: '9px 22px',
-              background: '#1a73e8',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(26, 115, 232, 0.3)'
-            }}
+            loading={submitting}
+            loadingText={flat ? 'Saving Changes...' : 'Adding Unit...'}
+            variant="primary"
           >
             {flat ? 'Save Changes' : 'Add Flat Unit'}
-          </button>
+          </LoadingButton>
         </div>
       </form>
     </Modal>

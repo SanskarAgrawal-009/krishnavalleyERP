@@ -531,7 +531,7 @@ export const CustomersPage = () => {
           secondaryActionIcon={UserPlus}
         />
       ) : (
-        <div className="g-card" style={{ padding: '0', borderRadius: '12px', overflow: 'hidden', width: '100%', boxSizing: 'border-box' }}>
+        <div className="g-card animate-fade-in" style={{ padding: '0', borderRadius: '12px', overflow: 'hidden', width: '100%', boxSizing: 'border-box' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0' }}>
