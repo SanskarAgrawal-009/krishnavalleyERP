@@ -136,9 +136,9 @@ export const FlatDetailModal = ({
     navigate(`/sales?search=${encodeURIComponent(flat.flatNumber || '')}`);
   };
 
-  const handleNavigateToRentals = () => {
+  const handleNavigateToFlatProfile = () => {
     onClose();
-    navigate(`/rentals?tab=units&search=${encodeURIComponent(flat.flatNumber || '')}`);
+    navigate(`/inventory/flats/${flat._id || flatId}`);
   };
 
   return (
@@ -231,22 +231,46 @@ export const FlatDetailModal = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              borderRadius: '8px',
-              color: '#94a3b8',
-              cursor: 'pointer',
-              padding: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <X size={18} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              type="button"
+              onClick={handleNavigateToFlatProfile}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 14px',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: '700',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(37, 99, 235, 0.3)'
+              }}
+              title="Open full dedicated flat profile page"
+            >
+              <span>Full Flat Profile</span>
+              <ExternalLink size={14} />
+            </button>
+            <button
+              onClick={onClose}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: 'none',
+                borderRadius: '8px',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                padding: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* TOAST ALERT */}
@@ -744,7 +768,7 @@ export const FlatDetailModal = ({
                   <div style={{ borderTop: '1px solid #ede9fe', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
                     <button
                       type="button"
-                      onClick={handleNavigateToRentals}
+                      onClick={handleNavigateToFlatProfile}
                       style={{
                         padding: '8px 16px',
                         background: '#7c3aed',
@@ -759,7 +783,7 @@ export const FlatDetailModal = ({
                         gap: '6px'
                       }}
                     >
-                      View 36-Month Payout Ledger in Rentals <ArrowRight size={14} />
+                      View Flat Profile &amp; Passbook Ledger <ArrowRight size={14} />
                     </button>
                   </div>
                 </div>
@@ -809,7 +833,7 @@ export const FlatDetailModal = ({
 
                     <button
                       type="button"
-                      onClick={handleNavigateToRentals}
+                      onClick={handleNavigateToFlatProfile}
                       style={{
                         padding: '8px 16px',
                         background: '#ffffff',
@@ -824,7 +848,7 @@ export const FlatDetailModal = ({
                         gap: '6px'
                       }}
                     >
-                      Enroll in Rental Pool ➔
+                      Open Full Flat Profile ➔
                     </button>
                   </div>
                 </div>

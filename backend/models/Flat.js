@@ -309,9 +309,18 @@ const FlatSchema = new mongoose.Schema(
         type: Boolean,
         default: true,
       },
+      tdsMode: {
+        type: String,
+        enum: ['percentage', 'amount'],
+        default: 'percentage',
+      },
       tdsPercentage: {
         type: Number,
         default: 10,
+      },
+      tdsAmount: {
+        type: Number,
+        default: 0,
       },
       prePossessionMonthlyRent: {
         type: Number,
@@ -329,6 +338,11 @@ const FlatSchema = new mongoose.Schema(
       mouDate: Date,
       startDate: Date,
       endDate: Date,
+      effectiveFromMonthYear: {
+        type: String, // e.g. "2026-10"
+        trim: true,
+      },
+      effectiveDate: Date,
       tenureMonths: {
         type: Number,
         default: 36,
@@ -341,6 +355,41 @@ const FlatSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
+      termRevisions: [
+        {
+          revisionDate: {
+            type: Date,
+            default: Date.now,
+          },
+          effectiveMonthYear: String,
+          effectiveDate: Date,
+          appliedFromMonthIndex: Number,
+          previousTerms: {
+            guaranteedMonthlyRent: Number,
+            applyTds: Boolean,
+            tdsMode: String,
+            tdsPercentage: Number,
+            tdsAmount: Number,
+            netRent: Number,
+            tenureMonths: Number,
+            startDate: Date,
+            endDate: Date,
+          },
+          newTerms: {
+            guaranteedMonthlyRent: Number,
+            applyTds: Boolean,
+            tdsMode: String,
+            tdsPercentage: Number,
+            tdsAmount: Number,
+            netRent: Number,
+            tenureMonths: Number,
+            startDate: Date,
+            endDate: Date,
+          },
+          reason: String,
+          updatedBy: String,
+        },
+      ],
       total36MonthCommitment: {
         type: Number,
         default: 0,
@@ -432,7 +481,6 @@ FlatSchema.index({ projectId: 1, buildingId: 1, status: 1 });
 FlatSchema.index({ takenForRental: 1, status: 1 });
 FlatSchema.index({ currentOwnerId: 1 });
 FlatSchema.index({ floor: 1, flatNumber: 1 });
-FlatSchema.index({ flatNumber: 1 });
 
 export const Flat = mongoose.models.Flat || mongoose.model('Flat', FlatSchema);
 export default Flat;

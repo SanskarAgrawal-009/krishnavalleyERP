@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { projectService } from '../../services/projectService.js';
 import { ManualProjectModal } from '../../components/manual/ManualProjectModal.jsx';
 import { ManualBuildingModal } from '../../components/manual/ManualBuildingModal.jsx';
 import { ManualFloorModal } from '../../components/manual/ManualFloorModal.jsx';
 import { ManualFlatModal } from '../../components/manual/ManualFlatModal.jsx';
+import { ImportFlatsModal } from '../../components/inventory/ImportFlatsModal.jsx';
 import { FlatDetailModal } from '../../components/inventory/FlatDetailModal.jsx';
-import { ImportInventoryModal } from '../../components/inventory/ImportInventoryModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { TableSkeleton, CardGridSkeleton } from '../../components/common/SkeletonLoader.jsx';
 import { EmptyState } from '../../components/common/EmptyState.jsx';
@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 
 export const PropertyInventoryPage = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const viewParam = searchParams.get('view');
 
@@ -64,8 +65,7 @@ export const PropertyInventoryPage = () => {
   const [editingFlat, setEditingFlat] = useState(null);
   const [selectedFlatForDetail, setSelectedFlatForDetail] = useState(null);
   const [isFlatDetailOpen, setIsFlatDetailOpen] = useState(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [importCategory, setImportCategory] = useState('sold');
+  const [isImportFlatsModalOpen, setIsImportFlatsModalOpen] = useState(false);
   const [selectedFlatIds, setSelectedFlatIds] = useState([]);
 
   // Toggle Flat Selection
@@ -484,26 +484,6 @@ export const PropertyInventoryPage = () => {
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => setIsImportModalOpen(true)}
-            style={{
-              background: '#16a34a',
-              color: '#ffffff',
-              padding: '8px 14px',
-              borderRadius: '6px',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              border: 'none',
-              boxShadow: '0 1px 2px rgba(22,163,74,0.2)'
-            }}
-          >
-            <FileSpreadsheet size={15} /> Import Excel / Legacy Data
-          </button>
-
-          <button
             onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
             style={{
               background: '#1a73e8',
@@ -585,146 +565,34 @@ export const PropertyInventoryPage = () => {
               <Plus size={15} /> Add Flat
             </button>
           )}
+
+          {selectedBuilding && (
+            <button
+              onClick={() => setIsImportFlatsModalOpen(true)}
+              style={{
+                background: '#16a34a',
+                color: '#ffffff',
+                padding: '8px 14px',
+                borderRadius: '6px',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                border: 'none',
+                boxShadow: '0 2px 4px rgba(22, 163, 74, 0.25)'
+              }}
+            >
+              <FileSpreadsheet size={15} /> Import Flats (Excel)
+            </button>
+          )}
         </div>
       </div>
 
       {/* TIER 1: ALL PROJECTS */}
       {!selectedProject && (
         <div>
-          {/* EXCEL UPLOAD QUICK ACTION BANNER */}
-          <div style={{
-            background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-            border: '1px solid #86efac',
-            borderRadius: '12px',
-            padding: '16px 20px',
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '12px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '10px',
-                background: '#16a34a',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <FileSpreadsheet size={22} />
-              </div>
-              <div>
-                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#14532d' }}>
-                  Have Previous Inventory or Legacy Excel Sheets?
-                </h4>
-                <p style={{ margin: '2px 0 0', fontSize: '0.82rem', color: '#166534' }}>
-                  Upload your Excel file to automatically create buildings, floors, flats, buyer allotments, and 3-Year Rental contracts in one click.
-                </p>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => {
-                  setImportCategory('sold');
-                  setIsImportModalOpen(true);
-                }}
-                style={{
-                  background: '#16a34a',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '9px 16px',
-                  borderRadius: '8px',
-                  fontWeight: '700',
-                  fontSize: '0.84rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 2px 4px rgba(22,163,74,0.3)'
-                }}
-                title="Upload 1. Standard Sold Inventory Excel"
-              >
-                <FileSpreadsheet size={15} /> Upload Sold Units
-              </button>
-
-              <button
-                onClick={() => {
-                  setImportCategory('resell');
-                  setIsImportModalOpen(true);
-                }}
-                style={{
-                  background: '#7c3aed',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '9px 16px',
-                  borderRadius: '8px',
-                  fontWeight: '700',
-                  fontSize: '0.84rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 2px 4px rgba(124,58,237,0.3)'
-                }}
-                title="Upload 2. Resell Inventory & History Excel"
-              >
-                <Repeat size={15} /> Upload Resell Units
-              </button>
-
-              <button
-                onClick={() => {
-                  setImportCategory('possession_renewal');
-                  setIsImportModalOpen(true);
-                }}
-                style={{
-                  background: '#059669',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '9px 16px',
-                  borderRadius: '8px',
-                  fontWeight: '700',
-                  fontSize: '0.84rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 2px 4px rgba(5,150,105,0.3)'
-                }}
-                title="Upload 3. Post-Possession Renewal Inventory & Prior Contracts Excel"
-              >
-                <RefreshCw size={15} /> Upload Renewal Units
-              </button>
-
-              <button
-                onClick={() => {
-                  setImportCategory('previous_owners');
-                  setIsImportModalOpen(true);
-                }}
-                style={{
-                  background: '#0284c7',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '9px 16px',
-                  borderRadius: '8px',
-                  fontWeight: '700',
-                  fontSize: '0.84rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 2px 4px rgba(2,132,199,0.3)'
-                }}
-                title="Upload 4. Previous Owners Dossier & Chain of Title Excel"
-              >
-                <FileSpreadsheet size={15} /> Upload Previous Owners
-              </button>
-            </div>
-          </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: '#191c1d' }}>
@@ -1366,15 +1234,12 @@ export const PropertyInventoryPage = () => {
                 <TableSkeleton rows={7} columns={6} />
               ) : flats.length === 0 ? (
                 <EmptyState
-                  icon={FileSpreadsheet}
+                  icon={Home}
                   title={`No Flats in ${selectedBuilding.buildingName} Yet`}
-                  description="Upload your inventory Excel sheet with flat numbers, floors, owner names, deal prices, and 3-Year rental terms to instantly populate everything!"
-                  primaryAction={() => setIsImportModalOpen(true)}
-                  primaryActionLabel="Upload Excel / Legacy Sheet"
-                  primaryActionIcon={FileSpreadsheet}
-                  secondaryAction={() => setIsFloorModalOpen(true)}
-                  secondaryActionLabel="Add Floor & Flats Manually"
-                  secondaryActionIcon={Plus}
+                  description="Add floors and flats manually to populate your building inventory matrix."
+                  primaryAction={() => setIsFloorModalOpen(true)}
+                  primaryActionLabel="Add Floor & Flats Manually"
+                  primaryActionIcon={Plus}
                 />
               ) : filteredFlats.length === 0 ? (
                 <EmptyState
@@ -1493,9 +1358,28 @@ export const PropertyInventoryPage = () => {
                       borderTop: '1px solid #dadce0',
                       paddingTop: '8px'
                     }}>
-                      <span style={{ fontSize: '0.75rem', color: '#1a73e8', fontWeight: '600' }}>
-                        Owner & Rental Dossier
-                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/inventory/flats/${fId}`);
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          padding: 0,
+                          fontSize: '0.75rem',
+                          color: '#1a73e8',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                        title="Open comprehensive Flat Profile Page"
+                      >
+                        Flat Profile &amp; Passbook ➔
+                      </button>
 
                       <div style={{ display: 'flex', gap: '6px' }}>
                         <button
@@ -1646,18 +1530,19 @@ export const PropertyInventoryPage = () => {
         }}
       />
 
-      {/* EXCEL INVENTORY & LEGACY DATA IMPORT MODAL */}
-      <ImportInventoryModal
-        isOpen={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
-        projects={projects}
-        defaultProjectId={selectedProject?._id || selectedProject?.id || ''}
-        initialCategory={importCategory}
-        onImportSuccess={() => {
+      {/* IMPORT FLATS EXCEL MODAL */}
+      <ImportFlatsModal
+        isOpen={isImportFlatsModalOpen}
+        onClose={() => setIsImportFlatsModalOpen(false)}
+        onSuccess={() => {
+          fetchFlats();
           fetchProjects();
-          if (selectedBuilding) fetchFlats();
         }}
+        projectId={selectedProject?._id || selectedProject?.id}
+        buildingId={selectedBuilding?._id || selectedBuilding?.id}
+        buildingName={selectedBuilding?.buildingName || 'Selected Building'}
       />
+
     </div>
   );
 };

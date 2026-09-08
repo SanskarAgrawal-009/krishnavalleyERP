@@ -18,7 +18,6 @@ import {
 import { projectService } from '../../services/projectService.js';
 import { salesService } from '../../services/salesService.js';
 import { leadService } from '../../services/leadService.js';
-import { rentalService } from '../../services/rentalService.js';
 import { inventoryService } from '../../services/inventoryService.js';
 import { maintenanceService } from '../../services/maintenanceService.js';
 import {
@@ -56,7 +55,6 @@ export const CommandCenterPage = () => {
   const [flatsList, setFlatsList] = useState([]);
   const [salesDeals, setSalesDeals] = useState([]);
   const [crmLeads, setCrmLeads] = useState([]);
-  const [rentalsList, setRentalsList] = useState([]);
   const [materialsList, setMaterialsList] = useState([]);
   const [serviceRequests, setServiceRequests] = useState([]);
 
@@ -69,7 +67,6 @@ export const CommandCenterPage = () => {
         flatsRes,
         salesRes,
         leadsRes,
-        rentalsRes,
         materialsRes,
         serviceRes
       ] = await Promise.allSettled([
@@ -77,7 +74,6 @@ export const CommandCenterPage = () => {
         projectService.getFlats(),
         salesService.getSalesLeads(),
         leadService.getLeads(),
-        rentalService.getRentals(),
         inventoryService.getMaterials(),
         maintenanceService.getServiceRequests()
       ]);
@@ -95,10 +91,7 @@ export const CommandCenterPage = () => {
         const leadsData = leadsRes.value.data?.leads || leadsRes.value.data || [];
         setCrmLeads(Array.isArray(leadsData) ? leadsData : []);
       }
-      if (rentalsRes.status === 'fulfilled' && rentalsRes.value?.data) {
-        const rData = rentalsRes.value.data?.rentals || rentalsRes.value.data || [];
-        setRentalsList(Array.isArray(rData) ? rData : []);
-      }
+
       if (materialsRes.status === 'fulfilled' && materialsRes.value?.data) {
         const mData = materialsRes.value.data?.materials || materialsRes.value.data || [];
         setMaterialsList(Array.isArray(mData) ? mData : []);
@@ -165,11 +158,7 @@ export const CommandCenterPage = () => {
     (l) => l.status === 'site_visit' || (l.followUps || []).some((fu) => fu.mode === 'site_visit')
   ).length;
 
-  // 4. Rentals & CAM
-  const activeRentalsCount = rentalsList.length;
-  const totalMonthlyRentalInflow = rentalsList.reduce((acc, r) => {
-    return acc + (Number(r.tenantAgreement?.monthlyRent) || Number(r.rentBack?.monthlyRent) || 0);
-  }, 0);
+
 
   const openServiceRequestsCount = serviceRequests.filter(
     (sr) => sr.status === 'open' || sr.status === 'assigned' || sr.status === 'in_progress'
@@ -494,12 +483,12 @@ export const CommandCenterPage = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
         <div style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '700' }}>RENTAL & RENT-BACK</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', marginTop: '2px' }}>{activeRentalsCount} Leases</div>
-            <div style={{ fontSize: '0.72rem', color: '#137333', fontWeight: '600' }}>{formatINR(totalMonthlyRentalInflow)}/mo Yield</div>
+            <div style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '700' }}>PROPERTY INVENTORY</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', marginTop: '2px' }}>{totalUnitsInPortfolio} Total Units</div>
+            <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '600' }}>{totalAvailableUnits} Available • {totalBookedUnits} Allotted</div>
           </div>
-          <div style={{ background: '#ecfdf5', color: '#10b981', padding: '8px', borderRadius: '6px' }}>
-            <Repeat size={18} />
+          <div style={{ background: '#e8f0fe', color: '#1a73e8', padding: '8px', borderRadius: '6px' }}>
+            <Building2 size={18} />
           </div>
         </div>
 

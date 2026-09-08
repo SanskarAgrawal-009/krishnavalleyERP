@@ -1,116 +1,91 @@
-import { request, BASE_URL } from './api.js';
+import { request } from './api.js';
 
 export const rentalService = {
-  createRental: (data) => request('/rentals', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
-
-  getRentals: (params = {}) => {
+  // Table 1: Active Rental Register (Current Owners)
+  getActiveRentals: (params = {}) => {
     const query = new URLSearchParams(params).toString();
-    return request(`/rentals${query ? `?${query}` : ''}`);
+    return request(`/rentals/active${query ? `?${query}` : ''}`);
   },
 
-  getRentalById: (id) => request(`/rentals/${id}`),
+  // Table 2: Previous Owners Trail (Ownership History)
+  getPreviousOwnersHistory: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/rentals/history${query ? `?${query}` : ''}`);
+  },
 
-  updateRental: (id, data) => request(`/rentals/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
-  
-  getOwnerByFlat: (flatId) => request(`/rentals/flat-owner/${flatId}`),
+  // Update Rental Terms (Tenure, Rent, Dates, TDS)
+  updateRentalTerms: (flatId, data) =>
+    request(`/rentals/${flatId}/terms`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }),
 
-  updateRentBack: (id, data) => request(`/rentals/${id}/rent-back`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
-
-  updateTenantAgreement: (id, data) => request(`/rentals/${id}/tenant-agreement`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
-
-  uploadRentBackDoc: (id, formDataOrFile) => {
-    const token = localStorage.getItem('kv_token');
-    let body = formDataOrFile;
-    if (formDataOrFile instanceof File) {
-      const fd = new FormData();
-      fd.append('agreementFile', formDataOrFile);
-      body = fd;
-    }
-    return fetch(`${BASE_URL}/rentals/${id}/rent-back/upload`, {
+  // Record Disbursement Payout
+  recordRentalPayout: (flatId, data) =>
+    request(`/rentals/${flatId}/payout`, {
       method: 'POST',
-      headers: {
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-      },
-      body
-    }).then(async (res) => {
-      const text = await res.text();
-      let data = {};
-      try { data = text ? JSON.parse(text) : {}; } catch (_) {}
-      if (!res.ok) throw new Error(data.message || `Rent-Back document upload failed (${res.status})`);
-      return data;
-    });
-  },
+      body: JSON.stringify(data)
+    }),
 
-  uploadTenantAgreementDoc: (id, formDataOrFile) => {
-    const token = localStorage.getItem('kv_token');
-    let body = formDataOrFile;
-    if (formDataOrFile instanceof File) {
-      const fd = new FormData();
-      fd.append('agreementFile', formDataOrFile);
-      body = fd;
-    }
-    return fetch(`${BASE_URL}/rentals/${id}/tenant-agreement/upload`, {
+  // Resale / Ownership Transfer (Archives old owner to Table 2, sets up new owner in Table 1)
+  transferOwnership: (flatId, data) =>
+    request(`/rentals/${flatId}/transfer`, {
       method: 'POST',
-      headers: {
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-      },
-      body
-    }).then(async (res) => {
-      const text = await res.text();
-      let data = {};
-      try { data = text ? JSON.parse(text) : {}; } catch (_) {}
-      if (!res.ok) throw new Error(data.message || `Tenant agreement upload failed (${res.status})`);
-      return data;
-    });
+      body: JSON.stringify(data)
+    }),
+
+  // Manual Rental Enrollment (Matching Required Columns)
+  createManualRental: (data) =>
+    request('/rentals/manual', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+
+  // Batch Import Rentals from Excel
+  importRentalsExcel: (data) =>
+    request('/rentals/import-excel', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+
+  // Table 3: Rental Passbook Ledgers for All Customers
+  getRentalLedgers: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/rentals/ledgers${query ? `?${query}` : ''}`);
   },
 
-  updateAllocation: (id, data) => request(`/rentals/${id}/allocation`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
+  // Auto-generate full tenure passbook from active rental register
+  autoGenerateLedgers: (data = {}) =>
+    request('/rentals/ledgers/auto-generate', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
 
-  recordDepositPayment: (id, data) => request(`/rentals/${id}/deposits/pay`, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
+  // Upload Excel, calculate paid months from tenure/net amount/paid, generate passbook entries
+  uploadLedgerExcelAndGenerate: (data) =>
+    request('/rentals/ledgers/upload-excel', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
 
-  terminateContract: (id, data = {}) => request(`/rentals/${id}/terminate`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
+  // Update or disburse an individual passbook entry
+  updatePassbookEntry: (flatId, data) =>
+    request(`/rentals/ledgers/${flatId}/entry`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }),
 
-  processTermination: function (id, data) {
-    return this.terminateContract(id, data);
-  },
+  // Delete / Unenroll active rental entry
+  deleteRental: (flatId) =>
+    request(`/rentals/${flatId}`, {
+      method: 'DELETE'
+    }),
 
-  deleteRental: (id) => request(`/rentals/${id}`, {
-    method: 'DELETE'
-  }),
-
-  addPenalty: (id, data) => request(`/maintenance/penalties`, {
-    method: 'POST',
-    body: JSON.stringify({ ...data, rentalId: id })
-  }),
-
-  recordOwnerPayout: (id, data) => request(`/rentals/${id}/payout`, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
-
-  importRentalLedger: (payload, format = 'single_passbook') => request(`/rentals/import-ledger`, {
-    method: 'POST',
-    body: JSON.stringify({ payload, format })
-  })
+  // Delete historical previous owner entry
+  deleteOwnershipHistory: (flatId, historyId) =>
+    request(`/rentals/${flatId}/history/${historyId}`, {
+      method: 'DELETE'
+    })
 };
+
+export default rentalService;

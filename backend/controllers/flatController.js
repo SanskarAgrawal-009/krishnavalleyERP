@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Flat from '../models/Flat.js';
 import Project from '../models/Project.js';
 import Customer from '../models/Customer.js';
@@ -122,7 +123,17 @@ export const getFlats = async (req, res) => {
 export const getFlatById = async (req, res) => {
   try {
     const { id } = req.params;
-    const flat = await Flat.findById(id).populate('projectId');
+    let flat;
+    if (mongoose.isValidObjectId(id)) {
+      flat = await Flat.findById(id).populate('projectId');
+    } else {
+      flat = await Flat.findOne({ flatNumber: id }).populate('projectId');
+      if (!flat) {
+        flat = await Flat.findOne({
+          flatNumber: new RegExp(`^${id.replace(/\s+/g, '')}$`, 'i')
+        }).populate('projectId');
+      }
+    }
     if (!flat) return res.status(404).json({ success: false, message: 'Flat not found' });
     
     const obj = flat.toObject();
@@ -139,18 +150,25 @@ export const getFlatById = async (req, res) => {
       }
     }
 
+    const flatActualId = flat._id;
+
     // 1. Fetch Sales Record (if booked, converted, agreement signed, possessed)
     const salesLead = await SalesLead.findOne({
-      flatId: id,
+      flatId: flatActualId,
       salesStatus: { $ne: 'cancelled' }
     }).populate('leadId', 'name mobileNo email agentId').populate('booking.bookingPaymentId');
 
     // 2. Fetch Owner from Customer collection
-    let ownerCustomer = await Customer.findOne({
-      customerType: 'owner',
-      'ownerDetails.propertyIds': id
-    });
-
+    let ownerCustomer = null;
+    if (flat.currentOwner?.customerId) {
+      ownerCustomer = await Customer.findById(flat.currentOwner.customerId);
+    }
+    if (!ownerCustomer) {
+      ownerCustomer = await Customer.findOne({
+        customerType: 'owner',
+        'ownerDetails.propertyIds': flatActualId
+      });
+    }
     if (!ownerCustomer && salesLead?.mobileNo) {
       ownerCustomer = await Customer.findOne({ mobileNo: salesLead.mobileNo });
     }
@@ -158,9 +176,9 @@ export const getFlatById = async (req, res) => {
     // 3. Fetch Rental Contracts for this Flat
     const rentalContracts = await RentalManagement.find({
       $or: [
-        { flatId: id },
-        { flatIds: id },
-        { 'leasedUnits.flatId': id }
+        { flatId: flatActualId },
+        { flatIds: flatActualId },
+        { 'leasedUnits.flatId': flatActualId }
       ]
     }).populate('ownerId', 'name mobileNo email address')
       .populate('tenantId', 'name mobileNo email address')
@@ -168,20 +186,24 @@ export const getFlatById = async (req, res) => {
 
     const activeRental = rentalContracts.find(r => r.status !== 'terminated') || rentalContracts[0] || null;
 
-    // 4. Calculate 3-Year Mandatory Rental Period & Possession Availability
-    // Business Rule: If a flat is sold or enrolled in rental program, the 36-month rental lock-in is confirmed.
-    const isSoldOrEnrolled = obj.status === 'sold' || obj.status === 'leased' || flat.takenForRental || !!salesLead || !!ownerCustomer || !!activeRental;
+    // 4. Calculate Rental Period & Possession Availability
+    const isSoldOrEnrolled = ['sold', 'leased', 'resell', 'possession_renewal', 'buy_back'].includes(obj.status) || flat.takenForRental || !!salesLead || !!ownerCustomer || !!activeRental;
     
     if (isSoldOrEnrolled) {
-      obj.status = 'sold';
-      obj.takenForRental = true;
-      if (flat.status !== 'sold' && flat.status !== 'leased') {
+      // PRESERVE 'resell' and 'possession_renewal' statuses!
+      if (!['sold', 'leased', 'resell', 'possession_renewal', 'buy_back'].includes(flat.status)) {
+        obj.status = 'sold';
+        obj.takenForRental = true;
         await Flat.findByIdAndUpdate(flat._id, { status: 'sold', takenForRental: true });
       }
     }
     
     let rentalStartDate = null;
-    if (activeRental?.rentBack?.startDate) {
+    if (flat.rentalDetails?.startDate) {
+      rentalStartDate = new Date(flat.rentalDetails.startDate);
+    } else if (flat.rentalDetails?.mouDate) {
+      rentalStartDate = new Date(flat.rentalDetails.mouDate);
+    } else if (activeRental?.rentBack?.startDate) {
       rentalStartDate = new Date(activeRental.rentBack.startDate);
     } else if (activeRental?.tenantAgreement?.startDate) {
       rentalStartDate = new Date(activeRental.tenantAgreement.startDate);
@@ -195,9 +217,10 @@ export const getFlatById = async (req, res) => {
       rentalStartDate = new Date();
     }
 
-    // Calculate exact 3 years (36 months) from rental start date
+    // Lock-in period based on tenure
+    const tenureMonths = obj.rentalDetails?.tenureMonths || 36;
     const lockInEndDate = new Date(rentalStartDate);
-    lockInEndDate.setFullYear(lockInEndDate.getFullYear() + 3);
+    lockInEndDate.setMonth(lockInEndDate.getMonth() + tenureMonths);
 
     const now = new Date();
     const diffMs = lockInEndDate.getTime() - now.getTime();
@@ -206,24 +229,24 @@ export const getFlatById = async (req, res) => {
     const isLocked = isSoldOrEnrolled && diffMs > 0;
 
     const remainingDays = isLocked ? Math.ceil(diffMs / (1000 * 60 * 60 * 24)) : (isSoldOrEnrolled ? 0 : 1095);
-    const remainingMonths = isLocked ? Math.ceil(remainingDays / 30.4375) : (isSoldOrEnrolled ? 0 : 36);
+    const remainingMonths = isLocked ? Math.ceil(remainingDays / 30.4375) : (isSoldOrEnrolled ? 0 : tenureMonths);
     const elapsedDays = isSoldOrEnrolled ? Math.max(0, Math.floor((now.getTime() - rentalStartDate.getTime()) / (1000 * 60 * 60 * 24))) : 0;
     const totalDays = Math.max(1, Math.floor(totalMs / (1000 * 60 * 60 * 24)));
     const progressPercentage = isSoldOrEnrolled ? Math.min(100, Math.max(0, Math.round((elapsedDays / totalDays) * 100))) : 0;
 
     let possessionStatus = 'available_for_sale';
-    let possessionMessage = 'Unit is currently available for sale. Upon sale, a confirmed 36-month guaranteed rental lock-in applies.';
+    let possessionMessage = 'Unit is currently available for sale. Upon sale, a confirmed guaranteed rental lock-in applies.';
 
     if (isSoldOrEnrolled) {
-      if (salesLead?.possession?.status === 'completed' || salesLead?.salesStatus === 'possessed') {
+      if (flat.salesDetails?.possessionStatus === 'handed_over' || salesLead?.possession?.status === 'completed' || salesLead?.salesStatus === 'possessed') {
         possessionStatus = 'possession_completed';
-        possessionMessage = `Possession has already been completed on ${salesLead.possession?.possessionDate ? new Date(salesLead.possession.possessionDate).toLocaleDateString('en-IN') : 'record'}.`;
+        possessionMessage = `Possession has already been completed on record.`;
       } else if (isLocked || remainingMonths > 0) {
         possessionStatus = 'possession_locked_3yr';
-        possessionMessage = `Flat is SOLD with a confirmed 36-Month Rental Lock-in. Physical possession will be available on ${lockInEndDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (${remainingMonths} months / ${remainingDays} days remaining).`;
+        possessionMessage = `Flat is under an active ${tenureMonths}-Month Rental Commitment. Physical possession target: ${lockInEndDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (${remainingMonths} months / ${remainingDays} days remaining).`;
       } else {
         possessionStatus = 'possession_eligible';
-        possessionMessage = `3-Year rental lock-in term fulfilled on ${lockInEndDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}. Unit is now fully eligible for physical possession and key handover!`;
+        possessionMessage = `Rental lock-in term fulfilled on ${lockInEndDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}. Unit is now fully eligible for physical possession and key handover!`;
       }
     }
 
@@ -231,8 +254,8 @@ export const getFlatById = async (req, res) => {
       isEnrolledInRental: isSoldOrEnrolled,
       rentalStartDate: isSoldOrEnrolled ? rentalStartDate : null,
       lockInEndDate: isSoldOrEnrolled ? lockInEndDate : null,
-      mandatoryTenureYears: 3,
-      mandatoryTenureMonths: 36,
+      mandatoryTenureYears: Math.round(tenureMonths / 12),
+      mandatoryTenureMonths: tenureMonths,
       elapsedDays,
       totalDays,
       remainingDays,
@@ -241,10 +264,10 @@ export const getFlatById = async (req, res) => {
       isLocked,
       possessionStatus,
       possessionMessage,
-      actualPossession: salesLead?.possession || null
+      actualPossession: flat.salesDetails?.possessionStatus ? { status: flat.salesDetails.possessionStatus, possessionDate: flat.salesDetails.possessionDate } : (salesLead?.possession || null)
     };
 
-    // Resolve Owner Details (Prioritize directly saved flat.currentOwner)
+    // Resolve Owner Details
     let resolvedOwner = null;
     const flatCurrentOwner = flat.currentOwner ? (flat.currentOwner.toObject ? flat.currentOwner.toObject() : flat.currentOwner) : null;
     const custOwner = ownerCustomer ? (ownerCustomer.toObject ? ownerCustomer.toObject() : ownerCustomer) : null;
@@ -253,6 +276,13 @@ export const getFlatById = async (req, res) => {
       resolvedOwner = {
         ...(custOwner || {}),
         ...flatCurrentOwner,
+        customerId: custOwner?._id || flatCurrentOwner.customerId,
+        name: flatCurrentOwner.name || custOwner?.name,
+        mobileNo: flatCurrentOwner.mobileNo || custOwner?.mobileNo,
+        email: flatCurrentOwner.email || custOwner?.email,
+        panNumber: flatCurrentOwner.panNumber || custOwner?.panNumber || custOwner?.ownerDetails?.panNumber,
+        aadhaarNumber: flatCurrentOwner.aadhaarNumber || custOwner?.aadhaarNumber || custOwner?.ownerDetails?.aadhaarNumber,
+        address: flatCurrentOwner.address || custOwner?.permanentAddress || custOwner?.address?.addressLine1,
         bankDetails: {
           ...(custOwner?.ownerDetails?.bankDetails || custOwner?.bankDetails || {}),
           ...(flatCurrentOwner.bankDetails || {})
@@ -261,6 +291,7 @@ export const getFlatById = async (req, res) => {
     } else if (custOwner) {
       resolvedOwner = {
         ...custOwner,
+        customerId: custOwner._id,
         bankDetails: custOwner.ownerDetails?.bankDetails || custOwner.bankDetails || {}
       };
     } else if (activeRental?.ownerId) {
@@ -275,6 +306,76 @@ export const getFlatById = async (req, res) => {
       };
     }
 
+    // Synthesize Month-by-Month Passbook Ledger
+    const monthlyRent = obj.rentalDetails?.guaranteedMonthlyRent || 0;
+    const applyTds = obj.rentalDetails?.applyTds !== false;
+    const tdsPercentage = obj.rentalDetails?.tdsPercentage || 10;
+    const dueDay = obj.rentalDetails?.dueDayOfMonth || 25;
+    const disbursed = obj.rentalDetails?.totalDisbursedToOwner || 0;
+    const commitment = obj.rentalDetails?.total36MonthCommitment || (monthlyRent * tenureMonths);
+    const paidMonthsCount = monthlyRent > 0 ? Math.round(disbursed / monthlyRent) : 0;
+    const startD = obj.rentalDetails?.startDate ? new Date(obj.rentalDetails.startDate) : (obj.rentalDetails?.mouDate ? new Date(obj.rentalDetails.mouDate) : new Date());
+
+    const existingLedgerMap = new Map();
+    (obj.rentalDetails?.ledgerEntries || []).forEach(entry => {
+      if (entry.monthIndex) existingLedgerMap.set(entry.monthIndex, entry);
+    });
+
+    const synthesizedLedger = [];
+    let runningCumulative = 0;
+
+    for (let m = 1; m <= tenureMonths; m++) {
+      const explicit = existingLedgerMap.get(m);
+      if (explicit) {
+        runningCumulative += (explicit.grossAmount || explicit.netAmountPaid || 0);
+        synthesizedLedger.push(explicit);
+      } else {
+        const dueDate = new Date(startD);
+        dueDate.setMonth(dueDate.getMonth() + (m - 1));
+        dueDate.setDate(Math.min(dueDay, 28));
+
+        const gross = monthlyRent;
+        const tdsAmt = applyTds ? Math.round(gross * (tdsPercentage / 100)) : 0;
+        const netAmt = gross - tdsAmt;
+
+        let status = 'upcoming';
+        let paymentDate = null;
+        let paymentMode = 'NEFT';
+        let refNo = '';
+
+        if (m <= paidMonthsCount) {
+          status = 'paid';
+          paymentDate = new Date(dueDate);
+          paymentDate.setDate(paymentDate.getDate() + 1);
+          refNo = `CMS-NEFT-${(flat.flatNumber || '001').replace(/[^0-9]/g, '')}-${m.toString().padStart(2, '0')}`;
+          runningCumulative += gross;
+        } else if (m === paidMonthsCount + 1) {
+          status = 'due';
+        }
+
+        synthesizedLedger.push({
+          monthIndex: m,
+          dueDate,
+          paymentDate,
+          paymentMode,
+          referenceNumber: refNo,
+          grossAmount: gross,
+          tdsDeducted: tdsAmt,
+          netAmountPaid: netAmt,
+          cumulativePaid: runningCumulative,
+          remainingTenureBalance: Math.max(0, commitment - runningCumulative),
+          status,
+          remarks: status === 'paid' ? `MOU Month ${m} Disbursed via Bank Transfer` : (status === 'due' ? 'Current Month Payable' : 'Scheduled Term')
+        });
+      }
+    }
+
+    if (!obj.rentalDetails) obj.rentalDetails = {};
+    obj.rentalDetails.ledgerEntries = synthesizedLedger;
+    obj.rentalDetails.paidMonthsCount = paidMonthsCount;
+    obj.rentalDetails.outstandingMonthsCount = Math.max(0, tenureMonths - paidMonthsCount);
+    obj.rentalDetails.progressPercentage = tenureMonths > 0 ? Math.min(100, Math.round((paidMonthsCount / tenureMonths) * 100)) : 0;
+
     // Resolve Sales Lead & Commercial Terms
     let resolvedSalesLead = salesLead;
     if (!resolvedSalesLead && (isSoldOrEnrolled || activeRental)) {
@@ -282,29 +383,29 @@ export const getFlatById = async (req, res) => {
         name: resolvedOwner?.name || 'Registered Property Owner',
         mobileNo: resolvedOwner?.mobileNo || 'On File',
         email: resolvedOwner?.email || 'owner@krishnavalley.com',
-        salesStatus: 'agreement_completed',
+        salesStatus: flat.salesDetails?.salesStatus || 'agreement_completed',
         convertedAt: rentalStartDate,
-        finalPrice: flat.basePrice || 2500000,
+        finalPrice: flat.salesDetails?.agreedDealPrice || flat.basePrice || 2500000,
         booking: {
           isBooked: true,
-          bookingDate: rentalStartDate,
-          bookingAmount: Math.round((flat.basePrice || 2500000) * 0.1) || 100000,
-          agreedDealPrice: flat.basePrice || 2500000,
+          bookingDate: flat.salesDetails?.bookingDate || rentalStartDate,
+          bookingAmount: flat.salesDetails?.bookingAmountPaid || Math.round((flat.basePrice || 2500000) * 0.1) || 100000,
+          agreedDealPrice: flat.salesDetails?.agreedDealPrice || flat.basePrice || 2500000,
           bookingStatus: 'confirmed'
         },
         agreement: {
           required: true,
           uploaded: true,
           isSigned: true,
-          agreementNumber: activeRental?.rentBack?.agreementNumber || `BBA-${flat.flatNumber || '001'}`,
-          agreementDate: rentalStartDate,
-          verificationStatus: 'verified'
+          agreementNumber: flat.salesDetails?.agreementNumber || activeRental?.rentBack?.agreementNumber || `BBA-${flat.flatNumber || '001'}`,
+          agreementDate: flat.salesDetails?.agreementDate || rentalStartDate,
+          verificationStatus: flat.salesDetails?.agreementVerificationStatus || 'verified'
         },
         paymentPlan: {
-          type: '36-month_rent_back_linked',
-          totalAmount: flat.basePrice || 2500000,
-          bookingAmount: Math.round((flat.basePrice || 2500000) * 0.1) || 100000,
-          remainingAmount: Math.max(0, (flat.basePrice || 2500000) - 100000),
+          type: flat.salesDetails?.paymentPlanType || 'installment',
+          totalAmount: flat.salesDetails?.agreedDealPrice || flat.basePrice || 2500000,
+          bookingAmount: flat.salesDetails?.bookingAmountPaid || Math.round((flat.basePrice || 2500000) * 0.1) || 100000,
+          remainingAmount: flat.salesDetails?.balanceAmountDue || Math.max(0, (flat.basePrice || 2500000) - 100000),
           numberOfInstallments: 1
         }
       };
@@ -371,6 +472,113 @@ export const createFlat = async (req, res) => {
     return res.status(201).json({ success: true, data: newFlat });
   } catch (error) {
     console.error('Error creating flat in MongoDB:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Bulk Import Flats from Excel (Contains Strictly Form Data of Flats Only)
+export const importFlatsFromExcel = async (req, res) => {
+  try {
+    let { projectId, buildingId, flats } = req.body;
+
+    // Support both direct Excel file upload and JSON array of parsed rows
+    if (req.file && req.file.buffer) {
+      const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      flats = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
+    }
+
+    if (!projectId || !buildingId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Project ID and Building ID are required to import flats'
+      });
+    }
+
+    if (!Array.isArray(flats) || flats.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No flats data provided for import'
+      });
+    }
+
+    let createdCount = 0;
+    let updatedCount = 0;
+    const errors = [];
+
+    for (let i = 0; i < flats.length; i++) {
+      const row = flats[i];
+      const flatNumber = String(
+        row.flatNumber || row['Flat Number'] || row['Flat No'] || row.flatNo || ''
+      ).trim();
+
+      if (!flatNumber) {
+        errors.push(`Row ${i + 1}: Missing Flat Number`);
+        continue;
+      }
+
+      const floor = row.floor !== undefined && row.floor !== ''
+        ? Number(row.floor)
+        : (row['Floor Number'] !== undefined && row['Floor Number'] !== ''
+          ? Number(row['Floor Number'])
+          : inferFloorFromFlat(flatNumber));
+
+      const bhkType = String(row.bhkType || row['BHK Type'] || '2BHK').trim();
+      const carpetArea = Number(row.carpetArea || row['Carpet Area (sq.ft)'] || row['Carpet Area'] || 950);
+      const basePrice = Number(row.basePrice || row['Base Price (₹)'] || row['Base Price'] || 4500000);
+      const facing = String(row.facing || row['Facing'] || 'East').trim();
+      const rawStatus = String(row.status || row['Status'] || 'available').trim().toLowerCase();
+      const validStatuses = ['available', 'sold', 'hold', 'booked', 'leased', 'resell', 'buy_back', 'possession_renewal'];
+      const status = validStatuses.includes(rawStatus) ? rawStatus : 'available';
+
+      const existingFlat = await Flat.findOne({
+        projectId,
+        buildingId,
+        flatNumber: { $regex: new RegExp(`^${flatNumber.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, '\\$&')}$`, 'i') }
+      });
+
+      if (existingFlat) {
+        existingFlat.floor = floor;
+        existingFlat.bhkType = bhkType;
+        existingFlat.carpetArea = carpetArea;
+        existingFlat.basePrice = basePrice;
+        existingFlat.facing = facing;
+        existingFlat.status = status;
+        await existingFlat.save();
+        updatedCount++;
+      } else {
+        await Flat.create({
+          flatNumber,
+          projectId,
+          buildingId,
+          floor,
+          bhkType,
+          carpetArea,
+          basePrice,
+          facing,
+          status,
+          buybackCount: 0,
+          takenForRental: false
+        });
+        createdCount++;
+      }
+    }
+
+    apiCache.invalidatePrefix('flats');
+    apiCache.invalidatePrefix('reports');
+
+    return res.status(200).json({
+      success: true,
+      message: `Successfully processed ${flats.length} flats (${createdCount} created, ${updatedCount} updated)`,
+      data: {
+        totalProcessed: flats.length,
+        createdCount,
+        updatedCount,
+        errors
+      }
+    });
+  } catch (error) {
+    console.error('Error importing flats from Excel:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -820,558 +1028,6 @@ const getRowVal = (row, ...aliases) => {
     }
   }
   return '';
-};
-
-// =========================================================================
-// BULK IMPORT EXCEL: Flats, Owners, 3-Year Rental & Rent-Back Contracts
-// =========================================================================
-export const importFlatsFromExcel = async (req, res) => {
-  try {
-    let rows = [];
-
-    // 1. Check if raw file was uploaded via multipart/form-data
-    if (req.file && req.file.buffer) {
-      const workbook = XLSX.read(req.file.buffer, { type: 'buffer', cellDates: true });
-      const firstSheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[firstSheetName];
-      rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-    } else if (req.body.items && Array.isArray(req.body.items)) {
-      rows = req.body.items;
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded or data items provided for import.'
-      });
-    }
-
-    if (!rows || rows.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'The uploaded sheet is empty or contains no readable rows.'
-      });
-    }
-
-    // 2. Resolve default or target Project
-    let targetProject = null;
-    const requestedProjId = req.body.projectId || req.query.projectId;
-    if (requestedProjId) {
-      targetProject = await Project.findById(requestedProjId);
-    }
-    if (!targetProject) {
-      targetProject = await Project.findOne().sort({ createdAt: -1 });
-    }
-    if (!targetProject) {
-      targetProject = await Project.create({
-        projectName: 'Krishna Valley Township',
-        projectCode: 'KV-MATHURA',
-        address: {
-          addressLine1: 'NH-19, Vrindavan Road',
-          city: 'Mathura',
-          state: 'Uttar Pradesh',
-          pincode: '281001'
-        },
-        status: 'ongoing',
-        buildings: []
-      });
-    }
-
-    const summary = {
-      totalRows: rows.length,
-      createdFlats: 0,
-      updatedFlats: 0,
-      createdOwners: 0,
-      createdRentals: 0,
-      errors: [],
-      importedRecords: []
-    };
-
-    // 3. Process each row sequentially
-    for (let index = 0; index < rows.length; index++) {
-      const row = rows[index];
-      const rowNumber = index + 2; // Accounting for 1-based indexing and header row
-
-      try {
-        const rawFlatNo = getRowVal(row, 'flat no', 'flat_no', 'flat no.', 'flat number', 'flat_number', 'unit no', 'unit', 'flat');
-        if (!rawFlatNo) {
-          summary.errors.push(`Row ${rowNumber}: Skipped (Missing Flat No).`);
-          continue;
-        }
-
-        const flatNumber = String(rawFlatNo).trim();
-        const rawFloor = getRowVal(row, 'floor', 'floor no', 'floor_no', 'floor number');
-        const floor = (rawFloor !== '' && rawFloor !== undefined && rawFloor !== null) ? cleanNumeric(rawFloor, 0) : inferFloorFromFlat(flatNumber);
-        
-        const rawBuilding = getRowVal(row, 'building', 'tower', 'building name', 'block', 'wing');
-        const buildingName = String(rawBuilding || 'Tower A').trim();
-
-        const rawOwner = getRowVal(row, 'owner name', 'owner_name', 'owner', 'buyer name', 'customer name', 'name');
-        const ownerName = String(rawOwner || '').trim();
-        const hasOwner = !!ownerName && !ownerName.toLowerCase().includes('vacant');
-
-        const rawPhone = getRowVal(row, 'owner mobile', 'owner phone', 'mobile', 'phone', 'contact', 'mobile no');
-        let ownerMobile = String(rawPhone || '').trim();
-
-        const rawAgreementDate = getRowVal(row, 'date of aggreement', 'date of agreement', 'agreement date', 'booking date', 'agreement_date');
-        const agreementDate = parseExcelDate(rawAgreementDate);
-
-        const rawRentalStart = getRowVal(row, 'date of the rental starts', 'rental start date', 'rental start', 'start date', 'rental_start_date');
-        const rentalStartDate = parseExcelDate(rawRentalStart) || agreementDate || new Date();
-
-        // Tenure: default 36 months if empty, 0, or not specified
-        const rawTenure = getRowVal(row, 'tenure', 'tenure (months)', 'tenure months', 'lease tenure', 'duration');
-        let tenure = cleanNumeric(rawTenure, 36);
-        if (tenure <= 0) tenure = 36;
-
-        // Amount Per Month
-        const rawMonthlyRent = getRowVal(row, 'amount per month', 'monthly rent', 'rent per month', 'monthly amount', 'rent', 'monthly_rent');
-        const monthlyRent = cleanNumeric(rawMonthlyRent, 0);
-
-        // Amount for the Total Tenure
-        const rawTotalTenureAmount = getRowVal(row, 'amount for the total tenure', 'total tenure amount', 'total amount', 'total rental amount', 'total rent');
-        let totalTenureAmount = cleanNumeric(rawTotalTenureAmount, 0);
-        if (totalTenureAmount <= 0 && monthlyRent > 0) {
-          totalTenureAmount = monthlyRent * tenure;
-        }
-
-        const rawRentDueDay = getRowVal(row, 'rent due day', 'due day', 'due date', 'actual due date', 'due_date');
-        const parsedDueDay = rawRentDueDay ? parseInt(String(rawRentDueDay).replace(/\D/g, ''), 10) : 25;
-        const rentDueDay = parsedDueDay || 25;
-
-        const bankName = getRowVal(row, 'bank name', 'bank');
-        const bankBranch = getRowVal(row, 'bank branch', 'branch');
-        const ifscCode = getRowVal(row, 'ifsc code', 'ifsc');
-        const accountNumber = getRowVal(row, 'account number', 'account no', 'account no.', 'ac no');
-        const panNumber = getRowVal(row, 'pan number', 'pan', 'pan no');
-
-        const rawBhk = getRowVal(row, 'flat type', 'bhk type', 'unit type', 'type', 'bhk');
-        const bhkType = String(rawBhk || 'Service Apartment').trim();
-
-        const rawArea = getRowVal(row, 'carpet area', 'area', 'sqft', 'super builtup area');
-        const carpetArea = cleanNumeric(rawArea, 850);
-
-        // Previous Payments & Deal Price Made by Buyer
-        const rawDealPrice = getRowVal(row, 'agreed deal price', 'deal price', 'sale price', 'total price', 'flat price', 'base price');
-        let agreedDealPrice = cleanNumeric(rawDealPrice, 0);
-        if (agreedDealPrice <= 0) {
-          agreedDealPrice = totalTenureAmount > 0 ? totalTenureAmount * 3 : 4500000;
-        }
-
-        const rawPaidAmount = getRowVal(row, 'previous payment', 'previous payments', 'paid amount', 'amount paid', 'booking amount', 'advance paid', 'token amount', 'payment made');
-        let previousPaidAmount = cleanNumeric(rawPaidAmount, 0);
-        if (previousPaidAmount <= 0 && rawPaidAmount === '') {
-          // Default booking advance if not explicitly zero
-          previousPaidAmount = Math.min(agreedDealPrice, 100000);
-        }
-
-        // A. Resolve or Create Building in Target Project
-        if (!targetProject.buildings) targetProject.buildings = [];
-        let building = targetProject.buildings.find(
-          (b) => b.buildingName && b.buildingName.toLowerCase() === buildingName.toLowerCase()
-        );
-
-        if (!building) {
-          const buildingCode = buildingName.toUpperCase().replace(/[^A-Z0-9]/g, '-').slice(0, 10) || `BLD-${Date.now().toString().slice(-4)}`;
-          targetProject.buildings.push({
-            buildingName,
-            buildingCode,
-            numberOfFloors: Math.max(floor, 1),
-            flats: [],
-            status: 'completed'
-          });
-          await targetProject.save();
-          building = targetProject.buildings[targetProject.buildings.length - 1];
-        } else if (floor > (building.numberOfFloors || 0)) {
-          building.numberOfFloors = floor;
-          await targetProject.save();
-        }
-
-        // B. Resolve or Create Flat in MongoDB
-        let flat = await Flat.findOne({
-          projectId: targetProject._id,
-          buildingId: building._id,
-          flatNumber
-        });
-
-        // Determine flat status
-        const rawStatus = String(getRowVal(row, 'status', 'flat status', 'unit status') || '').toLowerCase().trim();
-        let targetStatus = 'available';
-        if (rawStatus.includes('resell') || rawStatus.includes('resold')) {
-          targetStatus = 'resell';
-        } else if (rawStatus.includes('buyback') || rawStatus.includes('buy_back') || rawStatus.includes('buy back')) {
-          targetStatus = 'buy_back';
-        } else if (rawStatus.includes('possession') || rawStatus.includes('renewal')) {
-          targetStatus = 'possession_renewal';
-        } else if (rawStatus.includes('leased')) {
-          targetStatus = 'leased';
-        } else if (rawStatus.includes('hold') || rawStatus.includes('booked')) {
-          targetStatus = 'hold';
-        } else if (rawStatus.includes('sold') || hasOwner) {
-          targetStatus = 'sold';
-        }
-
-        const isFlatSold = ['sold', 'resell', 'buy_back', 'possession_renewal', 'leased'].includes(targetStatus);
-        const hasRental = monthlyRent > 0 || !!rawRentalStart;
-        let isNewFlat = false;
-
-        if (!flat) {
-          isNewFlat = true;
-          flat = new Flat({
-            projectId: targetProject._id,
-            buildingId: building._id,
-            flatNumber,
-            floor,
-            bhkType,
-            carpetArea,
-            basePrice: agreedDealPrice,
-            status: targetStatus,
-            isSold: isFlatSold,
-            takenForRental: hasRental,
-            facing: 'East'
-          });
-          await flat.save();
-          building.flats.push(flat._id);
-          await targetProject.save();
-          summary.createdFlats++;
-        } else {
-          flat.floor = floor;
-          if (bhkType) flat.bhkType = bhkType;
-          if (carpetArea) flat.carpetArea = carpetArea;
-          if (agreedDealPrice > 0) flat.basePrice = agreedDealPrice;
-          flat.status = targetStatus;
-          flat.isSold = isFlatSold;
-          if (hasRental) flat.takenForRental = true;
-          await flat.save();
-          summary.updatedFlats++;
-        }
-
-        // C. Resolve or Create Owner (Customer & SalesLead with Recorded Previous Payments)
-        let ownerCustomer = null;
-        if (hasOwner) {
-          if (!ownerMobile || ownerMobile.length < 10) {
-            // Generate clean unique deterministic phone number if missing
-            const seedDigits = Math.abs(flatNumber.split('').reduce((acc, c) => acc + c.charCodeAt(0), 1000));
-            ownerMobile = `+91 98${String(seedDigits).padEnd(8, '0').slice(0, 8)}`;
-          }
-
-          ownerCustomer = await Customer.findOne({
-            customerType: 'owner',
-            $or: [{ mobileNo: ownerMobile }, { name: ownerName }]
-          });
-
-          if (!ownerCustomer) {
-            ownerCustomer = new Customer({
-              customerType: 'owner',
-              name: ownerName,
-              mobileNo: ownerMobile,
-              email: `${ownerName.toLowerCase().replace(/[^a-z0-9]/g, '.')}.${flatNumber}@krishnavalley.com`,
-              panNumber: panNumber || '',
-              bankingDetails: {
-                bankName: bankName || '',
-                branchName: bankBranch || '',
-                accountNumber: accountNumber || '',
-                ifscCode: ifscCode || ''
-              },
-              ownerDetails: {
-                propertyIds: [flat._id],
-                ownershipType: 'individual',
-                ownershipPercentage: 100
-              }
-            });
-            await ownerCustomer.save();
-            summary.createdOwners++;
-          } else {
-            if (!ownerCustomer.ownerDetails) ownerCustomer.ownerDetails = { propertyIds: [] };
-            if (!ownerCustomer.ownerDetails.propertyIds) ownerCustomer.ownerDetails.propertyIds = [];
-            if (!ownerCustomer.ownerDetails.propertyIds.some((pId) => pId.toString() === flat._id.toString())) {
-              ownerCustomer.ownerDetails.propertyIds.push(flat._id);
-            }
-            if (bankName || accountNumber) {
-              if (!ownerCustomer.bankingDetails) ownerCustomer.bankingDetails = {};
-              if (bankName) ownerCustomer.bankingDetails.bankName = bankName;
-              if (bankBranch) ownerCustomer.bankingDetails.branchName = bankBranch;
-              if (ifscCode) ownerCustomer.bankingDetails.ifscCode = ifscCode;
-              if (accountNumber) ownerCustomer.bankingDetails.accountNumber = accountNumber;
-            }
-            if (panNumber) ownerCustomer.panNumber = panNumber;
-            await ownerCustomer.save();
-          }
-
-          // Ensure Lead & SalesLead exist with full payment & booking history
-          let lead = await Lead.findOne({ mobileNo: ownerCustomer.mobileNo });
-          if (!lead) {
-            lead = new Lead({
-              name: ownerCustomer.name,
-              mobileNo: ownerCustomer.mobileNo,
-              email: ownerCustomer.email,
-              requirement: `${bhkType} Unit`,
-              status: 'converted',
-              leadSource: 'direct',
-              assignedFlat: flat._id
-            });
-            await lead.save();
-          }
-
-          let salesLead = await SalesLead.findOne({ flatId: flat._id, salesStatus: { $ne: 'cancelled' } });
-          const isFullyPaid = previousPaidAmount >= agreedDealPrice && agreedDealPrice > 0;
-          const salesStatus = isFullyPaid ? 'fully_paid' : (previousPaidAmount > 0 ? 'agreement_completed' : 'agreement_completed');
-          const bbaNumber = `BBA-${flatNumber}-${Date.now().toString().slice(-4)}`;
-          const receiptNumber = `RCP-LEGACY-${flatNumber}-${Date.now().toString().slice(-4)}`;
-
-          if (!salesLead) {
-            salesLead = new SalesLead({
-              leadId: lead._id,
-              customerId: ownerCustomer._id,
-              name: ownerCustomer.name,
-              mobileNo: ownerCustomer.mobileNo,
-              email: ownerCustomer.email,
-              projectId: targetProject._id,
-              buildingId: building._id,
-              flatId: flat._id,
-              salesStatus,
-              booking: {
-                isBooked: true,
-                bookingDate: agreementDate || rentalStartDate,
-                agreedDealPrice,
-                bookingAmount: previousPaidAmount,
-                bookingStatus: 'confirmed'
-              },
-              agreement: {
-                required: true,
-                uploaded: true,
-                isSigned: true,
-                agreementDate: agreementDate || rentalStartDate,
-                agreementNumber: bbaNumber,
-                verificationStatus: 'verified'
-              },
-              paymentPlan: {
-                type: isFullyPaid ? 'full_payment' : 'installment',
-                totalAmount: agreedDealPrice,
-                bookingAmount: previousPaidAmount,
-                remainingAmount: Math.max(0, agreedDealPrice - previousPaidAmount),
-                numberOfInstallments: isFullyPaid ? 1 : 2,
-                decidedAt: agreementDate || rentalStartDate
-              },
-              receipts: previousPaidAmount > 0 ? [{
-                receiptNumber,
-                amount: previousPaidAmount,
-                generatedAt: agreementDate || rentalStartDate
-              }] : [],
-              installments: [
-                {
-                  installmentNumber: 1,
-                  dueDate: agreementDate || rentalStartDate,
-                  amount: previousPaidAmount > 0 ? previousPaidAmount : agreedDealPrice,
-                  paidAmount: previousPaidAmount,
-                  remainingAmount: Math.max(0, (previousPaidAmount > 0 ? previousPaidAmount : agreedDealPrice) - previousPaidAmount),
-                  status: previousPaidAmount > 0 ? 'paid' : 'due',
-                  paidAt: previousPaidAmount > 0 ? (agreementDate || rentalStartDate) : null
-                },
-                ...(agreedDealPrice > previousPaidAmount && previousPaidAmount > 0 ? [{
-                  installmentNumber: 2,
-                  dueDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-                  amount: agreedDealPrice - previousPaidAmount,
-                  paidAmount: 0,
-                  remainingAmount: agreedDealPrice - previousPaidAmount,
-                  status: 'upcoming'
-                }] : [])
-              ]
-            });
-            await salesLead.save();
-
-            ownerCustomer.salesAllotment = {
-              salesLeadId: salesLead._id,
-              agreedDealPrice,
-              bookingAmount: previousPaidAmount,
-              paymentMode: 'bank_transfer',
-              allotmentDate: agreementDate || rentalStartDate,
-              agreementDate: agreementDate || rentalStartDate,
-              salesStatus
-            };
-            await ownerCustomer.save();
-          } else {
-            salesLead.customerId = ownerCustomer._id;
-            salesLead.name = ownerCustomer.name;
-            salesLead.mobileNo = ownerCustomer.mobileNo;
-            salesLead.salesStatus = salesStatus;
-            salesLead.booking.agreedDealPrice = agreedDealPrice;
-            salesLead.booking.bookingAmount = previousPaidAmount;
-            salesLead.booking.isBooked = true;
-            salesLead.agreement.agreementDate = agreementDate || rentalStartDate;
-            salesLead.agreement.isSigned = true;
-            if (previousPaidAmount > 0 && (!salesLead.receipts || salesLead.receipts.length === 0)) {
-              salesLead.receipts = [{ receiptNumber, amount: previousPaidAmount, generatedAt: agreementDate || rentalStartDate }];
-            }
-            await salesLead.save();
-
-            ownerCustomer.salesAllotment = {
-              salesLeadId: salesLead._id,
-              agreedDealPrice,
-              bookingAmount: previousPaidAmount,
-              paymentMode: 'bank_transfer',
-              allotmentDate: agreementDate || rentalStartDate,
-              agreementDate: agreementDate || rentalStartDate,
-              salesStatus
-            };
-            await ownerCustomer.save();
-          }
-        }
-
-        // D. Resolve or Create 3-Year Guaranteed Rental Contract
-        if (hasRental && ownerCustomer) {
-          const rentalEndDate = new Date(rentalStartDate);
-          rentalEndDate.setMonth(rentalEndDate.getMonth() + tenure);
-
-          let rental = await RentalManagement.findOne({
-            flatId: flat._id,
-            status: { $ne: 'terminated' }
-          });
-
-          const codeSuffix = `${flatNumber}-${Date.now().toString().slice(-4)}`;
-
-          if (!rental) {
-            rental = new RentalManagement({
-              projectId: targetProject._id,
-              buildingId: building._id,
-              flatId: flat._id,
-              ownerId: ownerCustomer._id,
-              tenantId: ownerCustomer._id,
-              contractCode: `RENT-${codeSuffix}`,
-              contractNumber: `RENT-${codeSuffix}`,
-              status: 'rent_back_active',
-              rentBack: {
-                enabled: true,
-                agreementNumber: `RB-${codeSuffix}`,
-                startDate: rentalStartDate,
-                endDate: rentalEndDate,
-                monthlyRent,
-                securityDeposit: monthlyRent * 2,
-                rentDueDay,
-                status: 'active'
-              },
-              tenantAgreement: {
-                agreementNumber: `TA-${codeSuffix}`,
-                startDate: rentalStartDate,
-                endDate: rentalEndDate,
-                monthlyRent,
-                rentDueDay,
-                status: 'active'
-              },
-              securityDeposit: {
-                tenantDeposit: {
-                  requiredAmount: monthlyRent * 2,
-                  paidAmount: monthlyRent * 2,
-                  status: 'paid'
-                },
-                ownerDeposit: {
-                  requiredAmount: monthlyRent * 2,
-                  paidAmount: monthlyRent * 2,
-                  status: 'paid'
-                }
-              },
-              allocation: {
-                status: 'occupied',
-                allocationDate: rentalStartDate,
-                moveInDate: rentalStartDate
-              },
-              remarks: `Imported via Excel. Tenure: ${tenure} Months. Previous Payment: ₹${previousPaidAmount}`
-            });
-            await rental.save();
-            summary.createdRentals++;
-          } else {
-            rental.rentBack.enabled = true;
-            rental.rentBack.startDate = rentalStartDate;
-            rental.rentBack.endDate = rentalEndDate;
-            rental.rentBack.monthlyRent = monthlyRent;
-            rental.tenantAgreement.monthlyRent = monthlyRent;
-            rental.tenantAgreement.startDate = rentalStartDate;
-            rental.tenantAgreement.endDate = rentalEndDate;
-            rental.status = 'rent_back_active';
-            await rental.save();
-          }
-        }
-
-        // E. Synchronize Unified Flat Document
-        if (ownerCustomer) {
-          flat.currentOwner = {
-            customerId: ownerCustomer._id,
-            name: ownerCustomer.name,
-            mobileNo: ownerCustomer.mobileNo,
-            email: ownerCustomer.email,
-            ownershipStartDate: agreementDate || rentalStartDate,
-            ownershipType: 'individual'
-          };
-          flat.isSold = true;
-        }
-
-        if (hasOwner) {
-          const isFull = previousPaidAmount >= agreedDealPrice && agreedDealPrice > 0;
-          flat.salesDetails = {
-            buyerName: ownerCustomer?.name || ownerName,
-            bookingDate: agreementDate || rentalStartDate,
-            agreedDealPrice,
-            bookingAmountPaid: previousPaidAmount,
-            totalAmountPaid: previousPaidAmount,
-            balanceAmountDue: Math.max(0, agreedDealPrice - previousPaidAmount),
-            paymentPlanType: isFull ? 'full_payment' : 'installment',
-            agreementDate: agreementDate || rentalStartDate,
-            salesStatus: isFull ? 'fully_paid' : 'agreement_completed'
-          };
-        }
-
-        if (hasRental) {
-          const totalCommitment = totalTenureAmount || (monthlyRent * tenure);
-          const rentalEndDate = new Date(rentalStartDate);
-          rentalEndDate.setMonth(rentalEndDate.getMonth() + tenure);
-
-          flat.rentalDetails = {
-            isRentBackActive: true,
-            mouDate: agreementDate || rentalStartDate,
-            startDate: rentalStartDate,
-            endDate: rentalEndDate,
-            tenureMonths: tenure,
-            dueDayOfMonth: rentDueDay,
-            guaranteedMonthlyRent: monthlyRent,
-            total36MonthCommitment: totalCommitment,
-            totalDisbursedToOwner: 0,
-            remainingPayableToOwner: totalCommitment
-          };
-          flat.takenForRental = true;
-          flat.status = 'leased';
-        } else if (hasOwner) {
-          flat.status = 'sold';
-        }
-
-        await flat.save();
-
-        summary.importedRecords.push({
-          row: rowNumber,
-          flatNumber,
-          buildingName,
-          floor,
-          ownerName: ownerName || 'N/A',
-          monthlyRent,
-          tenureMonths: tenure,
-          totalTenureAmount,
-          previousPaidAmount,
-          rentalStartDate: rentalStartDate ? rentalStartDate.toISOString().slice(0, 10) : 'N/A'
-        });
-
-      } catch (rowErr) {
-        console.error(`Error processing row ${rowNumber}:`, rowErr);
-        summary.errors.push(`Row ${rowNumber}: ${rowErr.message}`);
-      }
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: `Successfully processed ${summary.importedRecords.length} records (${summary.createdFlats} new flats, ${summary.updatedFlats} updated, ${summary.createdOwners} owners, ${summary.createdRentals} rental contracts).`,
-      data: summary
-    });
-
-  } catch (error) {
-    console.error('Error importing flats from Excel:', error);
-    return res.status(500).json({ success: false, message: error.message });
-  }
 };
 
 // =========================================================================
@@ -2184,5 +1840,79 @@ export const deleteAllFlats = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Record Monthly Rental Payout & Update Flat Passbook Ledger
+export const recordRentalPayout = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let flat;
+    if (mongoose.isValidObjectId(id)) {
+      flat = await Flat.findById(id);
+    } else {
+      flat = await Flat.findOne({ flatNumber: id });
+    }
+    if (!flat) return res.status(404).json({ success: false, message: 'Flat not found' });
+
+    const { monthIndex, paymentDate, paymentMode, referenceNumber, amount, remarks } = req.body;
+    const idx = Number(monthIndex);
+    if (!idx || isNaN(idx)) {
+      return res.status(400).json({ success: false, message: 'Valid monthIndex is required' });
+    }
+
+    if (!flat.rentalDetails) flat.rentalDetails = {};
+    if (!flat.rentalDetails.ledgerEntries) flat.rentalDetails.ledgerEntries = [];
+
+    const gross = Number(amount || flat.rentalDetails.guaranteedMonthlyRent || 0);
+    const applyTds = flat.rentalDetails.applyTds !== false;
+    const tdsPercentage = flat.rentalDetails.tdsPercentage || 10;
+    const tdsAmt = applyTds ? Math.round(gross * (tdsPercentage / 100)) : 0;
+    const net = gross - tdsAmt;
+
+    const existingIdx = flat.rentalDetails.ledgerEntries.findIndex(e => Number(e.monthIndex) === idx);
+
+    const newEntry = {
+      monthIndex: idx,
+      dueDate: new Date(),
+      paymentDate: paymentDate ? new Date(paymentDate) : new Date(),
+      paymentMode: paymentMode || 'NEFT',
+      referenceNumber: referenceNumber || `CMS-TXN-${Date.now()}`,
+      grossAmount: gross,
+      tdsDeducted: tdsAmt,
+      netAmountPaid: net,
+      status: 'paid',
+      remarks: remarks || `Disbursed for Month ${idx}`
+    };
+
+    if (existingIdx >= 0) {
+      Object.assign(flat.rentalDetails.ledgerEntries[existingIdx], newEntry);
+    } else {
+      flat.rentalDetails.ledgerEntries.push(newEntry);
+    }
+
+    // Increment disbursed amount if recording a new payout
+    const totalPaid = flat.rentalDetails.ledgerEntries
+      .filter(e => e.status === 'paid')
+      .reduce((sum, e) => sum + (e.grossAmount || 0), 0);
+    
+    flat.rentalDetails.totalDisbursedToOwner = Math.max(flat.rentalDetails.totalDisbursedToOwner || 0, totalPaid);
+    flat.rentalDetails.remainingPayableToOwner = Math.max(0, (flat.rentalDetails.total36MonthCommitment || 0) - flat.rentalDetails.totalDisbursedToOwner);
+
+    flat.markModified('rentalDetails');
+    await flat.save();
+
+    apiCache.invalidatePrefix('flats');
+    apiCache.invalidatePrefix('reports');
+
+    return res.json({
+      success: true,
+      message: `Rental payout for Month ${idx} recorded successfully!`,
+      data: flat
+    });
+  } catch (error) {
+    console.error('Error in recordRentalPayout:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 

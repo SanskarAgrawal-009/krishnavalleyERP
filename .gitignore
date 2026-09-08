@@ -42,3 +42,7 @@ backend/uploads/*
 # Audit & Generated Reports
 KRISHNA_VALLEY_ERP_SYSTEM_AUDIT_REPORT.*
 *.pdf
+
+# Database backups & dumps
+backend/backups/
+backups/

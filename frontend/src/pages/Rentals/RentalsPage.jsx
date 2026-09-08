@@ -5,7 +5,6 @@ import { projectService } from '../../services/projectService.js';
 import { ManualRentalModal } from '../../components/rentals/ManualRentalModal.jsx';
 import { RentalDetailModal } from '../../components/rentals/RentalDetailModal.jsx';
 import { RentalLedgerModal } from '../../components/rentals/RentalLedgerModal.jsx';
-import { ImportRentalLedgerModal } from '../../components/rentals/ImportRentalLedgerModal.jsx';
 import { BulkEnrollRentalModal } from '../../components/rentals/BulkEnrollRentalModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { ModuleMessagingCenter } from '../../components/notifications/ModuleMessagingCenter.jsx';
@@ -35,7 +34,6 @@ import {
   MessageSquare,
   Zap,
   Send,
-  FileSpreadsheet,
   BookOpen,
   Printer,
   Download,
@@ -85,8 +83,6 @@ export const RentalsPage = () => {
   const [customDueDay, setCustomDueDay] = useState('');
   const [ledgerSearch, setLedgerSearch] = useState('');
 
-  // Import Rental Ledger Excel Modal
-  const [isImportLedgerModalOpen, setIsImportLedgerModalOpen] = useState(false);
 
   // Quick Message Modal
   const [quickMsgRental, setQuickMsgRental] = useState(null);
@@ -434,26 +430,6 @@ export const RentalsPage = () => {
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsImportLedgerModalOpen(true)}
-            style={{
-              padding: '9px 16px',
-              background: '#16a34a',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: '700',
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 2px 4px rgba(22, 163, 74, 0.25)'
-            }}
-          >
-            <FileSpreadsheet size={16} /> Upload Rental Ledger Excel
-          </button>
 
           <button
             onClick={() => {
@@ -1095,13 +1071,6 @@ export const RentalsPage = () => {
                   <Download size={15} /> Export Excel
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => setIsImportLedgerModalOpen(true)}
-                  style={{ padding: '7px 14px', background: '#16a34a', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <FileSpreadsheet size={14} /> Upload Passbook Excel
-                </button>
 
                 <button
                   type="button"
@@ -1763,12 +1732,6 @@ export const RentalsPage = () => {
         onUpdate={fetchRentals}
       />
 
-      {/* IMPORT RENTAL LEDGER EXCEL MODAL */}
-      <ImportRentalLedgerModal
-        isOpen={isImportLedgerModalOpen}
-        onClose={() => setIsImportLedgerModalOpen(false)}
-        onSuccess={fetchRentals}
-      />
 
       {/* BULK ENROLL FLATS IN 3-YEAR RENTAL MODAL */}
       <BulkEnrollRentalModal

@@ -22,18 +22,10 @@ export const projectService = {
   createFlat: (data) => request('/flats', { method: 'POST', body: JSON.stringify(data) }),
   updateFlat: (id, data) => request(`/flats/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteFlat: (id) => request(`/flats/${id}`, { method: 'DELETE' }),
-  importFlatsExcel: (formDataOrJson) => {
-    if (formDataOrJson instanceof FormData) {
-      return request('/flats/import-excel', {
-        method: 'POST',
-        body: formDataOrJson
-      });
-    }
-    return request('/flats/import-excel', {
-      method: 'POST',
-      body: JSON.stringify(formDataOrJson)
-    });
-  },
+  importFlatsExcel: (data) => request('/flats/import-excel', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
   bulkEnrollRentalSales: (data) => request('/flats/bulk-enroll-rental-sales', {
     method: 'POST',
     body: JSON.stringify(data)
@@ -45,19 +37,11 @@ export const projectService = {
   deleteAllFlats: () => request('/flats/delete-all-flats', {
     method: 'DELETE'
   }),
-  importOwnershipHistory: (formDataOrJson) => {
-    if (formDataOrJson instanceof FormData) {
-      return request('/flats/import-ownership-history', {
-        method: 'POST',
-        body: formDataOrJson
-      });
-    }
-    return request('/flats/import-ownership-history', {
-      method: 'POST',
-      body: JSON.stringify(formDataOrJson)
-    });
-  },
   recordFlatBuybackOrResale: (flatId, data) => request(`/flats/${flatId}/buyback-or-resale`, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  recordRentalPayout: (flatId, data) => request(`/flats/${flatId}/rental-payout`, {
     method: 'POST',
     body: JSON.stringify(data)
   })

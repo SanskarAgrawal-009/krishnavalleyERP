@@ -222,7 +222,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null }
   const tdsAmount = Math.round(grossRent * (tdsPct / 100));
   const netMonthlyPayout = grossRent - tdsAmount;
   const tenure = Number(rentBackForm.tenureMonths) || 36;
-  const totalCommitment = netMonthlyPayout * tenure;
+  const totalCommitment = grossRent * tenure;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

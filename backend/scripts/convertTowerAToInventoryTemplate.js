@@ -190,7 +190,7 @@ function convertTowerA() {
         'Amount Per Month': rent,
         'TDS': tds,
         'Net Amount': netAmount,
-        'Amount for the Total Tenure': netAmount * tenure,
+        'Amount for the Total Tenure': rent * tenure,
         'Status': 'Sold'
       });
       return;
@@ -281,7 +281,7 @@ function convertTowerA() {
         'Amount Per Month': rent,
         'TDS': tds,
         'Net Amount': netAmount,
-        'Amount for the Total Tenure': netAmount * tenure,
+        'Amount for the Total Tenure': rent * tenure,
         'Status': 'Resell'
       });
 

@@ -12,7 +12,7 @@ import {
   bulkDeleteFlats,
   deleteAllFlats,
   recordFlatBuybackOrResale,
-  importOwnershipHistoryFromExcel
+  recordRentalPayout
 } from '../controllers/flatController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
@@ -28,9 +28,10 @@ const upload = multer({
 // Apply auth to all flat routes
 router.use(authenticateToken);
 
-// Bulk Excel / Legacy Import & Bulk Enrollment & Bulk Deletion Endpoints
+// Flat Form Data Excel Import Endpoint
 router.post('/import-excel', authorizePermission('inventory:create', 'inventory:manage'), upload.single('excelFile'), importFlatsFromExcel);
-router.post('/import-ownership-history', authorizePermission('inventory:create', 'inventory:manage', 'sales:create', 'sales:edit'), upload.single('excelFile'), importOwnershipHistoryFromExcel);
+
+// Bulk Enrollment & Bulk Deletion Endpoints
 router.post('/bulk-enroll-rental-sales', authorizePermission('inventory:create', 'inventory:manage', 'sales:create', 'rentals:create'), bulkEnrollRentalSales);
 router.post('/bulk-delete', authorizePermission('inventory:manage'), bulkDeleteFlats);
 router.delete('/delete-all-flats', authorizePermission('inventory:manage'), deleteAllFlats);
@@ -43,5 +44,6 @@ router.put('/:id', authorizePermission('inventory:edit', 'inventory:manage', 'sa
 router.delete('/:id', authorizePermission('inventory:manage'), deleteFlat);
 router.post('/:id/blueprints', authorizePermission('inventory:edit', 'inventory:manage'), upload.single('blueprintFile'), uploadFlatBlueprint);
 router.post('/:id/buyback-or-resale', authorizePermission('inventory:edit', 'inventory:manage', 'sales:edit', 'sales:create'), recordFlatBuybackOrResale);
+router.post('/:id/rental-payout', authorizePermission('rentals:create', 'rentals:edit', 'inventory:manage', 'sales:edit'), recordRentalPayout);
 
 export default router;

@@ -4,13 +4,10 @@ import { salesService } from '../../services/salesService.js';
 import { projectService } from '../../services/projectService.js';
 import { SalesDetailModal } from '../../components/sales/SalesDetailModal.jsx';
 import { RecordBuybackModal } from '../../components/sales/RecordBuybackModal.jsx';
-import { ImportOwnershipHistoryModal } from '../../components/sales/ImportOwnershipHistoryModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { ModuleMessagingCenter } from '../../components/notifications/ModuleMessagingCenter.jsx';
 import { QuickMessageModal } from '../../components/notifications/QuickMessageModal.jsx';
 import { ConvertLeadModal } from '../../components/sales/ConvertLeadModal.jsx';
-import { ImportPaymentsModal } from '../../components/sales/ImportPaymentsModal.jsx';
-import * as XLSX from 'xlsx';
 
 import {
   ShoppingBag,
@@ -32,7 +29,6 @@ import {
   Plus,
   Send,
   Zap,
-  FileSpreadsheet,
   Trash2,
   History,
   RotateCcw,
@@ -85,8 +81,6 @@ export const SalesPage = () => {
   const [quickMsgLead, setQuickMsgLead] = useState(null);
   const [isQuickMsgModalOpen, setIsQuickMsgModalOpen] = useState(false);
 
-  // Import Previous Payments Modal
-  const [isImportPaymentsModalOpen, setIsImportPaymentsModalOpen] = useState(false);
 
   // New Booking Modal State
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -97,7 +91,6 @@ export const SalesPage = () => {
   const [resaleFilterReason, setResaleFilterReason] = useState('all');
   const [isBuybackModalOpen, setIsBuybackModalOpen] = useState(false);
   const [buybackTargetFlat, setBuybackTargetFlat] = useState(null);
-  const [isImportHistoryModalOpen, setIsImportHistoryModalOpen] = useState(false);
   const [loadingResale, setLoadingResale] = useState(false);
 
   const fetchFlatsData = async () => {
@@ -342,27 +335,6 @@ export const SalesPage = () => {
 
         {/* Right Action & View Switcher Ribbon */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => setIsImportPaymentsModalOpen(true)}
-            style={{
-              padding: '9px 16px',
-              background: '#16a34a',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: '700',
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 2px 4px rgba(22, 163, 74, 0.25)',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <FileSpreadsheet size={16} /> Import Previous Payments Excel
-          </button>
 
           <button
             type="button"
@@ -1130,27 +1102,6 @@ export const SalesPage = () => {
 
               <button
                 type="button"
-                onClick={() => setIsImportHistoryModalOpen(true)}
-                style={{
-                  padding: '9px 16px',
-                  borderRadius: '8px',
-                  background: '#16a34a',
-                  color: '#ffffff',
-                  border: 'none',
-                  fontSize: '0.84rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)'
-                }}
-              >
-                <FileSpreadsheet size={16} /> Import Ownership History Excel
-              </button>
-
-              <button
-                type="button"
                 onClick={fetchFlatsData}
                 style={{
                   padding: '9px 14px',
@@ -1331,7 +1282,7 @@ export const SalesPage = () => {
                           <td colSpan="7" style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b' }}>
                             <History size={32} color="#cbd5e1" style={{ margin: '0 auto 8px', display: 'block' }} />
                             <div style={{ fontWeight: '700', fontSize: '0.95rem', color: '#1e293b' }}>No Resale or Buyback Records Found</div>
-                            <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>Click "+ Record Buyback / Resale" or "Import Ownership History Excel" to record transfers.</div>
+                            <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>Click "+ Record Buyback / Resale" to record transfers.</div>
                           </td>
                         </tr>
                       );
@@ -1480,12 +1431,6 @@ export const SalesPage = () => {
         lead={null}
       />
 
-      {/* IMPORT PREVIOUS PAYMENTS EXCEL MODAL */}
-      <ImportPaymentsModal
-        isOpen={isImportPaymentsModalOpen}
-        onClose={() => setIsImportPaymentsModalOpen(false)}
-        onSuccess={fetchSalesLeads}
-      />
 
       {/* RECORD BUYBACK / RESALE MODAL */}
       <RecordBuybackModal
@@ -1496,16 +1441,6 @@ export const SalesPage = () => {
         }}
         flat={buybackTargetFlat}
         flatsList={allFlats}
-        onSuccess={() => {
-          fetchFlatsData();
-          fetchSalesLeads();
-        }}
-      />
-
-      {/* IMPORT OWNERSHIP HISTORY MODAL */}
-      <ImportOwnershipHistoryModal
-        isOpen={isImportHistoryModalOpen}
-        onClose={() => setIsImportHistoryModalOpen(false)}
         onSuccess={() => {
           fetchFlatsData();
           fetchSalesLeads();

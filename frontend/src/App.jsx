@@ -19,7 +19,9 @@ import { MaterialInventoryPage } from './pages/Inventory/MaterialInventoryPage.j
 import { LeadsPage } from './pages/CRM/LeadsPage.jsx';
 import { SalesPage } from './pages/Sales/SalesPage.jsx';
 import { CustomersPage } from './pages/Customers/CustomersPage.jsx';
-import { RentalsPage } from './pages/Rentals/RentalsPage.jsx';
+import { FlatProfilePage } from './pages/Inventory/FlatProfilePage.jsx';
+import { RentalManagementPage } from './pages/Rentals/RentalManagementPage.jsx';
+import { RentalLedgersPage } from './pages/Rentals/RentalLedgersPage.jsx';
 import { MaintenancePage } from './pages/Maintenance/MaintenancePage.jsx';
 import { HRPage } from './pages/HR/HRPage.jsx';
 import { DocumentManagementPage } from './pages/Documents/DocumentManagementPage.jsx';
@@ -111,6 +113,22 @@ export const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="inventory/flats/:flatId"
+              element={
+                <ProtectedRoute permission="inventory:view">
+                  <FlatProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="flats/:flatId"
+              element={
+                <ProtectedRoute permission="inventory:view">
+                  <FlatProfilePage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Materials & Stores */}
             <Route
@@ -152,12 +170,20 @@ export const App = () => {
               }
             />
 
-            {/* Rentals & Tenant Management */}
+            {/* Rental Management (Guaranteed 3-Yr Rent-Back & Resale History) */}
             <Route
               path="rentals"
               element={
-                <ProtectedRoute permission="rentals:view">
-                  <RentalsPage />
+                <ProtectedRoute permission="inventory:view">
+                  <RentalManagementPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="rentals/ledgers"
+              element={
+                <ProtectedRoute permission="inventory:view">
+                  <RentalLedgersPage />
                 </ProtectedRoute>
               }
             />

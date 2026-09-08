@@ -28,6 +28,11 @@ export const ToastProvider = ({ children }) => {
     error: (msg, dur) => addToast(msg, 'error', dur || 5000),
     warning: (msg, dur) => addToast(msg, 'warning', dur),
     info: (msg, dur) => addToast(msg, 'info', dur),
+    showSuccess: (msg, dur) => addToast(msg, 'success', dur),
+    showError: (msg, dur) => addToast(msg, 'error', dur || 5000),
+    showWarning: (msg, dur) => addToast(msg, 'warning', dur),
+    showInfo: (msg, dur) => addToast(msg, 'info', dur),
+    show: (msg, type = 'info', dur) => addToast(msg, type, dur),
     remove: removeToast
   };
 
@@ -48,6 +53,11 @@ export const useToast = () => {
       error: (msg) => console.error('[Toast Error]', msg),
       warning: (msg) => console.warn('[Toast Warning]', msg),
       info: (msg) => console.info('[Toast Info]', msg),
+      showSuccess: (msg) => console.log('[Toast Success]', msg),
+      showError: (msg) => console.error('[Toast Error]', msg),
+      showWarning: (msg) => console.warn('[Toast Warning]', msg),
+      showInfo: (msg) => console.info('[Toast Info]', msg),
+      show: (msg) => console.log('[Toast]', msg),
       remove: () => {}
     };
   }

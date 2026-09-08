@@ -13,7 +13,6 @@ import {
   addSalesFollowUp,
   updatePossession,
   processCancellationAndRefund,
-  importPreviousPayments,
   deleteSalesLead,
   deleteAllSalesLeads
 } from '../controllers/salesController.js';
@@ -34,7 +33,6 @@ router.use(authenticateToken);
 
 // Sales Lead Core
 router.post('/convert', authorizePermission('sales:create', 'crm:edit'), convertLeadToSales);
-router.post('/import-payments', authorizePermission('sales:create', 'sales:edit', 'accounts:manage'), importPreviousPayments);
 router.get('/', authorizePermission('sales:view'), getSalesLeads);
 router.get('/:id', authorizePermission('sales:view'), getSalesLeadById);
 router.delete('/delete-all', authorizePermission('sales:manage', 'sales:approve'), deleteAllSalesLeads);

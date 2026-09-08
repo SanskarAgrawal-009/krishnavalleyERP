@@ -145,15 +145,14 @@ const NAV_ITEMS = [
   },
   {
     path: '/rentals',
-    label: 'Rental & Rent-Back',
+    label: 'Rental Management',
     icon: Repeat,
-    badge: '36-Mo Ledger',
-    permission: 'rentals:view',
+    badge: 'Assured',
+    permission: 'inventory:view',
     subItems: [
-      { path: '/rentals?tab=rentback', label: '36-Month Rental Ledger', icon: BookOpen },
-      { path: '/rentals?tab=contracts', label: 'Rental Contracts & Leases', icon: Repeat },
-      { path: '/rentals?tab=units', label: 'Rental Units Pool', icon: Sparkles },
-      { path: '/rentals?tab=messaging', label: 'Owner & Tenant Notices', icon: MessageSquare }
+      { path: '/rentals?tab=active', label: 'Active Rental Register', icon: Building2 },
+      { path: '/rentals?tab=history', label: 'Previous Owners Trail', icon: History },
+      { path: '/rentals/ledgers', label: 'Rental Passbooks & Ledgers', icon: BookOpen }
     ]
   },
   {

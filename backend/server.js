@@ -165,7 +165,6 @@ const server = app.listen(PORT, () => {
   console.log(` Leads CRM:        http://localhost:${PORT}/api/leads`);
   console.log(` Sales Engine:     http://localhost:${PORT}/api/sales`);
   console.log(` Customers CRM:    http://localhost:${PORT}/api/customers`);
-  console.log(` Rental System:    http://localhost:${PORT}/api/rentals`);
   console.log(` Maintenance Hub:  http://localhost:${PORT}/api/maintenance`);
   console.log(` Inventory Hub:    http://localhost:${PORT}/api/inventory`);
   console.log(` HR & Payroll:     http://localhost:${PORT}/api/hr`);
