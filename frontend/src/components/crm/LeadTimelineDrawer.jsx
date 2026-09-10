@@ -14,8 +14,10 @@ import {
   XCircle, 
   AlertCircle, 
   Trash2, 
-  Home 
+  Home,
+  ExternalLink
 } from 'lucide-react';
+import { googleCalendarService } from '../../services/googleCalendarService.js';
 
 export const LeadTimelineDrawer = ({
   isOpen,
@@ -226,6 +228,63 @@ export const LeadTimelineDrawer = ({
                       )}
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {/* Google Calendar Link / Button */}
+                        {fu.googleCalendar?.htmlLink ? (
+                          <a
+                            href={fu.googleCalendar.htmlLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              background: '#eff6ff',
+                              border: '1px solid #bfdbfe',
+                              color: '#1d4ed8',
+                              fontSize: '0.72rem',
+                              fontWeight: '700',
+                              textDecoration: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                            title="Open Event in Google Calendar"
+                          >
+                            <Calendar size={11} /> Google Calendar <ExternalLink size={10} />
+                          </a>
+                        ) : fu.nextFollowUpDate ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const url = googleCalendarService.generateCalendarEventUrl({
+                                leadName: lead.name,
+                                leadMobile: lead.mobileNo,
+                                leadEmail: lead.email,
+                                mode: fu.mode,
+                                notes: fu.notes,
+                                scheduledDate: fu.nextFollowUpDate,
+                                durationMinutes: fu.mode === 'site_visit' ? 45 : 30
+                              });
+                              window.open(url, '_blank');
+                            }}
+                            style={{
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              background: '#ffffff',
+                              border: '1px solid #dadce0',
+                              color: '#1a73e8',
+                              fontSize: '0.72rem',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                            title="Add this follow-up to your Google Calendar"
+                          >
+                            <Calendar size={11} /> + Calendar
+                          </button>
+                        ) : null}
+
                         {fu.status === 'pending' && (
                           <button
                             onClick={() => onUpdateFollowUpStatus(lead._id, fu._id, 'completed')}

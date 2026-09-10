@@ -228,6 +228,7 @@ export const testEmailConfig = async (req, res) => {
 
     // Verify SMTP connection live
     const verifyResult = await verifySmtpConnection({
+      provider: 'smtp',
       smtpHost: settings.email?.smtp?.host,
       smtpPort: settings.email?.smtp?.port,
       secure: settings.email?.smtp?.secure,
@@ -255,19 +256,16 @@ export const testEmailConfig = async (req, res) => {
     // Dispatch live test email
     const emailResult = await sendEmail({
       to: targetEmail,
-      subject: 'Krishna Valley ERP - System SMTP Diagnostic Verification',
-      bodyHtml: `<div style="padding: 16px; font-family: sans-serif;">
-        <h3 style="color: #0f766e; margin-top: 0;">Krishna Valley Real Estate ERP</h3>
-        <p>This is a live test email verifying your system SMTP connection parameters.</p>
-        <div style="background: #f0fdfa; border-left: 4px solid #14b8a6; padding: 12px; margin: 16px 0;">
-          <p style="margin: 0 0 4px 0;"><strong>Host:</strong> ${settings.email?.smtp?.host}:${settings.email?.smtp?.port}</p>
-          <p style="margin: 0 0 4px 0;"><strong>User:</strong> ${settings.email?.smtp?.user}</p>
-          <p style="margin: 0;"><strong>Status:</strong> Verified & Operational</p>
-        </div>
-        <p style="font-size: 13px; color: #64748b;">Timestamp: ${new Date().toLocaleString('en-IN')}</p>
+      subject: 'Krishna Valley – Email Service Confirmation',
+      bodyHtml: `<div style="font-size: 15px; line-height: 1.65; color: #334155;">
+        <p style="margin: 0 0 16px 0; color: #0f172a; font-weight: 600;">Hello,</p>
+        <p style="margin: 0 0 16px 0;">This email confirms that your outgoing mail delivery connection with Krishna Valley is active and configured properly.</p>
+        <p style="margin: 0 0 20px 0;">All upcoming client reminders, site visit schedules, and property documentation can now be dispatched securely to your clients.</p>
+        <p style="margin: 0; color: #475569;">Warm regards,<br><strong style="color: #0f172a;">Krishna Valley Client Services Team</strong></p>
       </div>`,
       isTest: true,
       customConfig: {
+        provider: 'smtp',
         smtpHost: settings.email?.smtp?.host,
         smtpPort: settings.email?.smtp?.port,
         secure: settings.email?.smtp?.secure,

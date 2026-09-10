@@ -22,7 +22,8 @@ import {
   ExternalLink, 
   MessageSquare,
   ShieldCheck,
-  Plus
+  Plus,
+  CreditCard
 } from 'lucide-react';
 
 export const CustomerDetailModal = ({
@@ -259,6 +260,55 @@ export const CustomerDetailModal = ({
                 <div style={{ display: 'flex', gap: '20px', fontSize: '0.8rem', color: '#374151', borderTop: '1px solid var(--border-subtle)', paddingTop: '10px' }}>
                   <span>Ownership Type: <strong style={{ color: '#111827', textTransform: 'capitalize' }}>{customer.ownerDetails?.ownershipType || 'Individual'}</strong></span>
                   <span>Share: <strong style={{ color: '#111827' }}>{customer.ownerDetails?.ownershipPercentage || 100}%</strong></span>
+                </div>
+
+                {/* Banking & Payout Account Card */}
+                {(() => {
+                  const bank = customer.bankDetails || customer.ownerDetails?.bankDetails || {};
+                  return (
+                    <div style={{
+                      background: '#f0fdf4',
+                      border: '1px solid #bbf7d0',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#166534', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <CreditCard size={14} color="#16a34a" /> Banking &amp; Assured Payout Account
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '0.8rem', color: '#14532d' }}>
+                        <div><strong>Bank Name:</strong> {bank.bankName || 'Not configured'}</div>
+                        <div><strong>Branch:</strong> {bank.branch || 'Main Branch'}</div>
+                        <div><strong>Account No:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{bank.accountNumber || bank.accountNo || '—'}</span></div>
+                        <div><strong>IFSC Code:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{bank.ifscCode || bank.ifsc || '—'}</span></div>
+                        {bank.accountHolderName && <div><strong>Account Holder:</strong> {bank.accountHolderName}</div>}
+                        {bank.upiId && <div><strong>UPI ID:</strong> {bank.upiId}</div>}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* KYC & Identity Card */}
+                <div style={{
+                  background: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '12px 16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px'
+                }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#334155', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <ShieldCheck size={14} color="#0284c7" /> KYC &amp; Verification Profile
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '0.8rem', color: '#475569' }}>
+                    <div><strong>PAN Number:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#0f172a' }}>{customer.panNumber || customer.ownerDetails?.panNumber || 'On File'}</span></div>
+                    <div><strong>Aadhaar Number:</strong> {customer.aadhaarNumber || customer.ownerDetails?.aadhaarNumber || 'Verified on file'}</div>
+                    {customer.ownerDetails?.nominee?.name && <div><strong>Nominee:</strong> {customer.ownerDetails.nominee.name} ({customer.ownerDetails.nominee.relation || customer.ownerDetails.nominee.relationship || 'Nominee'})</div>}
+                    {customer.ownerDetails?.nominee?.contactNo && <div><strong>Nominee Contact:</strong> {customer.ownerDetails.nominee.contactNo}</div>}
+                  </div>
                 </div>
               </div>
             )}

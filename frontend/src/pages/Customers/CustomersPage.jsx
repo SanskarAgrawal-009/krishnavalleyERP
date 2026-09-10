@@ -34,7 +34,8 @@ import {
   Mail,
   ExternalLink,
   AlertTriangle,
-  Repeat
+  Repeat,
+  CreditCard
 } from 'lucide-react';
 
 export const CustomersPage = () => {
@@ -741,16 +742,51 @@ export const CustomersPage = () => {
                         )}
                       </td>
 
-                      {/* Column 4: Guaranteed Rent-Back */}
+                      {/* Column 4: Guaranteed Rent-Back & Bank Status */}
                       <td style={{ padding: '14px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ fontSize: '0.82rem', color: '#7c3aed', fontWeight: '800' }}>
-                            {formatINR(31000)} / mo
-                          </span>
-                          <span style={{ fontSize: '0.68rem', color: '#059669', fontWeight: '700' }}>
-                            3-Year Assured Return
-                          </span>
-                        </div>
+                        {(() => {
+                          const bank = cust.bankDetails || cust.ownerDetails?.bankDetails || {};
+                          const totalRent = units.reduce((sum, u) => sum + (Number(u.rentalDetails?.guaranteedMonthlyRent) || 31000), 0);
+                          const hasBank = Boolean(bank.accountNumber || bank.bankName);
+                          return (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                              <span style={{ fontSize: '0.84rem', color: '#7c3aed', fontWeight: '800' }}>
+                                {formatINR(totalRent || (units.length * 31000) || 31000)} / mo
+                              </span>
+                              {hasBank ? (
+                                <span style={{
+                                  fontSize: '0.68rem',
+                                  color: '#065f46',
+                                  background: '#d1fae5',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  width: 'fit-content',
+                                  fontWeight: '700'
+                                }}>
+                                  <CreditCard size={10} /> {bank.bankName || 'Bank'}: ••{String(bank.accountNumber || '').slice(-4)}
+                                </span>
+                              ) : (
+                                <span style={{
+                                  fontSize: '0.68rem',
+                                  color: '#b45309',
+                                  background: '#fef3c7',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  width: 'fit-content',
+                                  fontWeight: '600'
+                                }}>
+                                  No A/C Linked
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
 
                       {/* Column 5: Actions Toolbar */}
@@ -815,84 +851,187 @@ export const CustomersPage = () => {
                     {isExpanded && (
                       <tr style={{ background: '#f8fafd', borderBottom: '1px solid #d2e3fc' }}>
                         <td colSpan={5} style={{ padding: '16px 20px' }}>
-                          <div style={{
-                            background: '#ffffff',
-                            border: '1px solid #dadce0',
-                            borderRadius: '8px',
-                            padding: '16px 20px',
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                            gap: '20px'
-                          }}>
-                            {/* Sub-Panel 1: Contact & Address */}
-                            <div>
-                              <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                                Resident Contact Details
-                              </div>
-                              <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                <div><strong>Full Name:</strong> {cust.name}</div>
-                                <div><strong>Mobile:</strong> {cust.mobileNo}</div>
-                                {cust.email && <div><strong>Email:</strong> {cust.email}</div>}
-                                {cust.permanentAddress && <div><strong>Address:</strong> {cust.permanentAddress}</div>}
-                                <div><strong>Registered On:</strong> {new Date(cust.createdAt).toLocaleString('en-IN')}</div>
-                              </div>
-                            </div>
+                          {(() => {
+                            const bank = cust.bankDetails || cust.ownerDetails?.bankDetails || {};
+                            const pan = cust.panNumber || cust.ownerDetails?.panNumber || '';
+                            const aadhaar = cust.aadhaarNumber || cust.ownerDetails?.aadhaarNumber || '';
+                            const nominee = cust.ownerDetails?.nominee || {};
+                            const fullAddr = cust.permanentAddress || cust.address?.street || cust.address?.addressLine1 || (cust.address?.city ? `${cust.address.city}, ${cust.address.state || ''}` : 'Krishna Valley, Mathura');
 
-                            {/* Sub-Panel 2: Linked Flats Overview */}
-                            <div>
-                              <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                                Property Unit Portfolio ({flatsCount})
-                              </div>
-                              {flatsCount === 0 ? (
-                                <div style={{ fontSize: '0.8rem', color: '#727785', fontStyle: 'italic' }}>
-                                  No property units currently linked to this customer account.
+                            return (
+                              <div style={{
+                                background: '#ffffff',
+                                border: '1px solid #dadce0',
+                                borderRadius: '8px',
+                                padding: '18px 22px',
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                                gap: '20px'
+                              }}>
+                                {/* Sub-Panel 1: Contact & Address */}
+                                <div>
+                                  <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <User size={13} color="#4338ca" /> Basic Information
+                                  </div>
+                                  <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <div><strong>Full Name:</strong> {cust.name}</div>
+                                    <div><strong>Mobile:</strong> {cust.mobileNo}</div>
+                                    {cust.alternateMobileNo && <div><strong>Alt Phone:</strong> {cust.alternateMobileNo}</div>}
+                                    {cust.email && <div><strong>Email:</strong> {cust.email}</div>}
+                                    <div><strong>Address:</strong> {fullAddr}</div>
+                                    <div><strong>Registered:</strong> {new Date(cust.createdAt).toLocaleDateString('en-IN')}</div>
+                                  </div>
                                 </div>
-                              ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '140px', overflowY: 'auto' }}>
-                                  {units.map((flat, idx) => {
-                                    const fNum = flat.flatNumber || (typeof flat === 'string' ? `Flat ${flat.slice(-3)}` : `Unit ${idx + 1}`);
-                                    const proj = flat.projectId?.projectName || flat.projectId?.projectCode || 'Krishna Valley';
-                                    const flr = flat.floor !== undefined && flat.floor !== null ? (flat.floor === 0 ? 'Ground Floor' : `Floor ${flat.floor}`) : '';
-                                    const bhk = flat.bhkType || '';
-                                    return (
-                                      <div key={flat._id || idx} style={{ fontSize: '0.78rem', background: '#f8f9fa', padding: '6px 10px', borderRadius: '4px', border: '1px solid #edeef0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                          <Home size={13} color={isOwner ? '#8b5cf6' : '#2563eb'} />
-                                          <span style={{ fontWeight: '700', color: '#111827' }}>Flat {fNum}</span>
-                                          {(flr || bhk) && (
-                                            <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>
-                                              ({[bhk, flr].filter(Boolean).join(', ')})
-                                            </span>
-                                          )}
-                                        </div>
-                                        <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>
-                                          {proj}
-                                        </span>
+
+                                {/* Sub-Panel 2: Banking & NEFT Account Details */}
+                                <div style={{ background: '#f0fdf4', padding: '12px 14px', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                    <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      <CreditCard size={14} color="#16a34a" /> Bank Payout Account
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setEditingCustomer(cust);
+                                        setIsCreateModalOpen(true);
+                                      }}
+                                      style={{
+                                        fontSize: '0.7rem',
+                                        background: '#16a34a',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        padding: '3px 8px',
+                                        borderRadius: '4px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '3px'
+                                      }}
+                                      title="Edit Account Details"
+                                    >
+                                      <Edit size={10} /> Edit Account
+                                    </button>
+                                  </div>
+
+                                  {bank.accountNumber || bank.bankName ? (
+                                    <div style={{ fontSize: '0.8rem', color: '#14532d', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                      <div><strong>Bank:</strong> {bank.bankName || 'Not specified'}</div>
+                                      <div><strong>Branch:</strong> {bank.branch || 'Main Branch'}</div>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <strong>A/C No:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{bank.accountNumber || '—'}</span>
+                                        {bank.accountNumber && (
+                                          <button
+                                            type="button"
+                                            onClick={(e) => handleCopy(bank.accountNumber, e)}
+                                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '1px' }}
+                                            title="Copy Account Number"
+                                          >
+                                            {copiedText === bank.accountNumber ? <Check size={11} color="#16a34a" /> : <Copy size={11} color="#6b7280" />}
+                                          </button>
+                                        )}
                                       </div>
-                                    );
-                                  })}
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <strong>IFSC:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{bank.ifscCode || '—'}</span>
+                                        {bank.ifscCode && (
+                                          <button
+                                            type="button"
+                                            onClick={(e) => handleCopy(bank.ifscCode, e)}
+                                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '1px' }}
+                                            title="Copy IFSC"
+                                          >
+                                            {copiedText === bank.ifscCode ? <Check size={11} color="#16a34a" /> : <Copy size={11} color="#6b7280" />}
+                                          </button>
+                                        )}
+                                      </div>
+                                      {bank.accountHolderName && <div><strong>Holder:</strong> {bank.accountHolderName}</div>}
+                                      {bank.upiId && <div><strong>UPI ID:</strong> {bank.upiId}</div>}
+                                    </div>
+                                  ) : (
+                                    <div style={{ fontSize: '0.78rem', color: '#991b1b', fontStyle: 'italic', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                      <span>⚠️ No bank account registered for rental payouts.</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setEditingCustomer(cust);
+                                          setIsCreateModalOpen(true);
+                                        }}
+                                        style={{
+                                          padding: '5px 10px',
+                                          background: '#ffffff',
+                                          border: '1px solid #16a34a',
+                                          color: '#16a34a',
+                                          borderRadius: '4px',
+                                          fontWeight: '700',
+                                          cursor: 'pointer',
+                                          width: 'fit-content'
+                                        }}
+                                      >
+                                        + Add Bank Details
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
 
-                            {/* Sub-Panel 3: Passbook & Ledger Actions */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center' }}>
-                              <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                                Financial Passbook
+                                {/* Sub-Panel 3: KYC & Nominee Profile */}
+                                <div>
+                                  <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <ShieldCheck size={13} color="#059669" /> KYC & Nominee Details
+                                  </div>
+                                  <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <div><strong>PAN:</strong> {pan ? <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#111827' }}>{pan}</span> : 'On File'}</div>
+                                    <div><strong>Aadhaar:</strong> {aadhaar || 'Verified on file'}</div>
+                                    {nominee.name && <div><strong>Nominee:</strong> {nominee.name} ({nominee.relation || nominee.relationship || 'Nominee'})</div>}
+                                    {nominee.contactNo && <div><strong>Nominee Phone:</strong> {nominee.contactNo}</div>}
+                                    <div><strong>Ownership:</strong> <span style={{ textTransform: 'capitalize' }}>{cust.ownerDetails?.ownershipType || 'Individual'}</span> ({cust.ownerDetails?.ownershipPercentage || 100}%)</div>
+                                  </div>
+                                </div>
+
+                                {/* Sub-Panel 4: Linked Flats & Passbook */}
+                                <div>
+                                  <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <Home size={13} color="#2563eb" /> Property Units ({flatsCount})
+                                  </div>
+                                  {flatsCount === 0 ? (
+                                    <div style={{ fontSize: '0.8rem', color: '#727785', fontStyle: 'italic' }}>
+                                      No property units linked.
+                                    </div>
+                                  ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '130px', overflowY: 'auto', marginBottom: '10px' }}>
+                                      {units.map((flat, idx) => {
+                                        const fNum = flat.flatNumber || (typeof flat === 'string' ? `Flat ${flat.slice(-3)}` : `Unit ${idx + 1}`);
+                                        const flr = flat.floor !== undefined && flat.floor !== null ? (flat.floor === 0 ? 'Ground' : `Flr ${flat.floor}`) : '';
+                                        const rent = flat.rentalDetails?.guaranteedMonthlyRent;
+                                        return (
+                                          <div key={flat._id || idx} style={{ fontSize: '0.78rem', background: '#f8f9fa', padding: '5px 8px', borderRadius: '4px', border: '1px solid #edeef0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                              <Home size={12} color="#16a34a" />
+                                              <span style={{ fontWeight: '700', color: '#111827' }}>Flat {fNum}</span>
+                                              {flr && <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>({flr})</span>}
+                                            </div>
+                                            <span style={{ fontSize: '0.72rem', color: '#7c3aed', fontWeight: '700' }}>
+                                              {rent ? `${formatINR(rent)}/mo` : 'Rent-Back'}
+                                            </span>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedCustomer(cust);
+                                      setIsDetailModalOpen(true);
+                                    }}
+                                    className="btn-primary"
+                                    style={{ padding: '7px 12px', fontSize: '0.78rem', width: '100%', justifyContent: 'center' }}
+                                  >
+                                    View Complete Ledger Passbook <ArrowRight size={12} />
+                                  </button>
+                                </div>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setSelectedCustomer(cust);
-                                  setIsDetailModalOpen(true);
-                                }}
-                                className="btn-primary"
-                                style={{ padding: '8px 14px', fontSize: '0.78rem' }}
-                              >
-                                View Complete Ledger Passbook <ArrowRight size={13} />
-                              </button>
-                            </div>
-                          </div>
+                            );
+                          })()}
                         </td>
                       </tr>
                     )}

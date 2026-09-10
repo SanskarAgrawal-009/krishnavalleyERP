@@ -31,6 +31,8 @@ import settingsRoutes from './routes/settingsRoutes.js';
 import auditLogRoutes from './routes/auditLogRoutes.js';
 import { autoAuditMiddleware } from './middleware/auditMiddleware.js';
 
+import { initReminderScheduler } from './services/reminderSchedulerService.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -40,6 +42,7 @@ const PORT = process.env.PORT || 5000;
 // Initialize MongoDB Database connection and seed Auth
 connectDB().then(() => {
   seedAuthDefaults();
+  initReminderScheduler();
 });
 
 // Global Middlewares

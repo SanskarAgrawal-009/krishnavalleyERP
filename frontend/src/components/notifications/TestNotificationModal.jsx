@@ -22,6 +22,12 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      handleChannelSwitch(initialChannel);
+    }
+  }, [isOpen, initialChannel]);
+
   if (!isOpen) return null;
 
   const handleChannelSwitch = (ch) => {
@@ -37,9 +43,9 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
       setCustomSubject('KVALEY');
       setCustomMessage('KV-ERP TEST: SMS gateway connection verified and operational.');
     } else if (ch === 'email') {
-      setRecipient('admin@krishnavalley.com');
-      setCustomSubject('Test Email: Krishna Valley ERP Gateway Status');
-      setCustomMessage('This is a test email dispatched from your Krishna Valley ERP communication module to verify SMTP connectivity.');
+      setRecipient('krishna.valley.tech@gmail.com');
+      setCustomSubject('Krishna Valley: Welcome to Client Services');
+      setCustomMessage('Hello,\n\nThank you for connecting with Krishna Valley. This message confirms that your email preferences are set up and active. You will receive property tour schedules, project updates, and account statements directly to this inbox.\n\nWarm regards,\nKrishna Valley Client Services Team');
     } else if (ch === 'push') {
       setRecipient('active_browser_session');
       setCustomSubject('Krishna Valley ERP Web Push');

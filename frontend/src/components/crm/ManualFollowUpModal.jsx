@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { Phone, MessageSquare, Mail, Users, Compass, Tag, Calendar, CheckCircle2 } from 'lucide-react';
+import { googleCalendarService } from '../../services/googleCalendarService.js';
 
 export const ManualFollowUpModal = ({
   isOpen,
@@ -161,6 +162,52 @@ export const ManualFollowUpModal = ({
             style={{ width: '100%' }}
           />
         </div>
+
+        {/* Google Calendar Direct Sync Callout */}
+        {formData.nextFollowUpDate && (
+          <div style={{
+            padding: '10px 12px',
+            borderRadius: '6px',
+            background: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Calendar size={15} color="#1d4ed8" />
+              <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#1e40af' }}>
+                Google Calendar Auto-Sync Enabled
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const url = googleCalendarService.generateCalendarEventUrl({
+                  leadName,
+                  mode: formData.mode,
+                  notes: formData.notes,
+                  scheduledDate: formData.nextFollowUpDate
+                });
+                window.open(url, '_blank');
+              }}
+              style={{
+                padding: '3px 8px',
+                borderRadius: '4px',
+                background: '#ffffff',
+                border: '1px solid #3b82f6',
+                color: '#1d4ed8',
+                fontSize: '0.7rem',
+                fontWeight: '700',
+                cursor: 'pointer'
+              }}
+            >
+              + Add to Google Calendar
+            </button>
+          </div>
+        )}
 
         {/* Actions */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>

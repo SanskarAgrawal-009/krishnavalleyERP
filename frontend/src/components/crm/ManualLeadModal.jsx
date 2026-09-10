@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
-import { User, Phone, Mail, Home, MessageSquare, Plus } from 'lucide-react';
+import { User, Phone, Mail, Home, MessageSquare, Plus, Users, Zap } from 'lucide-react';
 import { projectService } from '../../services/projectService.js';
 import { sanitizeAlphabetsOnly, sanitizePhone, sanitizeEmail, isValidEmail } from '../../utils/inputValidators.js';
 
-export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
+export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMembers = [] }) => {
   const [formData, setFormData] = useState({
     name: '',
     mobileNo: '',
     email: '',
     assignedFlat: '',
+    assignedTo: 'auto',
     addInitialFollowUp: false,
     initialFollowUp: {
       mode: 'call',
@@ -42,6 +43,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
         mobileNo: lead.mobileNo || '',
         email: lead.email || '',
         assignedFlat: lead.assignedFlat?._id || lead.assignedFlat || '',
+        assignedTo: lead.assignedTo?._id || lead.assignedTo || 'auto',
         addInitialFollowUp: false,
         initialFollowUp: {
           mode: 'call',
@@ -56,6 +58,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
         mobileNo: '',
         email: '',
         assignedFlat: '',
+        assignedTo: 'auto',
         addInitialFollowUp: false,
         initialFollowUp: {
           mode: 'call',
@@ -88,7 +91,8 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
       name: formData.name.trim(),
       mobileNo: formData.mobileNo.trim(),
       email: formData.email.trim(),
-      assignedFlat: formData.assignedFlat || null
+      assignedFlat: formData.assignedFlat || null,
+      assignedTo: formData.assignedTo,
     };
 
     if (!lead && formData.addInitialFollowUp && (formData.initialFollowUp.notes || formData.initialFollowUp.nextFollowUpDate)) {
@@ -211,6 +215,34 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null }) => {
           })()}
           <span style={{ fontSize: '0.74rem', color: '#4b5563', marginTop: '3px', display: 'block' }}>
             Directly binds this lead to unit and floor inventory in MongoDB.
+          </span>
+        </div>
+
+        {/* Assign Lead to Sales Team Member */}
+        <div>
+          <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
+            <Users size={14} color="#1a73e8" />
+            Assign Lead To (In-House Team)
+          </label>
+          <select
+            value={formData.assignedTo}
+            onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
+            className="g-input"
+            style={{ width: '100%', padding: '9px 12px', fontSize: '0.85rem' }}
+          >
+            <option value="auto">⚡ Auto-Assign (Round-Robin Alternating 1-by-1)</option>
+            <option value="unassigned">Leave Unassigned</option>
+            {teamMembers.map((m) => {
+              const u = m.userId || m;
+              return (
+                <option key={u._id} value={u._id}>
+                  {u.firstName} {u.lastName || ''} ({m.roleTitle || 'Sales Member'})
+                </option>
+              );
+            })}
+          </select>
+          <span style={{ fontSize: '0.73rem', color: '#64748b', marginTop: '3px', display: 'block' }}>
+            Auto-Assign distributes sequentially across sales executives in circular rotation.
           </span>
         </div>
 

@@ -3,6 +3,8 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { ErrorBoundary } from '../common/ErrorBoundary.jsx';
 import { NotificationAlertBox } from './NotificationAlertBox.jsx';
+import { useReminderAlerts } from '../../hooks/useReminderAlerts.js';
+import { InAppReminderBanner } from '../common/InAppReminderBanner.jsx';
 import {
   LayoutDashboard,
   Building2,
@@ -284,6 +286,9 @@ export const AppLayout = () => {
   const [notifBoxOpen, setNotifBoxOpen] = useState(false);
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const notifRef = useRef(null);
+
+  // Automated 10-Minute Task & Site Visit Reminders Hook
+  const { activeAlert, dismissReminder, snoozeReminder, allReminders } = useReminderAlerts();
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -1359,6 +1364,7 @@ export const AppLayout = () => {
                 isOpen={notifBoxOpen}
                 onClose={() => setNotifBoxOpen(false)}
                 onCountChange={(cnt) => setUnreadNotifCount(cnt)}
+                activeReminders={allReminders}
               />
             </div>
 
@@ -1644,6 +1650,13 @@ export const AppLayout = () => {
             <span style={{ cursor: 'pointer' }}>Support</span>
           </div>
         </footer>
+
+        {/* Floating 10-Minute Reminder Alert Banner with Chime & Actions */}
+        <InAppReminderBanner
+          activeAlert={activeAlert}
+          onDismiss={dismissReminder}
+          onSnooze={snoozeReminder}
+        />
       </div>
     </div>
   );

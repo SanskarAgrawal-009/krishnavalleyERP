@@ -12,6 +12,7 @@ import {
 } from '../services/notificationDispatcher.js';
 import { verifySmtpConnection } from '../services/emailService.js';
 import { verifyMetaWebhook, handleMetaStatusWebhook } from '../services/whatsappService.js';
+import googleCalendarService from '../services/googleCalendarService.js';
 
 // Default professional real estate templates
 const DEFAULT_TEMPLATES = [
@@ -395,15 +396,21 @@ export const testChannelDispatch = async (req, res) => {
     } else if (channel === 'email') {
       result = await sendEmail({
         to: recipient,
-        subject: customSubject || 'Test Notification: Krishna Valley ERP Email Channel Verification',
-        bodyHtml: customMessage ? `<div style="padding: 20px; font-family: sans-serif;"><h3>Krishna Valley ERP</h3><p>${customMessage}</p></div>` : `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #ffffff; border: 1px solid #14b8a6; border-radius: 8px;">
-          <h2 style="color: #0f766e; margin-top: 0;">Krishna Valley Real Estate ERP</h2>
-          <p>This is a <strong>live test email</strong> from your ERP notification gateway.</p>
-          <p>If you are reading this, your SMTP / Email delivery settings are properly configured and operational.</p>
-          <div style="background: #f0fdfa; padding: 12px; border-radius: 4px; font-size: 13px; color: #115e59;">
-            <strong>Channel:</strong> Email (SMTP)<br>
-            <strong>Timestamp:</strong> ${new Date().toLocaleString()}
-          </div>
+        subject: customSubject || 'Krishna Valley: Welcome to Client Services',
+        bodyHtml: customMessage ? `<div style="font-size: 15px; line-height: 1.65; color: #334155;">
+          <p style="margin: 0 0 16px 0; white-space: pre-line;">${customMessage}</p>
+        </div>` : `<div style="font-size: 15px; line-height: 1.65; color: #334155;">
+          <p style="margin: 0 0 16px 0; color: #0f172a; font-weight: 600;">Hello,</p>
+          <p style="margin: 0 0 16px 0;">
+            Thank you for connecting with Krishna Valley. This message confirms that your email preferences are set up and active. You will receive property tour schedules, project updates, and account statements directly to this inbox.
+          </p>
+          <p style="margin: 0 0 20px 0;">
+            If you have any questions or need assistance, please feel free to reply directly to this email.
+          </p>
+          <p style="margin: 0; color: #475569;">
+            Warm regards,<br>
+            <strong style="color: #0f172a;">Krishna Valley Client Services Team</strong>
+          </p>
         </div>`,
         variables: testVars,
         isTest: true
@@ -771,5 +778,56 @@ export const handleWhatsAppWebhook = async (req, res) => {
     return res.status(500).send(error.message);
   }
 };
+
+// ================= GOOGLE CALENDAR CONTROLLERS =================
+
+// Test Google Calendar connection
+export const testGoogleCalendarAction = async (req, res) => {
+  try {
+    const result = await googleCalendarService.testCalendarConnection(req.body);
+    return res.json(result);
+  } catch (error) {
+    console.error('Error testing Google Calendar connection:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Sync all pending follow-ups to Google Calendar
+export const syncGoogleCalendarAction = async (req, res) => {
+  try {
+    const result = await googleCalendarService.syncAllPendingFollowUps(req.body);
+    return res.json(result);
+  } catch (error) {
+    console.error('Error syncing follow-ups to Google Calendar:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get Google Calendar sync status
+export const getGoogleCalendarStatusAction = async (req, res) => {
+  try {
+    const config = await googleCalendarService.resolveGoogleCalendarConfig();
+    return res.json({
+      success: true,
+      data: {
+        enabled: config.enabled,
+        calendarId: config.calendarId,
+        authType: config.authType,
+        clientEmail: config.clientEmail,
+        hasPrivateKey: Boolean(config.privateKey),
+        timeZone: config.timeZone,
+        autoSyncLeads: config.autoSyncLeads,
+        autoSyncSiteVisits: config.autoSyncSiteVisits,
+        reminderMinutesBefore: config.reminderMinutesBefore,
+        lastSyncAt: config.lastSyncAt,
+        syncStatus: config.syncStatus,
+      },
+    });
+  } catch (error) {
+    console.error('Error getting Google Calendar status:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 

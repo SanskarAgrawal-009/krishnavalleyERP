@@ -37,9 +37,12 @@ import {
   Radio,
   Check,
   X,
-  History
+  History,
+  Calendar,
+  Upload
 } from 'lucide-react';
 import { callingService } from '../../services/callingService.js';
+import { googleCalendarService } from '../../services/googleCalendarService.js';
 
 const CATEGORIES = [
   'All Categories',
@@ -105,8 +108,17 @@ export const NotificationManagementPage = () => {
     sms: false,
     email: false,
     push: false,
-    telephony: false
+    telephony: false,
+    googleCalendar: false
   });
+
+  // Google Calendar Live Testing & Batch Sync State
+  const [gcalTesting, setGcalTesting] = useState(false);
+  const [gcalTestResult, setGcalTestResult] = useState(null);
+  const [gcalSyncing, setGcalSyncing] = useState(false);
+  const [gcalSyncResult, setGcalSyncResult] = useState(null);
+  const [jsonPasteModal, setJsonPasteModal] = useState(false);
+  const [jsonPasteContent, setJsonPasteContent] = useState('');
 
   // SMTP Verification & Live Testing State
   const [smtpVerifying, setSmtpVerifying] = useState(false);
@@ -129,6 +141,23 @@ export const NotificationManagementPage = () => {
       const res = await notificationService.getConfig();
       if (res.data) {
         const d = res.data;
+        if (!d.googleCalendar) {
+          d.googleCalendar = {
+            enabled: false,
+            calendarId: 'primary',
+            authType: 'service_account',
+            clientEmail: '',
+            privateKey: '',
+            clientId: '',
+            clientSecret: '',
+            refreshToken: '',
+            timeZone: 'Asia/Kolkata',
+            autoSyncLeads: true,
+            autoSyncSiteVisits: true,
+            reminderMinutesBefore: 30,
+            syncStatus: 'not_configured'
+          };
+        }
         if (!d.telephony) {
           d.telephony = {
             enabled: true,
@@ -144,12 +173,93 @@ export const NotificationManagementPage = () => {
             environment: 'sandbox'
           };
         }
+        if (!d.email) {
+          d.email = {
+            enabled: true,
+            provider: 'resend',
+            apiKey: '',
+            smtpHost: 'smtp.resend.com',
+            smtpPort: 465,
+            secure: true,
+            smtpUser: 'resend',
+            smtpPassword: '',
+            fromEmail: 'onboarding@resend.dev',
+            fromName: 'Krishna Valley ERP',
+            replyTo: 'support@krishnavalley.com',
+            environment: 'sandbox'
+          };
+        } else {
+          if (!d.email.apiKey && d.email.provider === 'resend') {
+            d.email.apiKey = d.email.smtpPassword || '';
+          }
+        }
         setConfig(d);
       }
     } catch (err) {
       console.error('Failed to load notification config:', err);
     } finally {
       setConfigLoading(false);
+    }
+  };
+
+  const handleTestGoogleCalendar = async () => {
+    setGcalTesting(true);
+    setGcalTestResult(null);
+    try {
+      const res = await notificationService.testGoogleCalendar(config.googleCalendar);
+      setGcalTestResult(res);
+      if (res.success) {
+        setConfig(prev => ({
+          ...prev,
+          googleCalendar: {
+            ...prev.googleCalendar,
+            syncStatus: 'ready'
+          }
+        }));
+      }
+    } catch (err) {
+      setGcalTestResult({ success: false, message: err.message || 'Google Calendar connection test failed.' });
+    } finally {
+      setGcalTesting(false);
+    }
+  };
+
+  const handleSyncGoogleCalendarAll = async () => {
+    setGcalSyncing(true);
+    setGcalSyncResult(null);
+    try {
+      const res = await notificationService.syncGoogleCalendarAll(config.googleCalendar);
+      setGcalSyncResult(res);
+      loadConfig();
+    } catch (err) {
+      setGcalSyncResult({ success: false, message: err.message || 'Batch sync failed.' });
+    } finally {
+      setGcalSyncing(false);
+    }
+  };
+
+  const handleParseServiceAccountJson = () => {
+    try {
+      const parsed = JSON.parse(jsonPasteContent.trim());
+      if (!parsed.client_email || !parsed.private_key) {
+        alert('Invalid JSON! The file must contain "client_email" and "private_key".');
+        return;
+      }
+      setConfig(prev => ({
+        ...prev,
+        googleCalendar: {
+          ...prev.googleCalendar,
+          clientEmail: parsed.client_email,
+          privateKey: parsed.private_key,
+          authType: 'service_account',
+          enabled: true
+        }
+      }));
+      setJsonPasteModal(false);
+      setJsonPasteContent('');
+      alert('Service Account credentials successfully imported from JSON! Click "Save Configuration" to commit.');
+    } catch (err) {
+      alert('Failed to parse JSON. Please make sure you pasted valid JSON content.');
     }
   };
 
@@ -656,6 +766,44 @@ export const NotificationManagementPage = () => {
             {config.telephony?.enabled ? 'Active' : 'Disabled'}
           </button>
         </div>
+
+        {/* Google Calendar Card */}
+        <div style={{
+          background: '#ffffff',
+          border: config.googleCalendar?.enabled ? '1px solid rgba(66, 133, 244, 0.3)' : '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-md)',
+          padding: '16px 18px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(66, 133, 244, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4285f4' }}>
+              <Calendar size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#111827' }}>Google Calendar</div>
+              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>
+                Follow-ups: <strong style={{ color: '#111827' }}>{config.googleCalendar?.enabled ? 'Auto-Sync' : 'Off'}</strong>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => setActiveTab('google_calendar')}
+            style={{
+              padding: '4px 10px',
+              borderRadius: '4px',
+              background: config.googleCalendar?.enabled ? 'rgba(66, 133, 244, 0.2)' : 'rgba(255,255,255,0.05)',
+              color: config.googleCalendar?.enabled ? '#4285f4' : 'var(--text-muted)',
+              fontSize: '0.72rem',
+              fontWeight: '700',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {config.googleCalendar?.enabled ? 'Active' : 'Configure'}
+          </button>
+        </div>
       </div>
 
       {/* Main Module Tabs Bar */}
@@ -792,6 +940,27 @@ export const NotificationManagementPage = () => {
         >
           <Bell size={15} />
           Push Notification Configuration
+        </button>
+
+        <button
+          onClick={() => setActiveTab('google_calendar')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            background: activeTab === 'google_calendar' ? 'linear-gradient(135deg, #1a73e8, #4285f4)' : 'transparent',
+            color: activeTab === 'google_calendar' ? '#fff' : 'var(--text-secondary)',
+            fontWeight: activeTab === 'google_calendar' ? '700' : '500',
+            fontSize: '0.82rem',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          <Calendar size={15} />
+          Google Calendar Sync
         </button>
 
         <button
@@ -1655,18 +1824,18 @@ export const NotificationManagementPage = () => {
                       whatsapp: { ...config.whatsapp, provider: p.id }
                     })}
                     style={{
-                      background: config.whatsapp.provider === p.id ? 'rgba(37, 211, 102, 0.12)' : 'var(--bg-card)',
-                      border: config.whatsapp.provider === p.id ? '2px solid #25d366' : '1px solid var(--border-subtle)',
+                      background: config.whatsapp.provider === p.id ? '#ecfdf5' : '#f8f9fa',
+                      border: config.whatsapp.provider === p.id ? '2px solid #059669' : '1px solid #dadce0',
                       borderRadius: 'var(--radius-md)',
                       padding: '12px 14px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: config.whatsapp.provider === p.id ? '#25d366' : '#fff' }}>
+                    <div style={{ fontSize: '0.86rem', fontWeight: '700', color: config.whatsapp.provider === p.id ? '#047857' : '#111827' }}>
                       {p.name}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#4b5563', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.73rem', color: config.whatsapp.provider === p.id ? '#065f46' : '#4b5563', marginTop: '3px', fontWeight: '500' }}>
                       {p.desc}
                     </div>
                   </div>
@@ -1959,18 +2128,18 @@ export const NotificationManagementPage = () => {
                       sms: { ...config.sms, provider: p.id }
                     })}
                     style={{
-                      background: config.sms.provider === p.id ? 'rgba(59, 130, 246, 0.12)' : 'var(--bg-card)',
-                      border: config.sms.provider === p.id ? '2px solid #3b82f6' : '1px solid var(--border-subtle)',
+                      background: config.sms.provider === p.id ? '#eff6ff' : '#f8f9fa',
+                      border: config.sms.provider === p.id ? '2px solid #2563eb' : '1px solid #dadce0',
                       borderRadius: 'var(--radius-md)',
                       padding: '12px 14px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: config.sms.provider === p.id ? '#60a5fa' : '#fff' }}>
+                    <div style={{ fontSize: '0.86rem', fontWeight: '700', color: config.sms.provider === p.id ? '#1d4ed8' : '#111827' }}>
                       {p.name}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#4b5563', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.73rem', color: config.sms.provider === p.id ? '#1e40af' : '#4b5563', marginTop: '3px', fontWeight: '500' }}>
                       {p.desc}
                     </div>
                   </div>
@@ -2203,6 +2372,8 @@ export const NotificationManagementPage = () => {
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px' }}>
                 {[
+                  { id: 'brevo', name: '🚀 Brevo (Sendinblue)', desc: '300 Free/Day • No Domain Needed' },
+                  { id: 'resend', name: '⚡ Resend', desc: 'Developer-First Email API' },
                   { id: 'smtp', name: 'Custom SMTP Server', desc: 'Direct Host / Port Relay' },
                   { id: 'sendgrid', name: 'Twilio SendGrid', desc: 'API / SMTP Relay' },
                   { id: 'aws_ses', name: 'Amazon SES', desc: 'AWS Simple Email Service' },
@@ -2213,21 +2384,29 @@ export const NotificationManagementPage = () => {
                     key={p.id}
                     onClick={() => setConfig({
                       ...config,
-                      email: { ...config.email, provider: p.id }
+                      email: { 
+                        ...config.email, 
+                        provider: p.id,
+                        fromEmail: p.id === 'brevo' 
+                          ? (config.email.fromEmail && !config.email.fromEmail.includes('resend.dev') ? config.email.fromEmail : 'krishna.valley.tech@gmail.com')
+                          : (p.id === 'resend' && (!config.email.fromEmail || config.email.fromEmail.includes('krishnavalley')) 
+                            ? 'onboarding@resend.dev' 
+                            : config.email.fromEmail)
+                      }
                     })}
                     style={{
-                      background: config.email.provider === p.id ? 'rgba(245, 158, 11, 0.12)' : 'var(--bg-card)',
-                      border: config.email.provider === p.id ? '2px solid #f59e0b' : '1px solid var(--border-subtle)',
+                      background: config.email.provider === p.id ? '#fffbeb' : '#f8f9fa',
+                      border: config.email.provider === p.id ? '2px solid #d97706' : '1px solid #dadce0',
                       borderRadius: 'var(--radius-md)',
                       padding: '12px 14px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: config.email.provider === p.id ? '#fbbf24' : '#fff' }}>
+                    <div style={{ fontSize: '0.86rem', fontWeight: '700', color: config.email.provider === p.id ? '#b45309' : '#111827' }}>
                       {p.name}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#4b5563', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.73rem', color: config.email.provider === p.id ? '#92400e' : '#4b5563', marginTop: '3px', fontWeight: '500' }}>
                       {p.desc}
                     </div>
                   </div>
@@ -2235,96 +2414,283 @@ export const NotificationManagementPage = () => {
               </div>
             </div>
 
-            {/* SMTP Details */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
-                  SMTP Host *
-                </label>
-                <input
-                  type="text"
-                  placeholder="smtp.gmail.com or email-smtp.us-east-1.amazonaws.com"
-                  value={config.email.smtpHost}
-                  onChange={(e) => setConfig({
-                    ...config,
-                    email: { ...config.email, smtpHost: e.target.value }
-                  })}
-                  style={{
-                    width: '100%',
-                    padding: '9px 12px',
-                    background: '#f8f9fa',
-                    border: '1px solid #dadce0',
-                    borderRadius: 'var(--radius-sm)',
-                    color: '#111827',
-                    fontSize: '0.82rem'
-                  }}
-                />
-              </div>
+            {/* BREVO (SENDINBLUE) SPECIFIC CONFIGURATION */}
+            {config.email.provider === 'brevo' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{
+                  background: 'rgba(16, 185, 129, 0.08)',
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '14px 16px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px'
+                }}>
+                  <ShieldCheck size={20} color="#10b981" style={{ marginTop: '2px', flexShrink: 0 }} />
+                  <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5 }}>
+                    <strong style={{ color: '#0f172a' }}>Brevo (Sendinblue) Gateway Active — Zero Domain Required</strong>
+                    <div style={{ marginTop: '4px' }}>
+                      • <strong>No Custom Domain Required:</strong> Send emails directly to any client inbox using your verified sender (<code style={{ background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', color: '#0f172a' }}>krishna.valley.tech@gmail.com</code>).<br />
+                      • <strong>Free Daily Allowance:</strong> 300 free emails per day with pre-warmed transactional IP pools that land in inboxes.<br />
+                      • <strong>Get API Key:</strong> Generate a free API key at <a href="https://app.brevo.com/settings/keys/api" target="_blank" rel="noreferrer" style={{ color: '#059669', fontWeight: '600' }}>Brevo API Keys &rarr;</a> and verify your sender address at <a href="https://app.brevo.com/senders" target="_blank" rel="noreferrer" style={{ color: '#059669', fontWeight: '600' }}>Brevo Senders &rarr;</a>
+                    </div>
+                  </div>
+                </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
-                  SMTP Port *
-                </label>
-                <input
-                  type="number"
-                  placeholder="587 (TLS) or 465 (SSL)"
-                  value={config.email.smtpPort}
-                  onChange={(e) => setConfig({
-                    ...config,
-                    email: { ...config.email, smtpPort: Number(e.target.value) }
-                  })}
-                  style={{
-                    width: '100%',
-                    padding: '9px 12px',
-                    background: '#f8f9fa',
-                    border: '1px solid #dadce0',
-                    borderRadius: 'var(--radius-sm)',
-                    color: '#111827',
-                    fontSize: '0.82rem'
-                  }}
-                />
-              </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                      Brevo SMTP Login / Username
+                    </label>
+                    <input
+                      type="text"
+                      value={config.email.smtpUser || 'b8cb49001@smtp-brevo.com'}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        email: { ...config.email, smtpUser: e.target.value }
+                      })}
+                      style={{
+                        width: '100%',
+                        padding: '9px 12px',
+                        background: '#f8f9fa',
+                        border: '1px solid #dadce0',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#111827',
+                        fontSize: '0.82rem',
+                        fontFamily: 'monospace'
+                      }}
+                    />
+                  </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
-                  SMTP Username / Auth Email *
-                </label>
-                <input
-                  type="text"
-                  placeholder="notifications@krishnavalley.com"
-                  value={config.email.smtpUser}
-                  onChange={(e) => setConfig({
-                    ...config,
-                    email: { ...config.email, smtpUser: e.target.value }
-                  })}
-                  style={{
-                    width: '100%',
-                    padding: '9px 12px',
-                    background: '#f8f9fa',
-                    border: '1px solid #dadce0',
-                    borderRadius: 'var(--radius-sm)',
-                    color: '#111827',
-                    fontSize: '0.82rem'
-                  }}
-                />
-              </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: '600' }}>
+                        Brevo Password / SMTP Key *
+                      </label>
+                      <a
+                        href="https://app.brevo.com/settings/keys/smtp"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ fontSize: '0.72rem', color: '#059669', textDecoration: 'none', fontWeight: '600' }}
+                      >
+                        Open SMTP key settings &rarr;
+                      </a>
+                    </div>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showKeys.email ? 'text' : 'password'}
+                        placeholder="xsmtpsib-123456789... or xkeysib-..."
+                        value={config.email.smtpPassword || config.email.apiKey || ''}
+                        onChange={(e) => setConfig({
+                          ...config,
+                          email: {
+                            ...config.email,
+                            apiKey: e.target.value,
+                            smtpPassword: e.target.value
+                          }
+                        })}
+                        style={{
+                          width: '100%',
+                          padding: '9px 40px 9px 12px',
+                          background: '#f8f9fa',
+                          border: '1px solid #dadce0',
+                          borderRadius: 'var(--radius-sm)',
+                          color: '#111827',
+                          fontSize: '0.82rem',
+                          fontFamily: 'monospace'
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowKeys({ ...showKeys, email: !showKeys.email })}
+                        style={{
+                          position: 'absolute',
+                          right: '10px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#4b5563',
+                          cursor: 'pointer',
+                          fontSize: '0.72rem'
+                        }}
+                      >
+                        {showKeys.email ? 'Hide' : 'Show'}
+                      </button>
+                    </div>
+                  </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
-                  SMTP Password / API Key *
-                </label>
-                <div style={{ position: 'relative' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                      SMTP Server Host &amp; Port
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      value="smtp-relay.brevo.com : 587 (TLS)"
+                      style={{
+                        width: '100%',
+                        padding: '9px 12px',
+                        background: '#e5e7eb',
+                        border: '1px solid #d1d5db',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#4b5563',
+                        fontSize: '0.82rem'
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                      Environment Mode
+                    </label>
+                    <select
+                      value={config.email.environment || 'sandbox'}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        email: { ...config.email, environment: e.target.value }
+                      })}
+                      style={{
+                        width: '100%',
+                        padding: '9px 12px',
+                        background: '#f8f9fa',
+                        border: '1px solid #dadce0',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#111827',
+                        fontSize: '0.82rem'
+                      }}
+                    >
+                      <option value="production">Production (Live Outbound Email Delivery)</option>
+                      <option value="sandbox">Sandbox (Simulated Delivery Fallback)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ) : config.email.provider === 'resend' ? (
+              /* RESEND SPECIFIC CONFIGURATION */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{
+                  background: 'rgba(245, 158, 11, 0.08)',
+                  border: '1px solid rgba(245, 158, 11, 0.25)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '14px 16px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px'
+                }}>
+                  <Zap size={20} color="#f59e0b" style={{ marginTop: '2px', flexShrink: 0 }} />
+                  <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5 }}>
+                    <strong style={{ color: '#0f172a' }}>Resend Email Integration Active</strong>
+                    <div style={{ marginTop: '4px' }}>
+                      • <strong>Testing Domain:</strong> You can test immediately using <code style={{ background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', color: '#0f172a' }}>onboarding@resend.dev</code> as the From Address to send to your registered Resend email.<br />
+                      • <strong>Custom Domain:</strong> Add and verify your company domain (e.g. <code style={{ background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', color: '#0f172a' }}>krishnavalley.com</code>) in your <a href="https://resend.com/domains" target="_blank" rel="noreferrer" style={{ color: '#0d9488', fontWeight: '600' }}>Resend Dashboard &rarr;</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: '600' }}>
+                        Resend API Key *
+                      </label>
+                      <a
+                        href="https://resend.com/api-keys"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ fontSize: '0.72rem', color: '#0d9488', textDecoration: 'none', fontWeight: '600' }}
+                      >
+                        Get API Key &rarr;
+                      </a>
+                    </div>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showKeys.email ? 'text' : 'password'}
+                        placeholder="re_123456789_abcdefghijk..."
+                        value={config.email.apiKey || config.email.smtpPassword || ''}
+                        onChange={(e) => setConfig({
+                          ...config,
+                          email: {
+                            ...config.email,
+                            apiKey: e.target.value,
+                            smtpPassword: e.target.value
+                          }
+                        })}
+                        style={{
+                          width: '100%',
+                          padding: '9px 40px 9px 12px',
+                          background: '#f8f9fa',
+                          border: '1px solid #dadce0',
+                          borderRadius: 'var(--radius-sm)',
+                          color: '#111827',
+                          fontSize: '0.82rem',
+                          fontFamily: 'monospace'
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowKeys({ ...showKeys, email: !showKeys.email })}
+                        style={{
+                          position: 'absolute',
+                          right: '10px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#4b5563',
+                          cursor: 'pointer',
+                          fontSize: '0.72rem'
+                        }}
+                      >
+                        {showKeys.email ? 'Hide' : 'Show'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                      Environment Mode
+                    </label>
+                    <select
+                      value={config.email.environment || 'sandbox'}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        email: { ...config.email, environment: e.target.value }
+                      })}
+                      style={{
+                        width: '100%',
+                        padding: '9px 12px',
+                        background: '#f8f9fa',
+                        border: '1px solid #dadce0',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#111827',
+                        fontSize: '0.82rem'
+                      }}
+                    >
+                      <option value="production">Production (Live Outbound Email Relay)</option>
+                      <option value="sandbox">Sandbox (Simulated Delivery Fallback)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* STANDARD SMTP CONFIGURATION */
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    SMTP Host *
+                  </label>
                   <input
-                    type={showKeys.email ? 'text' : 'password'}
-                    placeholder="Enter password or App Password"
-                    value={config.email.smtpPassword}
+                    type="text"
+                    placeholder="smtp.gmail.com or email-smtp.us-east-1.amazonaws.com"
+                    value={config.email.smtpHost}
                     onChange={(e) => setConfig({
                       ...config,
-                      email: { ...config.email, smtpPassword: e.target.value }
+                      email: { ...config.email, smtpHost: e.target.value }
                     })}
                     style={{
                       width: '100%',
-                      padding: '9px 40px 9px 12px',
+                      padding: '9px 12px',
                       background: '#f8f9fa',
                       border: '1px solid #dadce0',
                       borderRadius: 'var(--radius-sm)',
@@ -2332,36 +2698,121 @@ export const NotificationManagementPage = () => {
                       fontSize: '0.82rem'
                     }}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowKeys({ ...showKeys, email: !showKeys.email })}
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    SMTP Port *
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="587 (TLS) or 465 (SSL)"
+                    value={config.email.smtpPort}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      email: { ...config.email, smtpPort: Number(e.target.value) }
+                    })}
                     style={{
-                      position: 'absolute',
-                      right: '10px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'transparent',
-                      border: 'none',
-                      color: '#4b5563',
-                      cursor: 'pointer',
-                      fontSize: '0.72rem'
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: '#f8f9fa',
+                      border: '1px solid #dadce0',
+                      borderRadius: 'var(--radius-sm)',
+                      color: '#111827',
+                      fontSize: '0.82rem'
                     }}
-                  >
-                    {showKeys.email ? 'Hide' : 'Show'}
-                  </button>
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    SMTP Username / Auth Email *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="notifications@krishnavalley.com"
+                    value={config.email.smtpUser}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      email: { ...config.email, smtpUser: e.target.value }
+                    })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: '#f8f9fa',
+                      border: '1px solid #dadce0',
+                      borderRadius: 'var(--radius-sm)',
+                      color: '#111827',
+                      fontSize: '0.82rem'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                    SMTP Password / App Password *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showKeys.email ? 'text' : 'password'}
+                      placeholder="Enter password or App Password"
+                      value={config.email.smtpPassword}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        email: { ...config.email, smtpPassword: e.target.value }
+                      })}
+                      style={{
+                        width: '100%',
+                        padding: '9px 40px 9px 12px',
+                        background: '#f8f9fa',
+                        border: '1px solid #dadce0',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#111827',
+                        fontSize: '0.82rem'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowKeys({ ...showKeys, email: !showKeys.email })}
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#4b5563',
+                        cursor: 'pointer',
+                        fontSize: '0.72rem'
+                      }}
+                    >
+                      {showKeys.email ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Sender From Meta */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', background: '#f8f9fa', padding: '16px', borderRadius: 'var(--radius-md)' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', color: '#374151', marginBottom: '4px' }}>
-                  Sender "From" Email Address
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '600' }}>
+                    Sender "From" Email Address *
+                  </label>
+                  {config.email.provider === 'resend' && (
+                    <button
+                      type="button"
+                      onClick={() => setConfig({ ...config, email: { ...config.email, fromEmail: 'onboarding@resend.dev' } })}
+                      style={{ background: 'transparent', border: 'none', color: '#0d9488', cursor: 'pointer', fontSize: '0.7rem', textDecoration: 'underline' }}
+                    >
+                      Use onboarding@resend.dev
+                    </button>
+                  )}
+                </div>
                 <input
                   type="email"
-                  placeholder="no-reply@krishnavalley.com"
+                  placeholder={config.email.provider === 'resend' ? 'onboarding@resend.dev or notifications@krishnavalley.com' : 'no-reply@krishnavalley.com'}
                   value={config.email.fromEmail}
                   onChange={(e) => setConfig({
                     ...config,
@@ -2380,7 +2831,7 @@ export const NotificationManagementPage = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', color: '#374151', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.76rem', color: '#374151', marginBottom: '4px', fontWeight: '600' }}>
                   Sender Display Name
                 </label>
                 <input
@@ -2404,7 +2855,7 @@ export const NotificationManagementPage = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', color: '#374151', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.76rem', color: '#374151', marginBottom: '4px', fontWeight: '600' }}>
                   Reply-To Email Address
                 </label>
                 <input
@@ -2428,7 +2879,7 @@ export const NotificationManagementPage = () => {
               </div>
             </div>
 
-            {/* SMTP Verification Diagnostic Banner */}
+            {/* Email Verification Diagnostic Banner */}
             {smtpVerifyResult && (
               <div style={{
                 padding: '12px 16px',
@@ -2446,7 +2897,13 @@ export const NotificationManagementPage = () => {
                   <div style={{ fontWeight: '700' }}>{smtpVerifyResult.message}</div>
                   {smtpVerifyResult.details && (
                     <div style={{ fontSize: '0.74rem', marginTop: '4px', opacity: 0.9 }}>
-                      Host: {smtpVerifyResult.details.host}:{smtpVerifyResult.details.port} • User: {smtpVerifyResult.details.user || 'N/A'} • Latency: {smtpVerifyResult.details.latencyMs}ms
+                      {smtpVerifyResult.details.provider === 'brevo' ? (
+                        <>Provider: Brevo • Account: {smtpVerifyResult.details.accountEmail || 'Active'} • Plan: {smtpVerifyResult.details.plan || 'Free'} • Latency: {smtpVerifyResult.details.latencyMs}ms</>
+                      ) : smtpVerifyResult.details.provider === 'resend' ? (
+                        <>Provider: Resend • Key: {smtpVerifyResult.details.keyPreview || 'Verified'} • Latency: {smtpVerifyResult.details.latencyMs}ms</>
+                      ) : (
+                        <>Host: {smtpVerifyResult.details.host}:{smtpVerifyResult.details.port} • User: {smtpVerifyResult.details.user || 'N/A'} • Latency: {smtpVerifyResult.details.latencyMs}ms</>
+                      )}
                     </div>
                   )}
                 </div>
@@ -2474,7 +2931,7 @@ export const NotificationManagementPage = () => {
                 }}
               >
                 {smtpVerifying ? <RefreshCw size={14} className="spin" /> : <ShieldCheck size={14} />}
-                Verify SMTP Connection
+                {config.email?.provider === 'brevo' ? 'Verify Brevo API Key' : config.email?.provider === 'resend' ? 'Verify Resend API Key' : 'Verify SMTP Connection'}
               </button>
 
               <button
@@ -2705,6 +3162,449 @@ export const NotificationManagementPage = () => {
                 }}
               >
                 <Check size={16} /> Save Push Settings
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
+
+      {/* ======================================================== */}
+      {/* TAB: GOOGLE CALENDAR DIRECT FOLLOW-UP MAPPING */}
+      {/* ======================================================== */}
+      {activeTab === 'google_calendar' && (
+        <form onSubmit={handleSaveConfig} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #dadce0',
+            borderRadius: 'var(--radius-lg)',
+            padding: '24px 28px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '22px'
+          }}>
+            {/* Header & Status */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: '1px solid var(--border-subtle)',
+              paddingBottom: '16px',
+              flexWrap: 'wrap',
+              gap: '14px'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Calendar size={22} color="#1a73e8" />
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+                    Google Calendar Follow-Up Mapping Gateway
+                  </h3>
+                  <span style={{
+                    fontSize: '0.72rem',
+                    fontWeight: '700',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    background: config.googleCalendar?.syncStatus === 'ready' ? 'rgba(16, 185, 129, 0.15)' : (config.googleCalendar?.syncStatus === 'error' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(148, 163, 184, 0.15)'),
+                    color: config.googleCalendar?.syncStatus === 'ready' ? '#059669' : (config.googleCalendar?.syncStatus === 'error' ? '#dc2626' : '#64748b'),
+                    border: config.googleCalendar?.syncStatus === 'ready' ? '1px solid #10b981' : (config.googleCalendar?.syncStatus === 'error' ? '1px solid #ef4444' : '1px solid #cbd5e1'),
+                  }}>
+                    {config.googleCalendar?.syncStatus === 'ready' ? 'READY & SYNCING' : (config.googleCalendar?.syncStatus === 'error' ? 'CONNECTION ERROR' : 'NOT CONFIGURED')}
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: '4px 0 0 0' }}>
+                  Directly map all scheduled client follow-ups, calls, and site visit tours into Google Calendar. Changes in the ERP reflect live on your team's Google Calendars.
+                </p>
+              </div>
+
+              {/* Master Enable/Disable Toggle */}
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', background: '#f8f9fa', padding: '8px 14px', borderRadius: '8px', border: '1px solid #dadce0' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#111827' }}>
+                  {config.googleCalendar?.enabled ? 'Active Direct Sync' : 'Sync Disabled'}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(config.googleCalendar?.enabled)}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    googleCalendar: { ...config.googleCalendar, enabled: e.target.checked }
+                  })}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                />
+              </label>
+            </div>
+
+            {/* Quick Actions & JSON Import Toolbar */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: '#f8f9fa',
+              padding: '12px 16px',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid #dadce0',
+              flexWrap: 'wrap',
+              gap: '12px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => setJsonPasteModal(true)}
+                  style={{
+                    padding: '7px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    background: '#ffffff',
+                    border: '1px solid #1a73e8',
+                    color: '#1a73e8',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Upload size={14} /> Import from Service Account JSON Key
+                </button>
+
+                <a
+                  href="https://calendar.google.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    padding: '7px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    background: '#ffffff',
+                    border: '1px solid #dadce0',
+                    color: '#374151',
+                    fontSize: '0.78rem',
+                    fontWeight: '600',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <ExternalLink size={14} /> Open Google Calendar Web
+                </a>
+              </div>
+
+              {/* Batch Sync All Button */}
+              <button
+                type="button"
+                onClick={handleSyncGoogleCalendarAll}
+                disabled={gcalSyncing || !config.googleCalendar?.clientEmail}
+                style={{
+                  padding: '7px 16px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'linear-gradient(135deg, #1a73e8, #4285f4)',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  cursor: (gcalSyncing || !config.googleCalendar?.clientEmail) ? 'not-allowed' : 'pointer',
+                  opacity: (gcalSyncing || !config.googleCalendar?.clientEmail) ? 0.6 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                {gcalSyncing ? <RefreshCw size={14} className="spin" /> : <Zap size={14} />}
+                {gcalSyncing ? 'Syncing Pending Follow-ups...' : '⚡ Sync All Pending Follow-Ups Now'}
+              </button>
+            </div>
+
+            {/* Sync Feedback Alert */}
+            {gcalSyncResult && (
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: 'var(--radius-sm)',
+                background: gcalSyncResult.success ? '#ecfdf5' : '#fef2f2',
+                border: gcalSyncResult.success ? '1px solid #10b981' : '1px solid #ef4444',
+                color: gcalSyncResult.success ? '#047857' : '#b91c1c',
+                fontSize: '0.82rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                {gcalSyncResult.success ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+                <div>
+                  <strong>{gcalSyncResult.message}</strong>
+                  {gcalSyncResult.totalSynced !== undefined && (
+                    <span style={{ marginLeft: '6px', fontSize: '0.76rem', opacity: 0.9 }}>
+                      (Total Synced: {gcalSyncResult.totalSynced}, Failed: {gcalSyncResult.failedCount || 0})
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Credentials & Settings Fields */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                  Target Google Calendar ID *
+                </label>
+                <input
+                  type="text"
+                  placeholder="krishna.valley.tech@gmail.com or primary"
+                  value={config.googleCalendar?.calendarId || ''}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    googleCalendar: { ...config.googleCalendar, calendarId: e.target.value }
+                  })}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    background: '#f8f9fa',
+                    border: '1px solid #dadce0',
+                    borderRadius: 'var(--radius-sm)',
+                    color: '#111827',
+                    fontSize: '0.82rem'
+                  }}
+                />
+                <span style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '4px', display: 'block' }}>
+                  Use your Google account email (e.g. <code>krishna.valley.tech@gmail.com</code>) or <code>primary</code>.
+                </span>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                  Calendar Time Zone
+                </label>
+                <select
+                  value={config.googleCalendar?.timeZone || 'Asia/Kolkata'}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    googleCalendar: { ...config.googleCalendar, timeZone: e.target.value }
+                  })}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    background: '#f8f9fa',
+                    border: '1px solid #dadce0',
+                    borderRadius: 'var(--radius-sm)',
+                    color: '#111827',
+                    fontSize: '0.82rem'
+                  }}
+                >
+                  <option value="Asia/Kolkata">Asia/Kolkata (IST - India Standard Time UTC+05:30)</option>
+                  <option value="UTC">UTC (Coordinated Universal Time)</option>
+                  <option value="Asia/Dubai">Asia/Dubai (GST UTC+04:00)</option>
+                  <option value="Europe/London">Europe/London (GMT/BST)</option>
+                  <option value="America/New_York">America/New_York (EST/EDT)</option>
+                </select>
+                <span style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '4px', display: 'block' }}>
+                  All follow-up time slots will be scheduled and displayed in this timezone.
+                </span>
+              </div>
+            </div>
+
+            {/* Service Account Email & Private Key */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', color: '#374151', marginBottom: '6px', fontWeight: '600' }}>
+                  Google Service Account Email (client_email) *
+                </label>
+                <input
+                  type="email"
+                  placeholder="krishna-valley-calendar@project-id.iam.gserviceaccount.com"
+                  value={config.googleCalendar?.clientEmail || ''}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    googleCalendar: { ...config.googleCalendar, clientEmail: e.target.value }
+                  })}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    background: '#f8f9fa',
+                    border: '1px solid #dadce0',
+                    borderRadius: 'var(--radius-sm)',
+                    color: '#111827',
+                    fontSize: '0.82rem',
+                    fontFamily: 'monospace'
+                  }}
+                />
+                <span style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '4px', display: 'block' }}>
+                  Share your Google Calendar with this email address with <strong>"Make changes to events"</strong> permission!
+                </span>
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: '600' }}>
+                    Service Account Private Key (private_key) *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowKeys({ ...showKeys, googleCalendar: !showKeys.googleCalendar })}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#1a73e8',
+                      cursor: 'pointer',
+                      fontSize: '0.72rem',
+                      fontWeight: '700'
+                    }}
+                  >
+                    {showKeys.googleCalendar ? 'Hide Key' : 'Reveal Key'}
+                  </button>
+                </div>
+                <textarea
+                  rows={4}
+                  placeholder="-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC...\n-----END PRIVATE KEY-----\n"
+                  value={showKeys.googleCalendar ? (config.googleCalendar?.privateKey || '') : (config.googleCalendar?.privateKey ? '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••' : '')}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    googleCalendar: { ...config.googleCalendar, privateKey: e.target.value }
+                  })}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    background: '#f8f9fa',
+                    border: '1px solid #dadce0',
+                    borderRadius: 'var(--radius-sm)',
+                    color: '#111827',
+                    fontSize: '0.78rem',
+                    fontFamily: 'monospace',
+                    resize: 'vertical'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Sync Preferences & Timing */}
+            <div style={{
+              background: '#f8f9fa',
+              padding: '16px',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid #dadce0',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '16px'
+            }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#111827', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={Boolean(config.googleCalendar?.autoSyncLeads)}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    googleCalendar: { ...config.googleCalendar, autoSyncLeads: e.target.checked }
+                  })}
+                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                />
+                <span>Auto-sync CRM Lead Follow-ups (Calls, Meetings)</span>
+              </label>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#111827', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={Boolean(config.googleCalendar?.autoSyncSiteVisits)}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    googleCalendar: { ...config.googleCalendar, autoSyncSiteVisits: e.target.checked }
+                  })}
+                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                />
+                <span>Auto-sync Site Visit Tours (With Vrindavan Campus GPS)</span>
+              </label>
+            </div>
+
+            {/* Live Verification Diagnostic Banner */}
+            {gcalTestResult && (
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: 'var(--radius-sm)',
+                background: gcalTestResult.success ? '#ecfdf5' : '#fef2f2',
+                border: gcalTestResult.success ? '1px solid #10b981' : '1px solid #ef4444',
+                color: gcalTestResult.success ? '#047857' : '#b91c1c',
+                fontSize: '0.82rem',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px'
+              }}>
+                {gcalTestResult.success ? <CheckCircle size={16} style={{ marginTop: '2px', flexShrink: 0 }} /> : <AlertTriangle size={16} style={{ marginTop: '2px', flexShrink: 0 }} />}
+                <div>
+                  <div style={{ fontWeight: '700' }}>{gcalTestResult.message}</div>
+                  {gcalTestResult.details && (
+                    <div style={{ fontSize: '0.74rem', marginTop: '4px', opacity: 0.9 }}>
+                      Calendar: {gcalTestResult.details.calendarTitle || gcalTestResult.details.calendarId} • Timezone: {gcalTestResult.details.timeZone} • Latency: {gcalTestResult.details.latencyMs}ms
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Quick 3-Step Setup Guide Card */}
+            <div style={{
+              background: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: 'var(--radius-md)',
+              padding: '16px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1e40af', fontWeight: '700', fontSize: '0.88rem' }}>
+                <Clock size={16} />
+                Quick 3-Step Google Calendar Setup Guide:
+              </div>
+              <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '0.78rem', color: '#1e3a8a', display: 'flex', flexDirection: 'column', gap: '6px', lineHeight: '1.5' }}>
+                <li>
+                  Go to <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', fontWeight: '700' }}>Google Cloud Console</a> &rarr; Enable <strong>Google Calendar API</strong>.
+                </li>
+                <li>
+                  Go to <strong>IAM &amp; Admin &rarr; Service Accounts</strong> &rarr; Create Service Account &rarr; Click <strong>Keys &rarr; Add Key &rarr; JSON</strong> (download the JSON file).
+                </li>
+                <li>
+                  Open your <a href="https://calendar.google.com" target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', fontWeight: '700' }}>Google Calendar</a> &rarr; Click Settings next to your calendar &rarr; <strong>"Share with specific people"</strong> &rarr; Add the Service Account email with <strong>"Make changes to events"</strong> permission!
+                </li>
+                <li>
+                  Click the <strong>"Import from Service Account JSON Key"</strong> button above, paste the file contents, click <strong>"Save Google Calendar Settings"</strong>, and then click <strong>"Test Google Calendar Connection"</strong>.
+                </li>
+              </ol>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={handleTestGoogleCalendar}
+                disabled={gcalTesting || !config.googleCalendar?.clientEmail}
+                style={{
+                  padding: '9px 18px',
+                  background: 'rgba(66, 133, 244, 0.12)',
+                  border: '1px solid #1a73e8',
+                  color: '#1a73e8',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  cursor: (gcalTesting || !config.googleCalendar?.clientEmail) ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                {gcalTesting ? <RefreshCw size={14} className="spin" /> : <ShieldCheck size={14} />}
+                Test Google Calendar Connection
+              </button>
+
+              <button
+                type="submit"
+                style={{
+                  padding: '9px 24px',
+                  background: 'linear-gradient(135deg, #1a73e8, #4285f4)',
+                  border: 'none',
+                  color: '#ffffff',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  boxShadow: 'var(--shadow-glow)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Check size={16} /> Save Google Calendar Settings
               </button>
             </div>
           </div>
@@ -3277,6 +4177,109 @@ export const NotificationManagementPage = () => {
           if (activeTab === 'logs') loadLogs();
         }}
       />
+
+      {/* SERVICE ACCOUNT JSON PASTE MODAL */}
+      {jsonPasteModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.75)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1100,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #dadce0',
+            borderRadius: 'var(--radius-lg)',
+            width: '100%',
+            maxWidth: '620px',
+            padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            boxShadow: 'var(--shadow-xl)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #dadce0', paddingBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Upload size={18} color="#1a73e8" />
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#111827', margin: 0 }}>
+                  Import Google Service Account JSON Key
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setJsonPasteModal(false)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: 0 }}>
+              Open your downloaded Service Account <code>.json</code> file in Notepad/TextEdit, copy all contents, and paste it below. The ERP will automatically extract your <strong>client_email</strong> and <strong>private_key</strong>.
+            </p>
+
+            <textarea
+              rows={8}
+              placeholder='{\n  "type": "service_account",\n  "project_id": "krishna-valley-erp",\n  "private_key_id": "...",\n  "private_key": "-----BEGIN PRIVATE KEY-----\\n...",\n  "client_email": "...@...iam.gserviceaccount.com"\n}'
+              value={jsonPasteContent}
+              onChange={(e) => setJsonPasteContent(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                background: '#f8f9fa',
+                border: '1px solid #dadce0',
+                borderRadius: 'var(--radius-sm)',
+                fontFamily: 'monospace',
+                fontSize: '0.78rem',
+                resize: 'vertical'
+              }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setJsonPasteModal(false)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#f8f9fa',
+                  border: '1px solid #dadce0',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.82rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  color: '#374151'
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleParseServiceAccountJson}
+                disabled={!jsonPasteContent.trim()}
+                style={{
+                  padding: '8px 18px',
+                  background: 'linear-gradient(135deg, #1a73e8, #4285f4)',
+                  border: 'none',
+                  color: '#ffffff',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  cursor: !jsonPasteContent.trim() ? 'not-allowed' : 'pointer',
+                  opacity: !jsonPasteContent.trim() ? 0.6 : 1
+                }}
+              >
+                Auto-Extract &amp; Populate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

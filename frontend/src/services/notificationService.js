@@ -23,6 +23,22 @@ export const notificationService = {
       body: JSON.stringify(data)
     }),
 
+  // Google Calendar Integration
+  testGoogleCalendar: (data) =>
+    request('/notifications/google-calendar/test', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+
+  syncGoogleCalendarAll: (data) =>
+    request('/notifications/google-calendar/sync-all', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+
+  getGoogleCalendarStatus: () =>
+    request('/notifications/google-calendar/status'),
+
   // Reminder Templates CRUD
   getTemplates: (params = {}) => {
     const query = new URLSearchParams();

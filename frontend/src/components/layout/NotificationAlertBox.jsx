@@ -14,7 +14,9 @@ import {
   Users,
   CheckCheck,
   Trash2,
-  X
+  X,
+  Car,
+  Phone
 } from 'lucide-react';
 
 const DEFAULT_NOTIFICATIONS = [
@@ -92,7 +94,7 @@ const DEFAULT_NOTIFICATIONS = [
   }
 ];
 
-export const NotificationAlertBox = ({ isOpen, onClose, onCountChange }) => {
+export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeReminders = [] }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'alerts' | 'reminders'
   const [readIds, setReadIds] = useState(() => {
@@ -113,8 +115,27 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange }) => {
     }
   });
 
+  // Map real-time 30-minute reminders into notifications
+  const reminderItems = activeReminders.map(r => {
+    const isDueSoon = r.isDueIn30Min || r.isDueIn10Min;
+    return {
+      id: `rem-${r.id}`,
+      category: 'reminders',
+      severity: r.isOverdue ? 'urgent' : (isDueSoon ? 'warning' : 'info'),
+      title: r.type === 'site_visit' ? `🚗 Site Visit: ${r.leadName}` : `📞 Follow-Up: ${r.leadName}`,
+      message: `${r.unit ? `${r.unit} • ` : ''}${isDueSoon ? `Due in ${r.minutesRemaining} mins` : (r.isOverdue ? `Overdue by ${Math.abs(r.minutesRemaining)} mins` : 'Scheduled today')}${r.notes ? ` • "${r.notes}"` : ''}`,
+      time: isDueSoon ? `In ${r.minutesRemaining}m` : (r.isOverdue ? `${Math.abs(r.minutesRemaining)}m ago` : 'Today'),
+      route: `/crm?search=${encodeURIComponent(r.leadPhone || r.leadName)}`,
+      icon: r.type === 'site_visit' ? Car : Phone,
+      color: r.isOverdue ? '#ef4444' : (r.type === 'site_visit' ? '#16a34a' : '#2563eb'),
+      bgColor: r.isOverdue ? '#fef2f2' : (r.type === 'site_visit' ? '#f0fdf4' : '#eff6ff')
+    };
+  });
+
+  const allDisplayNotifications = [...reminderItems, ...DEFAULT_NOTIFICATIONS];
+
   // Calculate unread count
-  const activeNotifications = DEFAULT_NOTIFICATIONS.filter((n) => !dismissedIds.includes(n.id));
+  const activeNotifications = allDisplayNotifications.filter((n) => !dismissedIds.includes(n.id));
   const unreadCount = activeNotifications.filter((n) => !readIds.includes(n.id)).length;
 
   useEffect(() => {

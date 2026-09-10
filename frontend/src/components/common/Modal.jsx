@@ -22,7 +22,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = '650px' }) 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1000,
+        zIndex: 2000,
         padding: '16px',
         animation: 'fadeIn 0.2s ease-out'
       }}

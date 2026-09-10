@@ -49,20 +49,21 @@ const notificationConfigSchema = new mongoose.Schema(
       }
     },
 
-    // ================= EMAIL (SMTP & CLOUD) CONFIGURATION =================
+    // ================= EMAIL (RESEND, SMTP & CLOUD) CONFIGURATION =================
     email: {
       enabled: { type: Boolean, default: true },
       provider: {
         type: String,
-        enum: ['smtp', 'sendgrid', 'aws_ses', 'mailgun', 'gmail'],
-        default: 'smtp'
+        enum: ['resend', 'brevo', 'smtp', 'sendgrid', 'aws_ses', 'mailgun', 'gmail'],
+        default: 'resend'
       },
-      smtpHost: { type: String, default: 'smtp.gmail.com' },
-      smtpPort: { type: Number, default: 587 },
-      secure: { type: Boolean, default: false }, // true for 465, false for 587
-      smtpUser: { type: String, default: 'notifications@krishnavalley.com' },
+      apiKey: { type: String, default: '' }, // Resend API Key (re_...)
+      smtpHost: { type: String, default: 'smtp.resend.com' },
+      smtpPort: { type: Number, default: 465 },
+      secure: { type: Boolean, default: true }, // true for 465, false for 587
+      smtpUser: { type: String, default: 'resend' },
       smtpPassword: { type: String, default: '' },
-      fromEmail: { type: String, default: 'no-reply@krishnavalley.com' },
+      fromEmail: { type: String, default: 'onboarding@resend.dev' },
       fromName: { type: String, default: 'Krishna Valley ERP' },
       replyTo: { type: String, default: 'support@krishnavalley.com' },
       environment: {
@@ -134,6 +135,40 @@ const notificationConfigSchema = new mongoose.Schema(
       quietHoursEnabled: { type: Boolean, default: true },
       quietHoursStart: { type: String, default: '21:00' },
       quietHoursEnd: { type: String, default: '08:00' }
+    },
+
+    // ================= GOOGLE CALENDAR DIRECT FOLLOW-UP MAPPING =================
+    googleCalendar: {
+      enabled: { type: Boolean, default: false },
+      calendarId: { type: String, default: 'primary' },
+      authType: {
+        type: String,
+        enum: ['service_account', 'oauth2'],
+        default: 'service_account'
+      },
+      // Service Account Credentials
+      clientEmail: { type: String, default: '' },
+      privateKey: { type: String, default: '' },
+      // OAuth2 alternative credentials
+      clientId: { type: String, default: '' },
+      clientSecret: { type: String, default: '' },
+      refreshToken: { type: String, default: '' },
+      // Sync & Timing Settings
+      timeZone: { type: String, default: 'Asia/Kolkata' },
+      autoSyncLeads: { type: Boolean, default: true },
+      autoSyncSiteVisits: { type: Boolean, default: true },
+      reminderMinutesBefore: { type: Number, default: 30 },
+      lastSyncAt: { type: Date, default: null },
+      syncStatus: {
+        type: String,
+        enum: ['ready', 'not_configured', 'error'],
+        default: 'not_configured'
+      },
+      lastSyncSummary: {
+        totalSynced: { type: Number, default: 0 },
+        failedCount: { type: Number, default: 0 },
+        message: { type: String, default: '' }
+      }
     }
   },
   { timestamps: true }

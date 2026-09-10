@@ -86,7 +86,7 @@ export const getActiveRentals = async (req, res) => {
 
     const flats = await Flat.find(query)
       .populate('projectId', 'projectName projectCode')
-      .populate('currentOwner.customerId', 'name mobileNo email panNumber aadhaarNumber address')
+      .populate('currentOwner.customerId', 'name mobileNo email panNumber aadhaarNumber address bankDetails ownerDetails')
       .sort({ flatNumber: 1 })
       .lean();
 
@@ -95,12 +95,13 @@ export const getActiveRentals = async (req, res) => {
       const owner = flat.currentOwner || {};
       const linkedCustomer = owner.customerId || {};
 
-      const ownerName = owner.name || linkedCustomer.name || 'Unassigned';
+      const ownerName = linkedCustomer.name || owner.name || 'Unassigned';
       const cleanField = (val) => (!val || val === '—' || val === '-' || val === 'On File' ? null : String(val).trim());
-      const ownerMobile = cleanField(owner.mobileNo) || cleanField(linkedCustomer.mobileNo) || null;
-      const ownerEmail = cleanField(owner.email) || cleanField(linkedCustomer.email) || null;
-      const ownerPan = cleanField(owner.panNumber) || cleanField(linkedCustomer.panNumber) || null;
-      const ownerAadhaar = cleanField(owner.aadhaarNumber) || cleanField(linkedCustomer.aadhaarNumber) || null;
+      const ownerMobile = cleanField(linkedCustomer.mobileNo) || cleanField(owner.mobileNo) || null;
+      const ownerEmail = cleanField(linkedCustomer.email) || cleanField(owner.email) || null;
+      const ownerPan = cleanField(linkedCustomer.panNumber) || cleanField(linkedCustomer.ownerDetails?.panNumber) || cleanField(owner.panNumber) || null;
+      const ownerAadhaar = cleanField(linkedCustomer.aadhaarNumber) || cleanField(linkedCustomer.ownerDetails?.aadhaarNumber) || cleanField(owner.aadhaarNumber) || null;
+      const ownerBank = linkedCustomer.bankDetails || linkedCustomer.ownerDetails?.bankDetails || owner.bankDetails || {};
 
       const rawReg = rental.mouDate || flat.salesDetails?.agreementDate || owner.ownershipStartDate || null;
       const registryDate = parseAnyDate(rawReg);
@@ -149,7 +150,7 @@ export const getActiveRentals = async (req, res) => {
         ownerEmail,
         ownerPan,
         ownerAadhaar,
-        bankDetails: owner.bankDetails || {},
+        bankDetails: ownerBank,
         registryDate,
         rentAmount,
         applyTds,
@@ -1308,7 +1309,7 @@ export const getCustomerRentalLedgers = async (req, res) => {
 
     const flats = await Flat.find(query)
       .populate('projectId', 'projectName projectCode')
-      .populate('currentOwner.customerId', 'name mobileNo email panNumber aadhaarNumber address')
+      .populate('currentOwner.customerId', 'name mobileNo email panNumber aadhaarNumber address bankDetails ownerDetails')
       .sort({ flatNumber: 1 })
       .lean();
 
@@ -1317,11 +1318,11 @@ export const getCustomerRentalLedgers = async (req, res) => {
       const owner = flat.currentOwner || {};
       const linkedCustomer = owner.customerId || {};
 
-      const ownerName = owner.name || linkedCustomer.name || 'Unassigned';
-      const ownerMobile = owner.mobileNo || linkedCustomer.mobileNo || '—';
-      const ownerEmail = owner.email || linkedCustomer.email || '—';
-      const ownerPan = owner.panNumber || linkedCustomer.panNumber || '—';
-      const ownerBank = owner.bankDetails || {};
+      const ownerName = linkedCustomer.name || owner.name || 'Unassigned';
+      const ownerMobile = linkedCustomer.mobileNo || owner.mobileNo || '—';
+      const ownerEmail = linkedCustomer.email || owner.email || '—';
+      const ownerPan = linkedCustomer.panNumber || linkedCustomer.ownerDetails?.panNumber || owner.panNumber || '—';
+      const ownerBank = linkedCustomer.bankDetails || linkedCustomer.ownerDetails?.bankDetails || owner.bankDetails || {};
 
       const registryDate = rental.mouDate || flat.salesDetails?.agreementDate || owner.ownershipStartDate || null;
       const tenureMonths = Number(rental.tenureMonths || 36);

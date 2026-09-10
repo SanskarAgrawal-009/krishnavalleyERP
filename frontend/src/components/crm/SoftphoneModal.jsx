@@ -223,7 +223,7 @@ export const SoftphoneModal = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 1100,
+      zIndex: 2000,
       padding: '16px'
     }}>
       <div style={{

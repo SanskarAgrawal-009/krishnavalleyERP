@@ -8,6 +8,7 @@ import { escapeRegex } from '../utils/regexUtil.js';
 import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
 import { isValidPhone, isValidPincode, isValidEmail, isValidGovtId } from '../utils/inputValidators.js';
 import mongoose from 'mongoose';
+import { ensureRentalOwnersSynced, syncCustomerToFlats } from '../utils/customerSyncService.js';
 
 // Create a new Customer (Owner or Tenant)
 export const createCustomer = async (req, res) => {
@@ -259,6 +260,11 @@ export const createCustomer = async (req, res) => {
         populate: { path: 'projectId', select: 'projectName projectCode' }
       });
 
+    // Synchronize newly created customer details to any linked flats
+    if (customerType === 'owner') {
+      await syncCustomerToFlats(saved._id, saved);
+    }
+
     console.log(`[MongoDB] Customer "${saved.name}" (${saved.customerType}) created with ID: ${saved._id}`);
     return res.status(201).json({ success: true, data: populated });
   } catch (error) {
@@ -271,15 +277,39 @@ export const createCustomer = async (req, res) => {
 // Get All Customers with search & filters
 export const getCustomers = async (req, res) => {
   try {
+    // Auto-fetch & ensure all rental flat owners exist in Customer collection
+    await ensureRentalOwnersSynced();
+
     const { search, customerType, tenantType, status, propertyId } = req.query;
     let filter = {};
 
     if (search) {
       const regex = new RegExp(escapeRegex(search), 'i');
+
+      // Check if search term matches any flat number
+      let matchingFlatIds = [];
+      try {
+        const matchingFlats = await Flat.find({
+          flatNumber: regex
+        }).select('_id').limit(100).lean();
+        matchingFlatIds = matchingFlats.map(f => f._id);
+      } catch (_) {}
+
       filter.$or = [
         { name: regex },
         { mobileNo: regex },
+        { alternateMobileNo: regex },
         { email: regex },
+        { panNumber: regex },
+        { aadhaarNumber: regex },
+        { 'bankDetails.bankName': regex },
+        { 'bankDetails.accountNumber': regex },
+        { 'bankDetails.ifscCode': regex },
+        { 'ownerDetails.bankDetails.accountNumber': regex },
+        ...(matchingFlatIds.length > 0 ? [
+          { 'ownerDetails.propertyIds': { $in: matchingFlatIds } },
+          { 'tenantDetails.rentalDetails.flatId': { $in: matchingFlatIds } }
+        ] : []),
         { 'tenantDetails.company.companyName': regex },
         { 'tenantDetails.company.gstNumber': regex },
         { 'tenantDetails.individual.governmentIdNumber': regex }
@@ -425,8 +455,10 @@ export const updateCustomer = async (req, res) => {
     const bBranch = updates.bankBranch || updates.branch || updates.bankDetails?.branch || updates.ownerDetails?.bankDetails?.branch;
     const bAcc = updates.accountNumber || updates.accountNo || updates.bankDetails?.accountNumber || updates.bankDetails?.accountNo || updates.ownerDetails?.bankDetails?.accountNumber || updates.ownerDetails?.bankDetails?.accountNo;
     const bIfsc = updates.ifscCode || updates.ifsc || updates.bankDetails?.ifscCode || updates.bankDetails?.ifsc || updates.ownerDetails?.bankDetails?.ifscCode || updates.ownerDetails?.bankDetails?.ifsc;
+    const bHolder = updates.accountHolderName || updates.bankDetails?.accountHolderName || updates.ownerDetails?.bankDetails?.accountHolderName;
+    const bUpi = updates.upiId || updates.bankDetails?.upiId || updates.ownerDetails?.bankDetails?.upiId;
 
-    if (bName || bBranch || bAcc || bIfsc) {
+    if (bName || bBranch || bAcc || bIfsc || bHolder || bUpi) {
       if (!customer.bankDetails) customer.bankDetails = {};
       if (bName) customer.bankDetails.bankName = bName;
       if (bBranch) customer.bankDetails.branch = bBranch;
@@ -438,6 +470,8 @@ export const updateCustomer = async (req, res) => {
         customer.bankDetails.ifscCode = bIfsc;
         customer.bankDetails.ifsc = bIfsc;
       }
+      if (bHolder) customer.bankDetails.accountHolderName = bHolder;
+      if (bUpi) customer.bankDetails.upiId = bUpi;
       customer.markModified('bankDetails');
     }
 
@@ -452,7 +486,7 @@ export const updateCustomer = async (req, res) => {
       if (updates.panNumber) customer.ownerDetails.panNumber = updates.panNumber;
       if (updates.aadhaarNumber) customer.ownerDetails.aadhaarNumber = updates.aadhaarNumber;
       if (updates.permanentAddress) customer.ownerDetails.permanentAddress = updates.permanentAddress;
-      if (bName || bBranch || bAcc || bIfsc) {
+      if (bName || bBranch || bAcc || bIfsc || bHolder || bUpi) {
         if (!customer.ownerDetails.bankDetails) customer.ownerDetails.bankDetails = {};
         if (bName) customer.ownerDetails.bankDetails.bankName = bName;
         if (bBranch) customer.ownerDetails.bankDetails.branch = bBranch;
@@ -464,9 +498,24 @@ export const updateCustomer = async (req, res) => {
           customer.ownerDetails.bankDetails.ifscCode = bIfsc;
           customer.ownerDetails.bankDetails.ifsc = bIfsc;
         }
+        if (bHolder) customer.ownerDetails.bankDetails.accountHolderName = bHolder;
+        if (bUpi) customer.ownerDetails.bankDetails.upiId = bUpi;
       }
+
+      if (updates.ownerDetails?.nominee || updates.nominee) {
+        const nom = updates.ownerDetails?.nominee || updates.nominee;
+        if (!customer.ownerDetails.nominee) customer.ownerDetails.nominee = {};
+        if (nom.name !== undefined) customer.ownerDetails.nominee.name = nom.name;
+        if (nom.relationship !== undefined) customer.ownerDetails.nominee.relationship = nom.relationship;
+        if (nom.relation !== undefined) customer.ownerDetails.nominee.relation = nom.relation;
+        if (nom.mobileNo !== undefined) customer.ownerDetails.nominee.mobileNo = nom.mobileNo;
+        if (nom.contactNo !== undefined) customer.ownerDetails.nominee.contactNo = nom.contactNo;
+        if (nom.aadhaarNumber !== undefined) customer.ownerDetails.nominee.aadhaarNumber = nom.aadhaarNumber;
+      }
+
       customer.markModified('ownerDetails');
       customer.markModified('ownerDetails.bankDetails');
+      customer.markModified('ownerDetails.nominee');
       if (updates.ownerDetails?.propertyIds && Array.isArray(updates.ownerDetails.propertyIds)) {
         const validFlatIds = updates.ownerDetails.propertyIds.filter(id => mongoose.Types.ObjectId.isValid(id));
         if (validFlatIds.length > 0) {
@@ -513,6 +562,11 @@ export const updateCustomer = async (req, res) => {
     }
 
     await customer.save();
+
+    // Two-way synchronization: propagate altered customer & banking details to all linked Flats & Rentals
+    if (customer.customerType === 'owner') {
+      await syncCustomerToFlats(customer._id, customer);
+    }
 
     const populated = await Customer.findById(customer._id)
       .populate('ownerDetails.propertyIds')

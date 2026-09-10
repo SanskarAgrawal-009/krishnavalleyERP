@@ -51,7 +51,8 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
     branch: '',
     accountNumber: '',
     ifscCode: '',
-    accountHolderName: ''
+    accountHolderName: '',
+    upiId: ''
   });
 
   // Nominee Details
@@ -80,28 +81,42 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
         setName(customer.name || '');
         setMobileNo(customer.mobileNo || '');
         setEmail(customer.email || '');
-        setAlternatePhone(customer.alternatePhone || '');
-        setAddress(customer.address || {
-          street: '',
-          city: 'Mathura',
-          state: 'Uttar Pradesh',
-          pincode: '281001',
-          country: 'India'
+        setAlternatePhone(customer.alternateMobileNo || customer.alternatePhone || '');
+        
+        const rawAddr = customer.address || {};
+        setAddress({
+          street: rawAddr.street || rawAddr.addressLine1 || customer.permanentAddress || '',
+          city: rawAddr.city || 'Mathura',
+          state: rawAddr.state || 'Uttar Pradesh',
+          pincode: rawAddr.pincode || '281001',
+          country: rawAddr.country || 'India'
         });
 
         const od = customer.ownerDetails || {};
+        const cb = customer.bankDetails || {};
+        const ob = od.bankDetails || {};
+
         setOwnershipType(od.ownershipType || 'individual');
         setSelectedPropertyIds((od.propertyIds || []).map(p => p._id || p));
         setPanNumber(customer.panNumber || od.panNumber || '');
         setAadhaarNumber(customer.aadhaarNumber || od.aadhaarNumber || '');
-        setBankDetails(od.bankDetails || {
-          bankName: '',
-          branch: '',
-          accountNumber: '',
-          ifscCode: '',
-          accountHolderName: customer.name || ''
+        
+        setBankDetails({
+          bankName: cb.bankName || ob.bankName || '',
+          branch: cb.branch || ob.branch || '',
+          accountNumber: cb.accountNumber || cb.accountNo || ob.accountNumber || ob.accountNo || '',
+          ifscCode: cb.ifscCode || cb.ifsc || ob.ifscCode || ob.ifsc || '',
+          accountHolderName: cb.accountHolderName || ob.accountHolderName || customer.name || '',
+          upiId: cb.upiId || ob.upiId || ''
         });
-        setNominee(od.nominee || { name: '', relation: '', contactNo: '' });
+
+        const nom = od.nominee || {};
+        setNominee({
+          name: nom.name || '',
+          relation: nom.relation || nom.relationship || '',
+          contactNo: nom.contactNo || nom.mobileNo || ''
+        });
+
         setNotes(customer.notes || '');
       } else {
         setName('');
@@ -124,7 +139,8 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
           branch: '',
           accountNumber: '',
           ifscCode: '',
-          accountHolderName: ''
+          accountHolderName: '',
+          upiId: ''
         });
         setNominee({ name: '', relation: '', contactNo: '' });
         setOptInRentBack(true);
@@ -149,24 +165,56 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
       return;
     }
 
+    const formattedAddress = address.street
+      ? `${address.street}, ${address.city || 'Mathura'}, ${address.state || 'Uttar Pradesh'} - ${address.pincode || '281001'}`
+      : undefined;
+
+    const normalizedBank = {
+      bankName: bankDetails.bankName?.trim() || '',
+      branch: bankDetails.branch?.trim() || '',
+      accountNumber: bankDetails.accountNumber?.trim() || '',
+      accountNo: bankDetails.accountNumber?.trim() || '',
+      ifscCode: bankDetails.ifscCode?.trim().toUpperCase() || '',
+      ifsc: bankDetails.ifscCode?.trim().toUpperCase() || '',
+      accountHolderName: bankDetails.accountHolderName?.trim() || name.trim(),
+      upiId: bankDetails.upiId?.trim() || ''
+    };
+
     const payload = {
       name: name.trim(),
       mobileNo: mobileNo.trim(),
-      email: email.trim() || undefined,
+      alternateMobileNo: alternatePhone.trim() || undefined,
       alternatePhone: alternatePhone.trim() || undefined,
+      email: email.trim() || undefined,
       customerType: 'owner',
       status: 'active',
-      address,
+      address: {
+        addressLine1: address.street || '',
+        street: address.street || '',
+        city: address.city || 'Mathura',
+        state: address.state || 'Uttar Pradesh',
+        pincode: address.pincode || '281001',
+        country: address.country || 'India'
+      },
+      permanentAddress: formattedAddress,
       panNumber: panNumber.trim().toUpperCase() || undefined,
       aadhaarNumber: aadhaarNumber.trim() || undefined,
+      bankDetails: normalizedBank,
       ownerDetails: {
         ownershipType,
         ownershipPercentage: 100,
         propertyIds: selectedPropertyIds,
         panNumber: panNumber.trim().toUpperCase(),
         aadhaarNumber: aadhaarNumber.trim(),
-        bankDetails,
-        nominee
+        permanentAddress: formattedAddress,
+        bankDetails: normalizedBank,
+        nominee: {
+          name: nominee.name?.trim() || '',
+          relation: nominee.relation?.trim() || '',
+          relationship: nominee.relation?.trim() || '',
+          contactNo: nominee.contactNo?.trim() || '',
+          mobileNo: nominee.contactNo?.trim() || ''
+        }
       },
       notes
     };
@@ -277,6 +325,58 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
               />
             </div>
           </div>
+
+          {/* Postal Address */}
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
+                Street / Residence Address
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Flat 101, Krishna Valley"
+                value={address.street}
+                onChange={(e) => setAddress({ ...address, street: e.target.value })}
+                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
+                City
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Mathura"
+                value={address.city}
+                onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
+                State
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Uttar Pradesh"
+                value={address.state}
+                onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
+                Pincode
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. 281001"
+                value={address.pincode}
+                onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
+                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Section 2: Allotted Flat Units */}
@@ -373,6 +473,34 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 placeholder="e.g. PUNB0098300"
                 value={bankDetails.ifscCode}
                 onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value.toUpperCase() })}
+                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
+                Account Holder Name
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Rajesh Singhal"
+                value={bankDetails.accountHolderName}
+                onChange={(e) => setBankDetails({ ...bankDetails, accountHolderName: e.target.value })}
+                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
+                UPI ID / VPA (Optional)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. rajesh@upi or 9876543210@paytm"
+                value={bankDetails.upiId || ''}
+                onChange={(e) => setBankDetails({ ...bankDetails, upiId: e.target.value })}
                 style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
               />
             </div>

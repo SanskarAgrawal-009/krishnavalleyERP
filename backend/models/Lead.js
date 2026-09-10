@@ -46,12 +46,46 @@ const LeadSchema = new mongoose.Schema(
       default: '2BHK Apartment',
     },
 
+    city: {
+      type: String,
+      trim: true,
+      default: '',
+      index: true,
+    },
+
+    state: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
+    country: {
+      type: String,
+      trim: true,
+      default: 'India',
+    },
+
+    address: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
+    pincode: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
     leadSource: {
       type: String,
       enum: [
         'agent',
         'direct',
         'website',
+        'meta_ads',
+        'facebook',
+        'instagram',
         'referral',
         'campaign',
         'walk_in',
@@ -60,11 +94,42 @@ const LeadSchema = new mongoose.Schema(
       index: true,
     },
 
+    // Meta Ads (Facebook & Instagram) details
+    metaAdDetails: {
+      leadgenId: { type: String, index: true },
+      formId: String,
+      formName: String,
+      pageId: String,
+      campaignId: String,
+      campaignName: String,
+      adSetId: String,
+      adSetName: String,
+      adId: String,
+      adName: String,
+      platform: { type: String, default: 'meta' }, // 'fb' | 'ig' | 'meta'
+      createdTime: Date,
+    },
+
+    // Any other data / questions asked on the Meta Instant Form (shown in dedicated box)
+    metaCustomQuestions: [
+      {
+        fieldKey: String,
+        question: String,
+        answer: String,
+      }
+    ],
+
+    rawMetaPayload: {
+      type: mongoose.Schema.Types.Mixed,
+    },
+
     status: {
       type: String,
       enum: [
         'new',
         'contacted',
+        'in_discussion',
+        'followup_scheduled',
         'site_visit_scheduled',
         'site_visit_completed_pending_approval',
         'site_visit_completed',
@@ -84,6 +149,43 @@ const LeadSchema = new mongoose.Schema(
       ref: 'User',
       index: true,
     },
+
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true,
+    },
+
+    assignedAt: {
+      type: Date,
+      index: true,
+    },
+
+    assignedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+
+    assignmentHistory: [
+      {
+        assignedTo: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        assignedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        assignedAt: {
+          type: Date,
+          default: Date.now,
+        },
+        reason: {
+          type: String,
+          trim: true,
+        },
+      },
+    ],
 
     assignedFlat: {
       type: mongoose.Schema.Types.ObjectId,
@@ -204,9 +306,106 @@ const LeadSchema = new mongoose.Schema(
           enum: [
             'pending',
             'completed',
+            'rescheduled',
             'cancelled',
           ],
           default: 'pending',
+        },
+
+        scheduledBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+
+        assignedTo: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+
+        // Team Member feedback / call resolution remarks
+        feedback: {
+          type: String,
+          trim: true,
+        },
+
+        completedAt: {
+          type: Date,
+        },
+
+        completedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+
+        rescheduledTo: {
+          type: Date,
+        },
+
+        reminderStatus: {
+          teamNotified: { type: Boolean, default: false },
+          teamNotifiedAt: Date,
+          teamChannels: [String],
+          clientNotified: { type: Boolean, default: false },
+          clientNotifiedAt: Date,
+          clientChannels: [String],
+          snoozedUntil: Date,
+        },
+
+        googleCalendar: {
+          eventId: { type: String, default: null },
+          htmlLink: { type: String, default: null },
+          syncedAt: { type: Date, default: null },
+          syncStatus: {
+            type: String,
+            enum: ['synced', 'pending', 'failed', 'none'],
+            default: 'none',
+          },
+          syncError: { type: String, default: null },
+        },
+      },
+    ],
+
+    // Log of External / Direct Lead Site Visits
+    externalSiteVisits: [
+      {
+        visitorName: { type: String, trim: true },
+        visitorPhone: { type: String, trim: true },
+        visitorEmail: { type: String, trim: true },
+        visitDate: { type: Date, default: Date.now },
+        assignedFlat: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Flat',
+        },
+        flatLabel: { type: String, trim: true },
+        accompaniedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        accompaniedByName: { type: String, trim: true },
+        numberOfPersons: { type: Number, default: 1 },
+        cabDetails: {
+          isCabProvided: { type: Boolean, default: false },
+          cabNumber: { type: String, trim: true },
+          driverName: { type: String, trim: true },
+          driverPhone: { type: String, trim: true },
+          pickupLocation: { type: String, trim: true },
+        },
+        interestRating: { type: Number, min: 1, max: 5, default: 4 }, // 1 to 5 stars
+        feedback: { type: String, trim: true },
+        nextStep: { type: String, trim: true },
+        loggedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        createdAt: { type: Date, default: Date.now },
+        reminderStatus: {
+          teamNotified: { type: Boolean, default: false },
+          teamNotifiedAt: Date,
+          teamChannels: [String],
+          clientNotified: { type: Boolean, default: false },
+          clientNotifiedAt: Date,
+          clientChannels: [String],
+          snoozedUntil: Date,
         },
       },
     ],

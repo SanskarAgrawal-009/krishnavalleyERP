@@ -75,6 +75,8 @@ const CustomerSchema = new mongoose.Schema(
       accountNo: { type: String, trim: true },
       ifscCode: { type: String, trim: true, uppercase: true },
       ifsc: { type: String, trim: true, uppercase: true },
+      accountHolderName: { type: String, trim: true },
+      upiId: { type: String, trim: true },
     },
 
     address: {
@@ -142,12 +144,16 @@ const CustomerSchema = new mongoose.Schema(
         accountNo: { type: String, trim: true },
         ifscCode: { type: String, trim: true, uppercase: true },
         ifsc: { type: String, trim: true, uppercase: true },
+        accountHolderName: { type: String, trim: true },
+        upiId: { type: String, trim: true },
       },
 
       nominee: {
         name: { type: String, trim: true },
         relationship: { type: String, trim: true },
+        relation: { type: String, trim: true },
         mobileNo: { type: String, trim: true },
+        contactNo: { type: String, trim: true },
         aadhaarNumber: { type: String, trim: true },
       },
 

@@ -13,7 +13,10 @@ import {
   clearNotificationLogs,
   verifyEmailSmtp,
   verifyWhatsAppWebhook,
-  handleWhatsAppWebhook
+  handleWhatsAppWebhook,
+  testGoogleCalendarAction,
+  syncGoogleCalendarAction,
+  getGoogleCalendarStatusAction
 } from '../controllers/notificationController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
@@ -36,6 +39,11 @@ router.put('/config', authorizePermission('notifications:send', 'notifications:m
 // Test channel dispatch & live verification
 router.post('/test-channel', authorizePermission('notifications:send'), testChannelDispatch);
 router.post('/email/verify', authorizePermission('notifications:send', 'notifications:manage'), verifyEmailSmtp);
+
+// Google Calendar Direct Sync & Test routes
+router.post('/google-calendar/test', authorizePermission('notifications:send', 'notifications:manage'), testGoogleCalendarAction);
+router.post('/google-calendar/sync-all', authorizePermission('notifications:send', 'notifications:manage'), syncGoogleCalendarAction);
+router.get('/google-calendar/status', authorizePermission('notifications:view'), getGoogleCalendarStatusAction);
 
 // Direct template dispatch
 router.post('/send-template', authorizePermission('notifications:send'), sendTemplateNotification);
