@@ -859,34 +859,67 @@ export const getAllAgents = async (req, res) => {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20));
     const skip = (pageNum - 1) * limitNum;
 
-    // 1. Identify Agent Roles and Admin Roles
-    const [agentRoles, adminRoles] = await Promise.all([
+    // 1. Identify Agent Roles and Internal Employee Roles
+    const [agentRoles, nonAgentRoles] = await Promise.all([
       Role.find({
         $or: [
           { roleCode: 'agent' },
+          { roleCode: 'channel_partner' },
           { roleName: /agent|channel partner/i },
         ],
       }).select('_id'),
       Role.find({
-        roleCode: { $in: ['super_admin', 'sales_head', 'site_engineer', 'hr_manager', 'accounts_manager'] },
+        roleCode: {
+          $in: [
+            'super_admin',
+            'sales_head',
+            'sales_executive',
+            'rental_manager',
+            'site_engineer',
+            'hr_manager',
+            'accounts_manager',
+            'project_manager',
+            'tenant_relations',
+          ],
+        },
       }).select('_id'),
     ]);
 
     const agentRoleIds = agentRoles.map(r => r._id);
-    const adminRoleIds = adminRoles.map(r => r._id);
+    const nonAgentRoleIds = nonAgentRoles.map(r => r._id);
 
     const baseAgentFilter = {
       $and: [
         {
           $or: [
             { roleId: { $in: agentRoleIds } },
-            { 'agentProfile.agentCode': { $exists: true, $ne: '', $ne: null } },
-            { 'agentProfile.agencyName': { $exists: true, $ne: '', $ne: null } },
+            { isAgent: true },
+            {
+              $and: [
+                { 'agentProfile.agentCode': { $exists: true, $type: 'string', $regex: /^AGT-[0-9A-Z]+/i } },
+                { 'agentProfile.agencyName': { $exists: true, $type: 'string', $ne: '' } },
+              ],
+            },
           ],
         },
         {
-          roleId: { $nin: adminRoleIds },
-          username: { $nin: ['admin', 'sales_head', 'site_eng', 'hr_manager', 'accounts_head'] },
+          roleId: { $nin: nonAgentRoleIds },
+          username: {
+            $nin: [
+              'admin',
+              'sales_head',
+              'site_eng',
+              'hr_manager',
+              'accounts_head',
+              'sch_1',
+              'se_1',
+              'se_2',
+              'meenakshi_rm1',
+              'deepak_rm2',
+              'raghav_rm3',
+              'test_rm4',
+            ],
+          },
         },
       ],
     };

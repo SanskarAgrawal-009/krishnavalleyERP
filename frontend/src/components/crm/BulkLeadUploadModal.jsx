@@ -40,6 +40,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
 
   // Results
   const [uploadResult, setUploadResult] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0, batch: 0, totalBatches: 0 });
 
   const fileInputRef = useRef(null);
 
@@ -52,6 +53,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
     setParsing(false);
     setUploading(false);
     setUploadResult(null);
+    setUploadProgress({ current: 0, total: 0, batch: 0, totalBatches: 0 });
   };
 
   const handleClose = () => {
@@ -275,7 +277,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
     XLSX.writeFile(workbook, 'Krishna_Valley_Leads_Bulk_Upload_Template.xlsx');
   };
 
-  // Submit bulk upload to backend
+  // Submit bulk upload to backend with batching for 2,000+ records
   const handleUploadSubmit = async () => {
     const validLeads = mappedLeads.filter(l => l.isValid);
     if (validLeads.length === 0) {
@@ -284,24 +286,59 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
     }
 
     setUploading(true);
+    const BATCH_SIZE = 500;
+    const totalBatches = Math.ceil(validLeads.length / BATCH_SIZE);
+    setUploadProgress({ current: 0, total: validLeads.length, batch: 1, totalBatches });
+
     try {
-      const payload = {
-        leads: validLeads,
-        duplicateStrategy,
-        assignmentStrategy,
-        assignedTo: assignmentStrategy === 'rep' ? selectedRepId : null,
-        defaultSource,
-        notesTag: `Bulk Import (${fileName || 'Excel'})`
+      let aggregatedResult = {
+        totalReceived: validLeads.length,
+        insertedCount: 0,
+        updatedCount: 0,
+        skippedCount: 0,
+        errorsCount: 0,
+        errors: [],
+        sampleImported: []
       };
 
-      const res = await leadService.bulkUploadLeads(payload);
-      if (res.success && res.data) {
-        setUploadResult(res.data);
-        setStep(3);
-        if (onSuccess) onSuccess();
-      } else {
-        alert(res.message || 'Error occurred during bulk lead upload.');
+      for (let b = 0; b < totalBatches; b++) {
+        const batchLeads = validLeads.slice(b * BATCH_SIZE, (b + 1) * BATCH_SIZE);
+        setUploadProgress({
+          current: Math.min((b + 1) * BATCH_SIZE, validLeads.length),
+          total: validLeads.length,
+          batch: b + 1,
+          totalBatches
+        });
+
+        const payload = {
+          leads: batchLeads,
+          duplicateStrategy,
+          assignmentStrategy,
+          assignedTo: assignmentStrategy === 'rep' ? selectedRepId : null,
+          defaultSource,
+          notesTag: `Bulk Import (${fileName || 'Excel'})`
+        };
+
+        const res = await leadService.bulkUploadLeads(payload);
+        if (res.success && res.data) {
+          aggregatedResult.insertedCount += (res.data.insertedCount || 0);
+          aggregatedResult.updatedCount += (res.data.updatedCount || 0);
+          aggregatedResult.skippedCount += (res.data.skippedCount || 0);
+          aggregatedResult.errorsCount += (res.data.errorsCount || 0);
+          if (Array.isArray(res.data.errors)) {
+            aggregatedResult.errors.push(...res.data.errors);
+          }
+          if (Array.isArray(res.data.sampleImported) && aggregatedResult.sampleImported.length < 10) {
+            aggregatedResult.sampleImported.push(...res.data.sampleImported);
+          }
+        } else {
+          throw new Error(res.message || `Error occurred during batch ${b + 1} of lead upload.`);
+        }
       }
+
+      setUploadResult(aggregatedResult);
+      setStep(3);
+      if (onSuccess) onSuccess();
     } catch (err) {
       console.error('Upload error:', err);
       alert(err.message || 'Failed to upload leads. Please try again.');
@@ -734,6 +771,29 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
             {mappedLeads.length > 100 && (
               <div style={{ fontSize: '0.72rem', color: '#64748b', textAlign: 'center' }}>
                 Showing first 100 rows preview of {mappedLeads.length} total rows.
+              </div>
+            )}
+
+            {uploading && (
+              <div style={{
+                marginTop: '12px',
+                padding: '12px 16px',
+                backgroundColor: '#eff6ff',
+                borderRadius: '8px',
+                border: '1px solid #bfdbfe'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: '700', color: '#1e40af', marginBottom: '6px' }}>
+                  <span>Importing leads into CRM engine... (Batch {uploadProgress.batch} of {uploadProgress.totalBatches})</span>
+                  <span>{uploadProgress.current} / {uploadProgress.total} ({uploadProgress.total > 0 ? Math.round((uploadProgress.current / uploadProgress.total) * 100) : 0}%)</span>
+                </div>
+                <div style={{ width: '100%', height: '8px', backgroundColor: '#dbeafe', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${uploadProgress.total > 0 ? Math.round((uploadProgress.current / uploadProgress.total) * 100) : 0}%`,
+                    height: '100%',
+                    backgroundColor: '#1a73e8',
+                    transition: 'width 0.3s ease'
+                  }} />
+                </div>
               </div>
             )}
 

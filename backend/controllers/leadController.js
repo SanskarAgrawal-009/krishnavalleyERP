@@ -1949,11 +1949,10 @@ export const bulkUploadLeadsAction = async (req, res) => {
       notesTag = 'Bulk Excel Import'
     } = req.body;
 
-    let insertedCount = 0;
-    let updatedCount = 0;
-    let skippedCount = 0;
+    // 1. Pre-process & normalize all rows
+    const preparedRows = [];
     const errors = [];
-    const createdLeads = [];
+    const allMobiles = [];
 
     for (let index = 0; index < rows.length; index++) {
       const row = rows[index];
@@ -1996,9 +1995,8 @@ export const bulkUploadLeadsAction = async (req, res) => {
       const cleanMobile = normalizeMobileNo(rawMobile);
       const fullName = lastName ? `${firstName} ${lastName}`.trim() : firstName.trim();
 
-      // Validation
+      // Validation: Skip completely empty row
       if (!fullName && !cleanMobile) {
-        // Skip completely empty row
         continue;
       }
 
@@ -2015,88 +2013,169 @@ export const bulkUploadLeadsAction = async (req, res) => {
       const finalName = fullName || `Lead (${cleanMobile.slice(-4)})`;
       const budgetNum = parseBudget(rawBudget);
 
-      // Check existing duplicate lead by mobile number
-      const existingLead = await Lead.findOne({ mobileNo: cleanMobile });
-
-      if (existingLead) {
-        if (duplicateStrategy === 'skip') {
-          skippedCount++;
-          continue;
-        } else if (duplicateStrategy === 'update') {
-          // Update details with newly provided non-empty info
-          if (finalName && (!existingLead.name || existingLead.name.startsWith('Lead ('))) existingLead.name = finalName;
-          if (email && !existingLead.email) existingLead.email = email.toLowerCase();
-          if (city && !existingLead.city) existingLead.city = city;
-          if (state && !existingLead.state) existingLead.state = state;
-          if (budgetNum && (!existingLead.budget || existingLead.budget === 0)) existingLead.budget = budgetNum;
-          if (requirement) existingLead.requirement = requirement;
-          if (purchaseTimeline) existingLead.purchaseTimeline = purchaseTimeline;
-
-          if (remarks) {
-            existingLead.followUps = existingLead.followUps || [];
-            existingLead.followUps.push({
-              date: new Date(),
-              mode: 'other',
-              notes: `[${notesTag}] ${remarks}`,
-              status: 'completed',
-              scheduledBy: req.user?.id || null
-            });
-          }
-
-          await existingLead.save();
-          updatedCount++;
-          continue;
-        }
-      }
-
-      // Determine Lead Assignment
-      let assignedMemberId = null;
-      let assignmentReason = null;
-
-      if (assignmentStrategy === 'rep' && assignedTo && assignedTo !== 'unassigned') {
-        assignedMemberId = assignedTo;
-        assignmentReason = 'Assigned during Bulk Excel Upload';
-      } else if (assignmentStrategy === 'auto') {
-        const nextMemberResult = await getNextSalesTeamMember();
-        if (nextMemberResult && nextMemberResult.user) {
-          assignedMemberId = nextMemberResult.user._id;
-          assignmentReason = 'Automated Round-Robin Sequential Distribution (Bulk Upload)';
-        }
-      }
-
-      // Create new Lead document
-      const newLeadData = {
+      preparedRows.push({
+        rowNum,
         name: finalName,
         mobileNo: cleanMobile,
         email: email ? email.toLowerCase().trim() : '',
         city: city || '',
         state: state || '',
-        country: 'India',
         budget: budgetNum,
         requirement,
         purchaseTimeline,
+        remarks
+      });
+
+      allMobiles.push(cleanMobile);
+    }
+
+    // 2. Fetch all existing leads in a single indexed query
+    const existingDocs = await Lead.find({ mobileNo: { $in: allMobiles } })
+      .select('mobileNo name email city state budget requirement purchaseTimeline followUps')
+      .lean();
+    const existingMap = new Map();
+    existingDocs.forEach((doc) => {
+      existingMap.set(doc.mobileNo, doc);
+    });
+
+    // 3. Pre-fetch active sales team members for round-robin rotation
+    let activeMembers = [];
+    let fallbackUser = null;
+    const memberAssignedCounts = {};
+
+    if (assignmentStrategy === 'auto') {
+      const teamQuery = await SalesTeamMember.find({ isActiveInRoundRobin: true })
+        .populate('userId', 'firstName lastName username email mobileNo status')
+        .sort({ lastAssignedAt: 1, order: 1, createdAt: 1 });
+      activeMembers = teamQuery.filter(
+        (m) => m.userId && m.userId.status !== 'inactive' && m.userId.status !== 'suspended'
+      );
+      if (activeMembers.length === 0) {
+        fallbackUser = await User.findOne({ username: { $in: ['sales_head', 'admin'] }, status: 'active' });
+      }
+    }
+
+    let rrIndex = 0;
+    const getNextAssignee = () => {
+      if (assignmentStrategy === 'rep' && assignedTo && assignedTo !== 'unassigned') {
+        return {
+          assignedTo,
+          reason: 'Assigned during Bulk Excel Upload'
+        };
+      }
+      if (assignmentStrategy === 'auto') {
+        if (activeMembers.length > 0) {
+          const selected = activeMembers[rrIndex % activeMembers.length];
+          rrIndex++;
+          const memberId = selected._id.toString();
+          memberAssignedCounts[memberId] = (memberAssignedCounts[memberId] || 0) + 1;
+          return {
+            assignedTo: selected.userId._id,
+            reason: 'Automated Round-Robin Sequential Distribution (Bulk Upload)'
+          };
+        } else if (fallbackUser) {
+          return {
+            assignedTo: fallbackUser._id,
+            reason: 'Automated Round-Robin Fallback Assignment (Bulk Upload)'
+          };
+        }
+      }
+      return {
+        assignedTo: null,
+        reason: null
+      };
+    };
+
+    let insertedCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+    const leadsToInsert = [];
+    const updateOps = [];
+    const batchSeenMobiles = new Set();
+    const createdLeadsSample = [];
+    const now = new Date();
+
+    for (const item of preparedRows) {
+      const { name, mobileNo, email, city, state, budget, requirement, purchaseTimeline, remarks } = item;
+      const isDuplicate = existingMap.has(mobileNo) || batchSeenMobiles.has(mobileNo);
+
+      if (isDuplicate) {
+        if (duplicateStrategy === 'skip') {
+          skippedCount++;
+          continue;
+        } else if (duplicateStrategy === 'update') {
+          const existing = existingMap.get(mobileNo);
+          if (existing) {
+            const updateFields = {};
+            if (name && (!existing.name || existing.name.startsWith('Lead ('))) updateFields.name = name;
+            if (email && !existing.email) updateFields.email = email;
+            if (city && !existing.city) updateFields.city = city;
+            if (state && !existing.state) updateFields.state = state;
+            if (budget && (!existing.budget || existing.budget === 0)) updateFields.budget = budget;
+            if (requirement) updateFields.requirement = requirement;
+            if (purchaseTimeline) updateFields.purchaseTimeline = purchaseTimeline;
+
+            updateOps.push({
+              updateOne: {
+                filter: { _id: existing._id },
+                update: {
+                  $set: updateFields,
+                  ...(remarks ? {
+                    $push: {
+                      followUps: {
+                        date: now,
+                        mode: 'other',
+                        notes: `[${notesTag}] ${remarks}`,
+                        status: 'completed',
+                        scheduledBy: req.user?.id || null
+                      }
+                    }
+                  } : {})
+                }
+              }
+            });
+            continue;
+          }
+        }
+      }
+
+      batchSeenMobiles.add(mobileNo);
+      const assignment = getNextAssignee();
+
+      const newDoc = {
+        name,
+        mobileNo,
+        email,
+        city,
+        state,
+        country: 'India',
+        budget,
+        requirement,
+        purchaseTimeline,
         leadSource: defaultSource || 'bulk_upload',
-        assignedTo: assignedMemberId,
-        assignedAt: assignedMemberId ? new Date() : null,
+        assignedTo: assignment.assignedTo,
+        assignedAt: assignment.assignedTo ? now : null,
         assignedBy: req.user?.id || null,
-        assignmentHistory: assignedMemberId
+        assignmentHistory: assignment.assignedTo
           ? [
               {
-                assignedTo: assignedMemberId,
+                assignedTo: assignment.assignedTo,
                 assignedBy: req.user?.id || null,
-                assignedAt: new Date(),
-                reason: assignmentReason
+                assignedAt: now,
+                reason: assignment.reason
               }
             ]
           : [],
         status: 'new',
-        createdBy: req.user?.id || null
+        createdBy: req.user?.id || null,
+        createdAt: now,
+        updatedAt: now
       };
 
       if (remarks) {
-        newLeadData.followUps = [
+        newDoc.followUps = [
           {
-            date: new Date(),
+            date: now,
             mode: 'other',
             notes: `[${notesTag}] ${remarks}`,
             status: 'completed',
@@ -2105,21 +2184,67 @@ export const bulkUploadLeadsAction = async (req, res) => {
         ];
       }
 
-      const created = await Lead.create(newLeadData);
-      insertedCount++;
-      if (createdLeads.length < 10) {
-        createdLeads.push({
-          id: created._id,
-          name: created.name,
-          mobileNo: created.mobileNo,
-          city: created.city,
-          budget: created.budget,
-          requirement: created.requirement,
-          purchaseTimeline: created.purchaseTimeline,
-          assignedTo: assignedMemberId
+      leadsToInsert.push(newDoc);
+
+      if (createdLeadsSample.length < 10) {
+        createdLeadsSample.push({
+          name,
+          mobileNo,
+          city,
+          budget,
+          requirement,
+          purchaseTimeline,
+          assignedTo: assignment.assignedTo
         });
       }
     }
+
+    // 4. Perform bulk updates if any
+    if (updateOps.length > 0) {
+      await Lead.bulkWrite(updateOps, { ordered: false });
+      updatedCount = updateOps.length;
+    }
+
+    // 5. Perform chunked bulk inserts for scalability up to 2,000+ entries
+    if (leadsToInsert.length > 0) {
+      const CHUNK_SIZE = 500;
+      for (let i = 0; i < leadsToInsert.length; i += CHUNK_SIZE) {
+        const chunk = leadsToInsert.slice(i, i + CHUNK_SIZE);
+        const insertedDocs = await Lead.insertMany(chunk, { ordered: false });
+        insertedCount += insertedDocs.length;
+      }
+    }
+
+    // 6. Update sales team member assignment counters in batch
+    const memberUpdatePromises = Object.entries(memberAssignedCounts).map(([memberId, count]) =>
+      SalesTeamMember.findByIdAndUpdate(memberId, {
+        $inc: { leadsAssignedCount: count },
+        $set: { lastAssignedAt: now }
+      })
+    );
+    if (memberUpdatePromises.length > 0) {
+      await Promise.allSettled(memberUpdatePromises);
+    }
+
+    // 7. Record Audit Event
+    await recordAuditEvent({
+      eventType: 'CRUD',
+      action: 'CREATE',
+      module: 'leads',
+      resourceType: 'Lead',
+      resourceName: `${insertedCount} Leads Created via Bulk Import`,
+      req,
+      summary: `Bulk uploaded ${rows.length} rows: ${insertedCount} leads created, ${updatedCount} updated, ${skippedCount} skipped, ${errors.length} errors.`,
+      changes: {
+        totalReceived: rows.length,
+        insertedCount,
+        updatedCount,
+        skippedCount,
+        errorsCount: errors.length,
+        assignmentStrategy,
+        duplicateStrategy
+      }
+    });
 
     return res.json({
       success: true,
@@ -2131,7 +2256,7 @@ export const bulkUploadLeadsAction = async (req, res) => {
         skippedCount,
         errorsCount: errors.length,
         errors,
-        sampleImported: createdLeads
+        sampleImported: createdLeadsSample
       }
     });
   } catch (error) {
