@@ -1,11 +1,119 @@
 import Project from '../models/Project.js';
 import Flat from '../models/Flat.js';
 
+/**
+ * Helper to enrich projects and buildings with real-time aggregated inventory stats from Flat collection
+ */
+const enrichProjectsWithInventoryStats = async (projects) => {
+  if (!projects || projects.length === 0) return [];
+
+  const flatStats = await Flat.aggregate([
+    {
+      $group: {
+        _id: { projectId: '$projectId', buildingId: '$buildingId' },
+        total: { $sum: 1 },
+        available: {
+          $sum: {
+            $cond: [{ $eq: [{ $toLower: '$status' }, 'available'] }, 1, 0]
+          }
+        },
+        reserved: {
+          $sum: {
+            $cond: [
+              {
+                $in: [
+                  { $toLower: '$status' },
+                  ['hold', 'blocked', 'on_hold', 'pending', 'under_maintenance']
+                ]
+              },
+              1,
+              0
+            ]
+          }
+        },
+        occupied: {
+          $sum: {
+            $cond: [
+              {
+                $or: [
+                  { $in: [{ $toLower: '$status' }, ['sold', 'booked', 'leased']] },
+                  { $eq: ['$isSold', true] }
+                ]
+              },
+              1,
+              0
+            ]
+          }
+        }
+      }
+    }
+  ]);
+
+  const statsMap = new Map();
+  flatStats.forEach((stat) => {
+    const pIdStr = stat._id.projectId ? stat._id.projectId.toString() : '';
+    const bIdStr = stat._id.buildingId ? stat._id.buildingId.toString() : '';
+    statsMap.set(`${pIdStr}:${bIdStr}`, stat);
+  });
+
+  return projects.map((proj) => {
+    const pIdStr = (proj._id || proj.id).toString();
+
+    let projTotal = 0;
+    let projAvailable = 0;
+    let projReserved = 0;
+    let projOccupied = 0;
+
+    const enrichedBuildings = (proj.buildings || []).map((bld) => {
+      const bIdStr = (bld._id || bld.id).toString();
+      const stat = statsMap.get(`${pIdStr}:${bIdStr}`) || {
+        total: 0,
+        available: 0,
+        reserved: 0,
+        occupied: 0
+      };
+
+      projTotal += stat.total;
+      projAvailable += stat.available;
+      projReserved += stat.reserved;
+      projOccupied += stat.occupied;
+
+      return {
+        ...bld,
+        stats: {
+          total: stat.total,
+          available: stat.available, // vacancies
+          reserved: stat.reserved,   // reserved / hold
+          occupied: stat.occupied,   // occupied / sold
+          occupancyRate: stat.total > 0 ? Math.round((stat.occupied / stat.total) * 100) : 0,
+          vacancyRate: stat.total > 0 ? Math.round((stat.available / stat.total) * 100) : 0,
+          reservedRate: stat.total > 0 ? Math.round((stat.reserved / stat.total) * 100) : 0
+        }
+      };
+    });
+
+    return {
+      ...proj,
+      buildings: enrichedBuildings,
+      stats: {
+        total: projTotal,
+        available: projAvailable, // vacancies
+        reserved: projReserved,   // reserved / hold
+        occupied: projOccupied,   // occupied / sold
+        occupancyRate: projTotal > 0 ? Math.round((projOccupied / projTotal) * 100) : 0,
+        vacancyRate: projTotal > 0 ? Math.round((projAvailable / projTotal) * 100) : 0,
+        reservedRate: projTotal > 0 ? Math.round((projReserved / projTotal) * 100) : 0
+      }
+    };
+  });
+};
+
 // Get All Projects
 export const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate('buildings.flats').sort({ createdAt: -1 });
-    return res.json({ success: true, count: projects.length, data: projects });
+    const projects = await Project.find().populate('buildings.flats').sort({ createdAt: -1 }).lean();
+    const enriched = await enrichProjectsWithInventoryStats(projects);
+    return res.json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
     console.error('Error in getProjects:', error);
     return res.status(500).json({ success: false, message: error.message });
@@ -16,9 +124,10 @@ export const getProjects = async (req, res) => {
 export const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findById(id).populate('buildings.flats');
+    const project = await Project.findById(id).populate('buildings.flats').lean();
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
-    return res.json({ success: true, data: project });
+    const [enriched] = await enrichProjectsWithInventoryStats([project]);
+    return res.json({ success: true, data: enriched });
   } catch (error) {
     console.error('Error in getProjectById:', error);
     return res.status(500).json({ success: false, message: error.message });

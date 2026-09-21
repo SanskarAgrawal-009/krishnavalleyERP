@@ -32,7 +32,14 @@ import {
   CheckSquare,
   Square,
   Repeat,
-  RotateCcw
+  RotateCcw,
+  BarChart3,
+  TrendingUp,
+  ChevronDown,
+  ChevronUp,
+  PieChart,
+  ShieldCheck,
+  Users
 } from 'lucide-react';
 
 export const PropertyInventoryPage = () => {
@@ -67,6 +74,17 @@ export const PropertyInventoryPage = () => {
   const [isFlatDetailOpen, setIsFlatDetailOpen] = useState(false);
   const [isImportFlatsModalOpen, setIsImportFlatsModalOpen] = useState(false);
   const [selectedFlatIds, setSelectedFlatIds] = useState([]);
+
+  // Project & Tower Inventory View & Accordion states
+  const [expandedProjectIds, setExpandedProjectIds] = useState([]);
+  const [tier1ViewMode, setTier1ViewMode] = useState('grid'); // 'grid' | 'matrix'
+
+  const handleToggleExpandProject = (projId, e) => {
+    if (e) e.stopPropagation();
+    setExpandedProjectIds((prev) =>
+      prev.includes(projId) ? prev.filter((id) => id !== projId) : [...prev, projId]
+    );
+  };
 
   // Toggle Flat Selection
   const handleToggleSelectFlat = (flatId, e) => {
@@ -196,6 +214,98 @@ export const PropertyInventoryPage = () => {
     setFloorFilter('all');
     setBhkFilter('all');
     setFlatSearchQuery('');
+  };
+
+  // Portfolio-wide aggregation across all projects and towers
+  const portfolioStats = useMemo(() => {
+    let totalUnits = 0;
+    let totalVacancies = 0;
+    let totalReserved = 0;
+    let totalOccupied = 0;
+    let totalTowers = 0;
+
+    projects.forEach((proj) => {
+      totalUnits += proj.stats?.total || 0;
+      totalVacancies += proj.stats?.available || 0;
+      totalReserved += proj.stats?.reserved || 0;
+      totalOccupied += proj.stats?.occupied || 0;
+      totalTowers += (proj.buildings || []).length;
+    });
+
+    const occupancyRate = totalUnits > 0 ? Math.round((totalOccupied / totalUnits) * 100) : 0;
+    const vacancyRate = totalUnits > 0 ? Math.round((totalVacancies / totalUnits) * 100) : 0;
+    const reservedRate = totalUnits > 0 ? Math.round((totalReserved / totalUnits) * 100) : 0;
+
+    return {
+      totalProjects: projects.length,
+      totalTowers,
+      totalUnits,
+      totalVacancies,
+      totalReserved,
+      totalOccupied,
+      occupancyRate,
+      vacancyRate,
+      reservedRate
+    };
+  }, [projects]);
+
+  // Flatten all towers across all projects for cross-tower matrix view
+  const allTowersList = useMemo(() => {
+    const list = [];
+    projects.forEach((proj) => {
+      (proj.buildings || []).forEach((bld) => {
+        list.push({
+          project: proj,
+          building: bld,
+          stats: bld.stats || {
+            total: 0,
+            available: 0,
+            reserved: 0,
+            occupied: 0,
+            occupancyRate: 0,
+            vacancyRate: 0,
+            reservedRate: 0
+          }
+        });
+      });
+    });
+    return list;
+  }, [projects]);
+
+  // Multi-Color Segmented Occupancy Bar Renderer
+  const renderSegmentedBar = (available = 0, reserved = 0, occupied = 0, total = 0, height = 8) => {
+    if (!total || total === 0) {
+      return (
+        <div style={{ height: `${height}px`, width: '100%', background: '#e2e8f0', borderRadius: '4px' }} />
+      );
+    }
+    const occPct = (occupied / total) * 100;
+    const resPct = (reserved / total) * 100;
+    const vacPct = (available / total) * 100;
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          height: `${height}px`,
+          borderRadius: '4px',
+          overflow: 'hidden',
+          background: '#f1f5f9'
+        }}
+        title={`Occupied: ${occupied} (${Math.round(occPct)}%) | Reserved: ${reserved} (${Math.round(resPct)}%) | Vacancies: ${available} (${Math.round(vacPct)}%)`}
+      >
+        {occPct > 0 && (
+          <div style={{ width: `${occPct}%`, background: '#2563eb', transition: 'width 0.3s' }} />
+        )}
+        {resPct > 0 && (
+          <div style={{ width: `${resPct}%`, background: '#f59e0b', transition: 'width 0.3s' }} />
+        )}
+        {vacPct > 0 && (
+          <div style={{ width: `${vacPct}%`, background: '#16a34a', transition: 'width 0.3s' }} />
+        )}
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -592,16 +702,200 @@ export const PropertyInventoryPage = () => {
 
       {/* TIER 1: ALL PROJECTS */}
       {!selectedProject && (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
+          {/* Portfolio-Wide Inventory KPI Cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+            gap: '14px'
+          }}>
+            {/* Card 1: Total Units */}
+            <div className="g-card" style={{
+              padding: '16px 20px',
+              borderLeft: '4px solid #1a73e8',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Total Inventory
+                </span>
+                <Building2 size={18} color="#1a73e8" />
+              </div>
+              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0f172a' }}>
+                {portfolioStats.totalUnits}
+              </div>
+              <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                Across {portfolioStats.totalProjects} Projects • {portfolioStats.totalTowers} Towers
+              </div>
+            </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: '#191c1d' }}>
-              Projects Overview ({projects.length})
-            </h3>
+            {/* Card 2: Vacancies (Available) */}
+            <div className="g-card" style={{
+              padding: '16px 20px',
+              borderLeft: '4px solid #16a34a',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.76rem', color: '#166534', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Vacancies (Available)
+                </span>
+                <span style={{ background: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
+                  {portfolioStats.vacancyRate}%
+                </span>
+              </div>
+              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#15803d' }}>
+                {portfolioStats.totalVacancies}
+              </div>
+              <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                Ready for immediate booking & sale
+              </div>
+            </div>
+
+            {/* Card 3: Reserved (On Hold) */}
+            <div className="g-card" style={{
+              padding: '16px 20px',
+              borderLeft: '4px solid #f59e0b',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.76rem', color: '#92400e', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Reserved (On Hold)
+                </span>
+                <span style={{ background: '#fef3c7', color: '#b45309', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
+                  {portfolioStats.reservedRate}%
+                </span>
+              </div>
+              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#b45309' }}>
+                {portfolioStats.totalReserved}
+              </div>
+              <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                Under booking hold / inquiry token
+              </div>
+            </div>
+
+            {/* Card 4: Occupied (Sold / Booked) */}
+            <div className="g-card" style={{
+              padding: '16px 20px',
+              borderLeft: '4px solid #2563eb',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.76rem', color: '#1e40af', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Occupied (Sold / Booked)
+                </span>
+                <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
+                  {portfolioStats.occupancyRate}%
+                </span>
+              </div>
+              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1d4ed8' }}>
+                {portfolioStats.totalOccupied}
+              </div>
+              <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                Allotted to buyers & rental pool
+              </div>
+            </div>
+          </div>
+
+          {/* Multi-Color Portfolio Occupancy Bar */}
+          <div className="g-card" style={{ padding: '14px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', fontWeight: '800', color: '#0f172a' }}>
+                <BarChart3 size={16} color="#1a73e8" />
+                Portfolio Occupancy & Vacancy Distribution
+              </div>
+              {/* Legend */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', fontSize: '0.76rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#16a34a' }} />
+                  <span style={{ color: '#475569', fontWeight: '700' }}>Vacancies ({portfolioStats.totalVacancies})</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#f59e0b' }} />
+                  <span style={{ color: '#475569', fontWeight: '700' }}>Reserved ({portfolioStats.totalReserved})</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#2563eb' }} />
+                  <span style={{ color: '#475569', fontWeight: '700' }}>Occupied ({portfolioStats.totalOccupied})</span>
+                </div>
+              </div>
+            </div>
+            {renderSegmentedBar(portfolioStats.totalVacancies, portfolioStats.totalReserved, portfolioStats.totalOccupied, portfolioStats.totalUnits, 10)}
+          </div>
+
+          {/* Tier 1 Header with View Switcher */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
+                Projects Overview ({projects.length})
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>
+                Explore vacancy and occupancy status across projects and individual towers.
+              </p>
+            </div>
+
+            {/* View Mode Switcher */}
+            <div style={{
+              display: 'flex',
+              background: '#f1f5f9',
+              padding: '3px',
+              borderRadius: '8px',
+              border: '1px solid #cbd5e1',
+              gap: '4px'
+            }}>
+              <button
+                type="button"
+                onClick={() => setTier1ViewMode('grid')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: tier1ViewMode === 'grid' ? '#ffffff' : 'transparent',
+                  color: tier1ViewMode === 'grid' ? '#1e293b' : '#64748b',
+                  boxShadow: tier1ViewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Layers size={13} /> Project Cards
+              </button>
+              <button
+                type="button"
+                onClick={() => setTier1ViewMode('matrix')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: tier1ViewMode === 'matrix' ? '#ffffff' : 'transparent',
+                  color: tier1ViewMode === 'matrix' ? '#1e293b' : '#64748b',
+                  boxShadow: tier1ViewMode === 'matrix' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <BarChart3 size={13} /> Tower Occupancy Matrix
+              </button>
+            </div>
           </div>
 
           {loading ? (
-            <CardGridSkeleton cards={3} height="190px" />
+            <CardGridSkeleton cards={3} height="220px" />
           ) : projects.length === 0 ? (
             <EmptyState
               icon={Building2}
@@ -611,63 +905,390 @@ export const PropertyInventoryPage = () => {
               primaryActionLabel="Add First Project"
               primaryActionIcon={Plus}
             />
+          ) : tier1ViewMode === 'matrix' ? (
+            /* CROSS-TOWER COMPARATIVE MATRIX TABLE */
+            <div className="g-card" style={{ padding: '0', borderRadius: '12px', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                    <th style={{ padding: '14px 18px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase' }}>Project</th>
+                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase' }}>Tower / Building</th>
+                    <th style={{ padding: '14px 14px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Floors</th>
+                    <th style={{ padding: '14px 14px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Total Units</th>
+                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#15803d', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Vacancies (Available)</th>
+                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#b45309', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Reserved (On Hold)</th>
+                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#1d4ed8', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Occupied (Sold)</th>
+                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase', width: '22%' }}>Occupancy Ratio</th>
+                    <th style={{ padding: '14px 18px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'right' }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allTowersList.map(({ project: p, building: b, stats: s }, tIdx) => (
+                    <tr
+                      key={`${p._id || p.id}_${b._id || b.id}_${tIdx}`}
+                      style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.15s ease' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      <td style={{ padding: '14px 18px', verticalAlign: 'middle' }}>
+                        <div style={{ fontWeight: '800', color: '#0f172a' }}>{p.projectName}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{p.projectCode} • {p.address?.city}</div>
+                      </td>
+                      <td style={{ padding: '14px 16px', verticalAlign: 'middle' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontWeight: '800', color: '#1e293b' }}>{b.buildingName}</span>
+                          <span style={{ fontSize: '0.68rem', background: '#e0f2fe', color: '#0369a1', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }}>
+                            {b.buildingCode}
+                          </span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '14px 14px', textAlign: 'center', fontWeight: '700', color: '#475569' }}>
+                        {b.numberOfFloors}
+                      </td>
+                      <td style={{ padding: '14px 14px', textAlign: 'center', fontWeight: '800', color: '#0f172a' }}>
+                        {s.total}
+                      </td>
+                      <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          background: '#dcfce7',
+                          color: '#15803d',
+                          border: '1px solid #86efac',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          fontWeight: '800',
+                          fontSize: '0.78rem'
+                        }}>
+                          🟢 {s.available} ({s.total > 0 ? Math.round((s.available / s.total) * 100) : 0}%)
+                        </span>
+                      </td>
+                      <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          background: '#fef3c7',
+                          color: '#b45309',
+                          border: '1px solid #fcd34d',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          fontWeight: '800',
+                          fontSize: '0.78rem'
+                        }}>
+                          🟡 {s.reserved} ({s.total > 0 ? Math.round((s.reserved / s.total) * 100) : 0}%)
+                        </span>
+                      </td>
+                      <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          background: '#dbeafe',
+                          color: '#1d4ed8',
+                          border: '1px solid #93c5fd',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          fontWeight: '800',
+                          fontSize: '0.78rem'
+                        }}>
+                          🔵 {s.occupied} ({s.total > 0 ? Math.round((s.occupied / s.total) * 100) : 0}%)
+                        </span>
+                      </td>
+                      <td style={{ padding: '14px 16px', verticalAlign: 'middle' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: '800', color: '#334155' }}>
+                            <span>{s.occupancyRate}% Occupied</span>
+                            <span>{s.total - s.occupied} Vacant/Held</span>
+                          </div>
+                          {renderSegmentedBar(s.available, s.reserved, s.occupied, s.total, 7)}
+                        </div>
+                      </td>
+                      <td style={{ padding: '14px 18px', textAlign: 'right', verticalAlign: 'middle' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedProject(p);
+                            setSelectedBuilding(b);
+                          }}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#eff6ff',
+                            color: '#1d4ed8',
+                            border: '1px solid #bfdbfe',
+                            borderRadius: '6px',
+                            fontWeight: '700',
+                            fontSize: '0.76rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                          }}
+                        >
+                          View Flats <ArrowRight size={12} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '18px' }}>
+            /* PROJECT CARDS GRID WITH INTEGRATED TOWER BREAKDOWN */
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '18px' }}>
               {projects.map((proj) => {
                 const bldsCount = proj.buildings?.length || 0;
+                const isExpanded = expandedProjectIds.includes(proj._id || proj.id);
+
                 return (
                   <div
                     key={proj._id || proj.id}
                     className="g-card"
-                    onClick={() => {
-                      setSelectedProject(proj);
-                      setSelectedBuilding(null);
-                    }}
                     style={{
                       padding: '20px',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '14px',
-                      cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <h4 style={{ fontSize: '1.15rem', fontWeight: '700', color: '#191c1d' }}>{proj.projectName}</h4>
-                          <span style={{ fontSize: '0.72rem', background: '#e8f0fe', padding: '2px 6px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
-                            {proj.projectCode}
-                          </span>
+                    {/* Project Card Header */}
+                    <div
+                      onClick={() => {
+                        setSelectedProject(proj);
+                        setSelectedBuilding(null);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <h4 style={{ fontSize: '1.18rem', fontWeight: '800', color: '#0f172a' }}>{proj.projectName}</h4>
+                            <span style={{ fontSize: '0.72rem', background: '#e8f0fe', padding: '2px 6px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
+                              {proj.projectCode}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem', color: '#64748b', marginTop: '4px' }}>
+                            <MapPin size={13} color="#94a3b8" />
+                            {proj.address?.city}, {proj.address?.state} • {bldsCount} Registered Towers
+                          </div>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem', color: '#414754', marginTop: '4px' }}>
-                          <MapPin size={13} color="#727785" />
-                          {proj.address?.city}, {proj.address?.state}
-                        </div>
+                        <StatusBadge status={proj.status} />
                       </div>
-                      <StatusBadge status={proj.status} />
                     </div>
 
+                    {/* Project Inventory Status Overview (Vacancies, Reserved, Occupied) */}
                     <div style={{
-                      background: '#f8f9fa',
-                      border: '1px solid #dadce0',
-                      padding: '10px 12px',
-                      borderRadius: '6px',
-                      fontSize: '0.78rem',
-                      color: '#414754',
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      padding: '12px 14px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '4px'
+                      gap: '8px'
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <MapPin size={13} color="#1a73e8" style={{ flexShrink: 0 }} />
-                        <span>{proj.address?.addressLine1} {proj.address?.locality ? `• ${proj.address.locality}` : ''} ({proj.address?.pincode})</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                          Project Inventory Status
+                        </span>
+                        <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#1e293b' }}>
+                          {proj.stats?.total || 0} Units • {proj.stats?.occupancyRate || 0}% Occupied
+                        </span>
                       </div>
-                      <div style={{ color: '#191c1d', fontWeight: '600', marginTop: '2px' }}>
-                        Registered Buildings: <span style={{ color: '#1a73e8' }}>{bldsCount}</span>
+
+                      {/* 3 Status Pills: Vacancies, Reserved, Occupied */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                        {/* Vacancies (Available) */}
+                        <div style={{
+                          background: '#f0fdf4',
+                          border: '1px solid #bbf7d0',
+                          borderRadius: '6px',
+                          padding: '6px 8px',
+                          textAlign: 'center'
+                        }}>
+                          <div style={{ fontSize: '0.64rem', fontWeight: '700', color: '#166534', textTransform: 'uppercase' }}>
+                            Vacancies
+                          </div>
+                          <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#15803d' }}>
+                            {proj.stats?.available || 0}
+                          </div>
+                        </div>
+
+                        {/* Reserved (On Hold) */}
+                        <div style={{
+                          background: '#fffbeb',
+                          border: '1px solid #fde68a',
+                          borderRadius: '6px',
+                          padding: '6px 8px',
+                          textAlign: 'center'
+                        }}>
+                          <div style={{ fontSize: '0.64rem', fontWeight: '700', color: '#92400e', textTransform: 'uppercase' }}>
+                            Reserved
+                          </div>
+                          <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#b45309' }}>
+                            {proj.stats?.reserved || 0}
+                          </div>
+                        </div>
+
+                        {/* Occupied (Sold) */}
+                        <div style={{
+                          background: '#eff6ff',
+                          border: '1px solid #bfdbfe',
+                          borderRadius: '6px',
+                          padding: '6px 8px',
+                          textAlign: 'center'
+                        }}>
+                          <div style={{ fontSize: '0.64rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>
+                            Occupied
+                          </div>
+                          <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1d4ed8' }}>
+                            {proj.stats?.occupied || 0}
+                          </div>
+                        </div>
                       </div>
+
+                      {/* Segmented Bar */}
+                      {renderSegmentedBar(
+                        proj.stats?.available || 0,
+                        proj.stats?.reserved || 0,
+                        proj.stats?.occupied || 0,
+                        proj.stats?.total || 0,
+                        6
+                      )}
                     </div>
 
+                    {/* Expandable Tower Breakdown Accordion */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <button
+                        type="button"
+                        onClick={(e) => handleToggleExpandProject(proj._id || proj.id, e)}
+                        style={{
+                          background: '#ffffff',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '6px',
+                          padding: '7px 10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          color: '#334155',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Layers size={14} color="#2563eb" />
+                          Tower Breakdown ({bldsCount} Towers)
+                        </span>
+                        {isExpanded ? (
+                          <ChevronUp size={15} color="#64748b" />
+                        ) : (
+                          <ChevronDown size={15} color="#64748b" />
+                        )}
+                      </button>
+
+                      {isExpanded && (
+                        <div
+                          style={{
+                            background: '#f8fafc',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            padding: '10px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '8px'
+                          }}
+                        >
+                          {(proj.buildings || []).length === 0 ? (
+                            <div style={{ fontSize: '0.74rem', color: '#64748b', textAlign: 'center', padding: '6px 0' }}>
+                              No towers added to this project yet.
+                            </div>
+                          ) : (
+                            (proj.buildings || []).map((bld) => (
+                              <div
+                                key={bld._id || bld.id}
+                                style={{
+                                  background: '#ffffff',
+                                  border: '1px solid #e2e8f0',
+                                  borderRadius: '6px',
+                                  padding: '8px 10px',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: '6px'
+                                }}
+                              >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.82rem' }}>
+                                      {bld.buildingName}
+                                    </span>
+                                    <span style={{ fontSize: '0.66rem', background: '#e0f2fe', color: '#0369a1', padding: '1px 5px', borderRadius: '3px', fontWeight: '700' }}>
+                                      {bld.buildingCode}
+                                    </span>
+                                  </div>
+                                  <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>
+                                    {bld.numberOfFloors} Floors • {bld.stats?.total || 0} Flats
+                                  </span>
+                                </div>
+
+                                {/* Tower Mini Status Badges */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', fontSize: '0.72rem' }}>
+                                  <span style={{ background: '#dcfce7', color: '#15803d', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                                    🟢 {bld.stats?.available || 0} Vacant
+                                  </span>
+                                  <span style={{ background: '#fef3c7', color: '#b45309', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                                    🟡 {bld.stats?.reserved || 0} Reserved
+                                  </span>
+                                  <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                                    🔵 {bld.stats?.occupied || 0} Occupied
+                                  </span>
+                                  <span style={{ marginLeft: 'auto', fontWeight: '800', color: '#0f172a' }}>
+                                    {bld.stats?.occupancyRate || 0}% Occupancy
+                                  </span>
+                                </div>
+
+                                {renderSegmentedBar(
+                                  bld.stats?.available || 0,
+                                  bld.stats?.reserved || 0,
+                                  bld.stats?.occupied || 0,
+                                  bld.stats?.total || 0,
+                                  5
+                                )}
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedProject(proj);
+                                    setSelectedBuilding(bld);
+                                  }}
+                                  style={{
+                                    marginTop: '2px',
+                                    padding: '5px 8px',
+                                    fontSize: '0.72rem',
+                                    fontWeight: '700',
+                                    color: '#2563eb',
+                                    background: '#eff6ff',
+                                    border: '1px solid #bfdbfe',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '4px'
+                                  }}
+                                >
+                                  View Tower Flats <ArrowRight size={11} />
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Footer Actions */}
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -699,9 +1320,26 @@ export const PropertyInventoryPage = () => {
                         </button>
                       </div>
 
-                      <span style={{ fontSize: '0.8rem', color: '#1a73e8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        Explore Buildings <ArrowRight size={14} />
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedProject(proj);
+                          setSelectedBuilding(null);
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: '0.8rem',
+                          color: '#1a73e8',
+                          fontWeight: '700',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Explore Towers ({bldsCount}) <ArrowRight size={14} />
+                      </button>
                     </div>
                   </div>
                 );
@@ -713,77 +1351,139 @@ export const PropertyInventoryPage = () => {
 
       {/* TIER 2: SELECTED PROJECT BUILDINGS */}
       {selectedProject && !selectedBuilding && (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Project Summary Banner */}
           <div className="g-card" style={{
-            padding: '20px 24px',
-            marginBottom: '20px',
+            padding: '22px 24px',
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '14px'
+            flexDirection: 'column',
+            gap: '16px'
           }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h3 style={{ fontSize: '1.35rem', fontWeight: '700', color: '#191c1d' }}>{selectedProject.projectName}</h3>
-                <span style={{ fontSize: '0.75rem', background: '#e8f0fe', padding: '2px 8px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
-                  {selectedProject.projectCode}
-                </span>
-                <StatusBadge status={selectedProject.status} />
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '14px'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{selectedProject.projectName}</h3>
+                  <span style={{ fontSize: '0.75rem', background: '#e8f0fe', padding: '2px 8px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
+                    {selectedProject.projectCode}
+                  </span>
+                  <StatusBadge status={selectedProject.status} />
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <MapPin size={13} color="#1a73e8" style={{ flexShrink: 0 }} />
+                  <span>{selectedProject.address?.addressLine1}, {selectedProject.address?.city}, {selectedProject.address?.state} - {selectedProject.address?.pincode}</span>
+                </div>
               </div>
-              <div style={{ fontSize: '0.82rem', color: '#414754', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <MapPin size={13} color="#1a73e8" style={{ flexShrink: 0 }} />
-                <span>{selectedProject.address?.addressLine1}, {selectedProject.address?.city}, {selectedProject.address?.state} - {selectedProject.address?.pincode}</span>
-              </div>
+
+              <button
+                onClick={() => setIsBuildingModalOpen(true)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <Plus size={15} /> Add Building / Tower
+              </button>
             </div>
 
-            <button
-              onClick={() => setIsBuildingModalOpen(true)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Plus size={15} /> Add Building
-            </button>
+            {/* Project Aggregated Inventory Badges */}
+            <div style={{
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              padding: '14px 18px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Project Inventory Availability Summary
+                </span>
+                <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#0f172a' }}>
+                  {selectedProject.stats?.total || 0} Total Units • {selectedProject.stats?.occupancyRate || 0}% Occupied
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#166534', textTransform: 'uppercase' }}>Vacancies</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#15803d' }}>{selectedProject.stats?.available || 0}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#166534' }}>{selectedProject.stats?.vacancyRate || 0}%</div>
+                </div>
+
+                <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#92400e', textTransform: 'uppercase' }}>Reserved</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#b45309' }}>{selectedProject.stats?.reserved || 0}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#92400e' }}>{selectedProject.stats?.reservedRate || 0}%</div>
+                </div>
+
+                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>Occupied</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1d4ed8' }}>{selectedProject.stats?.occupied || 0}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#1e40af' }}>{selectedProject.stats?.occupancyRate || 0}%</div>
+                </div>
+
+                <div style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#475569', textTransform: 'uppercase' }}>Total Units</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>{selectedProject.stats?.total || 0}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b' }}>{(selectedProject.buildings || []).length} Towers</div>
+                </div>
+              </div>
+
+              {renderSegmentedBar(
+                selectedProject.stats?.available || 0,
+                selectedProject.stats?.reserved || 0,
+                selectedProject.stats?.occupied || 0,
+                selectedProject.stats?.total || 0,
+                8
+              )}
+            </div>
           </div>
 
-          <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#191c1d', marginBottom: '14px' }}>
-            Towers & Buildings ({selectedProject.buildings?.length || 0})
-          </h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>
+              Towers & Buildings ({selectedProject.buildings?.length || 0})
+            </h3>
+          </div>
 
           {(!selectedProject.buildings || selectedProject.buildings.length === 0) ? (
             <div className="g-card" style={{ textAlign: 'center', padding: '40px 20px' }}>
               <Layers size={36} style={{ opacity: 0.3, margin: '0 auto 10px', color: '#727785' }} />
-              <p style={{ color: '#414754', marginBottom: '14px' }}>No buildings added to this project yet.</p>
+              <p style={{ color: '#414754', marginBottom: '14px' }}>No buildings or towers added to this project yet.</p>
               <button
                 onClick={() => setIsBuildingModalOpen(true)}
                 style={{ background: '#1a73e8', color: '#ffffff', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', border: 'none', fontWeight: '600' }}
               >
-                <Plus size={14} /> Add First Building
+                <Plus size={14} /> Add First Building / Tower
               </button>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '18px' }}>
               {selectedProject.buildings.map((bld) => (
                 <div
                   key={bld._id || bld.id}
                   className="g-card"
                   onClick={() => setSelectedBuilding(bld)}
                   style={{
-                    padding: '18px',
+                    padding: '20px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '12px',
+                    gap: '14px',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
@@ -791,16 +1491,64 @@ export const PropertyInventoryPage = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <h4 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#191c1d' }}>{bld.buildingName}</h4>
+                        <h4 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>{bld.buildingName}</h4>
                         <span style={{ fontSize: '0.7rem', background: '#e8f0fe', padding: '2px 6px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
                           {bld.buildingCode}
                         </span>
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: '#414754', marginTop: '2px' }}>
-                        Total Floors: <strong>{bld.numberOfFloors}</strong>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+                        Total Floors: <strong>{bld.numberOfFloors}</strong> • Total Units: <strong>{bld.stats?.total || 0}</strong>
                       </div>
                     </div>
                     <StatusBadge status={bld.status} />
+                  </div>
+
+                  {/* Tower Availability Breakdown: Vacancies, Reserved, Occupied */}
+                  <div style={{
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px',
+                    padding: '12px 14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>
+                        Tower Occupancy Status
+                      </span>
+                      <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#1e293b' }}>
+                        {bld.stats?.occupancyRate || 0}% Occupied
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                      {/* Vacancies */}
+                      <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', padding: '6px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '0.62rem', fontWeight: '700', color: '#166534', textTransform: 'uppercase' }}>Vacancies</div>
+                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#15803d' }}>{bld.stats?.available || 0}</div>
+                      </div>
+
+                      {/* Reserved */}
+                      <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '6px', padding: '6px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '0.62rem', fontWeight: '700', color: '#92400e', textTransform: 'uppercase' }}>Reserved</div>
+                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#b45309' }}>{bld.stats?.reserved || 0}</div>
+                      </div>
+
+                      {/* Occupied */}
+                      <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '0.62rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>Occupied</div>
+                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1d4ed8' }}>{bld.stats?.occupied || 0}</div>
+                      </div>
+                    </div>
+
+                    {renderSegmentedBar(
+                      bld.stats?.available || 0,
+                      bld.stats?.reserved || 0,
+                      bld.stats?.occupied || 0,
+                      bld.stats?.total || 0,
+                      6
+                    )}
                   </div>
 
                   <div style={{
@@ -809,7 +1557,7 @@ export const PropertyInventoryPage = () => {
                     alignItems: 'center',
                     borderTop: '1px solid #dadce0',
                     paddingTop: '10px',
-                    marginTop: '4px'
+                    marginTop: '2px'
                   }}>
                     <button
                       onClick={(e) => {
@@ -822,8 +1570,8 @@ export const PropertyInventoryPage = () => {
                       <Trash2 size={13} /> Delete
                     </button>
 
-                    <span style={{ fontSize: '0.8rem', color: '#1a73e8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      View Flats <ArrowRight size={14} />
+                    <span style={{ fontSize: '0.8rem', color: '#1a73e8', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      View Flats Matrix <ArrowRight size={14} />
                     </span>
                   </div>
                 </div>
@@ -837,24 +1585,37 @@ export const PropertyInventoryPage = () => {
       {selectedBuilding && (
         <div>
           <div className="g-card" style={{
-            padding: '18px 24px',
+            padding: '20px 24px',
             marginBottom: '20px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '12px'
+            gap: '14px'
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#191c1d' }}>{selectedBuilding.buildingName}</h3>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>{selectedBuilding.buildingName}</h3>
                 <span style={{ fontSize: '0.72rem', background: '#e8f0fe', padding: '2px 8px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
                   {selectedBuilding.buildingCode}
                 </span>
                 <StatusBadge status={selectedBuilding.status} />
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#414754', marginTop: '2px' }}>
-                Project: {selectedProject.projectName} • Floors: {selectedBuilding.numberOfFloors} • Flats: {flats.length}
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '3px' }}>
+                Project: <strong>{selectedProject.projectName}</strong> • Floors: <strong>{selectedBuilding.numberOfFloors}</strong> • Total Units: <strong>{flats.length}</strong>
+              </div>
+
+              {/* Tower Status Badges */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', flexWrap: 'wrap', fontSize: '0.75rem' }}>
+                <span style={{ background: '#dcfce7', color: '#15803d', border: '1px solid #86efac', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>
+                  🟢 Vacancies: {availableCount} ({flats.length > 0 ? Math.round((availableCount / flats.length) * 100) : 0}%)
+                </span>
+                <span style={{ background: '#fef3c7', color: '#b45309', border: '1px solid #fcd34d', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>
+                  🟡 Reserved: {holdCount} ({flats.length > 0 ? Math.round((holdCount / flats.length) * 100) : 0}%)
+                </span>
+                <span style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #93c5fd', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>
+                  🔵 Occupied: {soldCount} ({flats.length > 0 ? Math.round((soldCount / flats.length) * 100) : 0}%)
+                </span>
               </div>
             </div>
 
