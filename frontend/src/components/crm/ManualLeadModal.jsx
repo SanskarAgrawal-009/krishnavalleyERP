@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
-import { User, Phone, Mail, Home, MessageSquare, Plus, Users, Zap } from 'lucide-react';
+import { User, Phone, Mail, Home, MessageSquare, Plus, Users, Zap, MapPin, Tag, Calendar, DollarSign } from 'lucide-react';
 import { projectService } from '../../services/projectService.js';
 import { sanitizeAlphabetsOnly, sanitizePhone, sanitizeEmail, isValidEmail } from '../../utils/inputValidators.js';
 
@@ -9,6 +9,12 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
     name: '',
     mobileNo: '',
     email: '',
+    city: '',
+    state: '',
+    requirement: '',
+    budget: '',
+    purchaseTimeline: '',
+    leadSource: 'direct',
     assignedFlat: '',
     assignedTo: 'auto',
     addInitialFollowUp: false,
@@ -42,6 +48,12 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
         name: lead.name || '',
         mobileNo: lead.mobileNo || '',
         email: lead.email || '',
+        city: lead.city || '',
+        state: lead.state || '',
+        requirement: lead.requirement || '',
+        budget: lead.budget !== undefined && lead.budget !== null ? lead.budget : '',
+        purchaseTimeline: lead.purchaseTimeline || '',
+        leadSource: lead.leadSource || 'direct',
         assignedFlat: lead.assignedFlat?._id || lead.assignedFlat || '',
         assignedTo: lead.assignedTo?._id || lead.assignedTo || 'auto',
         addInitialFollowUp: false,
@@ -57,6 +69,12 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
         name: '',
         mobileNo: '',
         email: '',
+        city: '',
+        state: '',
+        requirement: '',
+        budget: '',
+        purchaseTimeline: '',
+        leadSource: 'direct',
         assignedFlat: '',
         assignedTo: 'auto',
         addInitialFollowUp: false,
@@ -91,6 +109,12 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       name: formData.name.trim(),
       mobileNo: formData.mobileNo.trim(),
       email: formData.email.trim(),
+      city: formData.city.trim(),
+      state: formData.state.trim(),
+      requirement: formData.requirement.trim(),
+      budget: formData.budget !== '' && !isNaN(formData.budget) ? Number(formData.budget) : undefined,
+      purchaseTimeline: formData.purchaseTimeline,
+      leadSource: formData.leadSource,
       assignedFlat: formData.assignedFlat || null,
       assignedTo: formData.assignedTo,
     };
@@ -159,6 +183,113 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
               placeholder="e.g. ramesh@example.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: sanitizeEmail(e.target.value) })}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            />
+          </div>
+        </div>
+
+        {/* Requirement & Budget */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
+              <Tag size={14} color="#7c3aed" />
+              Requirement / Looking For
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. 2BHK, 3BHK, Villa, Commercial"
+              value={formData.requirement}
+              onChange={(e) => setFormData({ ...formData, requirement: e.target.value })}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
+              <DollarSign size={14} color="#16a34a" />
+              Budget (₹)
+            </label>
+            <input
+              type="number"
+              placeholder="e.g. 4500000"
+              value={formData.budget}
+              onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            />
+          </div>
+        </div>
+
+        {/* Timeline & Lead Source */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
+              <Calendar size={14} color="#ea580c" />
+              Purchase Timeline / Planning
+            </label>
+            <select
+              value={formData.purchaseTimeline}
+              onChange={(e) => setFormData({ ...formData, purchaseTimeline: e.target.value })}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            >
+              <option value="">-- Select Timeline (Optional) --</option>
+              <option value="immediate">Immediate / Ready to Move</option>
+              <option value="within_1_month">Within 1 Month</option>
+              <option value="within_3_months">Within 3 Months</option>
+              <option value="within_6_months">Within 6 Months</option>
+              <option value="within_2-3_months">Within 2-3 Months</option>
+              <option value="6+_months">6+ Months</option>
+              <option value="exploring">Exploring / Long Term</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
+              <Zap size={14} color="#0284c7" />
+              Lead Source
+            </label>
+            <select
+              value={formData.leadSource}
+              onChange={(e) => setFormData({ ...formData, leadSource: e.target.value })}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            >
+              <option value="direct">Direct Walk-in / Inquiry</option>
+              <option value="website">Website Inquiry</option>
+              <option value="referral">Referral</option>
+              <option value="phone">Phone / Cold Call</option>
+              <option value="meta_ads">Meta Ads</option>
+              <option value="bulk_upload">Excel Bulk Import</option>
+              <option value="channel_partner">Channel Partner</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        {/* City & State */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
+              <MapPin size={14} color="#0284c7" />
+              City / Location
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Hisar, Delhi, Gurugram"
+              value={formData.city}
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700' }}>
+              <MapPin size={14} color="#64748b" />
+              State / Province
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Haryana, Delhi, Punjab"
+              value={formData.state}
+              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
               style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>

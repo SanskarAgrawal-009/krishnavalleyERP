@@ -92,12 +92,48 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
     return isNaN(cleanNum) ? 0 : Math.round(cleanNum);
   };
 
+  // Helper: Sanitize cell text & fix mojibake
+  const sanitizeCellText = (val) => {
+    if (val === undefined || val === null) return '';
+    let str = String(val).trim();
+    if (!str) return '';
+
+    const lower = str.toLowerCase();
+    if (
+      lower === 'null' ||
+      lower === 'undefined' ||
+      lower === 'none' ||
+      lower === 'nil' ||
+      lower === 'na' ||
+      lower === 'n/a' ||
+      lower === '-' ||
+      lower === '--' ||
+      lower === 'not specified' ||
+      lower === 'not provided' ||
+      lower === 'unknown'
+    ) {
+      return '';
+    }
+
+    // Auto-recover UTF-8 text if it was mangled as Windows-1252 (mojibake like à¤¹à¤¿à¤¸à¤¾à¤°)
+    if (/[\u00C0-\u00FF][\u0080-\u00BF]/.test(str)) {
+      try {
+        const decoded = decodeURIComponent(escape(str));
+        if (decoded && !/[\uFFFD]/.test(decoded)) {
+          str = decoded.trim();
+        }
+      } catch (e) {}
+    }
+
+    return str;
+  };
+
   // Helper: Fuzzy extract
   const extractFieldValue = (row, fieldKeys) => {
     if (!row || typeof row !== 'object') return '';
     for (const key of fieldKeys) {
       if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') {
-        return String(row[key]).trim();
+        return sanitizeCellText(row[key]);
       }
     }
     const rowKeys = Object.keys(row);
@@ -105,7 +141,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
       const normalizedTarget = key.toLowerCase().replace(/[^a-z0-9]/g, '');
       const matched = rowKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedTarget);
       if (matched && row[matched] !== undefined && row[matched] !== null && String(row[matched]).trim() !== '') {
-        return String(row[matched]).trim();
+        return sanitizeCellText(row[matched]);
       }
     }
     return '';
@@ -120,7 +156,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
 
     try {
       const buffer = await selectedFile.arrayBuffer();
-      const workbook = XLSX.read(buffer, { type: 'array' });
+      const workbook = XLSX.read(buffer, { type: 'array', codepage: 65001 });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const rawData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });

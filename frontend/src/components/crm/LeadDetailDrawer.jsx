@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { leadService } from '../../services/leadService.js';
 import {
   X,
@@ -74,6 +74,118 @@ export const LeadDetailDrawer = ({
   // Quick reassignment state
   const [reassigning, setReassigning] = useState(false);
   const [copiedText, setCopiedText] = useState('');
+
+  // Clean text, auto-recover mojibake, and show NA for missing/corrupted values
+  const displayNA = (val) => {
+    if (val === undefined || val === null) return 'NA';
+    let s = String(val).trim();
+    if (!s) return 'NA';
+    const lower = s.toLowerCase();
+    if (
+      lower === 'null' ||
+      lower === 'undefined' ||
+      lower === 'none' ||
+      lower === 'nil' ||
+      lower === 'na' ||
+      lower === 'n/a' ||
+      lower === '-' ||
+      lower === '--' ||
+      lower === 'not specified' ||
+      lower === 'not provided' ||
+      lower === 'unknown'
+    ) {
+      return 'NA';
+    }
+    // Auto-recover UTF-8 text if it was mangled as Windows-1252 mojibake (à¤¹à¤¿à¤¸à¤¾à¤° -> हिसार)
+    if (/[\u00C0-\u00FF][\u0080-\u00BF]/.test(s)) {
+      try {
+        const decoded = decodeURIComponent(escape(s));
+        if (decoded && !/[\uFFFD]/.test(decoded)) {
+          s = decoded.trim();
+        }
+      } catch (e) {}
+    }
+    return s;
+  };
+
+  const formatTimeline = (val) => {
+    const d = displayNA(val);
+    if (d === 'NA') return 'NA';
+    return d.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  };
+
+  const formatBudget = (val) => {
+    if (val === undefined || val === null || val === '') return 'NA';
+    const num = Number(val);
+    if (isNaN(num) || num === 0) return 'NA';
+    return `₹${num.toLocaleString('en-IN')}`;
+  };
+
+  // Lead Overview & Requirements Editing state
+  const [isEditingOverview, setIsEditingOverview] = useState(false);
+  const [savingOverview, setSavingOverview] = useState(false);
+  const [overviewMsg, setOverviewMsg] = useState('');
+  const [overviewForm, setOverviewForm] = useState({
+    name: lead.name || '',
+    mobileNo: lead.mobileNo || '',
+    email: lead.email || '',
+    requirement: lead.requirement || '',
+    budget: lead.budget || '',
+    purchaseTimeline: lead.purchaseTimeline || 'Immediate',
+    city: displayNA(lead.city) === 'NA' ? '' : displayNA(lead.city),
+    state: lead.state || '',
+    leadSource: lead.leadSource || 'direct',
+  });
+
+  useEffect(() => {
+    if (lead) {
+      setOverviewForm({
+        name: lead.name || '',
+        mobileNo: lead.mobileNo || '',
+        email: lead.email || '',
+        requirement: lead.requirement || '',
+        budget: lead.budget || '',
+        purchaseTimeline: lead.purchaseTimeline || 'Immediate',
+        city: displayNA(lead.city) === 'NA' ? '' : displayNA(lead.city),
+        state: lead.state || '',
+        leadSource: lead.leadSource || 'direct',
+      });
+      setIsEditingOverview(false);
+      setOverviewMsg('');
+    }
+  }, [lead]);
+
+  const handleSaveOverview = async (e) => {
+    if (e) e.preventDefault();
+    setSavingOverview(true);
+    setOverviewMsg('');
+    try {
+      const payload = {
+        name: overviewForm.name.trim(),
+        mobileNo: overviewForm.mobileNo.trim(),
+        email: overviewForm.email.trim(),
+        requirement: overviewForm.requirement.trim(),
+        budget: overviewForm.budget ? Number(overviewForm.budget) : 0,
+        purchaseTimeline: overviewForm.purchaseTimeline.trim(),
+        city: overviewForm.city.trim(),
+        state: overviewForm.state.trim(),
+        leadSource: overviewForm.leadSource.trim(),
+      };
+      const res = await leadService.updateLead(lead._id, payload);
+      if (res.success) {
+        setOverviewMsg('Details updated successfully!');
+        setIsEditingOverview(false);
+        if (onLeadUpdated) onLeadUpdated();
+      } else {
+        alert(res.message || 'Failed to update lead details');
+      }
+    } catch (err) {
+      console.error('Error updating lead overview:', err);
+      alert('Failed to update lead: ' + err.message);
+    } finally {
+      setSavingOverview(false);
+    }
+  };
 
   const followUps = lead.followUps || [];
   const externalSiteVisits = lead.externalSiteVisits || [];
@@ -1376,19 +1488,220 @@ export const LeadDetailDrawer = ({
             borderRadius: '10px',
             padding: '14px 18px'
           }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', marginBottom: '10px' }}>
-              Lead Overview & Requirements
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <FileText size={14} style={{ color: '#1a73e8' }} />
+                Lead Overview & Requirements
+              </div>
+
+              {!isEditingOverview ? (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingOverview(true)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    background: '#ffffff',
+                    color: '#1a73e8',
+                    fontSize: '0.74rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                  }}
+                  title="Edit requirement, budget, timeline, city & contact details"
+                >
+                  <Edit size={12} /> Edit Details
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingOverview(false)}
+                    disabled={savingOverview}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid #cbd5e1',
+                      background: '#ffffff',
+                      color: '#64748b',
+                      fontSize: '0.74rem',
+                      fontWeight: '700',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveOverview}
+                    disabled={savingOverview}
+                    style={{
+                      padding: '4px 12px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: '#1a73e8',
+                      color: '#ffffff',
+                      fontSize: '0.74rem',
+                      fontWeight: '800',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      boxShadow: '0 2px 4px rgba(26,115,232,0.3)'
+                    }}
+                  >
+                    {savingOverview ? 'Saving...' : <><Check size={12} /> Save Details</>}
+                  </button>
+                </div>
+              )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', fontSize: '0.82rem', color: '#475569' }}>
-              <div><strong>Requirement:</strong> {lead.assignedFlat ? `Flat ${lead.assignedFlat.flatNumber}` : (lead.requirement || 'Not specified')}</div>
-              <div><strong>Budget:</strong> {lead.budget ? (typeof lead.budget === 'number' ? `₹${lead.budget.toLocaleString('en-IN')}` : `₹${lead.budget}`) : 'Not specified'}</div>
-              <div><strong>Timeline:</strong> {lead.purchaseTimeline || 'Immediate'}</div>
-              <div><strong>City:</strong> {lead.city || 'Not specified'}</div>
-              <div><strong>Lead Source:</strong> {lead.leadSource?.replace(/_/g, ' ').toUpperCase() || 'Direct'}</div>
-              <div><strong>Email:</strong> {lead.email || 'Not provided'}</div>
-              <div><strong>Registered:</strong> {new Date(lead.createdAt).toLocaleDateString('en-IN')}</div>
-            </div>
+            {overviewMsg && (
+              <div style={{ padding: '6px 10px', borderRadius: '6px', backgroundColor: '#dcfce7', color: '#15803d', fontSize: '0.74rem', fontWeight: '700', marginBottom: '10px' }}>
+                ✓ {overviewMsg}
+              </div>
+            )}
+
+            {!isEditingOverview ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', fontSize: '0.82rem', color: '#475569' }}>
+                <div><strong>Requirement:</strong> {lead.assignedFlat ? `Flat ${lead.assignedFlat.flatNumber}` : displayNA(lead.requirement)}</div>
+                <div><strong>Budget:</strong> {formatBudget(lead.budget)}</div>
+                <div><strong>Timeline:</strong> {formatTimeline(lead.purchaseTimeline)}</div>
+                <div><strong>City:</strong> {displayNA(lead.city)}</div>
+                <div><strong>Lead Source:</strong> {displayNA(lead.leadSource?.replace(/_/g, ' ').toUpperCase())}</div>
+                <div><strong>Email:</strong> {displayNA(lead.email)}</div>
+                <div><strong>Registered:</strong> {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('en-IN') : 'NA'}</div>
+              </div>
+            ) : (
+              <form onSubmit={handleSaveOverview} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '0.78rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>Requirement</label>
+                  <input
+                    type="text"
+                    list="overview-req-list"
+                    value={overviewForm.requirement}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, requirement: e.target.value })}
+                    placeholder="e.g. 2 BHK, Villa"
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  />
+                  <datalist id="overview-req-list">
+                    <option value="1 BHK" />
+                    <option value="2 BHK" />
+                    <option value="3 BHK" />
+                    <option value="4 BHK" />
+                    <option value="Penthouse" />
+                    <option value="Villa" />
+                    <option value="Plot / Land" />
+                    <option value="Studio Apartment" />
+                    <option value="Commercial Space" />
+                  </datalist>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>Budget (₹)</label>
+                  <input
+                    type="number"
+                    value={overviewForm.budget}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, budget: e.target.value })}
+                    placeholder="e.g. 4500000"
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>Timeline</label>
+                  <select
+                    value={overviewForm.purchaseTimeline}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, purchaseTimeline: e.target.value })}
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  >
+                    <option value="Immediate">Immediate</option>
+                    <option value="Within 15 Days">Within 15 Days</option>
+                    <option value="Within 30 Days">Within 30 Days</option>
+                    <option value="Within 2-3 Months">Within 2-3 Months</option>
+                    <option value="3-6 Months">3-6 Months</option>
+                    <option value="Planning / Exploring">Planning / Exploring</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>City</label>
+                  <input
+                    type="text"
+                    value={overviewForm.city}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, city: e.target.value })}
+                    placeholder="e.g. Mathura, Hisar, Delhi"
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>State</label>
+                  <input
+                    type="text"
+                    value={overviewForm.state}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, state: e.target.value })}
+                    placeholder="e.g. Uttar Pradesh, Haryana"
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>Lead Source</label>
+                  <select
+                    value={overviewForm.leadSource}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, leadSource: e.target.value })}
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  >
+                    <option value="direct">Direct</option>
+                    <option value="bulk_upload">Bulk Upload</option>
+                    <option value="meta_ads">Meta Ads</option>
+                    <option value="agent">Agent / Channel Partner</option>
+                    <option value="walk_in">Walk-in</option>
+                    <option value="referral">Referral</option>
+                    <option value="website">Website</option>
+                    <option value="call">Phone Call</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>Email Address</label>
+                  <input
+                    type="email"
+                    value={overviewForm.email}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, email: e.target.value })}
+                    placeholder="client@example.com"
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>Full Name</label>
+                  <input
+                    type="text"
+                    value={overviewForm.name}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, name: e.target.value })}
+                    placeholder="Prospect name"
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '700', color: '#334155', marginBottom: '3px' }}>Mobile Number</label>
+                  <input
+                    type="text"
+                    value={overviewForm.mobileNo}
+                    onChange={(e) => setOverviewForm({ ...overviewForm, mobileNo: e.target.value })}
+                    placeholder="10-digit number"
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </form>
+            )}
 
             {lead.assignmentHistory && lead.assignmentHistory.length > 0 && (
               <div style={{ marginTop: '12px', borderTop: '1px solid #e2e8f0', paddingTop: '8px' }}>

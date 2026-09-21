@@ -494,16 +494,40 @@ export const createLead = async (req, res) => {
 export const updateLead = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, mobileNo, email, budget, requirement, assignedFlat, status, agentId, siteVisitDetails } = req.body;
+    const {
+      name,
+      mobileNo,
+      email,
+      budget,
+      requirement,
+      assignedFlat,
+      status,
+      agentId,
+      siteVisitDetails,
+      city,
+      state,
+      country,
+      address,
+      pincode,
+      purchaseTimeline,
+      leadSource,
+    } = req.body;
 
     const lead = await Lead.findById(id);
     if (!lead) return res.status(404).json({ success: false, message: 'Lead not found' });
 
-    if (name) lead.name = name.trim();
+    if (name) lead.name = sanitizeCellText(name) || lead.name;
     if (mobileNo) lead.mobileNo = mobileNo.trim();
-    if (email !== undefined) lead.email = email.trim();
-    if (budget !== undefined) lead.budget = Number(budget);
-    if (requirement) lead.requirement = requirement;
+    if (email !== undefined) lead.email = email ? email.trim() : '';
+    if (budget !== undefined) lead.budget = Number(budget) || 0;
+    if (requirement !== undefined) lead.requirement = sanitizeCellText(requirement) || '2 BHK';
+    if (city !== undefined) lead.city = sanitizeCellText(city);
+    if (state !== undefined) lead.state = sanitizeCellText(state);
+    if (country !== undefined) lead.country = sanitizeCellText(country) || 'India';
+    if (address !== undefined) lead.address = sanitizeCellText(address);
+    if (pincode !== undefined) lead.pincode = sanitizeCellText(pincode);
+    if (purchaseTimeline !== undefined) lead.purchaseTimeline = sanitizeCellText(purchaseTimeline) || 'Immediate';
+    if (leadSource !== undefined) lead.leadSource = sanitizeCellText(leadSource) || lead.leadSource;
     if (assignedFlat !== undefined) lead.assignedFlat = assignedFlat === '' ? null : assignedFlat;
     if (agentId !== undefined) {
       const prevAgentId = lead.agentId;
@@ -1874,11 +1898,51 @@ export const parseBudget = (val) => {
   return isNaN(cleanNum) ? 0 : Math.round(cleanNum);
 };
 
+/**
+ * Sanitizes cell text, clears placeholder/missing garbage, and auto-recovers UTF-8 text from mojibake
+ */
+export const sanitizeCellText = (val) => {
+  if (val === undefined || val === null) return '';
+  let str = String(val).trim();
+  if (!str) return '';
+
+  const lower = str.toLowerCase();
+  if (
+    lower === 'null' ||
+    lower === 'undefined' ||
+    lower === 'none' ||
+    lower === 'nil' ||
+    lower === 'na' ||
+    lower === 'n/a' ||
+    lower === '-' ||
+    lower === '--' ||
+    lower === 'not specified' ||
+    lower === 'not provided' ||
+    lower === 'unknown'
+  ) {
+    return '';
+  }
+
+  // Auto-recover UTF-8 text if it was mangled as Windows-1252 (mojibake like à¤¹à¤¿à¤¸à¤¾à¤°)
+  if (/[\u00C0-\u00FF][\u0080-\u00BF]/.test(str)) {
+    try {
+      const decoded = decodeURIComponent(escape(str));
+      if (decoded && !/[\uFFFD]/.test(decoded)) {
+        str = decoded.trim();
+      }
+    } catch (e) {
+      // keep str
+    }
+  }
+
+  return str;
+};
+
 const extractFieldValue = (row, fieldKeys) => {
   if (!row || typeof row !== 'object') return '';
   for (const key of fieldKeys) {
     if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') {
-      return String(row[key]).trim();
+      return sanitizeCellText(row[key]);
     }
   }
   // Case and special characters insensitive lookup
@@ -1887,7 +1951,7 @@ const extractFieldValue = (row, fieldKeys) => {
     const normalizedTarget = key.toLowerCase().replace(/[^a-z0-9]/g, '');
     const matched = rowKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedTarget);
     if (matched && row[matched] !== undefined && row[matched] !== null && String(row[matched]).trim() !== '') {
-      return String(row[matched]).trim();
+      return sanitizeCellText(row[matched]);
     }
   }
   return '';
