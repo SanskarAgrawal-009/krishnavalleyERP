@@ -102,5 +102,46 @@ export const hrService = {
       if (!res.ok) throw new Error(data.message || `Document upload failed (${res.status})`);
       return data;
     });
-  }
+  },
+
+  // 7. Extended HR Operations
+  updateEmployee: (id, data) => request(`/hr/employees/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  deleteEmployee: (id) => request(`/hr/employees/${id}`, {
+    method: 'DELETE'
+  }),
+  logBulkAttendance: (data) => request('/hr/attendance/bulk', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  getAttendanceByDate: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/hr/attendance${query ? `?${query}` : ''}`);
+  },
+  deleteLeave: (id, leaveId) => request(`/hr/employees/${id}/leaves/${leaveId}`, {
+    method: 'DELETE'
+  }),
+  getPayrollRegister: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/hr/payroll${query ? `?${query}` : ''}`);
+  },
+  updateDepartment: (deptId, data) => request(`/hr/departments/${deptId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  deleteDepartment: (deptId) => request(`/hr/departments/${deptId}`, {
+    method: 'DELETE'
+  }),
+  updateRole: (roleId, data) => request(`/hr/roles/${roleId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  deleteRole: (roleId) => request(`/hr/roles/${roleId}`, {
+    method: 'DELETE'
+  }),
+  seedSampleStaff: () => request('/hr/seed-sample-staff', {
+    method: 'POST'
+  })
 };

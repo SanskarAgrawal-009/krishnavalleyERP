@@ -18,6 +18,7 @@ import { LeadDetailDrawer } from '../../components/crm/LeadDetailDrawer.jsx';
 import { ExternalSiteVisitModal } from '../../components/crm/ExternalSiteVisitModal.jsx';
 import { SiteVisitsWindow } from '../../components/crm/SiteVisitsWindow.jsx';
 import { SendReminderModal } from '../../components/crm/SendReminderModal.jsx';
+import { BulkLeadUploadModal } from '../../components/crm/BulkLeadUploadModal.jsx';
 import {
   Users,
   UserPlus,
@@ -58,6 +59,8 @@ import {
   TrendingUp,
   Car,
   Star,
+  Upload,
+  FileSpreadsheet,
 } from 'lucide-react';
 
 export const LeadsPage = ({ onNavigateToSales }) => {
@@ -116,6 +119,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
   // CRUD Modals state
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
 
   const [isFollowUpModalOpen, setIsFollowUpModalOpen] = useState(false);
@@ -706,6 +710,31 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           >
             <Download size={14} />
             Export CSV
+          </button>
+
+          {/* Bulk Excel Upload Button */}
+          <button
+            type="button"
+            onClick={() => setIsBulkUploadModalOpen(true)}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '8px',
+              border: '1px solid #2563eb',
+              background: '#eff6ff',
+              color: '#1d4ed8',
+              fontSize: '0.82rem',
+              fontWeight: '800',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 1px 2px rgba(37,99,235,0.1)',
+              transition: 'all 0.15s ease'
+            }}
+            title="Import multiple leads via Excel (.xlsx) or CSV with Round-Robin or Direct Sales assignment"
+          >
+            <FileSpreadsheet size={15} color="#2563eb" />
+            📥 Bulk Excel Upload
           </button>
 
           {/* External Site Visit Logger Button */}
@@ -1516,13 +1545,34 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           <p style={{ fontSize: '0.86rem', color: '#64748b', marginBottom: '20px', fontWeight: '500', maxWidth: '440px', margin: '0 auto 20px' }}>
             No CRM leads match the current filters or search query.
           </p>
-          <button
-            onClick={() => { setQuickFilter('all'); setSelectedRepFilter('all'); setSearchTerm(''); }}
-            className="btn-secondary"
-            style={{ padding: '8px 18px', fontSize: '0.84rem' }}
-          >
-            Reset All Filters
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => { setQuickFilter('all'); setSelectedRepFilter('all'); setSearchTerm(''); }}
+              className="btn-secondary"
+              style={{ padding: '8px 18px', fontSize: '0.84rem' }}
+            >
+              Reset All Filters
+            </button>
+            <button
+              onClick={() => setIsBulkUploadModalOpen(true)}
+              style={{
+                padding: '8px 18px',
+                fontSize: '0.84rem',
+                fontWeight: '700',
+                color: '#1d4ed8',
+                backgroundColor: '#eff6ff',
+                border: '1px solid #bfdbfe',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <FileSpreadsheet size={15} color="#2563eb" />
+              📥 Bulk Upload via Excel
+            </button>
+          </div>
         </div>
       ) : (
         <div className="g-card" style={{ padding: '0', borderRadius: '12px', overflow: 'hidden', width: '100%', boxSizing: 'border-box' }}>
@@ -1558,6 +1608,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
                 const isMetaLead = lead.leadSource === 'meta_ads' || lead.metaAdDetails?.leadgenId || (lead.metaCustomQuestions && lead.metaCustomQuestions.length > 0);
                 const isWalkIn = lead.leadSource === 'walk_in';
+                const isBulkUpload = lead.leadSource === 'bulk_upload' || lead.leadSource === 'bulk-upload';
                 const isSelectedInDrawer = selectedLeadForDrawer?._id === lead._id;
                 const isScheduledByHead = pendingFollowUp && pendingFollowUp.scheduledBy;
 
@@ -1652,6 +1703,26 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 }}
                               >
                                 <Car size={10} /> Walk-in
+                              </span>
+                            )}
+
+                            {isBulkUpload && (
+                              <span
+                                style={{
+                                  fontSize: '0.66rem',
+                                  fontWeight: '800',
+                                  backgroundColor: '#f5f3ff',
+                                  color: '#6d28d9',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  border: '1px solid #ddd6fe',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px'
+                                }}
+                                title="Imported via Excel"
+                              >
+                                <FileSpreadsheet size={10} /> Excel Import
                               </span>
                             )}
 
@@ -1800,8 +1871,38 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           )}
                         </div>
                       ) : (
-                        <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500', marginBottom: '3px' }}>
-                          {lead.requirement || 'No specific unit'}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '4px' }}>
+                          <div style={{ fontSize: '0.74rem', color: '#334155', fontWeight: '700' }}>
+                            {lead.requirement || 'General Inquiry'}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+                            {lead.budget && (
+                              <span style={{
+                                fontSize: '0.67rem',
+                                fontWeight: '800',
+                                color: '#047857',
+                                background: '#ecfdf5',
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                border: '1px solid #a7f3d0'
+                              }}>
+                                ₹{typeof lead.budget === 'number' ? lead.budget.toLocaleString('en-IN') : lead.budget}
+                              </span>
+                            )}
+                            {lead.purchaseTimeline && (
+                              <span style={{
+                                fontSize: '0.67rem',
+                                fontWeight: '700',
+                                color: '#4338ca',
+                                background: '#e0e7ff',
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                border: '1px solid #c7d2fe'
+                              }}>
+                                ⏳ {lead.purchaseTimeline}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       )}
 
@@ -1920,6 +2021,17 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           fetchLeads();
           fetchTeam();
         }}
+      />
+
+      {/* BULK EXCEL LEAD UPLOAD MODAL */}
+      <BulkLeadUploadModal
+        isOpen={isBulkUploadModalOpen}
+        onClose={() => setIsBulkUploadModalOpen(false)}
+        onSuccess={() => {
+          fetchLeads();
+          fetchTeam();
+        }}
+        salesTeam={salesTeamOverview?.teamMembers || []}
       />
 
       {/* MANUAL LEAD MODAL */}

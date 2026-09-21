@@ -361,33 +361,6 @@ export const seedAuthDefaults = async () => {
         roleCode: 'sales_head',
       },
       {
-        firstName: 'Neha',
-        lastName: 'Verma',
-        username: 'neha_sales',
-        email: 'neha.sales@krishnavalley.com',
-        mobileNo: '+91 98765 00015',
-        passwordPlain: 'Sales@12345',
-        roleCode: 'sales_executive',
-      },
-      {
-        firstName: 'Vikas',
-        lastName: 'Patel',
-        username: 'vikas_sales',
-        email: 'vikas.sales@krishnavalley.com',
-        mobileNo: '+91 98765 00016',
-        passwordPlain: 'Sales@12345',
-        roleCode: 'sales_executive',
-      },
-      {
-        firstName: 'Arjun',
-        lastName: 'Singh',
-        username: 'arjun_sales',
-        email: 'arjun.sales@krishnavalley.com',
-        mobileNo: '+91 98765 00017',
-        passwordPlain: 'Sales@12345',
-        roleCode: 'sales_executive',
-      },
-      {
         firstName: 'Rahul',
         lastName: 'Sharma',
         username: 'agent_rahul',
@@ -439,15 +412,6 @@ export const seedAuthDefaults = async () => {
         mobileNo: '+91 98765 00005',
         passwordPlain: 'Accounts@12345',
         roleCode: 'accounts_manager',
-      },
-      {
-        firstName: 'Rajiv',
-        lastName: 'Menon',
-        username: 'rental_manager',
-        email: 'rental.manager@krishnavalley.com',
-        mobileNo: '+91 98765 00008',
-        passwordPlain: 'Rental@12345',
-        roleCode: 'rental_manager',
       },
     ];
 
@@ -523,9 +487,6 @@ export const seedAuthDefaults = async () => {
     // 5. Seed In-House Sales Team Members in Round-Robin Pool
     const salesTeamUsernames = [
       { username: 'sales_head', roleTitle: 'Sales & CRM Head', order: 1 },
-      { username: 'neha_sales', roleTitle: 'Senior Sales Executive', order: 2 },
-      { username: 'vikas_sales', roleTitle: 'Sales Executive', order: 3 },
-      { username: 'arjun_sales', roleTitle: 'Sales Executive', order: 4 },
     ];
 
     for (const st of salesTeamUsernames) {

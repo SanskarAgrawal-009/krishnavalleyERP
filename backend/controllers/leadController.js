@@ -25,6 +25,7 @@ import {
   dispatchManualReminder,
 } from '../services/reminderSchedulerService.js';
 import googleCalendarService from '../services/googleCalendarService.js';
+import XLSX from 'xlsx';
 
 // Helper to get configured agent maturity window days (from System Settings or default 5 days)
 export const getMaturityDays = async () => {
@@ -1837,5 +1838,386 @@ export const snoozeReminderAction = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/**
+ * Normalizes Indian and international phone numbers to standard 10 digits
+ */
+export const normalizeMobileNo = (val) => {
+  if (!val) return '';
+  let digits = String(val).replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('0')) {
+    digits = digits.slice(1);
+  } else if (digits.length === 12 && digits.startsWith('91')) {
+    digits = digits.slice(2);
+  } else if (digits.length > 10 && digits.endsWith(digits.slice(-10))) {
+    digits = digits.slice(-10);
+  }
+  return digits;
+};
+
+/**
+ * Flexible budget parser converting standard strings (₹45 Lakhs, 1.5 Cr, 4500000) to raw numbers
+ */
+export const parseBudget = (val) => {
+  if (val === undefined || val === null || val === '') return 0;
+  if (typeof val === 'number') return Math.round(val);
+  const str = String(val).toLowerCase().replace(/,/g, '').trim();
+  if (str.includes('cr') || str.includes('crore')) {
+    const num = parseFloat(str.replace(/[^0-9.]/g, ''));
+    return isNaN(num) ? 0 : Math.round(num * 10000000);
+  }
+  if (str.includes('lakh') || str.includes('lac') || str.includes('l')) {
+    const num = parseFloat(str.replace(/[^0-9.]/g, ''));
+    return isNaN(num) ? 0 : Math.round(num * 100000);
+  }
+  const cleanNum = parseFloat(str.replace(/[^0-9.]/g, ''));
+  return isNaN(cleanNum) ? 0 : Math.round(cleanNum);
+};
+
+const extractFieldValue = (row, fieldKeys) => {
+  if (!row || typeof row !== 'object') return '';
+  for (const key of fieldKeys) {
+    if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') {
+      return String(row[key]).trim();
+    }
+  }
+  // Case and special characters insensitive lookup
+  const rowKeys = Object.keys(row);
+  for (const key of fieldKeys) {
+    const normalizedTarget = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const matched = rowKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedTarget);
+    if (matched && row[matched] !== undefined && row[matched] !== null && String(row[matched]).trim() !== '') {
+      return String(row[matched]).trim();
+    }
+  }
+  return '';
+};
+
+/**
+ * POST /api/leads/bulk-upload
+ * Enterprise Bulk Lead Import supporting:
+ * - First Name, Number, Email Address, City, Budget, What they are looking for, When they are planning to do
+ * - Deduplication via phone
+ * - Auto round-robin or manual sales rep assignment
+ */
+export const bulkUploadLeadsAction = async (req, res) => {
+  try {
+    let rows = [];
+
+    // 1. Check if multipart file uploaded
+    if (req.file && req.file.buffer) {
+      const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+    } else if (Array.isArray(req.body.leads)) {
+      // 2. Pre-parsed JSON rows from frontend client preview
+      rows = req.body.leads;
+    } else if (typeof req.body.leads === 'string') {
+      try {
+        rows = JSON.parse(req.body.leads);
+      } catch (e) {
+        rows = [];
+      }
+    } else if (Array.isArray(req.body.parsedRows)) {
+      rows = req.body.parsedRows;
+    } else if (typeof req.body.parsedRows === 'string') {
+      try {
+        rows = JSON.parse(req.body.parsedRows);
+      } catch (e) {
+        rows = [];
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'No lead rows or Excel file provided for bulk upload.'
+      });
+    }
+
+    if (rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Uploaded file or list contains no data rows.'
+      });
+    }
+
+    const {
+      duplicateStrategy = 'skip', // 'skip' | 'update' | 'allow'
+      assignmentStrategy = 'auto', // 'auto' | 'rep' | 'unassigned'
+      assignedTo = null,
+      defaultSource = 'bulk_upload',
+      notesTag = 'Bulk Excel Import'
+    } = req.body;
+
+    let insertedCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+    const errors = [];
+    const createdLeads = [];
+
+    for (let index = 0; index < rows.length; index++) {
+      const row = rows[index];
+      const rowNum = index + 2; // header is row 1
+
+      // Map fields with robust column tolerance
+      const firstName = extractFieldValue(row, ['firstName', 'first_name', 'first name', 'name', 'fullName', 'prospectName', 'clientName', 'prospect']);
+      const lastName = extractFieldValue(row, ['lastName', 'last_name', 'last name', 'surname']);
+      const rawMobile = extractFieldValue(row, ['number', 'mobileNo', 'mobile', 'phone', 'contact', 'phoneNumber', 'contactNumber', 'cell', 'phone no', 'mobile number']);
+      const email = extractFieldValue(row, ['emailAddress', 'email', 'emailId', 'mail', 'email address']);
+      const city = extractFieldValue(row, ['city', 'location', 'town', 'district']);
+      const state = extractFieldValue(row, ['state', 'province']);
+      const rawBudget = extractFieldValue(row, ['budget', 'price', 'budgetRange', 'investment', 'budget in inr']);
+      const requirement = extractFieldValue(row, [
+        'whatTheyAreLookingFor',
+        'what they are looking for',
+        'lookingFor',
+        'looking for',
+        'requirement',
+        'propertyType',
+        'property type',
+        'unitType',
+        'bhk',
+        'interestedIn'
+      ]) || '2BHK Apartment';
+      const purchaseTimeline = extractFieldValue(row, [
+        'whenTheyArePlanningToDo',
+        'when they are planning to do',
+        'whenPlanning',
+        'when planning',
+        'planningToDo',
+        'purchaseTimeline',
+        'purchase timeline',
+        'planningToBuy',
+        'planning to buy',
+        'timeline'
+      ]) || 'Immediate';
+      const remarks = extractFieldValue(row, ['remarks', 'notes', 'comments', 'description']);
+
+      const cleanMobile = normalizeMobileNo(rawMobile);
+      const fullName = lastName ? `${firstName} ${lastName}`.trim() : firstName.trim();
+
+      // Validation
+      if (!fullName && !cleanMobile) {
+        // Skip completely empty row
+        continue;
+      }
+
+      if (!cleanMobile || cleanMobile.length < 10) {
+        errors.push({
+          row: rowNum,
+          name: fullName || 'Unknown',
+          mobile: rawMobile,
+          reason: 'Invalid or missing 10-digit mobile number'
+        });
+        continue;
+      }
+
+      const finalName = fullName || `Lead (${cleanMobile.slice(-4)})`;
+      const budgetNum = parseBudget(rawBudget);
+
+      // Check existing duplicate lead by mobile number
+      const existingLead = await Lead.findOne({ mobileNo: cleanMobile });
+
+      if (existingLead) {
+        if (duplicateStrategy === 'skip') {
+          skippedCount++;
+          continue;
+        } else if (duplicateStrategy === 'update') {
+          // Update details with newly provided non-empty info
+          if (finalName && (!existingLead.name || existingLead.name.startsWith('Lead ('))) existingLead.name = finalName;
+          if (email && !existingLead.email) existingLead.email = email.toLowerCase();
+          if (city && !existingLead.city) existingLead.city = city;
+          if (state && !existingLead.state) existingLead.state = state;
+          if (budgetNum && (!existingLead.budget || existingLead.budget === 0)) existingLead.budget = budgetNum;
+          if (requirement) existingLead.requirement = requirement;
+          if (purchaseTimeline) existingLead.purchaseTimeline = purchaseTimeline;
+
+          if (remarks) {
+            existingLead.followUps = existingLead.followUps || [];
+            existingLead.followUps.push({
+              date: new Date(),
+              mode: 'other',
+              notes: `[${notesTag}] ${remarks}`,
+              status: 'completed',
+              scheduledBy: req.user?.id || null
+            });
+          }
+
+          await existingLead.save();
+          updatedCount++;
+          continue;
+        }
+      }
+
+      // Determine Lead Assignment
+      let assignedMemberId = null;
+      let assignmentReason = null;
+
+      if (assignmentStrategy === 'rep' && assignedTo && assignedTo !== 'unassigned') {
+        assignedMemberId = assignedTo;
+        assignmentReason = 'Assigned during Bulk Excel Upload';
+      } else if (assignmentStrategy === 'auto') {
+        const nextMemberResult = await getNextSalesTeamMember();
+        if (nextMemberResult && nextMemberResult.user) {
+          assignedMemberId = nextMemberResult.user._id;
+          assignmentReason = 'Automated Round-Robin Sequential Distribution (Bulk Upload)';
+        }
+      }
+
+      // Create new Lead document
+      const newLeadData = {
+        name: finalName,
+        mobileNo: cleanMobile,
+        email: email ? email.toLowerCase().trim() : '',
+        city: city || '',
+        state: state || '',
+        country: 'India',
+        budget: budgetNum,
+        requirement,
+        purchaseTimeline,
+        leadSource: defaultSource || 'bulk_upload',
+        assignedTo: assignedMemberId,
+        assignedAt: assignedMemberId ? new Date() : null,
+        assignedBy: req.user?.id || null,
+        assignmentHistory: assignedMemberId
+          ? [
+              {
+                assignedTo: assignedMemberId,
+                assignedBy: req.user?.id || null,
+                assignedAt: new Date(),
+                reason: assignmentReason
+              }
+            ]
+          : [],
+        status: 'new',
+        createdBy: req.user?.id || null
+      };
+
+      if (remarks) {
+        newLeadData.followUps = [
+          {
+            date: new Date(),
+            mode: 'other',
+            notes: `[${notesTag}] ${remarks}`,
+            status: 'completed',
+            scheduledBy: req.user?.id || null
+          }
+        ];
+      }
+
+      const created = await Lead.create(newLeadData);
+      insertedCount++;
+      if (createdLeads.length < 10) {
+        createdLeads.push({
+          id: created._id,
+          name: created.name,
+          mobileNo: created.mobileNo,
+          city: created.city,
+          budget: created.budget,
+          requirement: created.requirement,
+          purchaseTimeline: created.purchaseTimeline,
+          assignedTo: assignedMemberId
+        });
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: `Bulk lead upload complete: ${insertedCount} leads created, ${updatedCount} updated, ${skippedCount} duplicates skipped.`,
+      data: {
+        totalReceived: rows.length,
+        insertedCount,
+        updatedCount,
+        skippedCount,
+        errorsCount: errors.length,
+        errors,
+        sampleImported: createdLeads
+      }
+    });
+  } catch (error) {
+    console.error('Error in bulkUploadLeadsAction:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error during bulk lead upload.'
+    });
+  }
+};
+
+/**
+ * GET /api/leads/excel-template
+ * Generates an official Excel template with Krishna Valley standard columns and demonstration data
+ */
+export const downloadLeadTemplateAction = async (req, res) => {
+  try {
+    const templateData = [
+      {
+        'First Name': 'Rajesh Sharma',
+        'Number': '9876543210',
+        'Email Address': 'rajesh.sharma@example.com',
+        'City': 'Mumbai',
+        'Budget': 4500000,
+        'What they are looking for': '2BHK Luxury Apartment',
+        'When they are planning to do': 'Immediate',
+        'Remarks': 'Interested in Tower A high-floor park facing unit'
+      },
+      {
+        'First Name': 'Priya Patel',
+        'Number': '9823456781',
+        'Email Address': 'priya.patel@gmail.com',
+        'City': 'Pune',
+        'Budget': 6500000,
+        'What they are looking for': '3BHK Penthouse Suite',
+        'When they are planning to do': 'Within 30 Days',
+        'Remarks': 'Looking for immediate site visit and loan assistance'
+      },
+      {
+        'First Name': 'Amit Singhal',
+        'Number': '9912345678',
+        'Email Address': 'amit.singhal@yahoo.com',
+        'City': 'Delhi NCR',
+        'Budget': 3200000,
+        'What they are looking for': '1BHK Studio Apartment',
+        'When they are planning to do': '1-3 Months',
+        'Remarks': 'Investor profile seeking assured rental returns'
+      },
+      {
+        'First Name': 'Ananya Verma',
+        'Number': '9845012345',
+        'Email Address': 'ananya.verma@outlook.com',
+        'City': 'Bengaluru',
+        'Budget': 5500000,
+        'What they are looking for': '2BHK Corner Unit',
+        'When they are planning to do': 'Within 15 Days',
+        'Remarks': 'Requires vastu-compliant east facing apartment'
+      }
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(templateData);
+
+    // Set auto column widths for neat look
+    worksheet['!cols'] = [
+      { wch: 18 }, // First Name
+      { wch: 15 }, // Number
+      { wch: 28 }, // Email Address
+      { wch: 14 }, // City
+      { wch: 14 }, // Budget
+      { wch: 26 }, // What they are looking for
+      { wch: 28 }, // When they are planning to do
+      { wch: 40 }, // Remarks
+    ];
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Krishna_Valley_Leads_Template');
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="Krishna_Valley_Leads_Bulk_Upload_Template.xlsx"');
+    return res.send(buffer);
+  } catch (error) {
+    console.error('Error generating lead template:', error);
+    return res.status(500).json({ success: false, message: 'Failed to generate Excel template' });
+  }
+};
+
 
 

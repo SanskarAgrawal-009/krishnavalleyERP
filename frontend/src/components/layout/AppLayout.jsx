@@ -177,7 +177,8 @@ const NAV_ITEMS = [
       { path: '/hr?tab=directory', label: 'Staff Directory', icon: Users },
       { path: '/hr?tab=attendance', label: 'Daily Attendance', icon: Calendar },
       { path: '/hr?tab=leaves', label: 'Leave Requests', icon: Clock },
-      { path: '/hr?tab=payroll', label: 'Monthly Payroll', icon: DollarSign }
+      { path: '/hr?tab=payroll', label: 'Monthly Payroll', icon: DollarSign },
+      { path: '/hr?tab=dept_roles', label: 'Departments & Roles', icon: Building2 }
     ]
   },
   {

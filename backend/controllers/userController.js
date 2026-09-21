@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
 import { Role } from '../models/Role.js';
 import { Branch } from '../models/Branch.js';
+import { SalesTeamMember } from '../models/SalesTeamMember.js';
 import { escapeRegex } from '../utils/regexUtil.js';
 import { recordAuditEvent } from '../middleware/auditMiddleware.js';
 
@@ -461,6 +462,9 @@ export const deleteUser = async (req, res) => {
         $pull: { users: user._id },
       });
     }
+
+    // Clean up sales team member record if exists
+    await SalesTeamMember.deleteMany({ userId: user._id });
 
     await User.findByIdAndDelete(user._id);
 

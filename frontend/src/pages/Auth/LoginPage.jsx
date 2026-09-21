@@ -48,7 +48,8 @@ export const LoginPage = () => {
 
     try {
       const userRes = await login(identifier.trim(), password);
-      const targetPath = userRes?.role?.roleCode === 'agent' ? '/agent-portal' : from;
+      const roleCode = userRes?.role?.roleCode || userRes?.user?.role?.roleCode;
+      const targetPath = roleCode === 'agent' ? '/agent-portal' : (roleCode === 'hr_manager' && from === '/dashboard' ? '/hr' : from);
       navigate(targetPath, { replace: true });
     } catch (err) {
       setErrorMessage(err.message || 'Authentication failed. Please verify credentials.');
@@ -66,7 +67,8 @@ export const LoginPage = () => {
 
     try {
       const userRes = await login(username, pass);
-      const targetPath = userRes?.role?.roleCode === 'agent' ? '/agent-portal' : from;
+      const roleCode = userRes?.role?.roleCode || userRes?.user?.role?.roleCode;
+      const targetPath = roleCode === 'agent' ? '/agent-portal' : (roleCode === 'hr_manager' && from === '/dashboard' ? '/hr' : from);
       navigate(targetPath, { replace: true });
     } catch (err) {
       setErrorMessage(err.message || 'Demo login failed. Ensure the server is running.');

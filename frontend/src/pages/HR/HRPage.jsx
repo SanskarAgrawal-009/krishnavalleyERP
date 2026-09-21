@@ -3,12 +3,15 @@ import { useSearchParams } from 'react-router-dom';
 import { hrService } from '../../services/hrService.js';
 import { getFileUrl } from '../../services/api.js';
 import { NewEmployeeModal } from '../../components/hr/NewEmployeeModal.jsx';
+import { EditEmployeeModal } from '../../components/hr/EditEmployeeModal.jsx';
+import { PrintablePayslipModal } from '../../components/hr/PrintablePayslipModal.jsx';
 import { LogAttendanceModal } from '../../components/hr/LogAttendanceModal.jsx';
 import { ApplyLeaveModal } from '../../components/hr/ApplyLeaveModal.jsx';
 import { GeneratePayrollModal } from '../../components/hr/GeneratePayrollModal.jsx';
 import { EmployeeDetailModal } from '../../components/hr/EmployeeDetailModal.jsx';
 import { DisburseSalaryModal } from '../../components/hr/DisburseSalaryModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
+import { Modal } from '../../components/common/Modal.jsx';
 
 import {
   Users,
@@ -26,7 +29,17 @@ import {
   UserCheck,
   ArrowRight,
   FileText,
-  Upload
+  Upload,
+  Edit2,
+  Trash2,
+  Printer,
+  Sparkles,
+  Layers,
+  Check,
+  X,
+  Eye,
+  CheckCircle2,
+  AlertTriangle
 } from 'lucide-react';
 
 export const HRPage = () => {
@@ -37,6 +50,7 @@ export const HRPage = () => {
     if (param === 'attendance') return 'attendance';
     if (param === 'leaves') return 'leaves';
     if (param === 'payroll') return 'payroll';
+    if (param === 'dept_roles') return 'dept_roles';
     return 'directory';
   };
 
@@ -68,8 +82,10 @@ export const HRPage = () => {
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
 
-  // Modals
+  // Modals & Active Edit State
   const [isEmpModalOpen, setIsEmpModalOpen] = useState(false);
+  const [isEditEmpModalOpen, setIsEditEmpModalOpen] = useState(false);
+  const [employeeToEdit, setEmployeeToEdit] = useState(null);
   const [isAttModalOpen, setIsAttModalOpen] = useState(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
@@ -77,6 +93,33 @@ export const HRPage = () => {
   const [selectedPayrollItem, setSelectedPayrollItem] = useState(null);
   const [slipPreviewUrl, setSlipPreviewUrl] = useState(null);
   const [selectedSlipItem, setSelectedSlipItem] = useState(null);
+  const [isPayslipModalOpen, setIsPayslipModalOpen] = useState(false);
+  const [payslipItemToPrint, setPayslipItemToPrint] = useState(null);
+
+  // Daily Attendance Roster State
+  const [attendanceViewMode, setAttendanceViewMode] = useState('roster'); // 'roster' | 'history'
+  const [selectedAttendanceDate, setSelectedAttendanceDate] = useState(new Date().toISOString().slice(0, 10));
+  const [rosterData, setRosterData] = useState([]);
+  const [rosterLoading, setRosterLoading] = useState(false);
+
+  // Payroll Filter State
+  const [selectedPayrollMonth, setSelectedPayrollMonth] = useState('');
+  const [selectedPayrollYear, setSelectedPayrollYear] = useState('');
+  const [payrollStatusFilter, setPayrollStatusFilter] = useState('');
+
+  // Department & Role Master Management Modals
+  const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
+  const [editingDept, setEditingDept] = useState(null);
+  const [deptNameInput, setDeptNameInput] = useState('');
+  const [deptCodeInput, setDeptCodeInput] = useState('');
+  const [deptDescInput, setDeptDescInput] = useState('');
+
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState(null);
+  const [roleNameInput, setRoleNameInput] = useState('');
+  const [roleCodeInput, setRoleCodeInput] = useState('');
+  const [roleDeptCodeInput, setRoleDeptCodeInput] = useState('');
+  const [roleDescInput, setRoleDescInput] = useState('');
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -294,6 +337,209 @@ export const HRPage = () => {
     }
   };
 
+  // Employee Edit, Delete, Seed handlers
+  const handleOpenEdit = (emp) => {
+    setEmployeeToEdit(emp);
+    setIsEditEmpModalOpen(true);
+  };
+
+  const handleDeleteEmployee = async (emp) => {
+    if (!window.confirm(`Are you sure you want to remove ${emp.firstName} ${emp.lastName} (${emp.employeeCode}) from the staff directory?`)) return;
+    try {
+      await hrService.deleteEmployee(emp._id || emp.id);
+      alert('Employee successfully removed.');
+      loadData();
+    } catch (err) {
+      alert(err.message || 'Failed to remove employee');
+    }
+  };
+
+  const handleSeedSampleStaff = async () => {
+    if (!window.confirm('Initialize Krishna Valley staff directory with sample department personnel (Site Engineers, Architects, Accounts, Facilities)?')) return;
+    try {
+      const res = await hrService.seedSampleStaff();
+      alert(res.message || 'Sample staff directory initialized!');
+      loadData();
+    } catch (err) {
+      alert(err.message || 'Error seeding sample staff');
+    }
+  };
+
+  // Leave Delete handler
+  const handleDeleteLeave = async (employeeId, leaveId) => {
+    if (!window.confirm('Are you sure you want to cancel and remove this leave application?')) return;
+    try {
+      await hrService.deleteLeave(employeeId, leaveId);
+      alert('Leave record removed.');
+      loadData();
+      if (selectedEmployee && selectedEmployee._id === employeeId) {
+        refreshActiveEmployee(employeeId);
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to remove leave');
+    }
+  };
+
+  // Daily Attendance Roster logic
+  const loadRosterForDate = async (dateStr) => {
+    setRosterLoading(true);
+    try {
+      const res = await hrService.getAttendanceByDate({ date: dateStr });
+      if (res.data && res.data.roster) {
+        setRosterData(res.data.roster);
+      }
+    } catch (err) {
+      console.error('Failed to load roster:', err);
+    } finally {
+      setRosterLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'attendance' && attendanceViewMode === 'roster') {
+      loadRosterForDate(selectedAttendanceDate);
+    }
+  }, [activeTab, attendanceViewMode, selectedAttendanceDate, employees]);
+
+  const handleMarkAllPresent = () => {
+    setRosterData((prev) =>
+      prev.map((r) => ({
+        ...r,
+        status: 'present',
+        workingHours: 8.5,
+        remarks: r.remarks || 'Standard site shift'
+      }))
+    );
+  };
+
+  const handleRosterStatusChange = (employeeId, newStatus) => {
+    setRosterData((prev) =>
+      prev.map((r) =>
+        r.employeeId === employeeId
+          ? {
+              ...r,
+              status: newStatus,
+              workingHours: newStatus === 'absent' || newStatus === 'leave' || newStatus === 'holiday' ? 0 : newStatus === 'half_day' ? 4 : 8.5
+            }
+          : r
+      )
+    );
+  };
+
+  const handleRosterRemarksChange = (employeeId, remarks) => {
+    setRosterData((prev) =>
+      prev.map((r) => (r.employeeId === employeeId ? { ...r, remarks } : r))
+    );
+  };
+
+  const handleSaveDailyRoster = async () => {
+    try {
+      const records = rosterData.map((r) => ({
+        employeeId: r.employeeId,
+        status: r.status,
+        workingHours: r.workingHours,
+        remarks: r.remarks
+      }));
+      const res = await hrService.logBulkAttendance({ date: selectedAttendanceDate, records });
+      alert(res.message || 'Daily attendance roster successfully saved!');
+      loadData();
+      loadRosterForDate(selectedAttendanceDate);
+    } catch (err) {
+      alert(err.message || 'Failed to save attendance roster');
+    }
+  };
+
+  // Department & Role Master actions
+  const handleOpenDeptModal = (dept = null) => {
+    setEditingDept(dept);
+    setDeptNameInput(dept?.departmentName || '');
+    setDeptCodeInput(dept?.departmentCode || '');
+    setDeptDescInput(dept?.description || '');
+    setIsDeptModalOpen(true);
+  };
+
+  const handleSaveDepartment = async (e) => {
+    e.preventDefault();
+    if (!deptNameInput.trim()) return;
+    try {
+      if (editingDept) {
+        await hrService.updateDepartment(editingDept._id, {
+          departmentName: deptNameInput,
+          description: deptDescInput
+        });
+        alert('Department updated successfully!');
+      } else {
+        await hrService.addDepartment({
+          departmentName: deptNameInput,
+          departmentCode: deptCodeInput || `DEP-${Date.now().toString().slice(-4)}`,
+          description: deptDescInput
+        });
+        alert('Department created successfully!');
+      }
+      setIsDeptModalOpen(false);
+      loadData();
+    } catch (err) {
+      alert(err.message || 'Failed to save department');
+    }
+  };
+
+  const handleDeleteDepartment = async (dept) => {
+    if (!window.confirm(`Delete department "${dept.departmentName}"? This is only allowed if no staff belong to it.`)) return;
+    try {
+      await hrService.deleteDepartment(dept._id);
+      alert('Department deleted successfully!');
+      loadData();
+    } catch (err) {
+      alert(err.message || 'Cannot delete department');
+    }
+  };
+
+  const handleOpenRoleModal = (deptCode = '', role = null) => {
+    setEditingRole(role);
+    setRoleDeptCodeInput(deptCode || role?.departmentCode || (masterData.departments?.[0]?.departmentCode || 'ENG'));
+    setRoleNameInput(role?.roleName || '');
+    setRoleCodeInput(role?.roleCode || '');
+    setRoleDescInput(role?.description || '');
+    setIsRoleModalOpen(true);
+  };
+
+  const handleSaveRole = async (e) => {
+    e.preventDefault();
+    if (!roleNameInput.trim()) return;
+    try {
+      if (editingRole) {
+        await hrService.updateRole(editingRole._id, {
+          roleName: roleNameInput,
+          description: roleDescInput
+        });
+        alert('Role updated successfully!');
+      } else {
+        await hrService.addRole({
+          roleName: roleNameInput,
+          roleCode: roleCodeInput || `ROL-${Date.now().toString().slice(-4)}`,
+          departmentCode: roleDeptCodeInput,
+          description: roleDescInput
+        });
+        alert('Role created successfully!');
+      }
+      setIsRoleModalOpen(false);
+      loadData();
+    } catch (err) {
+      alert(err.message || 'Failed to save role');
+    }
+  };
+
+  const handleDeleteRole = async (role) => {
+    if (!window.confirm(`Delete role "${role.roleName}"? This is only allowed if no employees are assigned to it.`)) return;
+    try {
+      await hrService.deleteRole(role._id);
+      alert('Role deleted successfully!');
+      loadData();
+    } catch (err) {
+      alert(err.message || 'Cannot delete role');
+    }
+  };
+
   // Derived Lists for Sub-tabs
   const allAttendanceLogs = React.useMemo(() => {
     const list = [];
@@ -349,6 +595,15 @@ export const HRPage = () => {
     });
     return list.sort((a, b) => (b.year - a.year) || (b.month - a.month));
   }, [employees]);
+
+  const filteredPayrollRecords = React.useMemo(() => {
+    return allPayrollRecords.filter((pay) => {
+      if (selectedPayrollMonth && Number(pay.month) !== Number(selectedPayrollMonth)) return false;
+      if (selectedPayrollYear && Number(pay.year) !== Number(selectedPayrollYear)) return false;
+      if (payrollStatusFilter && pay.status !== payrollStatusFilter) return false;
+      return true;
+    });
+  }, [allPayrollRecords, selectedPayrollMonth, selectedPayrollYear, payrollStatusFilter]);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -504,25 +759,48 @@ export const HRPage = () => {
               <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Employee Directory</h3>
               <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>Showing {filteredEmployees.length} of {employees.length} total staff members</p>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsEmpModalOpen(true)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Plus size={15} /> Onboard New Employee
-            </button>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+              {employees.length === 0 && (
+                <button
+                  type="button"
+                  onClick={handleSeedSampleStaff}
+                  style={{
+                    background: '#e6f4ea',
+                    color: '#137333',
+                    border: '1px solid #ceead6',
+                    padding: '8px 14px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Sparkles size={14} /> Populate Sample Staff
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsEmpModalOpen(true)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <Plus size={15} /> Onboard New Employee
+              </button>
+            </div>
           </div>
 
           {/* DYNAMIC DEPARTMENT & ROLE FILTER BAR */}
@@ -617,14 +895,66 @@ export const HRPage = () => {
                     <th>Phone / Email</th>
                     <th>Monthly Salary</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredEmployees.length === 0 ? (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: 'center', padding: '30px', color: '#6b7280' }}>
-                        No employees found matching the selected department/role criteria.
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '40px 20px', color: '#6b7280' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e8f0fe', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                          <Users size={24} />
+                        </div>
+                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
+                          No Employees Found
+                        </div>
+                        <p style={{ color: '#4b5563', fontSize: '0.85rem', maxWidth: '460px', margin: '0 auto 16px' }}>
+                          {employees.length === 0
+                            ? 'Your staff directory is currently empty. You can onboard new staff manually or initialize sample staff across site engineering, architecture, accounts, and facilities.'
+                            : 'No employees match the selected department, designation or search filters.'}
+                        </p>
+                        {employees.length === 0 && (
+                          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            <button
+                              type="button"
+                              onClick={() => setIsEmpModalOpen(true)}
+                              style={{
+                                background: '#1a73e8',
+                                color: '#ffffff',
+                                padding: '8px 18px',
+                                borderRadius: '6px',
+                                fontSize: '0.82rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                border: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                              }}
+                            >
+                              <Plus size={15} /> Onboard New Employee
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleSeedSampleStaff}
+                              style={{
+                                background: '#0d904f',
+                                color: '#ffffff',
+                                padding: '8px 18px',
+                                borderRadius: '6px',
+                                fontSize: '0.82rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                border: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                              }}
+                            >
+                              <Sparkles size={15} /> Initialize Sample Staff (6 Members)
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ) : (
@@ -656,26 +986,71 @@ export const HRPage = () => {
                         <td>
                           <StatusBadge status={emp.employmentStatus} />
                         </td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedEmployee(emp);
-                              setIsDetailModalOpen(true);
-                            }}
-                            style={{
-                              padding: '4px 10px',
-                              background: '#f3f4f5',
-                              border: '1px solid #dadce0',
-                              color: '#111827',
-                              borderRadius: '4px',
-                              fontSize: '0.75rem',
-                              fontWeight: '700',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            View Profile
-                          </button>
+                        <td style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: '6px', alignItems: 'center' }}>
+                            <button
+                              type="button"
+                              title="View Staff Dossier"
+                              onClick={() => {
+                                setSelectedEmployee(emp);
+                                setIsDetailModalOpen(true);
+                              }}
+                              style={{
+                                padding: '5px 9px',
+                                background: '#f1f5f9',
+                                border: '1px solid #cbd5e1',
+                                color: '#0f172a',
+                                borderRadius: '5px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <Eye size={13} /> Dossier
+                            </button>
+                            <button
+                              type="button"
+                              title="Edit Employee Profile"
+                              onClick={() => handleOpenEdit(emp)}
+                              style={{
+                                padding: '5px 9px',
+                                background: '#eff6ff',
+                                border: '1px solid #bfdbfe',
+                                color: '#1d4ed8',
+                                borderRadius: '5px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <Edit2 size={13} /> Edit
+                            </button>
+                            <button
+                              type="button"
+                              title="Delete Employee"
+                              onClick={() => handleDeleteEmployee(emp)}
+                              style={{
+                                padding: '5px 7px',
+                                background: '#fef2f2',
+                                border: '1px solid #fecaca',
+                                color: '#dc2626',
+                                borderRadius: '5px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center'
+                              }}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -695,6 +1070,25 @@ export const HRPage = () => {
               <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Department & Role Hierarchy Matrix</h3>
               <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>Every department maintains distinct dedicated roles and operational scopes.</p>
             </div>
+            <button
+              type="button"
+              onClick={() => handleOpenDeptModal(null)}
+              style={{
+                background: '#1a73e8',
+                color: '#ffffff',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                border: 'none'
+              }}
+            >
+              <Plus size={15} /> Add New Department
+            </button>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '14px' }}>
@@ -719,19 +1113,75 @@ export const HRPage = () => {
                         {dept.departmentName}
                       </h4>
                     </div>
-                    <span style={{ fontSize: '0.72rem', padding: '4px 8px', borderRadius: '12px', background: '#e6f4ea', color: '#137333', fontWeight: '700' }}>
-                      {deptStaffCount} Staff Active
-                    </span>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.72rem', padding: '4px 8px', borderRadius: '12px', background: '#e6f4ea', color: '#137333', fontWeight: '700' }}>
+                        {deptStaffCount} Staff
+                      </span>
+                      <button
+                        type="button"
+                        title="Edit Department"
+                        onClick={() => handleOpenDeptModal(dept)}
+                        style={{
+                          padding: '4px 6px',
+                          background: '#eff6ff',
+                          border: '1px solid #bfdbfe',
+                          color: '#1d4ed8',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Edit2 size={12} />
+                      </button>
+                      {deptStaffCount === 0 && (
+                        <button
+                          type="button"
+                          title="Delete Department"
+                          onClick={() => handleDeleteDepartment(dept)}
+                          style={{
+                            padding: '4px 6px',
+                            background: '#fef2f2',
+                            border: '1px solid #fecaca',
+                            color: '#dc2626',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <p style={{ fontSize: '0.76rem', color: '#4b5563', margin: 0, lineHeight: '1.4' }}>
-                    {dept.description}
+                    {dept.description || 'Department operational unit.'}
                   </p>
 
                   <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '10px', marginTop: '4px' }}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', marginBottom: '6px', textTransform: 'uppercase' }}>
-                      Department Roles & Designations ({deptRoles.length}):
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', textTransform: 'uppercase' }}>
+                        Roles & Designations ({deptRoles.length}):
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenRoleModal(dept.departmentCode, null)}
+                        style={{
+                          padding: '3px 8px',
+                          background: '#f1f5f9',
+                          border: '1px solid #cbd5e1',
+                          color: '#0f172a',
+                          borderRadius: '4px',
+                          fontSize: '0.7rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <Plus size={11} /> Add Role
+                      </button>
                     </div>
+
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {deptRoles.map((role) => {
                         const roleStaff = employees.filter((e) => {
@@ -760,9 +1210,43 @@ export const HRPage = () => {
                                 Code: <span style={{ fontFamily: 'monospace', fontWeight: '600' }}>{role.roleCode}</span> • {role.description || 'Department Role'}
                               </div>
                             </div>
-                            <span style={{ fontSize: '0.7rem', fontWeight: '700', color: roleStaff > 0 ? '#1a73e8' : '#9ca3af' }}>
-                              {roleStaff} staff
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontSize: '0.7rem', fontWeight: '700', color: roleStaff > 0 ? '#1a73e8' : '#9ca3af' }}>
+                                {roleStaff} staff
+                              </span>
+                              <button
+                                type="button"
+                                title="Edit Role"
+                                onClick={() => handleOpenRoleModal(dept.departmentCode, role)}
+                                style={{
+                                  padding: '3px 5px',
+                                  background: '#eff6ff',
+                                  border: '1px solid #bfdbfe',
+                                  color: '#1d4ed8',
+                                  borderRadius: '4px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <Edit2 size={11} />
+                              </button>
+                              {roleStaff === 0 && (
+                                <button
+                                  type="button"
+                                  title="Delete Role"
+                                  onClick={() => handleDeleteRole(role)}
+                                  style={{
+                                    padding: '3px 5px',
+                                    background: '#fef2f2',
+                                    border: '1px solid #fecaca',
+                                    color: '#dc2626',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  <Trash2 size={11} />
+                                </button>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
@@ -778,104 +1262,402 @@ export const HRPage = () => {
       {/* ================= TAB 2: ATTENDANCE ================= */}
       {activeTab === 'attendance' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
-              Shift Attendance Ledger ({allAttendanceLogs.length})
-            </h3>
-            <button
-              type="button"
-              onClick={() => setIsAttModalOpen(true)}
-              style={{
-                background: '#137333',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Clock size={15} /> Log Today's Attendance
-            </button>
-          </div>
-
-          {allAttendanceLogs.length === 0 ? (
-            <div className="g-card" style={{ padding: '32px 20px', textAlign: 'center' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e6f4ea', color: '#137333', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-                <Clock size={24} />
-              </div>
-              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
-                No Attendance Logs Yet
-              </div>
-              <p style={{ color: '#4b5563', fontSize: '0.85rem', maxWidth: '500px', margin: '0 auto 16px' }}>
-                Daily biometric and manual shift rosters automatically calculate monthly present days, half-days, and overtime for payroll generation.
+          
+          {/* Header & Controls Bar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
+                Shift Attendance & Biometric Rosters
+              </h3>
+              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>
+                Record daily site attendance rosters, mark presence, half-days, late arrivals, and generate attendance logs.
               </p>
+            </div>
+
+            {/* Mode Switch & Log Single Modal Button */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', background: '#f1f5f9', padding: '3px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                <button
+                  type="button"
+                  onClick={() => setAttendanceViewMode('roster')}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    background: attendanceViewMode === 'roster' ? '#1a73e8' : 'transparent',
+                    color: attendanceViewMode === 'roster' ? '#ffffff' : '#475569',
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    cursor: 'pointer'
+                  }}
+                >
+                  📅 Daily Roster Mode
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAttendanceViewMode('history')}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    background: attendanceViewMode === 'history' ? '#1a73e8' : 'transparent',
+                    color: attendanceViewMode === 'history' ? '#ffffff' : '#475569',
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    cursor: 'pointer'
+                  }}
+                >
+                  📜 Attendance History Logs ({allAttendanceLogs.length})
+                </button>
+              </div>
+
               <button
                 type="button"
                 onClick={() => setIsAttModalOpen(true)}
                 style={{
                   background: '#137333',
                   color: '#ffffff',
-                  padding: '8px 18px',
+                  padding: '7px 14px',
                   borderRadius: '6px',
-                  fontSize: '0.82rem',
+                  fontSize: '0.78rem',
                   fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
                   cursor: 'pointer',
                   border: 'none'
                 }}
               >
-                Log First Attendance Entry
+                <Clock size={14} /> Single Entry Modal
               </button>
             </div>
-          ) : (
-            <div className="g-card" style={{ overflow: 'hidden' }}>
-              <div style={{ overflowX: 'auto' }}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Date & Shift</th>
-                      <th>Staff Name & Code</th>
-                      <th>Department & Role</th>
-                      <th>Logged Hours</th>
-                      <th>Attendance Status</th>
-                      <th>Shift Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allAttendanceLogs.map((att, idx) => (
-                      <tr key={att.id || att._id || idx}>
-                        <td>
-                          <div style={{ fontWeight: '700', color: '#111827' }}>
-                            {new Date(att.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                          </div>
-                          <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Standard Site Shift</div>
-                        </td>
-                        <td>
-                          <div style={{ fontWeight: '700', color: '#111827' }}>{att.employeeName}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Emp Code: {att.employeeCode}</div>
-                        </td>
-                        <td>
-                          <div style={{ color: '#1a73e8', fontWeight: '600', fontSize: '0.8rem' }}>{att.departmentName}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{att.designation}</div>
-                        </td>
-                        <td>
-                          <div style={{ fontWeight: '700', color: '#111827' }}>{att.workingHours || 8.5} hrs</div>
-                        </td>
-                        <td>
-                          <StatusBadge status={att.status || 'present'} />
-                        </td>
-                        <td>
-                          <div style={{ color: '#4b5563', fontSize: '0.8rem' }}>{att.remarks || 'Standard site shift'}</div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          </div>
+
+          {/* MODE A: DAILY ROSTER MODE */}
+          {attendanceViewMode === 'roster' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              
+              {/* Date Selector & Quick Actions Ribbon */}
+              <div className="g-card" style={{ padding: '12px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: '#ffffff' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
+                      Roster Date:
+                    </label>
+                    <input
+                      type="date"
+                      value={selectedAttendanceDate}
+                      onChange={(e) => setSelectedAttendanceDate(e.target.value)}
+                      style={{ padding: '6px 10px', fontSize: '0.85rem', fontWeight: '700', border: '1px solid #cbd5e1', borderRadius: '6px' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '16px' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const today = new Date().toISOString().slice(0, 10);
+                        setSelectedAttendanceDate(today);
+                      }}
+                      style={{ padding: '6px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      Today
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const yest = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+                        setSelectedAttendanceDate(yest);
+                      }}
+                      style={{ padding: '6px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      Yesterday
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={handleMarkAllPresent}
+                    style={{
+                      padding: '8px 16px',
+                      background: '#e6f4ea',
+                      color: '#137333',
+                      border: '1px solid #ceead6',
+                      borderRadius: '6px',
+                      fontSize: '0.8rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <CheckCircle2 size={15} /> ⚡ Mark All Active Present
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveDailyRoster}
+                    disabled={rosterLoading || rosterData.length === 0}
+                    style={{
+                      padding: '8px 20px',
+                      background: '#1a73e8',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '0.8rem',
+                      fontWeight: '800',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      boxShadow: '0 2px 4px rgba(26, 115, 232, 0.25)'
+                    }}
+                  >
+                    <Check size={16} /> Save Daily Roster
+                  </button>
+                </div>
               </div>
+
+              {/* Roster Table */}
+              <div className="g-card" style={{ overflow: 'hidden' }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Staff Member & Code</th>
+                        <th>Department & Role</th>
+                        <th style={{ textAlign: 'center' }}>Attendance Status Toggle</th>
+                        <th>Shift Hours</th>
+                        <th>Shift Remarks / Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rosterLoading ? (
+                        <tr>
+                          <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                            Loading roster for {selectedAttendanceDate}...
+                          </td>
+                        </tr>
+                      ) : rosterData.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} style={{ textAlign: 'center', padding: '36px', color: '#64748b' }}>
+                            No active employees found to mark attendance. Onboard staff or initialize sample staff first.
+                          </td>
+                        </tr>
+                      ) : (
+                        rosterData.map((r) => {
+                          const status = r.status || 'present';
+                          return (
+                            <tr key={r.employeeId}>
+                              <td>
+                                <div style={{ fontWeight: '700', color: '#111827' }}>{r.employeeName}</div>
+                                <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Code: {r.employeeCode}</div>
+                              </td>
+                              <td>
+                                <div style={{ color: '#1a73e8', fontWeight: '600', fontSize: '0.8rem' }}>{r.departmentName}</div>
+                                <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{r.designation}</div>
+                              </td>
+                              <td style={{ textAlign: 'center' }}>
+                                <div style={{ display: 'inline-flex', gap: '4px', background: '#f1f5f9', padding: '3px', borderRadius: '6px' }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRosterStatusChange(r.employeeId, 'present')}
+                                    style={{
+                                      padding: '4px 10px',
+                                      borderRadius: '4px',
+                                      border: 'none',
+                                      background: status === 'present' ? '#137333' : 'transparent',
+                                      color: status === 'present' ? '#ffffff' : '#334155',
+                                      fontSize: '0.72rem',
+                                      fontWeight: '700',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Present
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRosterStatusChange(r.employeeId, 'late')}
+                                    style={{
+                                      padding: '4px 10px',
+                                      borderRadius: '4px',
+                                      border: 'none',
+                                      background: status === 'late' ? '#b06000' : 'transparent',
+                                      color: status === 'late' ? '#ffffff' : '#334155',
+                                      fontSize: '0.72rem',
+                                      fontWeight: '700',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Late
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRosterStatusChange(r.employeeId, 'half_day')}
+                                    style={{
+                                      padding: '4px 10px',
+                                      borderRadius: '4px',
+                                      border: 'none',
+                                      background: status === 'half_day' ? '#8b5cf6' : 'transparent',
+                                      color: status === 'half_day' ? '#ffffff' : '#334155',
+                                      fontSize: '0.72rem',
+                                      fontWeight: '700',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Half-Day
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRosterStatusChange(r.employeeId, 'absent')}
+                                    style={{
+                                      padding: '4px 10px',
+                                      borderRadius: '4px',
+                                      border: 'none',
+                                      background: status === 'absent' ? '#c5221f' : 'transparent',
+                                      color: status === 'absent' ? '#ffffff' : '#334155',
+                                      fontSize: '0.72rem',
+                                      fontWeight: '700',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Absent
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRosterStatusChange(r.employeeId, 'leave')}
+                                    style={{
+                                      padding: '4px 10px',
+                                      borderRadius: '4px',
+                                      border: 'none',
+                                      background: status === 'leave' ? '#0284c7' : 'transparent',
+                                      color: status === 'leave' ? '#ffffff' : '#334155',
+                                      fontSize: '0.72rem',
+                                      fontWeight: '700',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Leave
+                                  </button>
+                                </div>
+                              </td>
+                              <td>
+                                <input
+                                  type="number"
+                                  step="0.5"
+                                  min="0"
+                                  max="24"
+                                  value={r.workingHours !== undefined ? r.workingHours : 8.5}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setRosterData((prev) =>
+                                      prev.map((item) => (item.employeeId === r.employeeId ? { ...item, workingHours: val } : item))
+                                    );
+                                  }}
+                                  style={{ width: '65px', padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '0.8rem', textAlign: 'center', fontWeight: '700' }}
+                                />
+                                <span style={{ fontSize: '0.72rem', color: '#64748b', marginLeft: '4px' }}>hrs</span>
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  value={r.remarks || ''}
+                                  onChange={(e) => handleRosterRemarksChange(r.employeeId, e.target.value)}
+                                  placeholder="e.g. Regular site shift / tower B inspection"
+                                  style={{ width: '100%', padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '0.78rem' }}
+                                />
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODE B: ATTENDANCE HISTORY LOGS */}
+          {attendanceViewMode === 'history' && (
+            <div>
+              {allAttendanceLogs.length === 0 ? (
+                <div className="g-card" style={{ padding: '32px 20px', textAlign: 'center' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e6f4ea', color: '#137333', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                    <Clock size={24} />
+                  </div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
+                    No Attendance Logs Yet
+                  </div>
+                  <p style={{ color: '#4b5563', fontSize: '0.85rem', maxWidth: '500px', margin: '0 auto 16px' }}>
+                    Daily biometric and manual shift rosters automatically calculate monthly present days, half-days, and overtime for payroll generation.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setAttendanceViewMode('roster')}
+                    style={{
+                      background: '#137333',
+                      color: '#ffffff',
+                      padding: '8px 18px',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      border: 'none'
+                    }}
+                  >
+                    Open Daily Shift Roster
+                  </button>
+                </div>
+              ) : (
+                <div className="g-card" style={{ overflow: 'hidden' }}>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Date & Shift</th>
+                          <th>Staff Name & Code</th>
+                          <th>Department & Role</th>
+                          <th>Logged Hours</th>
+                          <th>Attendance Status</th>
+                          <th>Shift Remarks</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allAttendanceLogs.map((att, idx) => (
+                          <tr key={att.id || att._id || idx}>
+                            <td>
+                              <div style={{ fontWeight: '700', color: '#111827' }}>
+                                {new Date(att.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              </div>
+                              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Standard Site Shift</div>
+                            </td>
+                            <td>
+                              <div style={{ fontWeight: '700', color: '#111827' }}>{att.employeeName}</div>
+                              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Emp Code: {att.employeeCode}</div>
+                            </td>
+                            <td>
+                              <div style={{ color: '#1a73e8', fontWeight: '600', fontSize: '0.8rem' }}>{att.departmentName}</div>
+                              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{att.designation}</div>
+                            </td>
+                            <td>
+                              <div style={{ fontWeight: '700', color: '#111827' }}>{att.workingHours || 8.5} hrs</div>
+                            </td>
+                            <td>
+                              <StatusBadge status={att.status || 'present'} />
+                            </td>
+                            <td>
+                              <div style={{ color: '#4b5563', fontSize: '0.8rem' }}>{att.remarks || 'Standard site shift'}</div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -986,47 +1768,68 @@ export const HRPage = () => {
                         <td>
                           <StatusBadge status={lv.status || 'pending'} />
                         </td>
-                        <td>
-                          {lv.status === 'pending' ? (
-                            <div style={{ display: 'flex', gap: '6px' }}>
-                              <button
-                                type="button"
-                                onClick={() => handleUpdateLeaveStatus(lv.employeeId, lv.id || lv._id, 'approved')}
-                                style={{
-                                  padding: '4px 10px',
-                                  background: '#e6f4ea',
-                                  border: '1px solid #ceead6',
-                                  color: '#137333',
-                                  borderRadius: '4px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: '700',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Approve
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleUpdateLeaveStatus(lv.employeeId, lv.id || lv._id, 'rejected')}
-                                style={{
-                                  padding: '4px 10px',
-                                  background: '#fce8e6',
-                                  border: '1px solid #fad2cf',
-                                  color: '#c5221f',
-                                  borderRadius: '4px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: '700',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          ) : (
-                            <span style={{ color: lv.status === 'approved' ? '#137333' : '#c5221f', fontWeight: '700', fontSize: '0.75rem' }}>
-                              {lv.status === 'approved' ? '✓ Approved' : '✕ Rejected'}
-                            </span>
-                          )}
+                        <td style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: '6px', alignItems: 'center' }}>
+                            {lv.status === 'pending' ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateLeaveStatus(lv.employeeId, lv.id || lv._id, 'approved')}
+                                  style={{
+                                    padding: '4px 10px',
+                                    background: '#e6f4ea',
+                                    border: '1px solid #ceead6',
+                                    color: '#137333',
+                                    borderRadius: '4px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateLeaveStatus(lv.employeeId, lv.id || lv._id, 'rejected')}
+                                  style={{
+                                    padding: '4px 10px',
+                                    background: '#fce8e6',
+                                    border: '1px solid #fad2cf',
+                                    color: '#c5221f',
+                                    borderRadius: '4px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            ) : (
+                              <span style={{ color: lv.status === 'approved' ? '#137333' : '#c5221f', fontWeight: '700', fontSize: '0.75rem' }}>
+                                {lv.status === 'approved' ? '✓ Approved' : '✕ Rejected'}
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              title="Cancel / Delete Leave Application"
+                              onClick={() => handleDeleteLeave(lv.employeeId, lv.id || lv._id)}
+                              style={{
+                                padding: '4px 6px',
+                                background: '#fef2f2',
+                                border: '1px solid #fecaca',
+                                color: '#dc2626',
+                                borderRadius: '4px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center'
+                              }}
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1042,9 +1845,14 @@ export const HRPage = () => {
       {activeTab === 'payroll' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
-              Monthly Staff Payroll Register ({allPayrollRecords.length})
-            </h3>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
+                Monthly Staff Payroll Register ({filteredPayrollRecords.length})
+              </h3>
+              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>
+                Gross calculations, statutory deductions (PF/ESI), net pay, official slips, and bank disbursements.
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => setIsPayModalOpen(true)}
@@ -1066,33 +1874,116 @@ export const HRPage = () => {
             </button>
           </div>
 
-          {allPayrollRecords.length === 0 ? (
+          {/* Payroll Filter Bar */}
+          <div className="g-card" style={{ padding: '12px 16px', background: '#ffffff', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <div style={{ flex: '1 1 160px' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                Filter Month
+              </label>
+              <select
+                value={selectedPayrollMonth}
+                onChange={(e) => setSelectedPayrollMonth(e.target.value)}
+                style={{ width: '100%', fontSize: '0.82rem', borderColor: selectedPayrollMonth ? '#1a73e8' : '#dadce0', fontWeight: selectedPayrollMonth ? '700' : 'normal' }}
+              >
+                <option value="">All Months</option>
+                {monthNames.map((name, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ flex: '1 1 140px' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                Filter Year
+              </label>
+              <select
+                value={selectedPayrollYear}
+                onChange={(e) => setSelectedPayrollYear(e.target.value)}
+                style={{ width: '100%', fontSize: '0.82rem', borderColor: selectedPayrollYear ? '#1a73e8' : '#dadce0', fontWeight: selectedPayrollYear ? '700' : 'normal' }}
+              >
+                <option value="">All Years</option>
+                {[2024, 2025, 2026, 2027].map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ flex: '1 1 160px' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                Payment Status
+              </label>
+              <select
+                value={payrollStatusFilter}
+                onChange={(e) => setPayrollStatusFilter(e.target.value)}
+                style={{ width: '100%', fontSize: '0.82rem', borderColor: payrollStatusFilter ? '#137333' : '#dadce0', fontWeight: payrollStatusFilter ? '700' : 'normal' }}
+              >
+                <option value="">All Statuses</option>
+                <option value="processed">Processed (Unpaid)</option>
+                <option value="paid">Paid (Disbursed)</option>
+              </select>
+            </div>
+
+            {(selectedPayrollMonth || selectedPayrollYear || payrollStatusFilter) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedPayrollMonth('');
+                  setSelectedPayrollYear('');
+                  setPayrollStatusFilter('');
+                }}
+                style={{
+                  padding: '7px 12px',
+                  background: '#fef2f2',
+                  color: '#ba1a1a',
+                  borderRadius: '6px',
+                  border: '1px solid #fecaca',
+                  fontSize: '0.76rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  alignSelf: 'flex-end',
+                  height: '34px'
+                }}
+              >
+                Reset Filters
+              </button>
+            )}
+          </div>
+
+          {filteredPayrollRecords.length === 0 ? (
             <div className="g-card" style={{ padding: '32px 20px', textAlign: 'center' }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f3e8ff', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <DollarSign size={24} />
               </div>
               <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
-                No Payroll Registers Processed Yet
+                No Payroll Records Found
               </div>
               <p style={{ color: '#4b5563', fontSize: '0.85rem', maxWidth: '500px', margin: '0 auto 16px' }}>
-                Automated PF (12%), ESI, HRA allowances, and unpaid leave deductions with net disbursable calculations.
+                {allPayrollRecords.length === 0
+                  ? 'Automated PF (12%), ESI, HRA allowances, and unpaid leave deductions with net disbursable calculations.'
+                  : 'No payroll records match your current month/year/status filter.'}
               </p>
-              <button
-                type="button"
-                onClick={() => setIsPayModalOpen(true)}
-                style={{
-                  background: '#1a73e8',
-                  color: '#ffffff',
-                  padding: '8px 18px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
-              >
-                Run Monthly Payroll Calculations
-              </button>
+              {allPayrollRecords.length === 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsPayModalOpen(true)}
+                  style={{
+                    background: '#1a73e8',
+                    color: '#ffffff',
+                    padding: '8px 18px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    border: 'none'
+                  }}
+                >
+                  Run Monthly Payroll Calculations
+                </button>
+              )}
             </div>
           ) : (
             <div className="g-card" style={{ overflow: 'hidden' }}>
@@ -1108,11 +1999,11 @@ export const HRPage = () => {
                       <th>Deductions</th>
                       <th>Net Disbursable</th>
                       <th>Status</th>
-                      <th>Action</th>
+                      <th style={{ textAlign: 'right' }}>Actions & Payslips</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {allPayrollRecords.map((pay, idx) => (
+                    {filteredPayrollRecords.map((pay, idx) => (
                       <tr key={pay.id || pay._id || idx}>
                         <td>
                           <div style={{ fontWeight: '800', color: '#111827' }}>
@@ -1145,81 +2036,111 @@ export const HRPage = () => {
                         <td>
                           <StatusBadge status={pay.status || 'processed'} />
                         </td>
-                        <td>
-                          {pay.status !== 'paid' ? (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedPayrollItem({
-                                  employeeId: pay.employeeId,
-                                  payrollId: pay.id || pay._id,
-                                  employeeName: pay.employeeName || 'Staff Member',
-                                  employeeCode: pay.employeeCode || '',
-                                  departmentName: pay.departmentName,
-                                  roleName: pay.designation,
-                                  month: pay.month,
-                                  monthName: monthNames[pay.month - 1] || `Month ${pay.month}`,
-                                  year: pay.year,
-                                  netSalary: pay.netSalary
-                                });
-                                setIsDisburseModalOpen(true);
-                              }}
-                              style={{
-                                padding: '6px 14px',
-                                background: '#137333',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '5px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                boxShadow: '0 1px 2px rgba(0,0,0,0.08)'
-                              }}
-                            >
-                              <DollarSign size={13} /> Disburse Salary
-                            </button>
-                          ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-start' }}>
-                              <span style={{ color: '#137333', fontWeight: '700', fontSize: '0.75rem' }}>
-                                ✓ Disbursed ({pay.paymentMethod === 'upi' ? 'UPI' : (pay.paymentMethod ? pay.paymentMethod.replace(/_/g, ' ') : 'Bank Transfer')})
-                              </span>
-                              {pay.paymentReference && (
-                                <span style={{ fontSize: '0.68rem', color: '#64748b' }}>
-                                  Ref: {pay.paymentReference}
-                                </span>
-                              )}
-                              {(pay.paymentProof?.fileUrl || pay.payslipUrl) && (
+                        <td style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                              <button
+                                type="button"
+                                title="Generate & Print Official Payslip"
+                                onClick={() => {
+                                  setPayslipItemToPrint(pay);
+                                  setIsPayslipModalOpen(true);
+                                }}
+                                style={{
+                                  padding: '5px 9px',
+                                  background: '#eff6ff',
+                                  border: '1px solid #bfdbfe',
+                                  color: '#1d4ed8',
+                                  borderRadius: '5px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: '700',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px'
+                                }}
+                              >
+                                <Printer size={13} /> Payslip
+                              </button>
+
+                              {pay.status !== 'paid' ? (
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    setSelectedSlipItem(pay);
-                                    setSlipPreviewUrl(getFileUrl(pay.paymentProof?.fileUrl || pay.payslipUrl));
+                                    setSelectedPayrollItem({
+                                      employeeId: pay.employeeId,
+                                      payrollId: pay.id || pay._id,
+                                      employeeName: pay.employeeName || 'Staff Member',
+                                      employeeCode: pay.employeeCode || '',
+                                      departmentName: pay.departmentName,
+                                      roleName: pay.designation,
+                                      month: pay.month,
+                                      monthName: monthNames[pay.month - 1] || `Month ${pay.month}`,
+                                      year: pay.year,
+                                      netSalary: pay.netSalary
+                                    });
+                                    setIsDisburseModalOpen(true);
                                   }}
                                   style={{
+                                    padding: '5px 12px',
+                                    background: '#137333',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    borderRadius: '5px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                    whiteSpace: 'nowrap',
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '4px',
-                                    fontSize: '0.7rem',
-                                    color: '#1d4ed8',
-                                    fontWeight: '700',
-                                    textDecoration: 'none',
-                                    backgroundColor: '#eff6ff',
-                                    padding: '3px 8px',
-                                    borderRadius: '4px',
-                                    border: '1px solid #bfdbfe',
-                                    marginTop: '2px',
-                                    cursor: 'pointer'
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.08)'
                                   }}
                                 >
-                                  <FileText size={11} /> View Slip / Proof
+                                  <DollarSign size={13} /> Disburse
                                 </button>
+                              ) : (
+                                <span style={{ color: '#137333', fontWeight: '700', fontSize: '0.74rem' }}>
+                                  ✓ Disbursed
+                                </span>
                               )}
                             </div>
-                          )}
+
+                            {pay.status === 'paid' && (
+                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                                {pay.paymentReference && (
+                                  <span style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                                    Ref: {pay.paymentReference}
+                                  </span>
+                                )}
+                                {(pay.paymentProof?.fileUrl || pay.payslipUrl) && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedSlipItem(pay);
+                                      setSlipPreviewUrl(getFileUrl(pay.paymentProof?.fileUrl || pay.payslipUrl));
+                                    }}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '4px',
+                                      fontSize: '0.68rem',
+                                      color: '#1d4ed8',
+                                      fontWeight: '700',
+                                      textDecoration: 'none',
+                                      backgroundColor: '#eff6ff',
+                                      padding: '2px 6px',
+                                      borderRadius: '4px',
+                                      border: '1px solid #bfdbfe',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    <FileText size={11} /> Proof
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1254,6 +2175,182 @@ export const HRPage = () => {
         payrollItem={selectedPayrollItem}
         onDisburse={handlePaySalary}
       />
+
+      {/* Edit Employee Modal */}
+      <EditEmployeeModal
+        isOpen={isEditEmpModalOpen}
+        onClose={() => {
+          setIsEditEmpModalOpen(false);
+          setEmployeeToEdit(null);
+        }}
+        employee={employeeToEdit}
+        masterData={masterData}
+        onUpdated={() => {
+          loadData();
+          if (selectedEmployee && employeeToEdit && selectedEmployee._id === employeeToEdit._id) {
+            refreshActiveEmployee(selectedEmployee._id);
+          }
+        }}
+      />
+
+      {/* Printable Official Payslip Modal */}
+      <PrintablePayslipModal
+        isOpen={isPayslipModalOpen}
+        onClose={() => {
+          setIsPayslipModalOpen(false);
+          setPayslipItemToPrint(null);
+        }}
+        payrollItem={payslipItemToPrint}
+      />
+
+      {/* Department Create / Edit Modal */}
+      <Modal
+        isOpen={isDeptModalOpen}
+        onClose={() => setIsDeptModalOpen(false)}
+        title={editingDept ? `Edit Department: ${editingDept.departmentName}` : 'Add New Department'}
+        maxWidth="520px"
+      >
+        <form onSubmit={handleSaveDepartment} style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '10px 4px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>
+              Department Name *
+            </label>
+            <input
+              type="text"
+              required
+              value={deptNameInput}
+              onChange={(e) => setDeptNameInput(e.target.value)}
+              placeholder="e.g. Quality Assurance & Audits"
+              style={{ width: '100%', fontSize: '0.82rem' }}
+            />
+          </div>
+          {!editingDept && (
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>
+                Department Code *
+              </label>
+              <input
+                type="text"
+                required
+                value={deptCodeInput}
+                onChange={(e) => setDeptCodeInput(e.target.value.toUpperCase())}
+                placeholder="e.g. QA_QC, SAFETY"
+                style={{ width: '100%', fontSize: '0.82rem' }}
+              />
+            </div>
+          )}
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>
+              Description
+            </label>
+            <textarea
+              rows={3}
+              value={deptDescInput}
+              onChange={(e) => setDeptDescInput(e.target.value)}
+              placeholder="Operational scope, team mandate, and department objectives..."
+              style={{ width: '100%', fontSize: '0.82rem' }}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
+            <button
+              type="button"
+              onClick={() => setIsDeptModalOpen(false)}
+              style={{ padding: '8px 16px', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              style={{ padding: '8px 18px', background: '#1a73e8', color: '#ffffff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '700' }}
+            >
+              {editingDept ? 'Update Department' : 'Create Department'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Role Designation Create / Edit Modal */}
+      <Modal
+        isOpen={isRoleModalOpen}
+        onClose={() => setIsRoleModalOpen(false)}
+        title={editingRole ? `Edit Role: ${editingRole.roleName}` : 'Add Department Role Designation'}
+        maxWidth="520px"
+      >
+        <form onSubmit={handleSaveRole} style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '10px 4px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>
+              Associated Department *
+            </label>
+            <select
+              disabled={!!editingRole}
+              value={roleDeptCodeInput}
+              onChange={(e) => setRoleDeptCodeInput(e.target.value)}
+              style={{ width: '100%', fontSize: '0.82rem' }}
+            >
+              {(masterData.departments || []).map((d) => (
+                <option key={d.departmentCode || d._id} value={d.departmentCode}>
+                  {d.departmentName} ({d.departmentCode})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>
+              Role Designation Name *
+            </label>
+            <input
+              type="text"
+              required
+              value={roleNameInput}
+              onChange={(e) => setRoleNameInput(e.target.value)}
+              placeholder="e.g. Lead MEP Engineer"
+              style={{ width: '100%', fontSize: '0.82rem' }}
+            />
+          </div>
+          {!editingRole && (
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>
+                Role Code *
+              </label>
+              <input
+                type="text"
+                required
+                value={roleCodeInput}
+                onChange={(e) => setRoleCodeInput(e.target.value.toUpperCase())}
+                placeholder="e.g. LEAD_MEP"
+                style={{ width: '100%', fontSize: '0.82rem' }}
+              />
+            </div>
+          )}
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>
+              Role Description / Scope
+            </label>
+            <textarea
+              rows={3}
+              value={roleDescInput}
+              onChange={(e) => setRoleDescInput(e.target.value)}
+              placeholder="Key duties, reporting lines, and operational tasks..."
+              style={{ width: '100%', fontSize: '0.82rem' }}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
+            <button
+              type="button"
+              onClick={() => setIsRoleModalOpen(false)}
+              style={{ padding: '8px 16px', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              style={{ padding: '8px 18px', background: '#137333', color: '#ffffff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '700' }}
+            >
+              {editingRole ? 'Update Role' : 'Create Role'}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* In-App Slip / Proof Viewer Lightbox Modal */}
       {slipPreviewUrl && (

@@ -46,6 +46,12 @@ const LeadSchema = new mongoose.Schema(
       default: '2BHK Apartment',
     },
 
+    purchaseTimeline: {
+      type: String,
+      trim: true,
+      default: 'Immediate',
+    },
+
     city: {
       type: String,
       trim: true,
@@ -89,6 +95,8 @@ const LeadSchema = new mongoose.Schema(
         'referral',
         'campaign',
         'walk_in',
+        'bulk_upload',
+        'excel_import',
       ],
       default: 'agent',
       index: true,

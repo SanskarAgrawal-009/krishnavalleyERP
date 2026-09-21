@@ -28,13 +28,25 @@ import {
   getDueRemindersAction,
   sendManualReminderAction,
   snoozeReminderAction,
+  bulkUploadLeadsAction,
+  downloadLeadTemplateAction,
 } from '../controllers/leadController.js';
 import { optionalAuth, authenticateToken } from '../middleware/authMiddleware.js';
+import multer from 'multer';
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 }
+});
 
 const router = express.Router();
 
 // Apply optionalAuth to lead routes to capture agent/user identity if logged in
 router.use(optionalAuth);
+
+// Bulk Lead Excel Upload & Template Endpoints (Placed before /:id)
+router.get('/excel-template', downloadLeadTemplateAction);
+router.post('/bulk-upload', authenticateToken, upload.single('file'), bulkUploadLeadsAction);
 
 // Automated & Manual Reminder Engine Endpoints (Placed before /:id)
 router.get('/reminders/due', authenticateToken, getDueRemindersAction);

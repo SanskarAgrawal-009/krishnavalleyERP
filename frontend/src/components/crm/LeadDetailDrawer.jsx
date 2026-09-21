@@ -1382,6 +1382,9 @@ export const LeadDetailDrawer = ({
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', fontSize: '0.82rem', color: '#475569' }}>
               <div><strong>Requirement:</strong> {lead.assignedFlat ? `Flat ${lead.assignedFlat.flatNumber}` : (lead.requirement || 'Not specified')}</div>
+              <div><strong>Budget:</strong> {lead.budget ? (typeof lead.budget === 'number' ? `₹${lead.budget.toLocaleString('en-IN')}` : `₹${lead.budget}`) : 'Not specified'}</div>
+              <div><strong>Timeline:</strong> {lead.purchaseTimeline || 'Immediate'}</div>
+              <div><strong>City:</strong> {lead.city || 'Not specified'}</div>
               <div><strong>Lead Source:</strong> {lead.leadSource?.replace(/_/g, ' ').toUpperCase() || 'Direct'}</div>
               <div><strong>Email:</strong> {lead.email || 'Not provided'}</div>
               <div><strong>Registered:</strong> {new Date(lead.createdAt).toLocaleDateString('en-IN')}</div>

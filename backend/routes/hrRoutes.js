@@ -3,18 +3,29 @@ import multer from 'multer';
 import {
   getHRMaster,
   addDepartment,
+  updateDepartment,
+  deleteDepartment,
   addRole,
+  updateRole,
+  deleteRole,
   getRolesByDepartment,
   createEmployee,
+  updateEmployee,
+  deleteEmployee,
   getEmployees,
   getEmployeeById,
   logAttendance,
+  logBulkAttendance,
+  getAttendanceByDate,
   applyLeave,
   updateLeaveStatus,
+  deleteLeave,
   generateMonthlyPayroll,
+  getMonthlyPayrollRegister,
   processPayrollPayment,
   uploadEmployeeDocument,
-  getHRSummary
+  getHRSummary,
+  seedSampleStaff
 } from '../controllers/hrController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
@@ -34,25 +45,36 @@ router.use(authenticateToken);
 // HR Summary
 router.get('/summary', authorizePermission('hr:view'), getHRSummary);
 
-// 1. Master Data
+// 1. Master Data (Departments & Roles)
 router.get('/master', authorizePermission('hr:view'), getHRMaster);
 router.get('/roles', authorizePermission('hr:view'), getRolesByDepartment);
 router.post('/departments', authorizePermission('hr:manage'), addDepartment);
+router.put('/departments/:deptId', authorizePermission('hr:manage'), updateDepartment);
+router.delete('/departments/:deptId', authorizePermission('hr:manage'), deleteDepartment);
 router.post('/roles', authorizePermission('hr:manage'), addRole);
+router.put('/roles/:roleId', authorizePermission('hr:manage'), updateRole);
+router.delete('/roles/:roleId', authorizePermission('hr:manage'), deleteRole);
 
 // 2. Employee CRUD
 router.post('/employees', authorizePermission('hr:manage'), createEmployee);
 router.get('/employees', authorizePermission('hr:view'), getEmployees);
 router.get('/employees/:id', authorizePermission('hr:view'), getEmployeeById);
+router.put('/employees/:id', authorizePermission('hr:edit', 'hr:manage'), updateEmployee);
+router.delete('/employees/:id', authorizePermission('hr:manage'), deleteEmployee);
+router.post('/seed-sample-staff', authorizePermission('hr:manage'), seedSampleStaff);
 
 // 3. Attendance
+router.get('/attendance', authorizePermission('hr:view'), getAttendanceByDate);
+router.post('/attendance/bulk', authorizePermission('hr:edit', 'hr:manage'), logBulkAttendance);
 router.post('/employees/:id/attendance', authorizePermission('hr:edit', 'hr:manage'), logAttendance);
 
 // 4. Leaves
 router.post('/employees/:id/leaves', authorizePermission('hr:edit', 'hr:view'), applyLeave);
 router.put('/employees/:id/leaves/:leaveId', authorizePermission('hr:edit', 'hr:manage'), updateLeaveStatus);
+router.delete('/employees/:id/leaves/:leaveId', authorizePermission('hr:edit', 'hr:manage'), deleteLeave);
 
 // 5. Payroll
+router.get('/payroll', authorizePermission('hr:payroll', 'hr:view'), getMonthlyPayrollRegister);
 router.post('/payroll/generate', authorizePermission('hr:payroll', 'hr:manage'), generateMonthlyPayroll);
 router.post('/employees/:id/payroll/:payrollId/pay', authorizePermission('hr:payroll', 'hr:manage'), upload.single('paymentProof'), processPayrollPayment);
 

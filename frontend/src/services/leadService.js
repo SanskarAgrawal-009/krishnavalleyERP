@@ -1,4 +1,4 @@
-import { request } from './api.js';
+import { request, BASE_URL } from './api.js';
 
 export const leadService = {
   getLeads: (params = {}) => {
@@ -123,5 +123,12 @@ export const leadService = {
   snoozeReminder: (data) => request('/leads/reminders/snooze', {
     method: 'POST',
     body: JSON.stringify(data)
-  })
+  }),
+
+  bulkUploadLeads: (data) => request('/leads/bulk-upload', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+
+  downloadExcelTemplateUrl: () => `${BASE_URL}/leads/excel-template`
 };

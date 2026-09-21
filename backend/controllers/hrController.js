@@ -745,3 +745,568 @@ export const getHRSummary = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// =========================================================
+// 8. EXTENDED EMPLOYEE CRUD & ATTENDANCE & PAYROLL OPERATIONS
+// =========================================================
+
+export const updateEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const master = await ensureHRMaster();
+    const employee = await Employee.findById(id);
+    if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    const {
+      firstName,
+      lastName,
+      mobileNo,
+      phone,
+      email,
+      dateOfBirth,
+      gender,
+      joiningDate,
+      departmentId,
+      roleId,
+      employmentType,
+      employmentStatus,
+      salaryStructure,
+      address,
+      emergencyContact,
+    } = req.body;
+
+    const phoneNum = mobileNo || phone || employee.mobileNo;
+    if (emergencyContact?.mobileNo && arePhoneNumbersSame(phoneNum, emergencyContact.mobileNo)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Employee primary mobile number and emergency contact mobile number cannot be the same.'
+      });
+    }
+
+    if (firstName !== undefined) employee.firstName = firstName.trim();
+    if (lastName !== undefined) employee.lastName = lastName.trim();
+    if (phoneNum) employee.mobileNo = phoneNum;
+    if (email !== undefined) employee.email = email.trim();
+    if (dateOfBirth) employee.dateOfBirth = new Date(dateOfBirth);
+    if (gender) employee.gender = gender;
+    if (joiningDate) employee.joiningDate = new Date(joiningDate);
+    if (employmentType) employee.employmentType = employmentType;
+    if (employmentStatus) employee.employmentStatus = employmentStatus;
+    if (address) employee.address = { ...employee.address, ...address };
+    if (emergencyContact) employee.emergencyContact = { ...employee.emergencyContact, ...emergencyContact };
+
+    if (departmentId) {
+      const selectedDept = master.departments.find((d) => d._id.toString() === departmentId.toString()) || master.departments[0];
+      employee.departmentId = selectedDept._id;
+    }
+
+    if (roleId) {
+      const selectedRole = master.roles.find((r) => r._id.toString() === roleId.toString()) || master.roles[0];
+      employee.roleId = selectedRole._id;
+    }
+
+    if (salaryStructure) {
+      const basic = Number(salaryStructure.basicSalary) || employee.salaryStructure?.basicSalary || 45000;
+      const allowances = salaryStructure.allowances !== undefined ? Number(salaryStructure.allowances) : Math.round(basic * 0.25);
+      const deductions = salaryStructure.deductions !== undefined ? Number(salaryStructure.deductions) : 0;
+      employee.salaryStructure = { basicSalary: basic, allowances, deductions };
+    }
+
+    await employee.save();
+    const formatted = formatEmployeeWithMaster(employee, master);
+    return res.json({ success: true, message: 'Employee updated successfully', data: formatted });
+  } catch (error) {
+    console.error('Error updating employee:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const employee = await Employee.findById(id);
+    if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    // Unlink any user pointing to this employee
+    await User.updateMany({ employeeId: employee._id }, { $unset: { employeeId: '' } });
+
+    await Employee.findByIdAndDelete(id);
+    return res.json({
+      success: true,
+      message: `Employee ${employee.firstName} ${employee.lastName} (${employee.employeeCode}) removed successfully`
+    });
+  } catch (error) {
+    console.error('Error deleting employee:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const logBulkAttendance = async (req, res) => {
+  try {
+    const { date, records } = req.body;
+    if (!Array.isArray(records) || records.length === 0) {
+      return res.status(400).json({ success: false, message: 'No attendance records provided' });
+    }
+
+    const attDate = date ? new Date(date) : new Date();
+    const targetDateStr = attDate.toISOString().slice(0, 10);
+    let updatedCount = 0;
+
+    for (const rec of records) {
+      if (!rec.employeeId) continue;
+      const employee = await Employee.findById(rec.employeeId);
+      if (!employee) continue;
+
+      const workingHours =
+        rec.status === 'absent' || rec.status === 'leave' || rec.status === 'holiday'
+          ? 0
+          : rec.status === 'half_day'
+          ? 4
+          : (Number(rec.workingHours) || 8.5);
+
+      const entry = {
+        date: attDate,
+        checkIn: rec.checkIn ? new Date(rec.checkIn) : (rec.status === 'present' || rec.status === 'late' || rec.status === 'half_day' ? attDate : undefined),
+        checkOut: rec.checkOut ? new Date(rec.checkOut) : undefined,
+        workingHours,
+        status: rec.status || 'present',
+        remarks: rec.remarks || ''
+      };
+
+      const existingIdx = (employee.attendance || []).findIndex(
+        (a) => a.date && new Date(a.date).toISOString().slice(0, 10) === targetDateStr
+      );
+
+      if (existingIdx >= 0) {
+        employee.attendance[existingIdx] = { ...employee.attendance[existingIdx], ...entry };
+      } else {
+        employee.attendance.push(entry);
+      }
+
+      await employee.save();
+      updatedCount++;
+    }
+
+    return res.json({
+      success: true,
+      message: `Daily attendance roster successfully recorded for ${updatedCount} employees on ${targetDateStr}`
+    });
+  } catch (error) {
+    console.error('Error logging bulk attendance:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getAttendanceByDate = async (req, res) => {
+  try {
+    const { date } = req.query;
+    const master = await ensureHRMaster();
+    const employees = await Employee.find({ employmentStatus: { $ne: 'terminated' } });
+
+    const targetDateStr = date ? new Date(date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+
+    const roster = [];
+    const stats = { present: 0, absent: 0, late: 0, half_day: 0, leave: 0, holiday: 0, total: employees.length };
+
+    employees.forEach((emp) => {
+      const attRecord = (emp.attendance || []).find(
+        (a) => a.date && new Date(a.date).toISOString().slice(0, 10) === targetDateStr
+      );
+
+      const status = attRecord ? attRecord.status : 'not_marked';
+      if (stats[status] !== undefined) stats[status]++;
+
+      const formatted = formatEmployeeWithMaster(emp, master);
+
+      roster.push({
+        employeeId: emp._id,
+        employeeCode: emp.employeeCode,
+        employeeName: `${emp.firstName} ${emp.lastName}`,
+        departmentName: formatted.departmentName,
+        designation: formatted.designation,
+        status: status === 'not_marked' ? 'present' : status,
+        isMarked: !!attRecord,
+        checkIn: attRecord?.checkIn,
+        checkOut: attRecord?.checkOut,
+        workingHours: attRecord?.workingHours !== undefined ? attRecord.workingHours : (status === 'absent' ? 0 : 8.5),
+        remarks: attRecord?.remarks || ''
+      });
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        date: targetDateStr,
+        stats,
+        roster
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching attendance by date:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteLeave = async (req, res) => {
+  try {
+    const { id, leaveId } = req.params;
+    const employee = await Employee.findById(id);
+    if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    employee.leaves = (employee.leaves || []).filter((l) => l._id.toString() !== leaveId);
+    await employee.save();
+
+    return res.json({ success: true, message: 'Leave application removed successfully' });
+  } catch (error) {
+    console.error('Error deleting leave:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getMonthlyPayrollRegister = async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    const m = month ? Number(month) : (new Date().getMonth() + 1);
+    const y = year ? Number(year) : new Date().getFullYear();
+
+    const master = await ensureHRMaster();
+    const employees = await Employee.find();
+
+    const records = [];
+    const summary = {
+      totalEmployees: employees.length,
+      processedCount: 0,
+      paidCount: 0,
+      totalGross: 0,
+      totalDeductions: 0,
+      totalNetDisbursable: 0,
+      totalDisbursed: 0,
+      totalPending: 0
+    };
+
+    employees.forEach((emp) => {
+      const formatted = formatEmployeeWithMaster(emp, master);
+      const paySlip = (emp.payroll || []).find((p) => p.month === m && p.year === y);
+
+      if (paySlip) {
+        summary.processedCount++;
+        summary.totalGross += (paySlip.grossSalary || 0);
+        summary.totalDeductions += ((paySlip.deductions || 0) + (paySlip.unpaidLeaveDeduction || 0));
+        summary.totalNetDisbursable += (paySlip.netSalary || 0);
+
+        if (paySlip.status === 'paid') {
+          summary.paidCount++;
+          summary.totalDisbursed += (paySlip.netSalary || 0);
+        } else {
+          summary.totalPending += (paySlip.netSalary || 0);
+        }
+
+        records.push({
+          ...(paySlip.toObject ? paySlip.toObject() : paySlip),
+          id: paySlip._id,
+          employeeId: emp._id,
+          employeeCode: emp.employeeCode,
+          employeeName: `${emp.firstName} ${emp.lastName}`,
+          phone: emp.mobileNo,
+          email: emp.email,
+          joiningDate: emp.joiningDate,
+          departmentName: formatted.departmentName,
+          designation: formatted.designation,
+          address: emp.address
+        });
+      }
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        month: m,
+        year: y,
+        summary,
+        records
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching monthly payroll register:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateDepartment = async (req, res) => {
+  try {
+    const { deptId } = req.params;
+    const { departmentName, description } = req.body;
+    const master = await ensureHRMaster();
+
+    const dept = master.departments.id(deptId);
+    if (!dept) return res.status(404).json({ success: false, message: 'Department not found' });
+
+    if (departmentName) dept.departmentName = departmentName;
+    if (description !== undefined) dept.description = description;
+
+    await master.save();
+    return res.json({ success: true, message: 'Department updated successfully', data: master });
+  } catch (error) {
+    console.error('Error updating department:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteDepartment = async (req, res) => {
+  try {
+    const { deptId } = req.params;
+    const master = await ensureHRMaster();
+
+    const inUse = await Employee.countDocuments({ departmentId: deptId });
+    if (inUse > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot delete department: ${inUse} employee(s) are currently assigned to it.`
+      });
+    }
+
+    master.departments = master.departments.filter((d) => d._id.toString() !== deptId);
+    await master.save();
+    return res.json({ success: true, message: 'Department deleted successfully', data: master });
+  } catch (error) {
+    console.error('Error deleting department:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateRole = async (req, res) => {
+  try {
+    const { roleId } = req.params;
+    const { roleName, description, permissions } = req.body;
+    const master = await ensureHRMaster();
+
+    const role = master.roles.id(roleId);
+    if (!role) return res.status(404).json({ success: false, message: 'Role not found' });
+
+    if (roleName) role.roleName = roleName;
+    if (description !== undefined) role.description = description;
+    if (permissions) role.permissions = permissions;
+
+    await master.save();
+    return res.json({ success: true, message: 'Role updated successfully', data: master });
+  } catch (error) {
+    console.error('Error updating role:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteRole = async (req, res) => {
+  try {
+    const { roleId } = req.params;
+    const master = await ensureHRMaster();
+
+    const inUse = await Employee.countDocuments({ roleId });
+    if (inUse > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot delete role: ${inUse} employee(s) are currently assigned to it.`
+      });
+    }
+
+    master.roles = master.roles.filter((r) => r._id.toString() !== roleId);
+    await master.save();
+    return res.json({ success: true, message: 'Role deleted successfully', data: master });
+  } catch (error) {
+    console.error('Error deleting role:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const seedSampleStaff = async (req, res) => {
+  try {
+    const count = await Employee.countDocuments();
+    if (count > 0) {
+      return res.json({ success: true, message: `Staff directory already contains ${count} employee(s).` });
+    }
+
+    const master = await ensureHRMaster();
+
+    const findDept = (code) => master.departments.find((d) => d.departmentCode === code) || master.departments[0];
+    const findRole = (code) => master.roles.find((r) => r.roleCode === code) || master.roles[0];
+
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+
+    const sampleEmployees = [
+      {
+        employeeCode: 'KV-ENG-101',
+        firstName: 'Suresh',
+        lastName: 'Chandra',
+        mobileNo: '+91 98765 11001',
+        email: 'suresh.chandra@krishnavalley.com',
+        gender: 'male',
+        joiningDate: new Date('2023-04-15'),
+        deptCode: 'ENG',
+        roleCode: 'PROJ_MGR',
+        employmentType: 'full_time',
+        basicSalary: 65000,
+        city: 'Mathura',
+        state: 'Uttar Pradesh'
+      },
+      {
+        employeeCode: 'KV-ENG-102',
+        firstName: 'Dinesh',
+        lastName: 'Rawat',
+        mobileNo: '+91 98765 11002',
+        email: 'dinesh.rawat@krishnavalley.com',
+        gender: 'male',
+        joiningDate: new Date('2023-06-01'),
+        deptCode: 'ENG',
+        roleCode: 'SITE_ENG',
+        employmentType: 'full_time',
+        basicSalary: 48000,
+        city: 'Vrindavan',
+        state: 'Uttar Pradesh'
+      },
+      {
+        employeeCode: 'KV-ARC-201',
+        firstName: 'Ananya',
+        lastName: 'Iyer',
+        mobileNo: '+91 98765 11003',
+        email: 'ananya.iyer@krishnavalley.com',
+        gender: 'female',
+        joiningDate: new Date('2023-08-10'),
+        deptCode: 'ARC',
+        roleCode: 'CHIEF_ARCH',
+        employmentType: 'full_time',
+        basicSalary: 55000,
+        city: 'Mathura',
+        state: 'Uttar Pradesh'
+      },
+      {
+        employeeCode: 'KV-FIN-301',
+        firstName: 'Manish',
+        lastName: 'Khandelwal',
+        mobileNo: '+91 98765 11004',
+        email: 'manish.k@krishnavalley.com',
+        gender: 'male',
+        joiningDate: new Date('2023-03-01'),
+        deptCode: 'FIN',
+        roleCode: 'SR_ACCOUNTANT',
+        employmentType: 'full_time',
+        basicSalary: 50000,
+        city: 'Agra',
+        state: 'Uttar Pradesh'
+      },
+      {
+        employeeCode: 'KV-FAC-401',
+        firstName: 'Kailash',
+        lastName: 'Yadav',
+        mobileNo: '+91 98765 11005',
+        email: 'kailash.yadav@krishnavalley.com',
+        gender: 'male',
+        joiningDate: new Date('2023-10-01'),
+        deptCode: 'FAC',
+        roleCode: 'FAC_SUPER',
+        employmentType: 'full_time',
+        basicSalary: 38000,
+        city: 'Mathura',
+        state: 'Uttar Pradesh'
+      },
+      {
+        employeeCode: 'KV-HR-501',
+        firstName: 'Pooja',
+        lastName: 'Sharma',
+        mobileNo: '+91 98765 11006',
+        email: 'pooja.sharma@krishnavalley.com',
+        gender: 'female',
+        joiningDate: new Date('2023-09-15'),
+        deptCode: 'HR',
+        roleCode: 'PAYROLL_OFFICER',
+        employmentType: 'full_time',
+        basicSalary: 42000,
+        city: 'Mathura',
+        state: 'Uttar Pradesh'
+      }
+    ];
+
+    const today = new Date();
+    const created = [];
+
+    for (const item of sampleEmployees) {
+      const dept = findDept(item.deptCode);
+      const role = findRole(item.roleCode);
+      const allowances = Math.round(item.basicSalary * 0.25);
+      const deductions = Math.round(item.basicSalary * 0.12);
+      const grossSalary = item.basicSalary + allowances;
+      const netSalary = grossSalary - deductions;
+
+      const attendance = [];
+      for (let i = 0; i < 3; i++) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        attendance.push({
+          date: d,
+          checkIn: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 9, 15, 0),
+          checkOut: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 18, 0, 0),
+          workingHours: 8.75,
+          status: 'present',
+          remarks: 'Regular Site Shift'
+        });
+      }
+
+      const emp = new Employee({
+        employeeCode: item.employeeCode,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        mobileNo: item.mobileNo,
+        email: item.email,
+        gender: item.gender,
+        joiningDate: item.joiningDate,
+        departmentId: dept._id,
+        roleId: role._id,
+        employmentType: item.employmentType,
+        employmentStatus: 'active',
+        address: { city: item.city, state: item.state, country: 'India' },
+        emergencyContact: { name: `${item.firstName} Family`, relationship: 'Spouse', mobileNo: '+91 98765 99999' },
+        salaryStructure: {
+          basicSalary: item.basicSalary,
+          allowances,
+          deductions
+        },
+        attendance,
+        leaves: [
+          {
+            leaveType: 'casual',
+            fromDate: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000),
+            toDate: new Date(today.getTime() + 8 * 24 * 60 * 60 * 1000),
+            numberOfDays: 2,
+            reason: 'Family function at hometown',
+            status: 'pending'
+          }
+        ],
+        payroll: [
+          {
+            month: currentMonth,
+            year: currentYear,
+            basicSalary: item.basicSalary,
+            allowances,
+            deductions,
+            unpaidLeaveDeduction: 0,
+            grossSalary,
+            netSalary,
+            status: 'processed',
+            payslipUrl: `/payslips/slip_${item.employeeCode}_${currentMonth}_${currentYear}.pdf`
+          }
+        ]
+      });
+
+      await emp.save();
+      created.push(emp);
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: `Successfully seeded ${created.length} sample Krishna Valley staff members!`,
+      count: created.length
+    });
+  } catch (error) {
+    console.error('Error seeding sample staff:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

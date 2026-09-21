@@ -52,6 +52,7 @@ const allowedOrigins = [
   'http://localhost:5000',
   'http://127.0.0.1:5000',
   'https://main.djgpkgdb3xyow.amplifyapp.com',
+  'https://main.d22hm5lhhhbu4j.amplifyapp.com',
   'http://54.83.115.193',
   process.env.CLIENT_URL
 ].filter(Boolean);
