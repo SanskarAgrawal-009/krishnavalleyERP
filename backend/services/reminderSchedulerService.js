@@ -151,6 +151,73 @@ export const composeTeamFollowUpReminder = (lead, fu) => {
 };
 
 /**
+ * Compose message content for Client Follow-Up (Sent 30 minutes before task)
+ */
+export const composeClientFollowUpReminder = (lead, fu) => {
+  const followUpDate = new Date(fu.nextFollowUpDate || fu.date);
+  const timeStr = formatTime(followUpDate);
+  const dateStr = formatDate(followUpDate);
+  const modeName = (fu.mode || 'call').replace(/_/g, ' ');
+  const modeCapital = modeName.charAt(0).toUpperCase() + modeName.slice(1);
+  const rep = fu.assignedTo || lead.assignedTo;
+  const repName = rep?.firstName ? `${rep.firstName} ${rep.lastName || ''}`.trim() : 'Property Advisor';
+  const repPhone = rep?.mobileNo || '+91 98765 43210';
+  const unitStr = lead.assignedFlat?.flatNumber ? `Flat ${lead.assignedFlat.flatNumber}` : (lead.requirement || 'Property Consultation');
+
+  let text = `Hello ${lead.name},\n\n`;
+  text += `This is a reminder that your scheduled ${modeName} discussion with Krishna Valley is coming up today in 30 minutes at ${timeStr} (${dateStr}).\n\n`;
+  text += `Discussion Topic / Interest: ${unitStr}\n`;
+  text += `Your Relationship Manager: ${repName} (${repPhone})\n\n`;
+  text += `Our team will be connecting with you shortly. If you would like to reschedule or have immediate questions, feel free to reply directly to this email.\n\nWarm regards,\nKrishna Valley Client Relations`;
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 580px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+      <div style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); padding: 24px; color: #ffffff;">
+        <h2 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Krishna Valley</h2>
+        <p style="margin: 6px 0 0 0; font-size: 14px; opacity: 0.9;">Upcoming ${modeCapital} Consultation Reminder</p>
+      </div>
+
+      <div style="padding: 24px; color: #1e293b; line-height: 1.6;">
+        <p style="margin-top: 0; font-size: 16px; color: #0f172a;">Dear <strong>${lead.name}</strong>,</p>
+        <p style="color: #334155; line-height: 1.6; margin: 0 0 16px 0;">
+          This is a friendly reminder that your scheduled <strong>${modeName}</strong> consultation with <strong>Krishna Valley</strong> is coming up in <strong>30 minutes</strong> at <strong>${timeStr}</strong> today (${dateStr}).
+        </p>
+
+        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin: 18px 0;">
+          <tr>
+            <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; width: 150px; border-bottom: 1px solid #edf2f7;">Interaction Mode:</td>
+            <td style="padding: 12px 16px; font-size: 14px; color: #0f172a; font-weight: 700; border-bottom: 1px solid #edf2f7;">${modeCapital} Consultation</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Scheduled Time:</td>
+            <td style="padding: 12px 16px; font-size: 14px; color: #0f766e; font-weight: 700; border-bottom: 1px solid #edf2f7;">${timeStr} (${dateStr})</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Requirement / Interest:</td>
+            <td style="padding: 12px 16px; font-size: 14px; color: #0f172a; border-bottom: 1px solid #edf2f7;">${unitStr}</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600;">Your Relationship Manager:</td>
+            <td style="padding: 12px 16px; font-size: 14px; color: #0f172a; font-weight: 600;">${repName} (${repPhone})</td>
+          </tr>
+        </table>
+
+        <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 16px 0 0 0;">
+          Our team will be connecting with you at the appointed time. If you need to adjust your schedule or have any questions beforehand, please feel free to reply directly to this email or call <strong>${repPhone}</strong>.
+        </p>
+
+        <p style="font-size: 14px; color: #64748b; margin: 20px 0 0 0; border-top: 1px solid #f1f5f9; padding-top: 14px;">
+          Warm regards,<br/>
+          <strong>Krishna Valley Client Relations Team</strong>
+        </p>
+      </div>
+    </div>
+  `;
+
+  return { text, html, subject: `Reminder: Scheduled ${modeCapital} with Krishna Valley at ${timeStr}` };
+};
+
+/**
  * Main function that checks all pending follow-ups and site visits in the 30-minute window
  */
 export const checkAndDispatchReminders = async () => {
@@ -161,14 +228,17 @@ export const checkAndDispatchReminders = async () => {
     const windowEnd = new Date(now.getTime() + 32 * 60 * 1000);
 
     // -------------------------------------------------------------
-    // 1. TEAM FOLLOW-UP REMINDERS (All Modes: Call, WhatsApp, Meeting, Site Visit)
+    // 1. AUTOMATIC 30-MINUTE REMINDERS: BOTH SALES REP AND CLIENT
     // -------------------------------------------------------------
-    const leadsWithTeamReminders = await Lead.find({
+    const leadsWithPendingFollowUps = await Lead.find({
       'followUps': {
         $elemMatch: {
           status: 'pending',
           nextFollowUpDate: { $gte: windowStart, $lte: windowEnd },
-          'reminderStatus.teamNotified': { $ne: true }
+          $or: [
+            { 'reminderStatus.teamNotified': { $ne: true } },
+            { 'reminderStatus.clientNotified': { $ne: true } }
+          ]
         }
       }
     })
@@ -177,7 +247,7 @@ export const checkAndDispatchReminders = async () => {
       .populate('followUps.scheduledBy', 'firstName lastName email mobileNo')
       .populate('assignedFlat', 'flatNumber projectId');
 
-    for (const lead of leadsWithTeamReminders) {
+    for (const lead of leadsWithPendingFollowUps) {
       let modified = false;
 
       for (const fu of lead.followUps) {
@@ -185,51 +255,99 @@ export const checkAndDispatchReminders = async () => {
           fu.status === 'pending' &&
           fu.nextFollowUpDate &&
           new Date(fu.nextFollowUpDate) >= windowStart &&
-          new Date(fu.nextFollowUpDate) <= windowEnd &&
-          !fu.reminderStatus?.teamNotified
+          new Date(fu.nextFollowUpDate) <= windowEnd
         ) {
-          const assignee = fu.assignedTo || lead.assignedTo || fu.scheduledBy;
-          const { text, html, subject } = composeTeamFollowUpReminder(lead, fu);
-          const channelsSent = ['in_app'];
-
-          // Dispatch WhatsApp to Sales Executive if phone exists
-          if (assignee?.mobileNo) {
-            try {
-              await sendWhatsApp({
-                to: assignee.mobileNo,
-                text,
-                headerText: 'Krishna Valley • Follow-Up Reminder',
-                variables: { client_name: lead.name }
-              });
-              channelsSent.push('whatsapp');
-              console.log(`💬 [Reminder Engine] Dispatched 30-min WhatsApp reminder to ${assignee.mobileNo} for lead "${lead.name}".`);
-            } catch (err) {
-              console.warn(`Could not dispatch team WhatsApp reminder for lead ${lead._id}:`, err.message);
-            }
-          }
-
-          // Dispatch Email to Sales Executive if email exists
-          if (assignee?.email) {
-            try {
-              await sendEmail({
-                to: assignee.email,
-                subject,
-                bodyHtml: html,
-                text
-              });
-              channelsSent.push('email');
-              console.log(`📧 [Reminder Engine] Dispatched 30-min email reminder to ${assignee.email} for lead "${lead.name}".`);
-            } catch (err) {
-              console.warn(`Could not dispatch team email reminder for lead ${lead._id}:`, err.message);
-            }
-          }
-
-          // Update reminderStatus
           if (!fu.reminderStatus) fu.reminderStatus = {};
-          fu.reminderStatus.teamNotified = true;
-          fu.reminderStatus.teamNotifiedAt = new Date();
-          fu.reminderStatus.teamChannels = channelsSent;
-          modified = true;
+
+          // A. AUTOMATIC 30-MIN EMAIL TO SALES REP
+          if (!fu.reminderStatus.teamNotified) {
+            const assignee = fu.assignedTo || lead.assignedTo || fu.scheduledBy;
+            const { text, html, subject } = composeTeamFollowUpReminder(lead, fu);
+            const channelsSent = ['in_app'];
+
+            // Dispatch Email to Sales Rep
+            if (assignee?.email) {
+              try {
+                await sendEmail({
+                  to: assignee.email,
+                  subject,
+                  bodyHtml: html,
+                  text
+                });
+                channelsSent.push('email');
+                console.log(`📧 [Reminder Engine] Automatically sent 30-min reminder email to sales rep ${assignee.email} for lead "${lead.name}".`);
+              } catch (err) {
+                console.warn(`Could not dispatch sales rep email reminder for lead ${lead._id}:`, err.message);
+              }
+            }
+
+            // Dispatch WhatsApp to Sales Rep
+            if (assignee?.mobileNo) {
+              try {
+                await sendWhatsApp({
+                  to: assignee.mobileNo,
+                  text,
+                  headerText: 'Krishna Valley • Follow-Up Reminder',
+                  variables: { client_name: lead.name }
+                });
+                channelsSent.push('whatsapp');
+                console.log(`💬 [Reminder Engine] Sent 30-min WhatsApp reminder to sales rep ${assignee.mobileNo} for lead "${lead.name}".`);
+              } catch (err) {
+                console.warn(`Could not dispatch sales rep WhatsApp reminder for lead ${lead._id}:`, err.message);
+              }
+            }
+
+            fu.reminderStatus.teamNotified = true;
+            fu.reminderStatus.teamNotifiedAt = new Date();
+            fu.reminderStatus.teamChannels = channelsSent;
+            modified = true;
+          }
+
+          // B. AUTOMATIC 30-MIN EMAIL TO CLIENT
+          if (!fu.reminderStatus.clientNotified) {
+            const clientChannels = [];
+            const { text: clientText, html: clientHtml, subject: clientSubject } =
+              fu.mode === 'site_visit'
+                ? composeClientSiteVisitReminder(lead, fu)
+                : composeClientFollowUpReminder(lead, fu);
+
+            // Dispatch Email to Client
+            if (lead.email) {
+              try {
+                await sendEmail({
+                  to: lead.email,
+                  subject: clientSubject,
+                  bodyHtml: clientHtml,
+                  text: clientText
+                });
+                clientChannels.push('email');
+                console.log(`📧 [Reminder Engine] Automatically sent 30-min reminder email to client ${lead.email} for "${lead.name}".`);
+              } catch (err) {
+                console.warn(`Could not dispatch client email reminder for lead ${lead._id}:`, err.message);
+              }
+            }
+
+            // Dispatch WhatsApp to Client
+            if (lead.mobileNo) {
+              try {
+                await sendWhatsApp({
+                  to: lead.mobileNo,
+                  text: clientText,
+                  headerText: 'Krishna Valley • Reminder',
+                  variables: { client_name: lead.name }
+                });
+                clientChannels.push('whatsapp');
+                console.log(`💬 [Reminder Engine] Sent 30-min WhatsApp reminder to client ${lead.mobileNo} for "${lead.name}".`);
+              } catch (err) {
+                console.warn(`Could not dispatch client WhatsApp reminder for lead ${lead._id}:`, err.message);
+              }
+            }
+
+            fu.reminderStatus.clientNotified = true;
+            fu.reminderStatus.clientNotifiedAt = new Date();
+            fu.reminderStatus.clientChannels = clientChannels;
+            modified = true;
+          }
         }
       }
 
@@ -239,40 +357,23 @@ export const checkAndDispatchReminders = async () => {
     }
 
     // -------------------------------------------------------------
-    // 2. CLIENT REMINDERS (ONLY FOR SITE VISITS!)
+    // 2. EXTERNAL SITE VISITS REMINDERS (If logged via externalSiteVisits)
     // -------------------------------------------------------------
-    // Check scheduled external site visits
-    const leadsWithClientVisits = await Lead.find({
-      $or: [
-        {
-          'externalSiteVisits': {
-            $elemMatch: {
-              visitDate: { $gte: windowStart, $lte: windowEnd },
-              'reminderStatus.clientNotified': { $ne: true }
-            }
-          }
-        },
-        {
-          'followUps': {
-            $elemMatch: {
-              mode: 'site_visit',
-              status: 'pending',
-              nextFollowUpDate: { $gte: windowStart, $lte: windowEnd },
-              'reminderStatus.clientNotified': { $ne: true }
-            }
-          }
+    const leadsWithExternalVisits = await Lead.find({
+      'externalSiteVisits': {
+        $elemMatch: {
+          visitDate: { $gte: windowStart, $lte: windowEnd },
+          'reminderStatus.clientNotified': { $ne: true }
         }
-      ]
+      }
     })
-      .populate('assignedTo', 'firstName lastName mobileNo')
-      .populate('assignedFlat', 'flatNumber projectId')
+      .populate('assignedTo', 'firstName lastName email mobileNo')
       .populate('externalSiteVisits.assignedFlat', 'flatNumber projectId')
-      .populate('externalSiteVisits.accompaniedBy', 'firstName lastName mobileNo');
+      .populate('externalSiteVisits.accompaniedBy', 'firstName lastName email mobileNo');
 
-    for (const lead of leadsWithClientVisits) {
+    for (const lead of leadsWithExternalVisits) {
       let modified = false;
 
-      // Check externalSiteVisits
       for (const esv of lead.externalSiteVisits || []) {
         if (
           esv.visitDate &&
@@ -283,7 +384,21 @@ export const checkAndDispatchReminders = async () => {
           const { text, html, subject } = composeClientSiteVisitReminder(lead, esv);
           const channelsSent = [];
 
-          // WhatsApp to Client
+          if (lead.email) {
+            try {
+              await sendEmail({
+                to: lead.email,
+                subject,
+                bodyHtml: html,
+                text
+              });
+              channelsSent.push('email');
+              console.log(`📧 [Reminder Engine] Sent 30-min external site visit email to client ${lead.email} for "${lead.name}".`);
+            } catch (err) {
+              console.warn(`Could not dispatch client site visit email for lead ${lead._id}:`, err.message);
+            }
+          }
+
           if (lead.mobileNo) {
             try {
               await sendWhatsApp({
@@ -295,22 +410,6 @@ export const checkAndDispatchReminders = async () => {
               channelsSent.push('whatsapp');
             } catch (err) {
               console.warn(`Could not dispatch client WhatsApp reminder for lead ${lead._id}:`, err.message);
-            }
-          }
-
-          // Email to Client
-          if (lead.email) {
-            try {
-              await sendEmail({
-                to: lead.email,
-                subject,
-                bodyHtml: html,
-                text
-              });
-              channelsSent.push('email');
-              console.log(`📧 [Reminder Engine] Dispatched 30-min client site visit email to ${lead.email} for "${lead.name}".`);
-            } catch (err) {
-              console.warn(`Could not dispatch client email reminder for lead ${lead._id}:`, err.message);
             }
           }
 
@@ -318,56 +417,6 @@ export const checkAndDispatchReminders = async () => {
           esv.reminderStatus.clientNotified = true;
           esv.reminderStatus.clientNotifiedAt = new Date();
           esv.reminderStatus.clientChannels = channelsSent;
-          modified = true;
-        }
-      }
-
-      // Check followUps with mode === 'site_visit'
-      for (const fu of lead.followUps || []) {
-        if (
-          fu.mode === 'site_visit' &&
-          fu.status === 'pending' &&
-          fu.nextFollowUpDate &&
-          new Date(fu.nextFollowUpDate) >= windowStart &&
-          new Date(fu.nextFollowUpDate) <= windowEnd &&
-          !fu.reminderStatus?.clientNotified
-        ) {
-          const { text, html, subject } = composeClientSiteVisitReminder(lead, fu);
-          const channelsSent = [];
-
-          if (lead.mobileNo) {
-            try {
-              await sendWhatsApp({
-                to: lead.mobileNo,
-                text,
-                headerText: 'Krishna Valley • Site Visit Reminder',
-                variables: { client_name: lead.name }
-              });
-              channelsSent.push('whatsapp');
-            } catch (err) {
-              console.warn(`Could not dispatch client WhatsApp reminder for lead ${lead._id}:`, err.message);
-            }
-          }
-
-          if (lead.email) {
-            try {
-              await sendEmail({
-                to: lead.email,
-                subject,
-                bodyHtml: html,
-                text
-              });
-              channelsSent.push('email');
-              console.log(`📧 [Reminder Engine] Dispatched 30-min client site visit email to ${lead.email} for "${lead.name}".`);
-            } catch (err) {
-              console.warn(`Could not dispatch client email reminder for lead ${lead._id}:`, err.message);
-            }
-          }
-
-          if (!fu.reminderStatus) fu.reminderStatus = {};
-          fu.reminderStatus.clientNotified = true;
-          fu.reminderStatus.clientNotifiedAt = new Date();
-          fu.reminderStatus.clientChannels = channelsSent;
           modified = true;
         }
       }

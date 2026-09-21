@@ -85,6 +85,22 @@ export const rentalService = {
   deleteOwnershipHistory: (flatId, historyId) =>
     request(`/rentals/${flatId}/history/${historyId}`, {
       method: 'DELETE'
+    }),
+
+  // Upload rental agreement document (PDF/image)
+  uploadAgreement: (flatId, file) => {
+    const formData = new FormData();
+    formData.append('agreementFile', file);
+    return request(`/rentals/${flatId}/agreement`, {
+      method: 'POST',
+      body: formData
+    });
+  },
+
+  // Delete rental agreement document
+  deleteAgreement: (flatId) =>
+    request(`/rentals/${flatId}/agreement`, {
+      method: 'DELETE'
     })
 };
 

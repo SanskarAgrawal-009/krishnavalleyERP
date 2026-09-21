@@ -402,6 +402,17 @@ const FlatSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
+      // Rental Agreement Document Upload
+      agreementDocument: {
+        fileUrl: String,
+        fileName: String,
+        uploadedAt: Date,
+        verificationStatus: {
+          type: String,
+          enum: ['pending', 'verified', 'rejected'],
+          default: 'pending',
+        },
+      },
       // Month-by-Month Passbook Entries
       ledgerEntries: [
         {

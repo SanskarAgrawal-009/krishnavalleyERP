@@ -30,6 +30,8 @@ import {
   snoozeReminderAction,
   bulkUploadLeadsAction,
   downloadLeadTemplateAction,
+  bulkDeleteByStageAction,
+  bulkDeleteLeadsAction,
 } from '../controllers/leadController.js';
 import { optionalAuth, authenticateToken } from '../middleware/authMiddleware.js';
 import multer from 'multer';
@@ -69,6 +71,10 @@ router.delete('/team/:id', authenticateToken, deleteSalesTeamMemberAction);
 // Lead Assignment & Round-Robin Distribution
 router.post('/assign', authenticateToken, assignLeadsAction);
 router.post('/distribute-round-robin', authenticateToken, distributeRoundRobinAction);
+
+// Bulk Deletion Endpoints (MUST be registered before /:id)
+router.post('/bulk-delete-by-stage', authenticateToken, bulkDeleteByStageAction);
+router.post('/bulk-delete', authenticateToken, bulkDeleteLeadsAction);
 
 // Lead Core Endpoints
 router.get('/', getLeads);

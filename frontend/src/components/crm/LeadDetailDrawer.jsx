@@ -576,146 +576,168 @@ export const LeadDetailDrawer = ({
         </div>
 
         {/* ========================================================================= */}
-        {/* QUICK ACTION TOOLBAR (Prominent, High-Contrast, Action-Driven) */}
+        {/* QUICK ACTION TOOLBAR (Sleek, Unified, Professional SaaS Actions) */}
         {/* ========================================================================= */}
         <div style={{
           padding: '10px 24px',
-          background: '#f1f5f9',
+          background: '#f8fafc',
           borderBottom: '1px solid #e2e8f0',
           display: 'flex',
           gap: '8px',
           alignItems: 'center',
           flexWrap: 'wrap'
         }}>
-          {/* 🚗 Log Site Visit Button */}
-          <button
-            type="button"
-            onClick={() => onLogSiteVisit && onLogSiteVisit(lead)}
-            style={{
-              padding: '7px 14px',
-              borderRadius: '7px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-              color: '#ffffff',
-              fontSize: '0.8rem',
-              fontWeight: '800',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(22,163,74,0.2)'
-            }}
-          >
-            <Car size={14} /> 🚗 Log Site Visit
-          </button>
-
-          {/* 📅 Schedule Follow-Up Button (Sales Head / Manager Tool) */}
-          <button
-            type="button"
-            onClick={() => onScheduleFollowUp && onScheduleFollowUp(lead)}
-            style={{
-              padding: '7px 14px',
-              borderRadius: '7px',
-              border: '1px solid #bfdbfe',
-              background: '#eff6ff',
-              color: '#1d4ed8',
-              fontSize: '0.8rem',
-              fontWeight: '800',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer'
-            }}
-            title="Schedule Follow-Up Task for Team Member"
-          >
-            <Calendar size={14} /> 📅 Schedule Task
-          </button>
-
-          {/* ➕ Quick Log Follow-Up Button */}
+          {/* 1. Log Follow-Up (Inline Toggle) */}
           <button
             type="button"
             onClick={() => setIsAddingNewFu(!isAddingNewFu)}
             style={{
-              padding: '7px 12px',
+              height: '34px',
+              padding: '0 12px',
               borderRadius: '7px',
-              border: '1px solid #cbd5e1',
-              background: isAddingNewFu ? '#e2e8f0' : '#ffffff',
-              color: '#0f172a',
-              fontSize: '0.8rem',
-              fontWeight: '800',
+              border: isAddingNewFu ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
+              background: isAddingNewFu ? '#eff6ff' : '#ffffff',
+              color: isAddingNewFu ? '#1a73e8' : '#0f172a',
+              fontSize: '0.78rem',
+              fontWeight: '700',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '5px',
-              cursor: 'pointer'
+              gap: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              transition: 'all 0.15s ease'
             }}
           >
-            <Plus size={14} /> + New Follow-Up
+            <Plus size={14} color={isAddingNewFu ? '#1a73e8' : '#475569'} />
+            <span>Log Follow-Up</span>
           </button>
 
-          {/* ⚡ Change Stage Button */}
+          {/* 2. Schedule Task */}
+          <button
+            type="button"
+            onClick={() => onScheduleFollowUp && onScheduleFollowUp(lead)}
+            style={{
+              height: '34px',
+              padding: '0 12px',
+              borderRadius: '7px',
+              border: '1px solid #cbd5e1',
+              background: '#ffffff',
+              color: '#334155',
+              fontSize: '0.78rem',
+              fontWeight: '700',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              transition: 'all 0.15s ease'
+            }}
+            title="Schedule Follow-Up Task for Team Member"
+          >
+            <Calendar size={14} color="#2563eb" />
+            <span>Schedule Task</span>
+          </button>
+
+          {/* 3. Log Site Visit */}
+          <button
+            type="button"
+            onClick={() => onLogSiteVisit && onLogSiteVisit(lead)}
+            style={{
+              height: '34px',
+              padding: '0 12px',
+              borderRadius: '7px',
+              border: '1px solid #cbd5e1',
+              background: '#ffffff',
+              color: '#15803d',
+              fontSize: '0.78rem',
+              fontWeight: '700',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <Car size={14} color="#16a34a" />
+            <span>Site Visit</span>
+          </button>
+
+          {/* 4. Change Stage */}
           <button
             type="button"
             onClick={() => onChangeStage && onChangeStage(lead)}
             style={{
-              padding: '7px 12px',
+              height: '34px',
+              padding: '0 12px',
               borderRadius: '7px',
-              border: '1px solid #fde68a',
-              background: '#fffbeb',
+              border: '1px solid #cbd5e1',
+              background: '#ffffff',
               color: '#b45309',
-              fontSize: '0.8rem',
-              fontWeight: '800',
+              fontSize: '0.78rem',
+              fontWeight: '700',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '5px',
-              cursor: 'pointer'
+              gap: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              transition: 'all 0.15s ease'
             }}
           >
-            <Zap size={14} color="#f59e0b" /> Change Stage
+            <Zap size={14} color="#f59e0b" />
+            <span>Change Stage</span>
           </button>
 
-          {/* 🔔 Send Reminder Button */}
+          {/* 5. Send Reminder */}
           <button
             type="button"
             onClick={() => onSendReminder && onSendReminder(lead)}
             style={{
-              padding: '7px 12px',
+              height: '34px',
+              padding: '0 12px',
               borderRadius: '7px',
-              border: '1px solid #fde68a',
-              background: '#fffbeb',
-              color: '#b45309',
-              fontSize: '0.8rem',
-              fontWeight: '800',
+              border: '1px solid #cbd5e1',
+              background: '#ffffff',
+              color: '#4338ca',
+              fontSize: '0.78rem',
+              fontWeight: '700',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '5px',
-              cursor: 'pointer'
+              gap: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              transition: 'all 0.15s ease'
             }}
-            title="Send 30-Minute Reminder to Client (Site Visit) or Sales Rep via WhatsApp / Email"
+            title="Send 30-Minute Reminder to Client or Sales Rep"
           >
-            <Bell size={14} color="#b45309" /> 🔔 Send Reminder
+            <Bell size={14} color="#6366f1" />
+            <span>Send Reminder</span>
           </button>
 
-          {/* 🛍️ Convert to Sales Button */}
+          {/* 6. Convert Deal */}
           {lead.status !== 'converted' && (
             <button
               type="button"
               onClick={() => onConvertLead && onConvertLead(lead)}
               style={{
-                padding: '7px 14px',
+                height: '34px',
+                padding: '0 14px',
                 borderRadius: '7px',
                 border: 'none',
-                background: '#0d904f',
+                background: '#16a34a',
                 color: '#ffffff',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 fontWeight: '800',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '5px',
+                gap: '6px',
                 cursor: 'pointer',
-                marginLeft: 'auto'
+                boxShadow: '0 1px 3px rgba(22,163,74,0.3)',
+                transition: 'all 0.15s ease'
               }}
             >
-              <ShoppingBag size={14} /> Won Deal
+              <Award size={14} />
+              <span>Won Deal</span>
             </button>
           )}
         </div>
@@ -925,17 +947,22 @@ export const LeadDetailDrawer = ({
                   type="button"
                   onClick={() => onScheduleFollowUp && onScheduleFollowUp(lead)}
                   style={{
-                    padding: '6px 14px',
-                    borderRadius: '6px',
+                    padding: '8px 16px',
+                    borderRadius: '7px',
                     background: '#2563eb',
                     color: '#ffffff',
                     border: 'none',
-                    fontSize: '0.78rem',
+                    fontSize: '0.80rem',
                     fontWeight: '800',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 4px rgba(37,99,235,0.2)'
                   }}
                 >
-                  📅 Schedule Follow-Up Now
+                  <Calendar size={14} />
+                  <span>Schedule Follow-Up Now</span>
                 </button>
               </div>
             ) : (
@@ -1567,14 +1594,73 @@ export const LeadDetailDrawer = ({
             )}
 
             {!isEditingOverview ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', fontSize: '0.82rem', color: '#475569' }}>
-                <div><strong>Requirement:</strong> {lead.assignedFlat ? `Flat ${lead.assignedFlat.flatNumber}` : displayNA(lead.requirement)}</div>
-                <div><strong>Budget:</strong> {formatBudget(lead.budget)}</div>
-                <div><strong>Timeline:</strong> {formatTimeline(lead.purchaseTimeline)}</div>
-                <div><strong>City:</strong> {displayNA(lead.city)}</div>
-                <div><strong>Lead Source:</strong> {displayNA(lead.leadSource?.replace(/_/g, ' ').toUpperCase())}</div>
-                <div><strong>Email:</strong> {displayNA(lead.email)}</div>
-                <div><strong>Registered:</strong> {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('en-IN') : 'NA'}</div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                gap: '10px'
+              }}>
+                <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Requirement
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    {lead.assignedFlat ? `Flat ${lead.assignedFlat.flatNumber}` : displayNA(lead.requirement)}
+                  </div>
+                </div>
+
+                <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Budget
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    {formatBudget(lead.budget)}
+                  </div>
+                </div>
+
+                <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Timeline
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    {formatTimeline(lead.purchaseTimeline)}
+                  </div>
+                </div>
+
+                <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    City & Location
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    {displayNA(lead.city)}{lead.state ? `, ${lead.state}` : ''}
+                  </div>
+                </div>
+
+                <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Lead Source
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0284c7', marginTop: '3px' }}>
+                    {displayNA(lead.leadSource?.replace(/_/g, ' ').toUpperCase())}
+                  </div>
+                </div>
+
+                <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Email
+                  </div>
+                  <div style={{ fontSize: '0.84rem', fontWeight: '700', color: '#0f172a', marginTop: '3px', wordBreak: 'break-all' }}>
+                    {displayNA(lead.email)}
+                  </div>
+                </div>
+
+                <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Registration Date
+                  </div>
+                  <div style={{ fontSize: '0.84rem', fontWeight: '700', color: '#0f172a', marginTop: '3px' }}>
+                    {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'NA'}
+                  </div>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSaveOverview} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '0.78rem' }}>

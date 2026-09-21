@@ -4,6 +4,8 @@ import {
   getActiveRentals,
   getPreviousOwnersHistory,
   updateRentalTerms,
+  uploadAgreementDocument,
+  deleteAgreementDocument,
   recordRentalPayout,
   transferOwnership,
   createManualRentalEntry,
@@ -54,6 +56,12 @@ router.post('/import-excel', upload.single('excelFile'), importRentalsFromExcel)
 
 // Update rental terms (tenure, rent, dates, TDS)
 router.put('/:flatId/terms', updateRentalTerms);
+
+// Upload rental agreement document
+router.post('/:flatId/agreement', upload.single('agreementFile'), uploadAgreementDocument);
+
+// Delete rental agreement document
+router.delete('/:flatId/agreement', deleteAgreementDocument);
 
 // Record rental disbursement payout
 router.post('/:flatId/payout', recordRentalPayout);

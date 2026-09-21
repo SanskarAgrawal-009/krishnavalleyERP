@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   X,
   Calendar,
@@ -14,15 +14,23 @@ import {
   AlertCircle,
   TrendingUp,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Upload,
+  Download,
+  Trash2,
+  Eye
 } from 'lucide-react';
 import { rentalService } from '../../services/rentalService.js';
 import { useToast } from '../../context/ToastContext.jsx';
+import { getFileUrl } from '../../services/api.js';
 
 export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => {
   const toast = useToast();
   const [saving, setSaving] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [agreementUploading, setAgreementUploading] = useState(false);
+  const [agreementDoc, setAgreementDoc] = useState(null);
+  const fileInputRef = useRef(null);
 
   // Form State matching register details & effective date
   const [form, setForm] = useState({
@@ -183,8 +191,60 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         totalPaid: Number(rental.totalPaid || 0),
         revisionReason: ''
       });
+
+      // Load existing agreement document
+      setAgreementDoc(rental.agreementDocument || rental.rentalDetails?.agreementDocument || null);
     }
   }, [rental]);
+
+  // Agreement upload handler
+  const handleAgreementUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const maxSize = 20 * 1024 * 1024; // 20MB
+    if (file.size > maxSize) {
+      toast.showError('File size must be under 20MB');
+      return;
+    }
+
+    setAgreementUploading(true);
+    try {
+      const res = await rentalService.uploadAgreement(rental._id, file);
+      if (res.success) {
+        setAgreementDoc(res.data);
+        toast.showSuccess('Agreement document uploaded successfully!');
+        if (onUpdated) onUpdated();
+      } else {
+        toast.showError(res.message || 'Failed to upload agreement');
+      }
+    } catch (err) {
+      toast.showError(err.message || 'Error uploading agreement');
+    } finally {
+      setAgreementUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  // Agreement delete handler
+  const handleAgreementDelete = async () => {
+    if (!window.confirm('Are you sure you want to remove this agreement document?')) return;
+    setAgreementUploading(true);
+    try {
+      const res = await rentalService.deleteAgreement(rental._id);
+      if (res.success) {
+        setAgreementDoc(null);
+        toast.showSuccess('Agreement document removed');
+        if (onUpdated) onUpdated();
+      } else {
+        toast.showError(res.message || 'Failed to delete agreement');
+      }
+    } catch (err) {
+      toast.showError(err.message || 'Error deleting agreement');
+    } finally {
+      setAgreementUploading(false);
+    }
+  };
 
   if (!isOpen || !rental) return null;
 
@@ -1272,6 +1332,178 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
               )}
             </div>
           )}
+
+          {/* ================= SECTION 5: RENTAL AGREEMENT UPLOAD ================= */}
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+              <FileText size={15} color="#7c3aed" />
+              <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5b21b6', textTransform: 'uppercase' }}>
+                5. Rental Agreement Document
+              </span>
+            </div>
+
+            {agreementDoc?.fileUrl ? (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: '#ffffff',
+                  border: '1.5px solid #c4b5fd',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  gap: '12px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '8px',
+                      background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <FileText size={18} color="#ffffff" />
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {agreementDoc.fileName || 'Rental_Agreement.pdf'}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px' }}>
+                      Uploaded {agreementDoc.uploadedAt ? new Date(agreementDoc.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                      {agreementDoc.verificationStatus && (
+                        <span
+                          style={{
+                            marginLeft: '8px',
+                            padding: '1px 6px',
+                            borderRadius: '4px',
+                            fontSize: '0.65rem',
+                            fontWeight: '700',
+                            background: agreementDoc.verificationStatus === 'verified' ? '#dcfce7' : '#fef3c7',
+                            color: agreementDoc.verificationStatus === 'verified' ? '#166534' : '#92400e'
+                          }}
+                        >
+                          {agreementDoc.verificationStatus.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                  <a
+                    href={getFileUrl(agreementDoc.fileUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      border: '1px solid #c4b5fd',
+                      background: '#f5f3ff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      textDecoration: 'none'
+                    }}
+                    title="View / Download"
+                  >
+                    <Eye size={15} color="#7c3aed" />
+                  </a>
+                  <a
+                    href={getFileUrl(agreementDoc.fileUrl)}
+                    download={agreementDoc.fileName || 'Rental_Agreement.pdf'}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      border: '1px solid #93c5fd',
+                      background: '#eff6ff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      textDecoration: 'none'
+                    }}
+                    title="Download"
+                  >
+                    <Download size={15} color="#2563eb" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleAgreementDelete}
+                    disabled={agreementUploading}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      border: '1px solid #fca5a5',
+                      background: '#fef2f2',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: agreementUploading ? 'not-allowed' : 'pointer'
+                    }}
+                    title="Remove Agreement"
+                  >
+                    <Trash2 size={15} color="#dc2626" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                onClick={() => !agreementUploading && fileInputRef.current?.click()}
+                style={{
+                  border: '2px dashed #c4b5fd',
+                  borderRadius: '10px',
+                  padding: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: agreementUploading ? 'not-allowed' : 'pointer',
+                  background: '#faf5ff',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.borderColor = '#8b5cf6'; e.currentTarget.style.background = '#f5f3ff'; }}
+                onMouseOut={(e) => { e.currentTarget.style.borderColor = '#c4b5fd'; e.currentTarget.style.background = '#faf5ff'; }}
+              >
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <Upload size={20} color="#ffffff" />
+                </div>
+                <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#5b21b6' }}>
+                  {agreementUploading ? 'Uploading...' : 'Upload Rental Agreement'}
+                </span>
+                <span style={{ fontSize: '0.72rem', color: '#7c3aed' }}>
+                  PDF, JPG, PNG — Max 20MB
+                </span>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+              onChange={handleAgreementUpload}
+              style={{ display: 'none' }}
+            />
+          </div>
 
           {/* ================= MODAL FOOTER ACTIONS ================= */}
           <div

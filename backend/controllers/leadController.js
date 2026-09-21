@@ -693,6 +693,148 @@ export const deleteLead = async (req, res) => {
   }
 };
 
+// Bulk Delete Leads According to Stage / Pipeline Status
+export const bulkDeleteByStageAction = async (req, res) => {
+  try {
+    const { stage, stages } = req.body;
+    const stageList = [];
+    if (stage && typeof stage === 'string') stageList.push(stage.trim());
+    if (stages && Array.isArray(stages)) {
+      stages.forEach((s) => {
+        if (s && typeof s === 'string' && !stageList.includes(s.trim())) {
+          stageList.push(s.trim());
+        }
+      });
+    }
+
+    if (stageList.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please specify at least one stage to delete leads from (e.g. stage or stages array).'
+      });
+    }
+
+    const filter = { status: { $in: stageList } };
+
+    // Agent authorization scoping
+    if (req.user && (req.user.role === 'agent' || req.user.roleCode === 'agent')) {
+      filter.agentId = req.user.id || req.user._id;
+    }
+
+    // Find all leads matching the stage filter
+    const matchingLeads = await Lead.find(filter).select('_id name mobileNo agentId status').lean();
+
+    if (!matchingLeads || matchingLeads.length === 0) {
+      return res.json({
+        success: true,
+        message: `No leads found in stage(s): ${stageList.join(', ')}.`,
+        deletedCount: 0,
+        stages: stageList
+      });
+    }
+
+    const leadIds = matchingLeads.map((l) => l._id);
+    const agentIds = [...new Set(matchingLeads.filter((l) => l.agentId).map((l) => l.agentId.toString()))];
+
+    // Remove from agents' lead arrays
+    if (agentIds.length > 0) {
+      await User.updateMany(
+        { _id: { $in: agentIds } },
+        { $pull: { 'agentProfile.leads': { $in: leadIds } } }
+      );
+    }
+
+    // Delete from MongoDB
+    const deleteResult = await Lead.deleteMany({ _id: { $in: leadIds } });
+
+    // Record audit event
+    await recordAuditEvent({
+      eventType: 'CRUD',
+      action: 'DELETE',
+      module: 'leads',
+      resourceType: 'Lead',
+      user: req.user,
+      req,
+      status: 'SUCCESS',
+      summary: `Bulk deleted ${deleteResult.deletedCount} leads in stage(s): ${stageList.join(', ')}`,
+      deletionDetails: {
+        isDeletedRecord: true,
+        deletedCount: deleteResult.deletedCount,
+        stages: stageList,
+        leadCount: matchingLeads.length
+      }
+    });
+
+    console.log(`[CRM] Bulk deleted ${deleteResult.deletedCount} leads in stage(s) [${stageList.join(', ')}]`);
+
+    return res.json({
+      success: true,
+      message: `Successfully deleted ${deleteResult.deletedCount} lead(s) in stage(s): ${stageList.join(', ')}.`,
+      deletedCount: deleteResult.deletedCount,
+      stages: stageList
+    });
+  } catch (error) {
+    console.error('Error in bulkDeleteByStageAction:', error);
+    return res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+  }
+};
+
+// Bulk Delete Specific Leads by ID array
+export const bulkDeleteLeadsAction = async (req, res) => {
+  try {
+    const { leadIds } = req.body;
+    if (!leadIds || !Array.isArray(leadIds) || leadIds.length === 0) {
+      return res.status(400).json({ success: false, message: 'leadIds array is required' });
+    }
+
+    const filter = { _id: { $in: leadIds } };
+    if (req.user && (req.user.role === 'agent' || req.user.roleCode === 'agent')) {
+      filter.agentId = req.user.id || req.user._id;
+    }
+
+    const matchingLeads = await Lead.find(filter).select('_id agentId').lean();
+    if (!matchingLeads || matchingLeads.length === 0) {
+      return res.json({ success: true, message: 'No matching leads found to delete.', deletedCount: 0 });
+    }
+
+    const idsToDelete = matchingLeads.map((l) => l._id);
+    const agentIds = [...new Set(matchingLeads.filter((l) => l.agentId).map((l) => l.agentId.toString()))];
+
+    if (agentIds.length > 0) {
+      await User.updateMany(
+        { _id: { $in: agentIds } },
+        { $pull: { 'agentProfile.leads': { $in: idsToDelete } } }
+      );
+    }
+
+    const deleteResult = await Lead.deleteMany({ _id: { $in: idsToDelete } });
+
+    await recordAuditEvent({
+      eventType: 'CRUD',
+      action: 'DELETE',
+      module: 'leads',
+      resourceType: 'Lead',
+      user: req.user,
+      req,
+      status: 'SUCCESS',
+      summary: `Bulk deleted ${deleteResult.deletedCount} selected leads`,
+      deletionDetails: {
+        isDeletedRecord: true,
+        deletedCount: deleteResult.deletedCount,
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: `Successfully deleted ${deleteResult.deletedCount} selected lead(s).`,
+      deletedCount: deleteResult.deletedCount
+    });
+  } catch (error) {
+    console.error('Error in bulkDeleteLeadsAction:', error);
+    return res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+  }
+};
+
 // Add Follow-Up to Lead (detects site_visit completion and triggers commission credit)
 export const addFollowUp = async (req, res) => {
   try {

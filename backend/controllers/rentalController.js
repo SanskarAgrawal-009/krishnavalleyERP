@@ -171,6 +171,7 @@ export const getActiveRentals = async (req, res) => {
         dueDayOfMonth: Number(rental.dueDayOfMonth || 25),
         paidMonthsCount,
         remainingMonths,
+        agreementDocument: rental.agreementDocument || null,
         hasPreviousOwners: Array.isArray(flat.ownershipHistory) && flat.ownershipHistory.length > 0,
         previousOwnersCount: (flat.ownershipHistory || []).length
       };
@@ -582,6 +583,116 @@ export const updateRentalTerms = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating rental terms:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ============================================================================
+// 3B. UPLOAD RENTAL AGREEMENT DOCUMENT
+// ============================================================================
+export const uploadAgreementDocument = async (req, res) => {
+  try {
+    const { flatId } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const flat = await Flat.findById(flatId);
+    if (!flat) {
+      return res.status(404).json({ success: false, message: 'Flat not found' });
+    }
+
+    if (!flat.rentalDetails) flat.rentalDetails = {};
+
+    // Save file to disk
+    const fs = await import('fs');
+    const pathModule = await import('path');
+    const { fileURLToPath } = await import('url');
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = pathModule.default.dirname(__filename);
+
+    const uploadsDir = pathModule.default.resolve(__dirname, '../uploads/agreements');
+    if (!fs.default.existsSync(uploadsDir)) {
+      fs.default.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const ext = pathModule.default.extname(req.file.originalname) || '.pdf';
+    const safeFileName = `agreement_flat_${flat.flatNumber}_${Date.now()}${ext}`;
+    const filePath = pathModule.default.join(uploadsDir, safeFileName);
+    fs.default.writeFileSync(filePath, req.file.buffer);
+
+    const fileUrl = `/uploads/agreements/${safeFileName}`;
+
+    flat.rentalDetails.agreementDocument = {
+      fileUrl,
+      fileName: req.file.originalname,
+      uploadedAt: new Date(),
+      verificationStatus: 'verified'
+    };
+
+    await flat.save();
+
+    if (apiCache) {
+      apiCache.invalidatePrefix('flats');
+      apiCache.invalidatePrefix('reports');
+    }
+
+    return res.json({
+      success: true,
+      message: `Agreement document uploaded for Flat ${flat.flatNumber}`,
+      data: flat.rentalDetails.agreementDocument
+    });
+  } catch (error) {
+    console.error('Error uploading agreement document:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ============================================================================
+// 3C. DELETE RENTAL AGREEMENT DOCUMENT
+// ============================================================================
+export const deleteAgreementDocument = async (req, res) => {
+  try {
+    const { flatId } = req.params;
+
+    const flat = await Flat.findById(flatId);
+    if (!flat) {
+      return res.status(404).json({ success: false, message: 'Flat not found' });
+    }
+
+    if (flat.rentalDetails?.agreementDocument?.fileUrl) {
+      // Try to delete the physical file
+      try {
+        const fs = await import('fs');
+        const pathModule = await import('path');
+        const { fileURLToPath } = await import('url');
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = pathModule.default.dirname(__filename);
+        const filePath = pathModule.default.resolve(__dirname, '..', flat.rentalDetails.agreementDocument.fileUrl.replace(/^\//, ''));
+        if (fs.default.existsSync(filePath)) {
+          fs.default.unlinkSync(filePath);
+        }
+      } catch (e) {
+        console.warn('Could not delete physical file:', e.message);
+      }
+    }
+
+    if (flat.rentalDetails) {
+      flat.rentalDetails.agreementDocument = undefined;
+    }
+    await flat.save();
+
+    if (apiCache) {
+      apiCache.invalidatePrefix('flats');
+    }
+
+    return res.json({
+      success: true,
+      message: `Agreement document removed for Flat ${flat.flatNumber}`
+    });
+  } catch (error) {
+    console.error('Error deleting agreement document:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

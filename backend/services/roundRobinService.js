@@ -50,13 +50,20 @@ export const getNextSalesTeamMember = async () => {
  */
 export const distributeUnassignedLeads = async (leadIds = null, initiatedByUserId = null) => {
   try {
-    let query = {
-      assignedTo: null,
-      status: { $nin: ['converted', 'lost'] },
-    };
+    const validUserIds = await User.find().distinct('_id');
 
+    let query;
     if (Array.isArray(leadIds) && leadIds.length > 0) {
-      query._id = { $in: leadIds };
+      query = { _id: { $in: leadIds } };
+    } else {
+      query = {
+        $or: [
+          { assignedTo: null },
+          { assignedTo: { $exists: false } },
+          { assignedTo: { $nin: validUserIds } },
+        ],
+        status: { $nin: ['converted', 'lost'] },
+      };
     }
 
     const unassignedLeads = await Lead.find(query).sort({ createdAt: 1 });

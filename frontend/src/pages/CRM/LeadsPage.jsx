@@ -19,6 +19,7 @@ import { ExternalSiteVisitModal } from '../../components/crm/ExternalSiteVisitMo
 import { SiteVisitsWindow } from '../../components/crm/SiteVisitsWindow.jsx';
 import { SendReminderModal } from '../../components/crm/SendReminderModal.jsx';
 import { BulkLeadUploadModal } from '../../components/crm/BulkLeadUploadModal.jsx';
+import { BulkDeleteByStageModal } from '../../components/crm/BulkDeleteByStageModal.jsx';
 import {
   Users,
   UserPlus,
@@ -84,7 +85,13 @@ export const LeadsPage = ({ onNavigateToSales }) => {
   const [searchTerm, setSearchTerm] = useState(searchParam);
   const [modeFilter, setModeFilter] = useState(tabParam === 'visits' ? 'site_visit' : '');
   const [statusFilter, setStatusFilter] = useState(tabParam === 'pipeline' ? 'pending' : '');
+  const [stageFilter, setStageFilter] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [bulkDeleteInitialStage, setBulkDeleteInitialStage] = useState(null);
+  const [selectedLeadIds, setSelectedLeadIds] = useState([]);
+  const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   // Active Lead for Full Slide-Over Workspace Drawer
   const [selectedLeadForDrawer, setSelectedLeadForDrawer] = useState(null);
 
@@ -260,7 +267,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
     if (window.confirm(`Distribute ${unassignedLeads.length} unassigned leads sequentially one-by-one across active sales team members?`)) {
       try {
-        const res = await leadService.distributeRoundRobin();
+        const res = await leadService.distributeRoundRobin({ leadIds: unassignedLeads.map((l) => l._id) });
         alert(res.message || 'Leads successfully distributed!');
         fetchLeads();
         fetchTeam();
@@ -438,8 +445,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
     });
   });
 
-  // Filter leads based on interactive quickFilter & Sales Head Rep Selection
+  // Filter leads based on interactive quickFilter & Sales Head Rep Selection & stageFilter
   const displayedLeads = baseLeads.filter((lead) => {
+    if (stageFilter && lead.status !== stageFilter) return false;
     if (statusFilter !== 'converted' && lead.status === 'converted') return false;
 
     // Sales Head Assignment Scoping (in Window 1: All Leads)
@@ -627,7 +635,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
       {/* ========================================================================= */}
-      {/* 1. TOP HEADER & MAIN ACTION BUTTONS */}
+      {/* 1. CLEAN TOP HEADER & PROGRESSIVE ACTION GROUP */}
       {/* ========================================================================= */}
       <div style={{
         display: 'flex',
@@ -635,15 +643,15 @@ export const LeadsPage = ({ onNavigateToSales }) => {
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '16px',
-        paddingBottom: '4px'
+        paddingBottom: '2px'
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontSize: '1.45rem', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-0.025em' }}>
               CRM Leads Hub
             </h2>
             <span style={{
-              fontSize: '0.72rem',
+              fontSize: '0.70rem',
               fontWeight: '800',
               background: '#e0f2fe',
               color: '#0369a1',
@@ -662,82 +670,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           </p>
         </div>
 
-        {/* Header Action Buttons */}
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* Meta Ads Integration Button */}
-          <button
-            type="button"
-            onClick={() => setIsMetaModalOpen(true)}
-            style={{
-              padding: '8px 14px',
-              borderRadius: '8px',
-              border: '1px solid #0284c7',
-              background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
-              color: '#ffffff',
-              fontSize: '0.82rem',
-              fontWeight: '800',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 2px 6px rgba(37,99,235,0.25)',
-              transition: 'all 0.15s ease'
-            }}
-            title="Configure Meta Webhook and Test Instant Lead Ingestion"
-          >
-            <Globe size={14} />
-            ⚡ Meta Ads Integration
-          </button>
-
-          {/* Sales Team Pool Button */}
-          <button
-            type="button"
-            onClick={() => setIsTeamModalOpen(true)}
-            className="btn-secondary"
-            style={{ padding: '8px 14px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <Users size={14} />
-            Sales Team Pool ({salesTeamOverview?.totalTeamMembers || 0})
-          </button>
-
-          {/* Export CSV Button */}
-          <button
-            type="button"
-            onClick={handleExportCSV}
-            className="btn-secondary"
-            style={{ padding: '8px 14px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-            title="Export Leads to CSV Spreadsheet"
-          >
-            <Download size={14} />
-            Export CSV
-          </button>
-
-          {/* Bulk Excel Upload Button */}
-          <button
-            type="button"
-            onClick={() => setIsBulkUploadModalOpen(true)}
-            style={{
-              padding: '8px 14px',
-              borderRadius: '8px',
-              border: '1px solid #2563eb',
-              background: '#eff6ff',
-              color: '#1d4ed8',
-              fontSize: '0.82rem',
-              fontWeight: '800',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 1px 2px rgba(37,99,235,0.1)',
-              transition: 'all 0.15s ease'
-            }}
-            title="Import multiple leads via Excel (.xlsx) or CSV with Round-Robin or Direct Sales assignment"
-          >
-            <FileSpreadsheet size={15} color="#2563eb" />
-            📥 Bulk Excel Upload
-          </button>
-
-          {/* External Site Visit Logger Button */}
+        {/* Clean, Cohesive Action Buttons */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }}>
+          {/* Log Site Visit Button */}
           <button
             type="button"
             onClick={() => {
@@ -745,35 +680,252 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               setIsSiteVisitModalOpen(true);
             }}
             style={{
-              padding: '8px 15px',
+              padding: '8px 14px',
               borderRadius: '8px',
-              border: '1px solid #16a34a',
-              background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-              color: '#ffffff',
+              border: '1px solid #dcfce7',
+              background: '#f0fdf4',
+              color: '#15803d',
               fontSize: '0.82rem',
-              fontWeight: '800',
+              fontWeight: '700',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              boxShadow: '0 2px 6px rgba(22,163,74,0.25)',
               transition: 'all 0.15s ease'
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#dcfce7'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#f0fdf4'; }}
             title="Log an external lead or walk-in site visit"
           >
-            <Car size={14} />
-            🚗 Log Site Visit
+            <Car size={14} color="#16a34a" />
+            Log Site Visit
           </button>
 
-          {/* Add New Lead Button */}
+          {/* More Actions Dropdown Menu */}
+          <div style={{ position: 'relative' }}>
+            <button
+              type="button"
+              onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                background: '#ffffff',
+                color: '#334155',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
+            >
+              <Sliders size={14} color="#64748b" />
+              Actions & Tools
+              <ChevronDown size={14} color="#64748b" style={{ transform: isActionsDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
+            </button>
+
+            {isActionsDropdownOpen && (
+              <>
+                <div
+                  onClick={() => setIsActionsDropdownOpen(false)}
+                  style={{ position: 'fixed', inset: 0, zIndex: 40 }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '115%',
+                  zIndex: 50,
+                  width: '240px',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
+                  padding: '6px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '2px'
+                }}>
+                  {/* Bulk Excel Upload */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsDropdownOpen(false);
+                      setIsBulkUploadModalOpen(true);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '600',
+                      color: '#1e293b',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <FileSpreadsheet size={15} color="#2563eb" />
+                    <span>📥 Bulk Excel Upload</span>
+                  </button>
+
+                  {/* Bulk Delete by Stage */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsDropdownOpen(false);
+                      setBulkDeleteInitialStage(stageFilter || null);
+                      setIsBulkDeleteModalOpen(true);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      color: '#dc2626',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <Trash2 size={15} color="#dc2626" />
+                    <span>🗑️ Bulk Delete by Stage</span>
+                  </button>
+
+                  <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
+
+                  {/* Meta Ads Integration */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsDropdownOpen(false);
+                      setIsMetaModalOpen(true);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '600',
+                      color: '#1e293b',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <Globe size={15} color="#0284c7" />
+                    <span>⚡ Meta Ads Integration</span>
+                  </button>
+
+                  {/* Sales Team Pool */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsDropdownOpen(false);
+                      setIsTeamModalOpen(true);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '600',
+                      color: '#1e293b',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <Users size={15} color="#475569" />
+                    <span>Sales Team Pool ({salesTeamOverview?.totalTeamMembers || 0})</span>
+                  </button>
+
+                  {/* Export CSV */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsDropdownOpen(false);
+                      handleExportCSV();
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '9px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '600',
+                      color: '#1e293b',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <Download size={15} color="#475569" />
+                    <span>Export Leads CSV</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Primary CTA: Add New Lead */}
           <button
             type="button"
             onClick={() => {
               setEditingLead(null);
               setIsLeadModalOpen(true);
             }}
-            className="btn-primary"
-            style={{ padding: '8px 18px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '8px',
+              background: '#1a73e8',
+              color: '#ffffff',
+              border: 'none',
+              fontSize: '0.84rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#1557b0'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#1a73e8'; }}
           >
             <UserPlus size={15} />
             + Add New Lead
@@ -782,127 +934,126 @@ export const LeadsPage = ({ onNavigateToSales }) => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. PRIMARY TWO-WINDOW VIEW SELECTOR (WINDOW 1: ALL LEADS | WINDOW 2: ASSIGNED TO ME) */}
+      {/* 2. PROGRESSIVE WORKSPACE SELECTOR (LINEAR-STYLE SEGMENTED TABS) */}
       {/* ========================================================================= */}
       <div style={{
         display: 'flex',
-        background: '#f1f5f9',
-        padding: '5px',
-        borderRadius: '14px',
-        border: '1px solid #cbd5e1',
-        gap: '8px',
-        width: 'fit-content'
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '12px'
       }}>
-        {/* Window 1 Button */}
-        <button
-          type="button"
-          onClick={() => {
-            setActiveWindow('all');
-            setQuickFilter('all');
-          }}
-          style={{
-            padding: '10px 24px',
-            borderRadius: '10px',
-            border: 'none',
-            background: activeWindow === 'all' ? '#1a73e8' : 'transparent',
-            color: activeWindow === 'all' ? '#ffffff' : '#334155',
-            fontWeight: activeWindow === 'all' ? '800' : '700',
-            fontSize: '0.92rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: activeWindow === 'all' ? '0 3px 8px rgba(26,115,232,0.3)' : 'none',
-            transition: 'all 0.15s ease'
-          }}
-        >
-          <Users size={17} />
-          🏢 Window 1: All Leads
-          <span style={{
-            fontSize: '0.74rem',
-            padding: '2px 8px',
-            borderRadius: '20px',
-            background: activeWindow === 'all' ? 'rgba(255,255,255,0.25)' : '#e2e8f0',
-            color: activeWindow === 'all' ? '#ffffff' : '#475569',
-            fontWeight: '800'
-          }}>
-            {leads.filter(l => l.status !== 'converted').length}
-          </span>
-        </button>
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          background: '#f1f5f9',
+          padding: '4px',
+          borderRadius: '10px',
+          border: '1px solid #e2e8f0',
+          gap: '4px'
+        }}>
+          {/* Tab 1: All Pipeline Leads */}
+          <button
+            type="button"
+            onClick={() => setActiveWindow('all')}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '7px',
+              border: 'none',
+              fontSize: '0.82rem',
+              fontWeight: activeWindow === 'all' ? '800' : '600',
+              background: activeWindow === 'all' ? '#ffffff' : 'transparent',
+              color: activeWindow === 'all' ? '#1a73e8' : '#64748b',
+              boxShadow: activeWindow === 'all' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '7px',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <Users size={14} color={activeWindow === 'all' ? '#1a73e8' : '#64748b'} />
+            <span>All Leads</span>
+            <span style={{
+              fontSize: '0.70rem',
+              padding: '1px 6px',
+              borderRadius: '10px',
+              fontWeight: '800',
+              background: activeWindow === 'all' ? '#e8f0fe' : '#e2e8f0',
+              color: activeWindow === 'all' ? '#1a73e8' : '#475569'
+            }}>
+              {leads.length}
+            </span>
+          </button>
 
-        {/* Window 2 Button */}
-        <button
-          type="button"
-          onClick={() => {
-            setActiveWindow('assigned_to_me');
-            setQuickFilter('all');
-          }}
-          style={{
-            padding: '10px 24px',
-            borderRadius: '10px',
-            border: 'none',
-            background: activeWindow === 'assigned_to_me' ? '#16a34a' : 'transparent',
-            color: activeWindow === 'assigned_to_me' ? '#ffffff' : '#334155',
-            fontWeight: activeWindow === 'assigned_to_me' ? '800' : '700',
-            fontSize: '0.92rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: activeWindow === 'assigned_to_me' ? '0 3px 8px rgba(22,163,74,0.3)' : 'none',
-            transition: 'all 0.15s ease'
-          }}
-        >
-          <UserCheck size={17} />
-          👤 Window 2: Assigned to Me
-          <span style={{
-            fontSize: '0.74rem',
-            padding: '2px 8px',
-            borderRadius: '20px',
-            background: activeWindow === 'assigned_to_me' ? 'rgba(255,255,255,0.25)' : (myLeads.length > 0 ? '#dcfce7' : '#e2e8f0'),
-            color: activeWindow === 'assigned_to_me' ? '#ffffff' : (myLeads.length > 0 ? '#15803d' : '#475569'),
-            fontWeight: '800'
-          }}>
-            {myLeads.filter(l => l.status !== 'converted').length}
-          </span>
-        </button>
+          {/* Tab 2: Assigned to Me */}
+          <button
+            type="button"
+            onClick={() => setActiveWindow('assigned_to_me')}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '7px',
+              border: 'none',
+              fontSize: '0.82rem',
+              fontWeight: activeWindow === 'assigned_to_me' ? '800' : '600',
+              background: activeWindow === 'assigned_to_me' ? '#ffffff' : 'transparent',
+              color: activeWindow === 'assigned_to_me' ? '#1a73e8' : '#64748b',
+              boxShadow: activeWindow === 'assigned_to_me' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '7px',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <UserCheck size={14} color={activeWindow === 'assigned_to_me' ? '#1a73e8' : '#64748b'} />
+            <span>Assigned to Me</span>
+            <span style={{
+              fontSize: '0.70rem',
+              padding: '1px 6px',
+              borderRadius: '10px',
+              fontWeight: '800',
+              background: activeWindow === 'assigned_to_me' ? '#e8f0fe' : '#e2e8f0',
+              color: activeWindow === 'assigned_to_me' ? '#1a73e8' : '#475569'
+            }}>
+              {myLeads.length}
+            </span>
+          </button>
 
-        {/* Window 3 Button: Site Visits */}
-        <button
-          type="button"
-          onClick={() => {
-            setActiveWindow('site_visits');
-            setSiteVisitFilter('all');
-          }}
-          style={{
-            padding: '10px 24px',
-            borderRadius: '10px',
-            border: 'none',
-            background: activeWindow === 'site_visits' ? '#7c3aed' : 'transparent',
-            color: activeWindow === 'site_visits' ? '#ffffff' : '#334155',
-            fontWeight: activeWindow === 'site_visits' ? '800' : '700',
-            fontSize: '0.92rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: activeWindow === 'site_visits' ? '0 3px 8px rgba(124,58,237,0.3)' : 'none',
-            transition: 'all 0.15s ease'
-          }}
-        >
-          <Car size={17} />
-          🚗 Window 3: Site Visits
-          <span style={{
-            fontSize: '0.74rem',
-            padding: '2px 8px',
-            borderRadius: '20px',
-            background: activeWindow === 'site_visits' ? 'rgba(255,255,255,0.25)' : (allSiteVisits.length > 0 ? '#ede9fe' : '#e2e8f0'),
-            color: activeWindow === 'site_visits' ? '#ffffff' : (allSiteVisits.length > 0 ? '#7c3aed' : '#475569'),
-            fontWeight: '800'
-          }}>
-            {allSiteVisits.length}
-          </span>
-        </button>
+          {/* Tab 3: Site Visits */}
+          <button
+            type="button"
+            onClick={() => setActiveWindow('site_visits')}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '7px',
+              border: 'none',
+              fontSize: '0.82rem',
+              fontWeight: activeWindow === 'site_visits' ? '800' : '600',
+              background: activeWindow === 'site_visits' ? '#ffffff' : 'transparent',
+              color: activeWindow === 'site_visits' ? '#15803d' : '#64748b',
+              boxShadow: activeWindow === 'site_visits' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '7px',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <Car size={14} color={activeWindow === 'site_visits' ? '#15803d' : '#64748b'} />
+            <span>Site Visits</span>
+            <span style={{
+              fontSize: '0.70rem',
+              padding: '1px 6px',
+              borderRadius: '10px',
+              fontWeight: '800',
+              background: activeWindow === 'site_visits' ? '#dcfce7' : '#e2e8f0',
+              color: activeWindow === 'site_visits' ? '#15803d' : '#475569'
+            }}>
+              {allSiteVisits.length}
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* ========================================================================= */}
@@ -1214,258 +1365,360 @@ export const LeadsPage = ({ onNavigateToSales }) => {
       ) : (
         <>
           {/* ========================================================================= */}
-          {/* 4. SALES HEAD ASSIGNMENT FILTER BAR (SHOWN IN WINDOW 1: ALL LEADS) */}
+          {/* 4. SMART PROGRESSIVE SEARCH & FILTER TOOLBAR */}
           {/* ========================================================================= */}
-          {activeWindow === 'all' && (
-        <div style={{
-          background: '#ffffff',
-          padding: '12px 18px',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          flexWrap: 'wrap',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-        }}>
-          <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <UserCheck size={14} color="#1a73e8" />
-            Filter by Sales Rep:
-          </span>
-
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-            {/* All Reps Chip */}
-            <button
-              type="button"
-              onClick={() => setSelectedRepFilter('all')}
-              style={{
-                padding: '4px 12px',
-                borderRadius: '20px',
-                fontSize: '0.76rem',
-                fontWeight: selectedRepFilter === 'all' ? '800' : '600',
-                border: selectedRepFilter === 'all' ? '1px solid #1a73e8' : '1px solid #e2e8f0',
-                background: selectedRepFilter === 'all' ? '#e8f0fe' : '#f8fafc',
-                color: selectedRepFilter === 'all' ? '#1a73e8' : '#334155',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              All Representatives ({leads.filter(l => l.status !== 'converted').length})
-            </button>
-
-            {/* Rep Buttons from Sales Team */}
-            {(salesTeamOverview?.teamMembers || []).map((member) => {
-              const u = member.userId;
-              if (!u) return null;
-              const repId = u._id?.toString();
-              const isSelected = selectedRepFilter === repId;
-              const repLeadCount = leads.filter(l => (l.assignedTo?._id?.toString() || l.assignedTo?.toString()) === repId && l.status !== 'converted').length;
-
-              return (
-                <button
-                  key={repId}
-                  type="button"
-                  onClick={() => setSelectedRepFilter(repId)}
+          <div className="g-card" style={{ padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: '12px', borderRadius: '12px' }}>
+            {/* Primary Controls Row: Perfectly Aligned 1-Row Toolbar */}
+            <div style={{
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'center',
+              flexWrap: 'nowrap',
+              width: '100%'
+            }}>
+              {/* Clean Integrated Search Bar */}
+              <form onSubmit={handleSearchSubmit} style={{ flex: 1, minWidth: '220px', position: 'relative', margin: 0 }}>
+                <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input
+                  type="text"
+                  placeholder="Search leads by name, phone, city, state, requirement..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
-                    padding: '4px 12px',
-                    borderRadius: '20px',
-                    fontSize: '0.76rem',
-                    fontWeight: isSelected ? '800' : '600',
-                    border: isSelected ? '1px solid #1a73e8' : '1px solid #e2e8f0',
-                    background: isSelected ? '#e8f0fe' : '#ffffff',
-                    color: isSelected ? '#1a73e8' : '#334155',
+                    width: '100%',
+                    height: '38px',
+                    padding: '0 36px 0 36px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.84rem',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    background: '#ffffff',
+                    transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#1a73e8';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(26,115,232,0.12)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#cbd5e1';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    title="Clear Search"
+                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center' }}
+                  >
+                    <X size={15} />
+                  </button>
+                )}
+              </form>
+
+              {/* Action Controls Group: Strictly Single Row */}
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                flexShrink: 0,
+                flexWrap: 'nowrap'
+              }}>
+                {/* Sales Rep Selector (In 'all' leads window) */}
+                {activeWindow === 'all' && (
+                  <select
+                    value={selectedRepFilter}
+                    onChange={(e) => setSelectedRepFilter(e.target.value)}
+                    style={{
+                      display: 'inline-block',
+                      width: 'auto',
+                      minWidth: '170px',
+                      maxWidth: '210px',
+                      height: '38px',
+                      padding: '0 10px',
+                      margin: 0,
+                      boxSizing: 'border-box',
+                      fontSize: '0.80rem',
+                      color: selectedRepFilter !== 'all' ? '#1a73e8' : '#1e293b',
+                      fontWeight: selectedRepFilter !== 'all' ? '700' : '600',
+                      borderRadius: '8px',
+                      border: selectedRepFilter !== 'all' ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
+                      background: selectedRepFilter !== 'all' ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer'
+                    }}
+                    title="Filter by assigned sales representative"
+                  >
+                    <option value="all">👤 All Sales Reps ({leads.filter(l => l.status !== 'converted').length})</option>
+                    {(salesTeamOverview?.teamMembers || []).map((member) => {
+                      const u = member.userId;
+                      if (!u) return null;
+                      const repId = u._id?.toString();
+                      const repLeadCount = leads.filter(l => (l.assignedTo?._id?.toString() || l.assignedTo?.toString()) === repId && l.status !== 'converted').length;
+                      return (
+                        <option key={repId} value={repId}>
+                          {member.isActiveInRoundRobin ? '🟢' : '⚪'} {u.firstName || u.username} ({repLeadCount})
+                        </option>
+                      );
+                    })}
+                    <option value="unassigned">⚠️ Unassigned Only ({unassignedCount})</option>
+                  </select>
+                )}
+
+                {/* Pipeline Stage Selector */}
+                <select
+                  value={stageFilter}
+                  onChange={(e) => setStageFilter(e.target.value)}
+                  style={{
+                    display: 'inline-block',
+                    width: 'auto',
+                    minWidth: '155px',
+                    maxWidth: '190px',
+                    height: '38px',
+                    padding: '0 10px',
+                    margin: 0,
+                    boxSizing: 'border-box',
+                    fontSize: '0.80rem',
+                    color: stageFilter ? '#b91c1c' : '#1e293b',
+                    fontWeight: '700',
+                    borderRadius: '8px',
+                    border: stageFilter ? '1.5px solid #f87171' : '1px solid #cbd5e1',
+                    background: stageFilter ? '#fef2f2' : '#ffffff',
+                    cursor: 'pointer'
+                  }}
+                  title="Filter by CRM pipeline stage"
+                >
+                  <option value="">All Pipeline Stages</option>
+                  <option value="new">🔵 New Prospect</option>
+                  <option value="contacted">🔷 Contacted</option>
+                  <option value="in_discussion">🟣 In Discussion</option>
+                  <option value="followup_scheduled">🟡 Follow-Up Scheduled</option>
+                  <option value="site_visit_scheduled">🟠 Visit Scheduled</option>
+                  <option value="site_visit_completed">🟢 Site Visit Done</option>
+                  <option value="negotiation">🔹 Negotiation</option>
+                  <option value="lost">🔴 Lost / Dropped</option>
+                  <option value="converted">🏆 Converted Deal</option>
+                </select>
+
+                {/* Contextual Bulk Delete for the selected stage */}
+                {stageFilter && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBulkDeleteInitialStage(stageFilter);
+                      setIsBulkDeleteModalOpen(true);
+                    }}
+                    style={{
+                      height: '38px',
+                      padding: '0 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #dc2626',
+                      background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                      color: '#ffffff',
+                      fontSize: '0.78rem',
+                      fontWeight: '800',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      boxShadow: '0 2px 4px rgba(220,38,38,0.25)',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0
+                    }}
+                    title={`Delete all leads in stage: ${stageFilter}`}
+                  >
+                    <Trash2 size={13} />
+                    Delete Stage ({leads.filter((l) => (l.status || 'new') === stageFilter).length})
+                  </button>
+                )}
+
+                {/* Progressive "More Filters" Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                  style={{
+                    height: '38px',
+                    padding: '0 12px',
+                    borderRadius: '8px',
+                    border: (modeFilter || statusFilter || showAdvancedFilters) ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
+                    background: (modeFilter || statusFilter || showAdvancedFilters) ? '#eff6ff' : '#ffffff',
+                    color: (modeFilter || statusFilter || showAdvancedFilters) ? '#1a73e8' : '#475569',
+                    fontSize: '0.80rem',
+                    fontWeight: '700',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '5px',
+                    gap: '6px',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
                     transition: 'all 0.15s ease'
                   }}
+                  title="Toggle interaction channel and follow-up status filters"
                 >
-                  <span style={{
-                    width: '7px',
-                    height: '7px',
-                    borderRadius: '50%',
-                    background: member.isActiveInRoundRobin ? '#16a34a' : '#94a3b8'
-                  }} />
-                  {u.firstName || u.username} ({repLeadCount})
+                  <Sliders size={14} />
+                  <span>Filters</span>
+                  {(modeFilter || statusFilter) && (
+                    <span style={{
+                      width: '7px',
+                      height: '7px',
+                      borderRadius: '50%',
+                      background: '#1a73e8'
+                    }} />
+                  )}
                 </button>
-              );
-            })}
 
-            {/* Unassigned Rep Chip */}
-            <button
-              type="button"
-              onClick={() => setSelectedRepFilter('unassigned')}
-              style={{
-                padding: '4px 12px',
-                borderRadius: '20px',
-                fontSize: '0.76rem',
-                fontWeight: selectedRepFilter === 'unassigned' ? '800' : '600',
-                border: selectedRepFilter === 'unassigned' ? '1px solid #f59e0b' : '1px solid #e2e8f0',
-                background: selectedRepFilter === 'unassigned' ? '#fef3c7' : '#ffffff',
-                color: selectedRepFilter === 'unassigned' ? '#92400e' : '#64748b',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              ⚠️ Unassigned Only ({unassignedCount})
-            </button>
-          </div>
-        </div>
-      )}
+                {/* Refresh Button */}
+                <button
+                  type="button"
+                  onClick={() => { fetchLeads(); fetchTeam(); }}
+                  title="Refresh CRM leads & sales team"
+                  style={{
+                    height: '38px',
+                    width: '38px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#f8fafc',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '8px',
+                    color: '#334155',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#e2e8f0'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}
+                >
+                  <RefreshCw size={15} className={loading ? 'spin' : ''} />
+                </button>
 
-      {/* ========================================================================= */}
-      {/* 5. SEARCH & FAST FILTER BAR */}
-      {/* ========================================================================= */}
-      <div className="g-card" style={{ padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: '12px', borderRadius: '12px' }}>
-        {/* Top Controls Row: Search Input + Non-Wrapping Filter Toolbar */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-          {/* Integrated Clean Search Bar */}
-          <form onSubmit={handleSearchSubmit} style={{ flex: 1, minWidth: '260px', position: 'relative', margin: 0 }}>
-            <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-            <input
-              type="text"
-              placeholder="Search leads by name, phone, city, state, requirement..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '9px 36px 9px 36px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.86rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-                background: '#ffffff',
-                transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#1a73e8';
-                e.target.style.boxShadow = '0 0 0 3px rgba(26,115,232,0.12)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#cbd5e1';
-                e.target.style.boxShadow = 'none';
-              }}
-            />
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => setSearchTerm('')}
-                title="Clear Search"
-                style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center' }}
-              >
-                <X size={15} />
-              </button>
-            )}
-          </form>
+                {/* Clear All Filters Button (Shows only when filters are active) */}
+                {(searchTerm || modeFilter || statusFilter || stageFilter || quickFilter !== 'all' || (activeWindow === 'all' && selectedRepFilter !== 'all')) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchTerm('');
+                      setModeFilter('');
+                      setStatusFilter('');
+                      setStageFilter('');
+                      setQuickFilter('all');
+                      setSelectedRepFilter('all');
+                    }}
+                    title="Reset all active filters"
+                    style={{
+                      height: '38px',
+                      padding: '0 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #fecaca',
+                      background: '#fef2f2',
+                      color: '#dc2626',
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0
+                    }}
+                  >
+                    <X size={13} /> Clear
+                  </button>
+                )}
+              </div>
+            </div>
 
-          {/* Inline Action Bar: Mode + Status + Refresh + Clear All (NEVER STACKED) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-            {/* Mode Selector */}
-            <select
-              value={modeFilter}
-              onChange={(e) => setModeFilter(e.target.value)}
-              style={{
-                fontSize: '0.82rem',
-                height: '38px',
-                padding: '0 10px',
-                color: '#1e293b',
-                fontWeight: '600',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                background: '#ffffff',
-                cursor: 'pointer'
-              }}
-              title="Filter by interaction channel"
-            >
-              <option value="">All Interaction Modes</option>
-              <option value="call">📞 Phone Calls</option>
-              <option value="whatsapp">💬 WhatsApp</option>
-              <option value="site_visit">🚗 Site Visits</option>
-              <option value="meeting">🤝 In-Person Meetings</option>
-              <option value="email">✉️ Emails</option>
-            </select>
-
-            {/* Follow-up Status Selector */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                fontSize: '0.82rem',
-                height: '38px',
-                padding: '0 10px',
-                color: '#1e293b',
-                fontWeight: '600',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                background: '#ffffff',
-                cursor: 'pointer'
-              }}
-              title="Filter by task progress"
-            >
-              <option value="">All Follow-up Statuses</option>
-              <option value="pending">⏳ Pending Action</option>
-              <option value="completed">✅ Completed</option>
-              <option value="cancelled">❌ Cancelled</option>
-            </select>
-
-            {/* Refresh Button */}
-            <button
-              type="button"
-              onClick={() => { fetchLeads(); fetchTeam(); }}
-              title="Refresh CRM leads & sales team"
-              style={{
-                height: '38px',
-                width: '38px',
+            {/* Collapsible Progressive Advanced Filters Row */}
+            {showAdvancedFilters && (
+              <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                background: '#f8fafc',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                color: '#334155',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#e2e8f0'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}
-            >
-              <RefreshCw size={15} className={loading ? 'spin' : ''} />
-            </button>
+                gap: '12px',
+                paddingTop: '10px',
+                borderTop: '1px dashed #e2e8f0',
+                flexWrap: 'wrap'
+              }}>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  More Filters:
+                </span>
 
-            {/* Clear All Filters Button (Shows only when filters are active) */}
-            {(searchTerm || modeFilter || statusFilter || quickFilter !== 'all' || (activeWindow === 'all' && selectedRepFilter !== 'all')) && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchTerm('');
-                  setModeFilter('');
-                  setStatusFilter('');
-                  setQuickFilter('all');
-                  setSelectedRepFilter('all');
-                }}
-                title="Reset all active filters"
-                style={{
-                  height: '38px',
-                  padding: '0 12px',
-                  borderRadius: '8px',
-                  border: '1px solid #fecaca',
-                  background: '#fef2f2',
-                  color: '#dc2626',
-                  fontSize: '0.78rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}
-              >
-                <X size={13} /> Clear
-              </button>
+                {/* Interaction Mode Selector */}
+                <select
+                  value={modeFilter}
+                  onChange={(e) => setModeFilter(e.target.value)}
+                  style={{
+                    display: 'inline-block',
+                    width: 'auto',
+                    minWidth: '175px',
+                    height: '36px',
+                    padding: '0 10px',
+                    margin: 0,
+                    boxSizing: 'border-box',
+                    fontSize: '0.80rem',
+                    color: modeFilter ? '#1a73e8' : '#1e293b',
+                    fontWeight: modeFilter ? '700' : '600',
+                    borderRadius: '6px',
+                    border: modeFilter ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
+                    background: modeFilter ? '#eff6ff' : '#ffffff',
+                    cursor: 'pointer'
+                  }}
+                  title="Filter by interaction channel"
+                >
+                  <option value="">All Interaction Modes</option>
+                  <option value="call">📞 Phone Calls</option>
+                  <option value="whatsapp">💬 WhatsApp</option>
+                  <option value="site_visit">🚗 Site Visits</option>
+                  <option value="meeting">🤝 In-Person Meetings</option>
+                  <option value="email">✉️ Emails</option>
+                </select>
+
+                {/* Follow-up Status Selector */}
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  style={{
+                    display: 'inline-block',
+                    width: 'auto',
+                    minWidth: '175px',
+                    height: '36px',
+                    padding: '0 10px',
+                    margin: 0,
+                    boxSizing: 'border-box',
+                    fontSize: '0.80rem',
+                    color: statusFilter ? '#1a73e8' : '#1e293b',
+                    fontWeight: statusFilter ? '700' : '600',
+                    borderRadius: '6px',
+                    border: statusFilter ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
+                    background: statusFilter ? '#eff6ff' : '#ffffff',
+                    cursor: 'pointer'
+                  }}
+                  title="Filter by task progress"
+                >
+                  <option value="">All Follow-up Statuses</option>
+                  <option value="pending">⏳ Pending Action</option>
+                  <option value="completed">✅ Completed</option>
+                  <option value="cancelled">❌ Cancelled</option>
+                </select>
+
+                {(modeFilter || statusFilter) && (
+                  <button
+                    type="button"
+                    onClick={() => { setModeFilter(''); setStatusFilter(''); }}
+                    style={{
+                      fontSize: '0.76rem',
+                      color: '#64748b',
+                      background: 'none',
+                      border: 'none',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      fontWeight: '600'
+                    }}
+                  >
+                    Reset advanced
+                  </button>
+                )}
+              </div>
             )}
-          </div>
-        </div>
 
         {/* Bottom Row: Sleek Segmented Pipeline Tabs */}
         <div style={{
@@ -2032,6 +2285,22 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           fetchTeam();
         }}
         salesTeam={salesTeamOverview?.teamMembers || []}
+      />
+
+      {/* BULK DELETE BY STAGE MODAL */}
+      <BulkDeleteByStageModal
+        isOpen={isBulkDeleteModalOpen}
+        onClose={() => {
+          setIsBulkDeleteModalOpen(false);
+          setBulkDeleteInitialStage(null);
+        }}
+        onSuccess={() => {
+          fetchLeads();
+          fetchTeam();
+          setSelectedLeadIds([]);
+        }}
+        leads={leads}
+        initialStage={bulkDeleteInitialStage}
       />
 
       {/* MANUAL LEAD MODAL */}

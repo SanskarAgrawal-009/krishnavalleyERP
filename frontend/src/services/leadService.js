@@ -22,6 +22,17 @@ export const leadService = {
     method: 'DELETE'
   }),
 
+  // Bulk Deletion Methods
+  bulkDeleteByStage: (data) => request('/leads/bulk-delete-by-stage', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+
+  bulkDeleteLeads: (data) => request('/leads/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+
   // Lead Assignment & Round-Robin Methods
   assignLead: (data) => request('/leads/assign', {
     method: 'POST',
