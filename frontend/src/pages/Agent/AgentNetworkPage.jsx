@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { agentService } from '../../services/agentService.js';
+import { AddAgentModal } from '../../components/agents/AddAgentModal.jsx';
 import {
   Users, Search, Filter, RefreshCw, ChevronLeft, ChevronRight,
   Award, Wallet, TrendingUp, Phone, Mail, Building2, MapPin,
   CheckCircle2, Clock, XCircle, Eye, ArrowUpDown, UserCheck,
-  Shield, Star, Briefcase, DollarSign, BarChart3, Hash, ExternalLink
+  Shield, Star, Briefcase, DollarSign, BarChart3, Hash, ExternalLink, UserPlus
 } from 'lucide-react';
 
 export const AgentNetworkPage = () => {
@@ -22,6 +23,7 @@ export const AgentNetworkPage = () => {
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
   const [networkKPIs, setNetworkKPIs] = useState({});
   const [selectedAgent, setSelectedAgent] = useState(null);
+  const [showAddAgent, setShowAddAgent] = useState(false);
   const LIMIT = 20;
 
   const fetchAgents = useCallback(async () => {
@@ -105,18 +107,32 @@ export const AgentNetworkPage = () => {
             {pagination.total} registered agents across {new Set(agents.map(a => a.agentProfile?.city).filter(Boolean)).size}+ cities • Manage commissions, tiers & verifications
           </p>
         </div>
-        <button
-          onClick={() => { setPage(1); fetchAgents(); }}
-          style={{
-            padding: '10px 20px', borderRadius: '10px', border: 'none',
-            background: 'linear-gradient(135deg, #1a73e8, #1557b0)',
-            color: '#fff', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: '6px',
-            boxShadow: '0 4px 12px rgba(26,115,232,0.3)',
-          }}
-        >
-          <RefreshCw size={14} /> Refresh Network
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => setShowAddAgent(true)}
+            style={{
+              padding: '10px 20px', borderRadius: '10px', border: 'none',
+              background: 'linear-gradient(135deg, #16a34a, #15803d)',
+              color: '#fff', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '6px',
+              boxShadow: '0 4px 12px rgba(22,163,74,0.3)',
+            }}
+          >
+            <UserPlus size={14} /> Add Agent
+          </button>
+          <button
+            onClick={() => { setPage(1); fetchAgents(); }}
+            style={{
+              padding: '10px 20px', borderRadius: '10px', border: 'none',
+              background: 'linear-gradient(135deg, #1a73e8, #1557b0)',
+              color: '#fff', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '6px',
+              boxShadow: '0 4px 12px rgba(26,115,232,0.3)',
+            }}
+          >
+            <RefreshCw size={14} /> Refresh
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -605,6 +621,17 @@ export const AgentNetworkPage = () => {
           </div>
         </div>
       )}
+
+      {/* Add Agent Modal */}
+      <AddAgentModal
+        isOpen={showAddAgent}
+        onClose={() => setShowAddAgent(false)}
+        onAgentAdded={() => {
+          setShowAddAgent(false);
+          setPage(1);
+          fetchAgents();
+        }}
+      />
 
       <style>{`
         @keyframes fadeIn {
