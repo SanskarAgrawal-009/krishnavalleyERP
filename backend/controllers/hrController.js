@@ -316,8 +316,13 @@ export const createEmployee = async (req, res) => {
       departmentId,
       roleId,
       employmentType,
+      bloodGroup,
+      workLocation,
       address,
       emergencyContact,
+      idCardDetails,
+      bankDetails,
+      salaryStructure,
       initialSalary
     } = req.body;
 
@@ -340,7 +345,9 @@ export const createEmployee = async (req, res) => {
 
     let selectedDept = master.departments.find((d) => d._id.toString() === departmentId?.toString()) || master.departments[0];
     let selectedRole = master.roles.find((r) => r._id.toString() === roleId?.toString()) || master.roles[0];
-    const basicSal = initialSalary !== undefined && initialSalary !== '' ? Number(initialSalary) : (selectedRole?.baseSalary || 0);
+    const basicSal = initialSalary !== undefined && initialSalary !== '' ? Number(initialSalary) : (Number(salaryStructure?.basicSalary) || selectedRole?.baseSalary || 45000);
+    const allowVal = salaryStructure?.allowances !== undefined ? Number(salaryStructure.allowances) : Math.round(basicSal * 0.25);
+    const dedVal = salaryStructure?.deductions !== undefined ? Number(salaryStructure.deductions) : Math.round(basicSal * 0.12);
 
     const emp = new Employee({
       employeeCode: code,
@@ -350,6 +357,8 @@ export const createEmployee = async (req, res) => {
       email: email || '',
       dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
       gender: gender || 'male',
+      bloodGroup: bloodGroup || 'B+',
+      workLocation: workLocation || 'Head Office - Krishna Valley',
       joiningDate: joiningDate ? new Date(joiningDate) : new Date(),
       departmentId: selectedDept._id,
       roleId: selectedRole._id,
@@ -357,6 +366,38 @@ export const createEmployee = async (req, res) => {
       employmentStatus: 'active',
       address: address || {},
       emergencyContact: emergencyContact || {},
+      idCardDetails: {
+        aadhaarNumber: idCardDetails?.aadhaarNumber || '',
+        panNumber: idCardDetails?.panNumber ? idCardDetails.panNumber.toUpperCase() : '',
+        uanNumber: idCardDetails?.uanNumber || '',
+        esiNumber: idCardDetails?.esiNumber || '',
+        issueDate: idCardDetails?.issueDate ? new Date(idCardDetails.issueDate) : new Date(),
+        validUntil: idCardDetails?.validUntil ? new Date(idCardDetails.validUntil) : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000 * 2), // 2 yrs validity
+        idCardIssued: true,
+        photoUrl: idCardDetails?.photoUrl || ''
+      },
+      bankDetails: {
+        accountHolderName: bankDetails?.accountHolderName || `${firstName} ${lastName || ''}`.trim(),
+        bankName: bankDetails?.bankName || '',
+        accountNumber: bankDetails?.accountNumber || '',
+        ifscCode: bankDetails?.ifscCode ? bankDetails.ifscCode.toUpperCase() : '',
+        branchName: bankDetails?.branchName || '',
+        upiId: bankDetails?.upiId || ''
+      },
+      salaryStructure: {
+        basicSalary: basicSal,
+        allowances: allowVal,
+        deductions: dedVal,
+        pfDeduction: Math.round(basicSal * 0.08),
+        esiDeduction: Math.round(basicSal * 0.04),
+        tdsDeduction: 0
+      },
+      leaveBalance: {
+        casualLeave: { total: 12, used: 0 },
+        sickLeave: { total: 10, used: 0 },
+        earnedLeave: { total: 15, used: 0 },
+        unpaidLeave: { used: 0 }
+      },
       attendance: [],
       leaves: [],
       payroll: [
@@ -364,10 +405,10 @@ export const createEmployee = async (req, res) => {
           month: new Date().getMonth() + 1,
           year: new Date().getFullYear(),
           basicSalary: basicSal,
-          allowances: Math.round(basicSal * 0.2),
-          deductions: 0,
-          grossSalary: basicSal + Math.round(basicSal * 0.2),
-          netSalary: basicSal + Math.round(basicSal * 0.2),
+          allowances: allowVal,
+          deductions: dedVal,
+          grossSalary: basicSal + allowVal,
+          netSalary: Math.max(0, basicSal + allowVal - dedVal),
           status: 'pending'
         }
       ],
@@ -482,28 +523,50 @@ export const logAttendance = async (req, res) => {
 };
 
 // =========================================================
-// 4. LEAVE MANAGEMENT
+// 4. LEAVE MANAGEMENT & CENTRALIZED HR LOGGING
 // =========================================================
 
 export const applyLeave = async (req, res) => {
   try {
     const { id } = req.params;
-    const { leaveType, fromDate, toDate, numberOfDays, reason } = req.body;
+    const { leaveType, fromDate, toDate, numberOfDays, reason, status } = req.body;
 
     const employee = await Employee.findById(id);
     if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    const days = Number(numberOfDays) || 1;
+    const leaveStatus = status || 'approved'; // Centralized HR module: direct admin records default to approved
 
     employee.leaves.push({
       leaveType: leaveType || 'casual',
       fromDate: new Date(fromDate),
       toDate: new Date(toDate),
-      numberOfDays: Number(numberOfDays) || 1,
-      reason: reason || '',
-      status: 'pending'
+      numberOfDays: days,
+      reason: reason || 'Approved administrative leave',
+      status: leaveStatus,
+      approvedAt: leaveStatus === 'approved' ? new Date() : undefined,
+      approvedBy: req.user?._id
     });
 
+    if (!employee.leaveBalance) {
+      employee.leaveBalance = {
+        casualLeave: { total: 12, used: 0 },
+        sickLeave: { total: 10, used: 0 },
+        earnedLeave: { total: 15, used: 0 },
+        unpaidLeave: { used: 0 }
+      };
+    }
+
+    if (leaveStatus === 'approved') {
+      const type = leaveType || 'casual';
+      if (type === 'casual') employee.leaveBalance.casualLeave.used = (employee.leaveBalance.casualLeave.used || 0) + days;
+      else if (type === 'sick') employee.leaveBalance.sickLeave.used = (employee.leaveBalance.sickLeave.used || 0) + days;
+      else if (type === 'earned') employee.leaveBalance.earnedLeave.used = (employee.leaveBalance.earnedLeave.used || 0) + days;
+      else if (type === 'unpaid') employee.leaveBalance.unpaidLeave.used = (employee.leaveBalance.unpaidLeave.used || 0) + days;
+    }
+
     await employee.save();
-    return res.status(201).json({ success: true, message: 'Leave application submitted', data: employee });
+    return res.status(201).json({ success: true, message: `Staff leave recorded successfully (${leaveStatus})`, data: employee });
   } catch (error) {
     console.error('Error applying leave:', error);
     return res.status(500).json({ success: false, message: error.message });
@@ -513,7 +576,7 @@ export const applyLeave = async (req, res) => {
 export const updateLeaveStatus = async (req, res) => {
   try {
     const { id, leaveId } = req.params;
-    const { status } = req.body; // 'approved' | 'rejected' | 'cancelled'
+    const { status } = req.body; // 'approved' | 'rejected' | 'cancelled' | 'pending'
 
     const employee = await Employee.findById(id);
     if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
@@ -521,11 +584,41 @@ export const updateLeaveStatus = async (req, res) => {
     const leave = employee.leaves.id(leaveId);
     if (!leave) return res.status(404).json({ success: false, message: 'Leave record not found' });
 
-    leave.status = status;
-    leave.approvedAt = new Date();
+    const oldStatus = leave.status;
+    const newStatus = status;
+    const days = leave.numberOfDays || 1;
+    const type = leave.leaveType || 'casual';
+
+    if (!employee.leaveBalance) {
+      employee.leaveBalance = {
+        casualLeave: { total: 12, used: 0 },
+        sickLeave: { total: 10, used: 0 },
+        earnedLeave: { total: 15, used: 0 },
+        unpaidLeave: { used: 0 }
+      };
+    }
+
+    // Delta sync
+    if (oldStatus !== 'approved' && newStatus === 'approved') {
+      if (type === 'casual') employee.leaveBalance.casualLeave.used = (employee.leaveBalance.casualLeave.used || 0) + days;
+      else if (type === 'sick') employee.leaveBalance.sickLeave.used = (employee.leaveBalance.sickLeave.used || 0) + days;
+      else if (type === 'earned') employee.leaveBalance.earnedLeave.used = (employee.leaveBalance.earnedLeave.used || 0) + days;
+      else if (type === 'unpaid') employee.leaveBalance.unpaidLeave.used = (employee.leaveBalance.unpaidLeave.used || 0) + days;
+    } else if (oldStatus === 'approved' && newStatus !== 'approved') {
+      if (type === 'casual') employee.leaveBalance.casualLeave.used = Math.max(0, (employee.leaveBalance.casualLeave.used || 0) - days);
+      else if (type === 'sick') employee.leaveBalance.sickLeave.used = Math.max(0, (employee.leaveBalance.sickLeave.used || 0) - days);
+      else if (type === 'earned') employee.leaveBalance.earnedLeave.used = Math.max(0, (employee.leaveBalance.earnedLeave.used || 0) - days);
+      else if (type === 'unpaid') employee.leaveBalance.unpaidLeave.used = Math.max(0, (employee.leaveBalance.unpaidLeave.used || 0) - days);
+    }
+
+    leave.status = newStatus;
+    if (newStatus === 'approved') {
+      leave.approvedAt = new Date();
+      leave.approvedBy = req.user?._id;
+    }
 
     await employee.save();
-    return res.json({ success: true, message: `Leave status updated to ${status}`, data: employee });
+    return res.json({ success: true, message: `Leave status updated to ${newStatus}`, data: employee });
   } catch (error) {
     console.error('Error updating leave status:', error);
     return res.status(500).json({ success: false, message: error.message });
@@ -702,10 +795,12 @@ export const getHRSummary = async (req, res) => {
     const employees = await Employee.find();
     const activeStaff = employees.filter((e) => e.employmentStatus === 'active').length;
 
-    // Today's Attendance
+    // Today's Attendance & Leaves
     const todayStr = new Date().toISOString().slice(0, 10);
     let todayPresent = 0;
     let pendingLeavesCount = 0;
+    let staffOnLeaveToday = 0;
+    let totalIdCardsIssued = 0;
     let monthlyPayrollOutflow = 0;
 
     const currentMonth = new Date().getMonth() + 1;
@@ -719,10 +814,25 @@ export const getHRSummary = async (req, res) => {
       }
 
       // Leaves
-      pendingLeavesCount += emp.leaves.filter((l) => l.status === 'pending').length;
+      pendingLeavesCount += (emp.leaves || []).filter((l) => l.status === 'pending').length;
+
+      const isAbsentOnLeave = (emp.leaves || []).some((l) => {
+        if (l.status !== 'approved') return false;
+        const from = l.fromDate ? new Date(l.fromDate).toISOString().slice(0, 10) : '';
+        const to = l.toDate ? new Date(l.toDate).toISOString().slice(0, 10) : '';
+        return todayStr >= from && todayStr <= to;
+      });
+      if (isAbsentOnLeave) {
+        staffOnLeaveToday++;
+      }
+
+      // ID Cards
+      if (emp.idCardDetails?.idCardIssued !== false) {
+        totalIdCardsIssued++;
+      }
 
       // Payroll
-      const paySlip = emp.payroll.find((p) => p.month === currentMonth && p.year === currentYear);
+      const paySlip = (emp.payroll || []).find((p) => p.month === currentMonth && p.year === currentYear);
       if (paySlip) {
         monthlyPayrollOutflow += (paySlip.netSalary || 0);
       }
@@ -737,6 +847,8 @@ export const getHRSummary = async (req, res) => {
         activeStaff,
         todayAttendancePercent: attendanceRate,
         pendingLeavesCount,
+        staffOnLeaveToday,
+        totalIdCardsIssued,
         monthlyPayrollOutflow: Math.round(monthlyPayrollOutflow)
       }
     });
@@ -771,6 +883,11 @@ export const updateEmployee = async (req, res) => {
       employmentType,
       employmentStatus,
       salaryStructure,
+      bloodGroup,
+      workLocation,
+      idCardDetails,
+      bankDetails,
+      leaveBalance,
       address,
       emergencyContact,
     } = req.body;
@@ -789,11 +906,51 @@ export const updateEmployee = async (req, res) => {
     if (email !== undefined) employee.email = email.trim();
     if (dateOfBirth) employee.dateOfBirth = new Date(dateOfBirth);
     if (gender) employee.gender = gender;
+    if (bloodGroup !== undefined) employee.bloodGroup = bloodGroup;
+    if (workLocation !== undefined) employee.workLocation = workLocation;
     if (joiningDate) employee.joiningDate = new Date(joiningDate);
     if (employmentType) employee.employmentType = employmentType;
     if (employmentStatus) employee.employmentStatus = employmentStatus;
     if (address) employee.address = { ...employee.address, ...address };
     if (emergencyContact) employee.emergencyContact = { ...employee.emergencyContact, ...emergencyContact };
+
+    if (idCardDetails) {
+      employee.idCardDetails = {
+        ...employee.idCardDetails,
+        ...idCardDetails,
+        ...(idCardDetails.panNumber && { panNumber: idCardDetails.panNumber.toUpperCase() }),
+        ...(idCardDetails.issueDate && { issueDate: new Date(idCardDetails.issueDate) }),
+        ...(idCardDetails.validUntil && { validUntil: new Date(idCardDetails.validUntil) })
+      };
+    }
+
+    if (bankDetails) {
+      employee.bankDetails = {
+        ...employee.bankDetails,
+        ...bankDetails,
+        ...(bankDetails.ifscCode && { ifscCode: bankDetails.ifscCode.toUpperCase() })
+      };
+    }
+
+    if (leaveBalance) {
+      employee.leaveBalance = {
+        casualLeave: {
+          total: leaveBalance.casualLeave?.total !== undefined ? Number(leaveBalance.casualLeave.total) : (employee.leaveBalance?.casualLeave?.total || 12),
+          used: leaveBalance.casualLeave?.used !== undefined ? Number(leaveBalance.casualLeave.used) : (employee.leaveBalance?.casualLeave?.used || 0)
+        },
+        sickLeave: {
+          total: leaveBalance.sickLeave?.total !== undefined ? Number(leaveBalance.sickLeave.total) : (employee.leaveBalance?.sickLeave?.total || 10),
+          used: leaveBalance.sickLeave?.used !== undefined ? Number(leaveBalance.sickLeave.used) : (employee.leaveBalance?.sickLeave?.used || 0)
+        },
+        earnedLeave: {
+          total: leaveBalance.earnedLeave?.total !== undefined ? Number(leaveBalance.earnedLeave.total) : (employee.leaveBalance?.earnedLeave?.total || 15),
+          used: leaveBalance.earnedLeave?.used !== undefined ? Number(leaveBalance.earnedLeave.used) : (employee.leaveBalance?.earnedLeave?.used || 0)
+        },
+        unpaidLeave: {
+          used: leaveBalance.unpaidLeave?.used !== undefined ? Number(leaveBalance.unpaidLeave.used) : (employee.leaveBalance?.unpaidLeave?.used || 0)
+        }
+      };
+    }
 
     if (departmentId) {
       const selectedDept = master.departments.find((d) => d._id.toString() === departmentId.toString()) || master.departments[0];
@@ -808,8 +965,15 @@ export const updateEmployee = async (req, res) => {
     if (salaryStructure) {
       const basic = Number(salaryStructure.basicSalary) || employee.salaryStructure?.basicSalary || 45000;
       const allowances = salaryStructure.allowances !== undefined ? Number(salaryStructure.allowances) : Math.round(basic * 0.25);
-      const deductions = salaryStructure.deductions !== undefined ? Number(salaryStructure.deductions) : 0;
-      employee.salaryStructure = { basicSalary: basic, allowances, deductions };
+      const deductions = salaryStructure.deductions !== undefined ? Number(salaryStructure.deductions) : Math.round(basic * 0.12);
+      employee.salaryStructure = {
+        basicSalary: basic,
+        allowances,
+        deductions,
+        pfDeduction: Number(salaryStructure.pfDeduction) || Math.round(basic * 0.08),
+        esiDeduction: Number(salaryStructure.esiDeduction) || Math.round(basic * 0.04),
+        tdsDeduction: Number(salaryStructure.tdsDeduction) || 0
+      };
     }
 
     await employee.save();
@@ -953,12 +1117,90 @@ export const deleteLeave = async (req, res) => {
     const employee = await Employee.findById(id);
     if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
 
+    const leave = (employee.leaves || []).find((l) => l._id.toString() === leaveId);
+    if (leave && leave.status === 'approved' && employee.leaveBalance) {
+      const days = leave.numberOfDays || 1;
+      const type = leave.leaveType || 'casual';
+      if (type === 'casual') employee.leaveBalance.casualLeave.used = Math.max(0, (employee.leaveBalance.casualLeave.used || 0) - days);
+      else if (type === 'sick') employee.leaveBalance.sickLeave.used = Math.max(0, (employee.leaveBalance.sickLeave.used || 0) - days);
+      else if (type === 'earned') employee.leaveBalance.earnedLeave.used = Math.max(0, (employee.leaveBalance.earnedLeave.used || 0) - days);
+      else if (type === 'unpaid') employee.leaveBalance.unpaidLeave.used = Math.max(0, (employee.leaveBalance.unpaidLeave.used || 0) - days);
+    }
+
     employee.leaves = (employee.leaves || []).filter((l) => l._id.toString() !== leaveId);
     await employee.save();
 
-    return res.json({ success: true, message: 'Leave application removed successfully' });
+    return res.json({ success: true, message: 'Leave record removed successfully', data: employee });
   } catch (error) {
     console.error('Error deleting leave:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateLeaveBalance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { casualLeave, sickLeave, earnedLeave, unpaidLeave } = req.body;
+    const employee = await Employee.findById(id);
+    if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    if (!employee.leaveBalance) {
+      employee.leaveBalance = {
+        casualLeave: { total: 12, used: 0 },
+        sickLeave: { total: 10, used: 0 },
+        earnedLeave: { total: 15, used: 0 },
+        unpaidLeave: { used: 0 }
+      };
+    }
+
+    if (casualLeave) {
+      if (casualLeave.total !== undefined) employee.leaveBalance.casualLeave.total = Number(casualLeave.total);
+      if (casualLeave.used !== undefined) employee.leaveBalance.casualLeave.used = Number(casualLeave.used);
+    }
+    if (sickLeave) {
+      if (sickLeave.total !== undefined) employee.leaveBalance.sickLeave.total = Number(sickLeave.total);
+      if (sickLeave.used !== undefined) employee.leaveBalance.sickLeave.used = Number(sickLeave.used);
+    }
+    if (earnedLeave) {
+      if (earnedLeave.total !== undefined) employee.leaveBalance.earnedLeave.total = Number(earnedLeave.total);
+      if (earnedLeave.used !== undefined) employee.leaveBalance.earnedLeave.used = Number(earnedLeave.used);
+    }
+    if (unpaidLeave) {
+      if (unpaidLeave.used !== undefined) employee.leaveBalance.unpaidLeave.used = Number(unpaidLeave.used);
+    }
+
+    await employee.save();
+    return res.json({ success: true, message: 'Employee leave balance quotas updated successfully', data: employee });
+  } catch (error) {
+    console.error('Error updating leave balance:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateEmployeeIdDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { aadhaarNumber, panNumber, uanNumber, esiNumber, issueDate, validUntil, idCardIssued, photoUrl } = req.body;
+
+    const employee = await Employee.findById(id);
+    if (!employee) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    employee.idCardDetails = {
+      ...employee.idCardDetails,
+      ...(aadhaarNumber !== undefined && { aadhaarNumber: aadhaarNumber.trim() }),
+      ...(panNumber !== undefined && { panNumber: panNumber.trim().toUpperCase() }),
+      ...(uanNumber !== undefined && { uanNumber: uanNumber.trim() }),
+      ...(esiNumber !== undefined && { esiNumber: esiNumber.trim() }),
+      ...(issueDate && { issueDate: new Date(issueDate) }),
+      ...(validUntil && { validUntil: new Date(validUntil) }),
+      ...(idCardIssued !== undefined && { idCardIssued: Boolean(idCardIssued) }),
+      ...(photoUrl !== undefined && { photoUrl })
+    };
+
+    await employee.save();
+    return res.json({ success: true, message: 'Staff ID card and regulatory identity details updated', data: employee });
+  } catch (error) {
+    console.error('Error updating employee ID details:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

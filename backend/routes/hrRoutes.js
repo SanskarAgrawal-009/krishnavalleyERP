@@ -20,6 +20,8 @@ import {
   applyLeave,
   updateLeaveStatus,
   deleteLeave,
+  updateLeaveBalance,
+  updateEmployeeIdDetails,
   generateMonthlyPayroll,
   getMonthlyPayrollRegister,
   processPayrollPayment,
@@ -55,11 +57,12 @@ router.post('/roles', authorizePermission('hr:manage'), addRole);
 router.put('/roles/:roleId', authorizePermission('hr:manage'), updateRole);
 router.delete('/roles/:roleId', authorizePermission('hr:manage'), deleteRole);
 
-// 2. Employee CRUD
+// 2. Employee CRUD & Identity
 router.post('/employees', authorizePermission('hr:manage'), createEmployee);
 router.get('/employees', authorizePermission('hr:view'), getEmployees);
 router.get('/employees/:id', authorizePermission('hr:view'), getEmployeeById);
 router.put('/employees/:id', authorizePermission('hr:edit', 'hr:manage'), updateEmployee);
+router.put('/employees/:id/id-details', authorizePermission('hr:edit', 'hr:manage'), updateEmployeeIdDetails);
 router.delete('/employees/:id', authorizePermission('hr:manage'), deleteEmployee);
 router.post('/seed-sample-staff', authorizePermission('hr:manage'), seedSampleStaff);
 
@@ -68,10 +71,11 @@ router.get('/attendance', authorizePermission('hr:view'), getAttendanceByDate);
 router.post('/attendance/bulk', authorizePermission('hr:edit', 'hr:manage'), logBulkAttendance);
 router.post('/employees/:id/attendance', authorizePermission('hr:edit', 'hr:manage'), logAttendance);
 
-// 4. Leaves
+// 4. Centralized Leaves & Quotas
 router.post('/employees/:id/leaves', authorizePermission('hr:edit', 'hr:view'), applyLeave);
 router.put('/employees/:id/leaves/:leaveId', authorizePermission('hr:edit', 'hr:manage'), updateLeaveStatus);
 router.delete('/employees/:id/leaves/:leaveId', authorizePermission('hr:edit', 'hr:manage'), deleteLeave);
+router.put('/employees/:id/leave-balance', authorizePermission('hr:edit', 'hr:manage'), updateLeaveBalance);
 
 // 5. Payroll
 router.get('/payroll', authorizePermission('hr:payroll', 'hr:view'), getMonthlyPayrollRegister);

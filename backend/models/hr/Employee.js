@@ -64,6 +64,18 @@ const EmployeeSchema = new mongoose.Schema(
       ],
     },
 
+    bloodGroup: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", ""],
+      default: "B+",
+    },
+
+    workLocation: {
+      type: String,
+      default: "Head Office - Krishna Valley",
+      trim: true,
+    },
+
     joiningDate: {
       type: Date,
       required: true,
@@ -137,6 +149,76 @@ const EmployeeSchema = new mongoose.Schema(
       name: String,
       relationship: String,
       mobileNo: String,
+    },
+
+    // =====================================================
+    // ID CARD & REGULATORY IDENTIFIERS
+    // =====================================================
+
+    idCardDetails: {
+      aadhaarNumber: {
+        type: String,
+        trim: true,
+      },
+      panNumber: {
+        type: String,
+        trim: true,
+        uppercase: true,
+      },
+      uanNumber: {
+        type: String,
+        trim: true,
+      },
+      esiNumber: {
+        type: String,
+        trim: true,
+      },
+      issueDate: {
+        type: Date,
+        default: Date.now,
+      },
+      validUntil: {
+        type: Date,
+      },
+      idCardIssued: {
+        type: Boolean,
+        default: true,
+      },
+      photoUrl: {
+        type: String,
+      },
+    },
+
+    // =====================================================
+    // BANK DETAILS (FOR SALARY DISBURSEMENT)
+    // =====================================================
+
+    bankDetails: {
+      accountHolderName: {
+        type: String,
+        trim: true,
+      },
+      bankName: {
+        type: String,
+        trim: true,
+      },
+      accountNumber: {
+        type: String,
+        trim: true,
+      },
+      ifscCode: {
+        type: String,
+        trim: true,
+        uppercase: true,
+      },
+      branchName: {
+        type: String,
+        trim: true,
+      },
+      upiId: {
+        type: String,
+        trim: true,
+      },
     },
 
     // =====================================================
@@ -238,6 +320,59 @@ const EmployeeSchema = new mongoose.Schema(
         approvedAt: Date,
       },
     ],
+
+    // =====================================================
+    // LEAVE BALANCE & ANNUAL ALLOTMENTS
+    // =====================================================
+
+    leaveBalance: {
+      casualLeave: {
+        total: { type: Number, default: 12 },
+        used: { type: Number, default: 0 },
+      },
+      sickLeave: {
+        total: { type: Number, default: 10 },
+        used: { type: Number, default: 0 },
+      },
+      earnedLeave: {
+        total: { type: Number, default: 15 },
+        used: { type: Number, default: 0 },
+      },
+      unpaidLeave: {
+        used: { type: Number, default: 0 },
+      },
+    },
+
+    // =====================================================
+    // SALARY STRUCTURE
+    // =====================================================
+
+    salaryStructure: {
+      basicSalary: {
+        type: Number,
+        default: 0,
+      },
+      allowances: {
+        type: Number,
+        default: 0,
+      },
+      deductions: {
+        type: Number,
+        default: 0,
+      },
+      pfDeduction: {
+        type: Number,
+        default: 0,
+      },
+      esiDeduction: {
+        type: Number,
+        default: 0,
+      },
+      tdsDeduction: {
+        type: Number,
+        default: 0,
+      },
+    },
 
     // =====================================================
     // PAYROLL

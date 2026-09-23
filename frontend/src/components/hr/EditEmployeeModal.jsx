@@ -14,6 +14,8 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
   const [mobileNo, setMobileNo] = useState('');
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState('male');
+  const [bloodGroup, setBloodGroup] = useState('B+');
+  const [workLocation, setWorkLocation] = useState('Head Office - Krishna Valley');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [joiningDate, setJoiningDate] = useState('');
   const [employmentType, setEmploymentType] = useState('full_time');
@@ -23,6 +25,23 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
   const [basicSalary, setBasicSalary] = useState('');
   const [allowances, setAllowances] = useState('');
   const [deductions, setDeductions] = useState('');
+
+  // Regulatory & Identity
+  const [aadhaarNumber, setAadhaarNumber] = useState('');
+  const [panNumber, setPanNumber] = useState('');
+  const [uanNumber, setUanNumber] = useState('');
+  const [esiNumber, setEsiNumber] = useState('');
+
+  // Bank Wire Details
+  const [bankName, setBankName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [ifscCode, setIfscCode] = useState('');
+  const [upiId, setUpiId] = useState('');
+
+  // Leave Quotas
+  const [clTotal, setClTotal] = useState(12);
+  const [slTotal, setSlTotal] = useState(10);
+  const [elTotal, setElTotal] = useState(15);
 
   // Address & Emergency Contact
   const [city, setCity] = useState('');
@@ -47,6 +66,8 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
       setMobileNo(employee.mobileNo || employee.phone || '');
       setEmail(employee.email || '');
       setGender(employee.gender || 'male');
+      setBloodGroup(employee.bloodGroup || 'B+');
+      setWorkLocation(employee.workLocation || 'Head Office - Krishna Valley');
       setDateOfBirth(employee.dateOfBirth ? new Date(employee.dateOfBirth).toISOString().slice(0, 10) : '');
       setJoiningDate(employee.joiningDate ? new Date(employee.joiningDate).toISOString().slice(0, 10) : '');
       setEmploymentType(employee.employmentType || 'full_time');
@@ -63,6 +84,20 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
       setBasicSalary(basic);
       setAllowances(allow);
       setDeductions(ded);
+
+      setAadhaarNumber(employee.idCardDetails?.aadhaarNumber || '');
+      setPanNumber(employee.idCardDetails?.panNumber || '');
+      setUanNumber(employee.idCardDetails?.uanNumber || '');
+      setEsiNumber(employee.idCardDetails?.esiNumber || '');
+
+      setBankName(employee.bankDetails?.bankName || '');
+      setAccountNumber(employee.bankDetails?.accountNumber || '');
+      setIfscCode(employee.bankDetails?.ifscCode || '');
+      setUpiId(employee.bankDetails?.upiId || '');
+
+      setClTotal(employee.leaveBalance?.casualLeave?.total !== undefined ? employee.leaveBalance.casualLeave.total : 12);
+      setSlTotal(employee.leaveBalance?.sickLeave?.total !== undefined ? employee.leaveBalance.sickLeave.total : 10);
+      setElTotal(employee.leaveBalance?.earnedLeave?.total !== undefined ? employee.leaveBalance.earnedLeave.total : 15);
 
       setCity(employee.address?.city || '');
       setState(employee.address?.state || '');
@@ -129,6 +164,8 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
         mobileNo,
         email,
         gender,
+        bloodGroup,
+        workLocation,
         dateOfBirth: dateOfBirth || undefined,
         joiningDate: joiningDate || undefined,
         employmentType,
@@ -139,6 +176,25 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
           basicSalary: Number(basicSalary) || 0,
           allowances: Number(allowances) || 0,
           deductions: Number(deductions) || 0
+        },
+        idCardDetails: {
+          aadhaarNumber: aadhaarNumber.trim(),
+          panNumber: panNumber.trim().toUpperCase(),
+          uanNumber: uanNumber.trim(),
+          esiNumber: esiNumber.trim(),
+          idCardIssued: true
+        },
+        bankDetails: {
+          bankName: bankName.trim(),
+          accountNumber: accountNumber.trim(),
+          ifscCode: ifscCode.trim().toUpperCase(),
+          upiId: upiId.trim(),
+          accountHolderName: `${firstName} ${lastName || ''}`.trim()
+        },
+        leaveBalance: {
+          casualLeave: { total: Number(clTotal) },
+          sickLeave: { total: Number(slTotal) },
+          earnedLeave: { total: Number(elTotal) }
         },
         address: { city, state, country: 'India' },
         emergencyContact: {
@@ -227,6 +283,18 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
               </select>
             </div>
             <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#b91c1c', marginBottom: '4px' }}>Blood Group</label>
+              <select
+                value={bloodGroup}
+                onChange={(e) => setBloodGroup(e.target.value)}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #fca5a5', fontSize: '0.85rem', background: '#fff', fontWeight: '700', color: '#b91c1c' }}
+              >
+                {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
+                  <option key={bg} value={bg}>{bg}</option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Joining Date</label>
               <input
                 type="date"
@@ -241,7 +309,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
         {/* Section 2: Department & Designation */}
         <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
           <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1a73e8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Building2 size={14} /> Department, Role & Employment Status
+            <Building2 size={14} /> Department, Role & Placement
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
             <div>
@@ -297,6 +365,153 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
                 <option value="resigned">Resigned / Notice Period</option>
                 <option value="terminated">Terminated</option>
               </select>
+            </div>
+            <div style={{ gridColumn: 'span 2' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Work Location / Assigned Site Office</label>
+              <input
+                type="text"
+                value={workLocation}
+                onChange={(e) => setWorkLocation(e.target.value)}
+                placeholder="e.g. Tower A Site Office, Vrindavan Highway"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2B: ID & Regulatory Identification */}
+        <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1a73e8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ShieldCheck size={14} /> Staff ID & Government Identity Proofs
+          </h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Aadhaar Number (12 Digits)</label>
+              <input
+                type="text"
+                value={aadhaarNumber}
+                onChange={(e) => setAadhaarNumber(e.target.value)}
+                placeholder="xxxx xxxx xxxx"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>PAN Card Number</label>
+              <input
+                type="text"
+                value={panNumber}
+                onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+                placeholder="ABCDE1234F"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>UAN / PF Number</label>
+              <input
+                type="text"
+                value={uanNumber}
+                onChange={(e) => setUanNumber(e.target.value)}
+                placeholder="UAN Number"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>ESI Number</label>
+              <input
+                type="text"
+                value={esiNumber}
+                onChange={(e) => setEsiNumber(e.target.value)}
+                placeholder="ESI Number"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2C: Bank Details */}
+        <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1a73e8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <DollarSign size={14} /> Bank Account & Wire Details
+          </h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Bank Name</label>
+              <input
+                type="text"
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                placeholder="e.g. HDFC Bank, SBI"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Account Number</label>
+              <input
+                type="text"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+                placeholder="Account number"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>IFSC Code</label>
+              <input
+                type="text"
+                value={ifscCode}
+                onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
+                placeholder="HDFC0001234"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>UPI ID</label>
+              <input
+                type="text"
+                value={upiId}
+                onChange={(e) => setUpiId(e.target.value)}
+                placeholder="user@upi"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2D: Annual Leave Quotas (HR Managed) */}
+        <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1a73e8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Calendar size={14} /> Annual Leave Quotas (HR Managed)
+          </h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Casual Leave Quota (CL)</label>
+              <input
+                type="number"
+                value={clTotal}
+                onChange={(e) => setClTotal(e.target.value)}
+                min="0"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem', fontWeight: '700' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Sick Leave Quota (SL)</label>
+              <input
+                type="number"
+                value={slTotal}
+                onChange={(e) => setSlTotal(e.target.value)}
+                min="0"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem', fontWeight: '700' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Earned / Privilege Leave (EL)</label>
+              <input
+                type="number"
+                value={elTotal}
+                onChange={(e) => setElTotal(e.target.value)}
+                min="0"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem', fontWeight: '700' }}
+              />
             </div>
           </div>
         </div>

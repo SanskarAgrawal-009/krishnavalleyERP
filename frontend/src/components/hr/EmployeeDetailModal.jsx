@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { StatusBadge } from '../common/StatusBadge.jsx';
 import { DisburseSalaryModal } from './DisburseSalaryModal.jsx';
+import { PrintableIDCardModal } from './PrintableIDCardModal.jsx';
 import { 
   User, 
   Phone, 
@@ -16,7 +17,12 @@ import {
   ExternalLink,
   CheckCircle,
   XCircle,
-  FileText
+  FileText,
+  Printer,
+  Heart,
+  CreditCard,
+  MapPin,
+  CheckCircle2
 } from 'lucide-react';
 
 export const EmployeeDetailModal = ({
@@ -27,7 +33,10 @@ export const EmployeeDetailModal = ({
   onPaySalary,
   onUploadDoc
 }) => {
-  const [activeTab, setActiveTab] = useState('attendance'); // 'attendance' | 'leaves' | 'payroll' | 'docs'
+  const [activeTab, setActiveTab] = useState('id_badge'); // 'id_badge' | 'leaves' | 'attendance' | 'payroll' | 'docs'
+
+  // ID Card Print Modal State
+  const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
 
   // Document Upload State
   const [docFile, setDocFile] = useState(null);
@@ -109,11 +118,33 @@ export const EmployeeDetailModal = ({
             </div>
           </div>
 
-          <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '700' }}>EMPLOYEE CODE</span>
-            <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#1a73e8' }}>
-              {employee.employeeCode}
+          <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+            <div>
+              <span style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '700' }}>EMPLOYEE CODE</span>
+              <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#1a73e8' }}>
+                {employee.employeeCode}
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={() => setIsIDCardModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '5px 12px',
+                background: '#1e40af',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(30, 64, 175, 0.25)'
+              }}
+            >
+              <Printer size={13} /> Print ID Badge
+            </button>
           </div>
         </div>
 
@@ -128,10 +159,11 @@ export const EmployeeDetailModal = ({
           overflowX: 'auto'
         }}>
           {[
+            { id: 'id_badge', label: `Staff ID Badge`, icon: ShieldCheck },
+            { id: 'leaves', label: `Leaves & Quotas (${leavesList.length})`, icon: Calendar },
             { id: 'attendance', label: `Attendance (${attendanceList.length})`, icon: Clock },
-            { id: 'leaves', label: `Leaves (${leavesList.length})`, icon: Calendar },
-            { id: 'payroll', label: `Payroll (${payrollList.length})`, icon: DollarSign },
-            { id: 'docs', label: `S3 Documents (${documentsList.length})`, icon: ShieldCheck }
+            { id: 'payroll', label: `Payroll & Bank (${payrollList.length})`, icon: DollarSign },
+            { id: 'docs', label: `S3 Documents (${documentsList.length})`, icon: FileText }
           ].map((tab) => {
             const isSelected = activeTab === tab.id;
             return (
@@ -159,6 +191,189 @@ export const EmployeeDetailModal = ({
             );
           })}
         </div>
+
+        {/* ================= TAB: STAFF ID BADGE & REGULATORY IDENTIFIERS ================= */}
+        {activeTab === 'id_badge' && (
+          <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+              <div>
+                <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+                  Official Krishna Valley Staff Identity Badge
+                </h4>
+                <p style={{ fontSize: '0.74rem', color: '#6b7280', margin: '2px 0 0' }}>
+                  Standard corporate and construction site access credential issued by HR.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsIDCardModalOpen(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '7px 14px',
+                  backgroundColor: '#10b981',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: '700',
+                  fontSize: '0.78rem',
+                  cursor: 'pointer'
+                }}
+              >
+                <Printer size={14} /> Open Full Size Printable Card
+              </button>
+            </div>
+
+            {/* Badge Preview and Details Split */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+              {/* Mini Card Preview */}
+              <div
+                style={{
+                  background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #f59e0b', paddingBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Building2 size={16} color="#1e40af" />
+                    <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#1e3a8a', letterSpacing: '0.5px' }}>
+                      KRISHNA VALLEY
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.62rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 6px', borderRadius: '4px', fontWeight: '800' }}>
+                    AUTHORIZED ID
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <div
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #1e40af, #0284c7)',
+                      color: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.2rem',
+                      fontWeight: '800',
+                      flexShrink: 0
+                    }}
+                  >
+                    {employee.firstName.charAt(0)}{employee.lastName?.charAt(0) || ''}
+                  </div>
+
+                  <div>
+                    <h5 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: '0 0 2px' }}>
+                      {employee.firstName} {employee.lastName}
+                    </h5>
+                    <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#1d4ed8' }}>
+                      {employee.designation || employee.roleName || 'Senior Site Engineer'}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                      {employee.departmentName || 'Civil & Structural Engineering'}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', background: '#f1f5f9', padding: '10px', borderRadius: '8px', fontSize: '0.7rem' }}>
+                  <div>
+                    <span style={{ color: '#64748b', fontSize: '0.62rem', fontWeight: '700', display: 'block' }}>EMP ID CODE</span>
+                    <strong style={{ color: '#1e40af' }}>{employee.employeeCode}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', fontSize: '0.62rem', fontWeight: '700', display: 'block' }}>BLOOD GROUP</span>
+                    <strong style={{ color: '#b91c1c' }}>{employee.bloodGroup || 'B+'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', fontSize: '0.62rem', fontWeight: '700', display: 'block' }}>EMERGENCY CONTACT</span>
+                    <strong style={{ color: '#0f172a' }}>{employee.emergencyContact?.mobileNo || 'N/A'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b', fontSize: '0.62rem', fontWeight: '700', display: 'block' }}>ASSIGNED LOCATION</span>
+                    <strong style={{ color: '#047857' }}>{employee.workLocation || 'Site Office'}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Regulatory Identity Numbers Vault */}
+              <div
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px'
+                }}
+              >
+                <h5 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Government Regulatory Credentials
+                </h5>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'block' }}>AADHAAR NUMBER</span>
+                      <strong style={{ fontSize: '0.84rem', color: '#0f172a' }}>
+                        {employee.idCardDetails?.aadhaarNumber ? `•••• •••• ${employee.idCardDetails.aadhaarNumber.slice(-4)}` : 'Not Provided'}
+                      </strong>
+                    </div>
+                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: employee.idCardDetails?.aadhaarNumber ? '#e6f4ea' : '#fef3c7', color: employee.idCardDetails?.aadhaarNumber ? '#137333' : '#b45309', fontWeight: '700' }}>
+                      {employee.idCardDetails?.aadhaarNumber ? 'Recorded' : 'Pending'}
+                    </span>
+                  </div>
+
+                  <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'block' }}>PAN CARD NUMBER</span>
+                      <strong style={{ fontSize: '0.84rem', color: '#0f172a' }}>
+                        {employee.idCardDetails?.panNumber || 'Not Provided'}
+                      </strong>
+                    </div>
+                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: employee.idCardDetails?.panNumber ? '#e6f4ea' : '#fef3c7', color: employee.idCardDetails?.panNumber ? '#137333' : '#b45309', fontWeight: '700' }}>
+                      {employee.idCardDetails?.panNumber ? 'Recorded' : 'Pending'}
+                    </span>
+                  </div>
+
+                  <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'block' }}>UAN / PROVIDENT FUND</span>
+                      <strong style={{ fontSize: '0.84rem', color: '#0f172a' }}>
+                        {employee.idCardDetails?.uanNumber || 'Not Assigned'}
+                      </strong>
+                    </div>
+                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#475569', fontWeight: '700' }}>
+                      PF ID
+                    </span>
+                  </div>
+
+                  <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'block' }}>ESI INSURANCE NUMBER</span>
+                      <strong style={{ fontSize: '0.84rem', color: '#0f172a' }}>
+                        {employee.idCardDetails?.esiNumber || 'Not Enrolled'}
+                      </strong>
+                    </div>
+                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#475569', fontWeight: '700' }}>
+                      ESI
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ================= TAB 1: ATTENDANCE LOG ================= */}
         {activeTab === 'attendance' && (
@@ -200,14 +415,57 @@ export const EmployeeDetailModal = ({
           </div>
         )}
 
-        {/* ================= TAB 2: LEAVES ================= */}
+        {/* ================= TAB 2: LEAVES & QUOTA METERS ================= */}
         {activeTab === 'leaves' && (
-          <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>Leave Applications & History</h4>
+          <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+                Leave Quota Balances & History
+              </h4>
+            </div>
+
+            {/* Quota meters */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
+              <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#1d4ed8', display: 'block' }}>CASUAL LEAVES (CL)</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1e40af', marginTop: '2px' }}>
+                  {Math.max(0, (employee.leaveBalance?.casualLeave?.total || 12) - (employee.leaveBalance?.casualLeave?.used || 0))}
+                  <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> / {employee.leaveBalance?.casualLeave?.total || 12} left</span>
+                </div>
+                <span style={{ fontSize: '0.64rem', color: '#64748b' }}>Used: {employee.leaveBalance?.casualLeave?.used || 0} days</span>
+              </div>
+
+              <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#fef3c7', border: '1px solid #fde68a' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#b45309', display: 'block' }}>SICK LEAVES (SL)</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#92400e', marginTop: '2px' }}>
+                  {Math.max(0, (employee.leaveBalance?.sickLeave?.total || 10) - (employee.leaveBalance?.sickLeave?.used || 0))}
+                  <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> / {employee.leaveBalance?.sickLeave?.total || 10} left</span>
+                </div>
+                <span style={{ fontSize: '0.64rem', color: '#64748b' }}>Used: {employee.leaveBalance?.sickLeave?.used || 0} days</span>
+              </div>
+
+              <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #a7f3d0' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#047857', display: 'block' }}>EARNED LEAVES (EL)</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#065f46', marginTop: '2px' }}>
+                  {Math.max(0, (employee.leaveBalance?.earnedLeave?.total || 15) - (employee.leaveBalance?.earnedLeave?.used || 0))}
+                  <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> / {employee.leaveBalance?.earnedLeave?.total || 15} left</span>
+                </div>
+                <span style={{ fontSize: '0.64rem', color: '#64748b' }}>Used: {employee.leaveBalance?.earnedLeave?.used || 0} days</span>
+              </div>
+
+              <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #cbd5e1' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#475569', display: 'block' }}>LWP (UNPAID)</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+                  {employee.leaveBalance?.unpaidLeave?.used || 0}
+                  <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> Days Taken</span>
+                </div>
+                <span style={{ fontSize: '0.64rem', color: '#dc2626' }}>Salary deducted</span>
+              </div>
+            </div>
 
             {leavesList.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '24px', color: '#4b5563', fontSize: '0.78rem' }}>
-                No leave applications on record.
+                No leave records on file.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -215,8 +473,8 @@ export const EmployeeDetailModal = ({
                   <div key={l._id} style={{ background: '#f8f9fa', padding: '10px 12px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ color: '#c084fc', fontWeight: '700', textTransform: 'capitalize', fontSize: '0.82rem' }}>
-                          {l.leaveType} Leave ({l.numberOfDays} Days)
+                        <span style={{ color: '#1e3a8a', fontWeight: '700', textTransform: 'capitalize', fontSize: '0.82rem' }}>
+                          {l.leaveType} Leave ({l.numberOfDays} Day{l.numberOfDays > 1 ? 's' : ''})
                         </span>
                         <StatusBadge status={l.status} />
                       </div>
@@ -252,8 +510,29 @@ export const EmployeeDetailModal = ({
 
         {/* ================= TAB 3: PAYROLL & SALARY SLIPS ================= */}
         {activeTab === 'payroll' && (
-          <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#10b981' }}>Salary Slips & Disbursal History</h4>
+          <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#10b981', margin: 0 }}>
+                Salary Slips & Disbursal History
+              </h4>
+            </div>
+
+            {/* Bank wire info card */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+              <div>
+                <span style={{ fontSize: '0.64rem', fontWeight: '700', color: '#64748b', display: 'block', textTransform: 'uppercase' }}>
+                  Bank Wire Account for Salary
+                </span>
+                <strong style={{ fontSize: '0.82rem', color: '#0f172a' }}>
+                  {employee.bankDetails?.bankName || 'Bank Not Specified'} • A/C: {employee.bankDetails?.accountNumber || 'N/A'} • IFSC: {employee.bankDetails?.ifscCode || 'N/A'}
+                </strong>
+              </div>
+              {employee.bankDetails?.upiId && (
+                <span style={{ fontSize: '0.72rem', color: '#1e40af', background: '#eff6ff', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                  UPI: {employee.bankDetails.upiId}
+                </span>
+              )}
+            </div>
 
             {payrollList.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '24px', color: '#4b5563', fontSize: '0.78rem' }}>
@@ -421,6 +700,11 @@ export const EmployeeDetailModal = ({
         }}
         payrollItem={selectedPayroll}
         onDisburse={onPaySalary}
+      />
+      <PrintableIDCardModal
+        isOpen={isIDCardModalOpen}
+        onClose={() => setIsIDCardModalOpen(false)}
+        employee={employee}
       />
     </Modal>
   );

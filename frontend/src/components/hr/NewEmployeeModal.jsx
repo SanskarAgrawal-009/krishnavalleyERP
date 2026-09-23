@@ -15,17 +15,30 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
   const [mobileNo, setMobileNo] = useState('');
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState('male');
+  const [bloodGroup, setBloodGroup] = useState('B+');
+  const [workLocation, setWorkLocation] = useState('Head Office - Krishna Valley');
   const [joiningDate, setJoiningDate] = useState(new Date().toISOString().slice(0, 10));
   const [employmentType, setEmploymentType] = useState('full_time');
   const [departmentId, setDepartmentId] = useState('');
   const [roleId, setRoleId] = useState('');
   const [initialSalary, setInitialSalary] = useState('');
 
+  // Regulatory & Identity
+  const [aadhaarNumber, setAadhaarNumber] = useState('');
+  const [panNumber, setPanNumber] = useState('');
+  const [uanNumber, setUanNumber] = useState('');
+
+  // Bank Wire Details
+  const [bankName, setBankName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [ifscCode, setIfscCode] = useState('');
+
   // Address & Emergency
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [emergencyName, setEmergencyName] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
+  const [emergencyRel, setEmergencyRel] = useState('Family');
 
   // Initial Master Data Fetch
   useEffect(() => {
@@ -57,8 +70,19 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
       setLastName('');
       setMobileNo('');
       setEmail('');
+      setBloodGroup('B+');
+      setWorkLocation('Head Office - Krishna Valley');
+      setAadhaarNumber('');
+      setPanNumber('');
+      setUanNumber('');
+      setBankName('');
+      setAccountNumber('');
+      setIfscCode('');
       setCity('');
       setState('');
+      setEmergencyName('');
+      setEmergencyPhone('');
+      setEmergencyRel('Family');
       setInitialSalary('');
     }
   }, [isOpen]);
@@ -106,13 +130,27 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
       mobileNo,
       email,
       gender,
+      bloodGroup,
+      workLocation,
       joiningDate,
       employmentType,
       departmentId,
       roleId,
-      initialSalary: Number(initialSalary),
+      initialSalary: Number(initialSalary) || 0,
+      idCardDetails: {
+        aadhaarNumber: aadhaarNumber.trim(),
+        panNumber: panNumber.trim().toUpperCase(),
+        uanNumber: uanNumber.trim(),
+        idCardIssued: true
+      },
+      bankDetails: {
+        bankName: bankName.trim(),
+        accountNumber: accountNumber.trim(),
+        ifscCode: ifscCode.trim().toUpperCase(),
+        accountHolderName: `${firstName} ${lastName || ''}`.trim()
+      },
       address: { city, state, country: 'India' },
-      emergencyContact: { name: emergencyName, mobileNo: emergencyPhone }
+      emergencyContact: { name: emergencyName, relationship: emergencyRel, mobileNo: emergencyPhone }
     });
   };
 
@@ -160,7 +198,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr', gap: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr 1fr', gap: '10px' }}>
           <div>
             <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Mobile Phone * (Numbers only)</label>
             <input
@@ -196,13 +234,36 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
               <option value="other">Other</option>
             </select>
           </div>
+
+          <div>
+            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px', fontWeight: '700' }}>Blood Group</label>
+            <select
+              value={bloodGroup}
+              onChange={(e) => setBloodGroup(e.target.value)}
+              style={{ width: '100%', fontSize: '0.8rem', borderColor: '#ef4444' }}
+            >
+              {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
+                <option key={bg} value={bg}>{bg}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Joining Date</label>
+            <input
+              type="date"
+              value={joiningDate}
+              onChange={(e) => setJoiningDate(e.target.value)}
+              style={{ width: '100%', fontSize: '0.8rem' }}
+            />
+          </div>
         </div>
 
         {/* Organizational Position */}
         <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Organizational Placement & Compensation</h4>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '10px' }}>
             <div>
               <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px', fontWeight: '700' }}>Department *</label>
               <select
@@ -221,7 +282,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
 
             <div>
               <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
-                Designation / Role * ({departmentRoles.length} available)
+                Designation / Role *
               </label>
               <select
                 required
@@ -230,7 +291,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
                 style={{ width: '100%', fontSize: '0.8rem' }}
               >
                 {departmentRoles.length === 0 ? (
-                  <option value="">No roles defined for this department</option>
+                  <option value="">No roles defined</option>
                 ) : (
                   departmentRoles.map((r) => (
                     <option key={r._id || r.roleCode} value={r._id}>
@@ -240,9 +301,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
                 )}
               </select>
             </div>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
             <div>
               <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Employment Type</label>
               <select
@@ -256,23 +315,142 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
                 <option value="part_time">Part-Time</option>
               </select>
             </div>
+          </div>
 
+          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Joining Date</label>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Work Location / Site Office</label>
               <input
-                type="date"
-                value={joiningDate}
-                onChange={(e) => setJoiningDate(e.target.value)}
+                type="text"
+                placeholder="e.g. Tower A Site Office, Mathura"
+                value={workLocation}
+                onChange={(e) => setWorkLocation(e.target.value)}
                 style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Base Monthly Salary (₹, Numbers only)</label>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Base Monthly Salary (₹)</label>
               <input
                 type="text"
+                placeholder="e.g. 45000"
                 value={initialSalary}
                 onChange={(e) => setInitialSalary(sanitizeDigitsOnly(e.target.value))}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Identity & Regulatory Details */}
+        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Government Identity & Badging (Staff ID)</h4>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Aadhaar Number (12 Digits)</label>
+              <input
+                type="text"
+                placeholder="xxxx xxxx xxxx"
+                value={aadhaarNumber}
+                onChange={(e) => setAadhaarNumber(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>PAN Card Number</label>
+              <input
+                type="text"
+                placeholder="ABCDE1234F"
+                value={panNumber}
+                onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>UAN / PF Number</label>
+              <input
+                type="text"
+                placeholder="Optional UAN"
+                value={uanNumber}
+                onChange={(e) => setUanNumber(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Bank & Emergency Details */}
+        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Bank Wire & Emergency Contact</h4>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Bank Name</label>
+              <input
+                type="text"
+                placeholder="e.g. HDFC Bank, SBI"
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Bank Account Number</label>
+              <input
+                type="text"
+                placeholder="Account number"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>IFSC Code</label>
+              <input
+                type="text"
+                placeholder="HDFC0001234"
+                value={ifscCode}
+                onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Emergency Contact Name</label>
+              <input
+                type="text"
+                placeholder="e.g. Ramesh Sharma"
+                value={emergencyName}
+                onChange={(e) => setEmergencyName(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Relationship</label>
+              <input
+                type="text"
+                placeholder="e.g. Spouse, Father"
+                value={emergencyRel}
+                onChange={(e) => setEmergencyRel(e.target.value)}
+                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Emergency Contact Phone</label>
+              <input
+                type="tel"
+                placeholder="+91 98765 00000"
+                value={emergencyPhone}
+                onChange={(e) => setEmergencyPhone(sanitizePhone(e.target.value))}
                 style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>
@@ -284,7 +462,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
             Cancel
           </button>
           <button type="submit" style={{ padding: '7px 18px', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
-            Onboard Employee
+            Onboard Employee & Issue Staff ID
           </button>
         </div>
       </form>

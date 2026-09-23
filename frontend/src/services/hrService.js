@@ -141,6 +141,14 @@ export const hrService = {
   deleteRole: (roleId) => request(`/hr/roles/${roleId}`, {
     method: 'DELETE'
   }),
+  updateLeaveBalance: (id, data) => request(`/hr/employees/${id}/leave-balance`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  updateIdDetails: (id, data) => request(`/hr/employees/${id}/id-details`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
   seedSampleStaff: () => request('/hr/seed-sample-staff', {
     method: 'POST'
   })

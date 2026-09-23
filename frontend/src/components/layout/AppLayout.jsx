@@ -175,9 +175,10 @@ const NAV_ITEMS = [
     permission: 'hr:view',
     subItems: [
       { path: '/hr?tab=directory', label: 'Staff Directory', icon: Users },
-      { path: '/hr?tab=attendance', label: 'Daily Attendance', icon: Calendar },
-      { path: '/hr?tab=leaves', label: 'Leave Requests', icon: Clock },
-      { path: '/hr?tab=payroll', label: 'Monthly Payroll', icon: DollarSign },
+      { path: '/hr?tab=id_cards', label: 'Staff ID Badges & Identity', icon: ShieldCheck },
+      { path: '/hr?tab=leaves', label: 'Leave Quotas & Approvals', icon: Clock },
+      { path: '/hr?tab=attendance', label: 'Daily Shift Attendance', icon: Calendar },
+      { path: '/hr?tab=payroll', label: 'Monthly Payroll Register', icon: DollarSign },
       { path: '/hr?tab=dept_roles', label: 'Departments & Roles', icon: Building2 }
     ]
   },
