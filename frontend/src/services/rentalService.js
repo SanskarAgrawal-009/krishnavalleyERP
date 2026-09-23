@@ -88,12 +88,16 @@ export const rentalService = {
     }),
 
   // Upload rental agreement document (PDF/image)
-  uploadAgreement: (flatId, file) => {
-    const formData = new FormData();
-    formData.append('agreementFile', file);
+  uploadAgreement: (flatId, fileOrFormData) => {
+    let body = fileOrFormData;
+    if (fileOrFormData instanceof File) {
+      const formData = new FormData();
+      formData.append('agreementFile', fileOrFormData);
+      body = formData;
+    }
     return request(`/rentals/${flatId}/agreement`, {
       method: 'POST',
-      body: formData
+      body
     });
   },
 
@@ -104,12 +108,16 @@ export const rentalService = {
     }),
 
   // Upload owner registry document (Sale Deed / Registry Copy)
-  uploadRegistryDocument: (flatId, file) => {
-    const formData = new FormData();
-    formData.append('registryFile', file);
+  uploadRegistryDocument: (flatId, fileOrFormData) => {
+    let body = fileOrFormData;
+    if (fileOrFormData instanceof File) {
+      const formData = new FormData();
+      formData.append('registryFile', fileOrFormData);
+      body = formData;
+    }
     return request(`/rentals/${flatId}/registry-doc`, {
       method: 'POST',
-      body: formData
+      body
     });
   },
 
@@ -117,7 +125,12 @@ export const rentalService = {
   deleteRegistryDocument: (flatId) =>
     request(`/rentals/${flatId}/registry-doc`, {
       method: 'DELETE'
-    })
+    }),
+
+  // Compatibility aliases
+  getRentals: (params = {}) => rentalService.getActiveRentals(params),
+  uploadTenantAgreementDoc: (flatId, fileOrFormData) => rentalService.uploadAgreement(flatId, fileOrFormData),
+  uploadRentBackDoc: (flatId, fileOrFormData) => rentalService.uploadAgreement(flatId, fileOrFormData)
 };
 
 export default rentalService;
