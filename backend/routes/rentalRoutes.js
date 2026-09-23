@@ -6,6 +6,8 @@ import {
   updateRentalTerms,
   uploadAgreementDocument,
   deleteAgreementDocument,
+  uploadRegistryDocument,
+  deleteRegistryDocument,
   recordRentalPayout,
   transferOwnership,
   createManualRentalEntry,
@@ -62,6 +64,12 @@ router.post('/:flatId/agreement', upload.single('agreementFile'), uploadAgreemen
 
 // Delete rental agreement document
 router.delete('/:flatId/agreement', deleteAgreementDocument);
+
+// Upload owner registry document (Sale Deed / Registry Copy)
+router.post('/:flatId/registry-doc', upload.single('registryFile'), uploadRegistryDocument);
+
+// Delete owner registry document
+router.delete('/:flatId/registry-doc', deleteRegistryDocument);
 
 // Record rental disbursement payout
 router.post('/:flatId/payout', recordRentalPayout);

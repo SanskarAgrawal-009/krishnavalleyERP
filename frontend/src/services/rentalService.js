@@ -101,6 +101,22 @@ export const rentalService = {
   deleteAgreement: (flatId) =>
     request(`/rentals/${flatId}/agreement`, {
       method: 'DELETE'
+    }),
+
+  // Upload owner registry document (Sale Deed / Registry Copy)
+  uploadRegistryDocument: (flatId, file) => {
+    const formData = new FormData();
+    formData.append('registryFile', file);
+    return request(`/rentals/${flatId}/registry-doc`, {
+      method: 'POST',
+      body: formData
+    });
+  },
+
+  // Delete owner registry document
+  deleteRegistryDocument: (flatId) =>
+    request(`/rentals/${flatId}/registry-doc`, {
+      method: 'DELETE'
     })
 };
 

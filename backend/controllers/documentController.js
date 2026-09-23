@@ -22,7 +22,8 @@ export const getUnifiedDocumentVault = async (req, res) => {
       legalDocs,
       customers,
       employees,
-      signatures
+      signatures,
+      flatsWithDocs
     ] = await Promise.all([
       SalesLead.find().populate('flatId', 'flatNumber').populate('projectId', 'projectName').sort({ createdAt: -1 }),
       RentalManagement.find()
@@ -35,7 +36,14 @@ export const getUnifiedDocumentVault = async (req, res) => {
       LegalDocument.find().populate('projectId', 'projectName').sort({ createdAt: -1 }),
       Customer.find({ 'documents.0': { $exists: true } }),
       Employee.find({ 'documents.0': { $exists: true } }),
-      DigitalSignature.find().sort({ signedAt: -1 })
+      DigitalSignature.find().sort({ signedAt: -1 }),
+      Flat.find({
+        $or: [
+          { 'rentalDetails.registryDocument.fileUrl': { $exists: true, $ne: '' } },
+          { 'rentalDetails.agreementDocument.fileUrl': { $exists: true, $ne: '' } },
+          { 'currentOwner.registryDocument.fileUrl': { $exists: true, $ne: '' } }
+        ]
+      }).populate('projectId', 'projectName').sort({ flatNumber: 1 })
     ]);
 
     // 1. Sale Agreements
@@ -124,6 +132,64 @@ export const getUnifiedDocumentVault = async (req, res) => {
       }
     });
 
+    // 2B. Flat-Specific Registry Documents & Direct Rental Agreements
+    const registryDocuments = [];
+    (flatsWithDocs || []).forEach((f) => {
+      const projName = f.projectId?.projectName || 'Krishna Valley Heritage';
+      const ownerName = f.currentOwner?.name || 'Owner';
+
+      // 1. Owner Registry Document
+      const regDoc = f.rentalDetails?.registryDocument || f.currentOwner?.registryDocument;
+      if (regDoc && regDoc.fileUrl) {
+        const item = {
+          id: `${f._id}_reg`,
+          flatId: f._id,
+          documentTitle: `Owner Registry Document (Sale Deed) — Flat ${f.flatNumber}`,
+          fileUrl: regDoc.fileUrl,
+          fileName: regDoc.fileName || `Registry_Flat_${f.flatNumber}.pdf`,
+          partyName: ownerName,
+          tenantName: ownerName,
+          agreementNumber: `REG-FLAT-${f.flatNumber}`,
+          contractCode: `REG-FLAT-${f.flatNumber}`,
+          type: 'Owner Registry Document',
+          documentType: 'Registry Document',
+          projectName: projName,
+          project: projName,
+          flatNumber: f.flatNumber,
+          monthlyRent: f.rentalDetails?.guaranteedMonthlyRent || 0,
+          uploadedAt: regDoc.uploadedAt || f.createdAt,
+          verificationStatus: regDoc.verificationStatus || 'verified',
+          sourceType: 'registry_document'
+        };
+        registryDocuments.push(item);
+        rentalAgreements.push(item);
+      }
+
+      // 2. Direct Flat Agreement Document
+      const agDoc = f.rentalDetails?.agreementDocument;
+      if (agDoc && agDoc.fileUrl && !rentalAgreements.some(ra => ra.flatNumber === f.flatNumber && ra.sourceType === 'rental_owner')) {
+        rentalAgreements.push({
+          id: `${f._id}_rental_agree`,
+          flatId: f._id,
+          documentTitle: `Guaranteed Rental Agreement — Flat ${f.flatNumber}`,
+          fileUrl: agDoc.fileUrl,
+          fileName: agDoc.fileName || `Rental_Agreement_Flat_${f.flatNumber}.pdf`,
+          partyName: ownerName,
+          tenantName: ownerName,
+          agreementNumber: `RB-FLAT-${f.flatNumber}`,
+          contractCode: `RB-FLAT-${f.flatNumber}`,
+          type: 'Owner Rent-Back Agreement',
+          projectName: projName,
+          project: projName,
+          flatNumber: f.flatNumber,
+          monthlyRent: f.rentalDetails?.guaranteedMonthlyRent || 0,
+          uploadedAt: agDoc.uploadedAt || f.createdAt,
+          verificationStatus: agDoc.verificationStatus || 'verified',
+          sourceType: 'rental_owner'
+        });
+      }
+    });
+
     // 3. Maintenance Agreements
     const maintenanceAgreements = legalDocs.filter((d) => d.documentType === 'maintenance_bylaws');
 
@@ -206,6 +272,7 @@ export const getUnifiedDocumentVault = async (req, res) => {
       data: {
         saleAgreements,
         rentalAgreements,
+        registryDocuments,
         maintenanceAgreements,
         blueprints,
         legalDocuments: legalMasterDocs,
@@ -214,6 +281,7 @@ export const getUnifiedDocumentVault = async (req, res) => {
         counts: {
           saleAgreements: saleAgreements.length,
           rentalAgreements: rentalAgreements.length,
+          registryDocuments: registryDocuments.length,
           maintenanceAgreements: maintenanceAgreements.length,
           blueprints: blueprints.length,
           legalDocuments: legalMasterDocs.length,

@@ -41,6 +41,9 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
   const [agreementUploading, setAgreementUploading] = useState(false);
   const [agreementDoc, setAgreementDoc] = useState(null);
   const fileInputRef = useRef(null);
+  const [registryUploading, setRegistryUploading] = useState(false);
+  const [registryDoc, setRegistryDoc] = useState(null);
+  const registryFileInputRef = useRef(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [stepDirection, setStepDirection] = useState('next');
 
@@ -204,8 +207,9 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         revisionReason: ''
       });
 
-      // Load existing agreement document
+      // Load existing agreement & registry documents
       setAgreementDoc(rental.agreementDocument || rental.rentalDetails?.agreementDocument || null);
+      setRegistryDoc(rental.registryDocument || rental.rentalDetails?.registryDocument || rental.currentOwner?.registryDocument || null);
       setCurrentStep(1);
     }
   }, [rental]);
@@ -256,6 +260,55 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
       toast.showError(err.message || 'Error deleting agreement');
     } finally {
       setAgreementUploading(false);
+    }
+  };
+
+  // Registry document upload handler
+  const handleRegistryUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const maxSize = 25 * 1024 * 1024; // 25MB
+    if (file.size > maxSize) {
+      toast.showError('File size must be under 25MB');
+      return;
+    }
+
+    setRegistryUploading(true);
+    try {
+      const res = await rentalService.uploadRegistryDocument(rental._id, file);
+      if (res.success) {
+        setRegistryDoc(res.data);
+        toast.showSuccess('Registry document uploaded successfully!');
+        if (onUpdated) onUpdated();
+      } else {
+        toast.showError(res.message || 'Failed to upload registry document');
+      }
+    } catch (err) {
+      toast.showError(err.message || 'Error uploading registry document');
+    } finally {
+      setRegistryUploading(false);
+      if (registryFileInputRef.current) registryFileInputRef.current.value = '';
+    }
+  };
+
+  // Registry document delete handler
+  const handleRegistryDelete = async () => {
+    if (!window.confirm('Are you sure you want to remove this registry document?')) return;
+    setRegistryUploading(true);
+    try {
+      const res = await rentalService.deleteRegistryDocument(rental._id);
+      if (res.success) {
+        setRegistryDoc(null);
+        toast.showSuccess('Registry document removed');
+        if (onUpdated) onUpdated();
+      } else {
+        toast.showError(res.message || 'Failed to delete registry document');
+      }
+    } catch (err) {
+      toast.showError(err.message || 'Error deleting registry document');
+    } finally {
+      setRegistryUploading(false);
     }
   };
 
@@ -560,6 +613,103 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
             onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
             onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
           />
+        </div>
+      </div>
+
+      {/* Row 4: Owner Registry Document Box in Step 1 */}
+      <div style={{
+        background: registryDoc ? '#f0fdf4' : '#f8fafc',
+        border: registryDoc ? '1.5px solid #86efac' : '1px solid #e2e8f0',
+        borderRadius: '12px',
+        padding: '14px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '10px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{
+            width: '36px', height: '36px', borderRadius: '8px',
+            background: registryDoc ? '#16a34a' : '#64748b',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0
+          }}>
+            <ShieldCheck size={18} />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#0f172a' }}>
+                Owner Registry Document
+              </span>
+              <span style={{
+                fontSize: '0.68rem', fontWeight: '700', padding: '1px 6px', borderRadius: '4px',
+                background: registryDoc ? '#dcfce7' : '#f1f5f9',
+                color: registryDoc ? '#15803d' : '#64748b'
+              }}>
+                {registryDoc ? 'Verified on File' : 'Not Uploaded'}
+              </span>
+            </div>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+              {registryDoc?.fileName || 'Sale deed, registry receipt or registration proof'}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <input
+            ref={registryFileInputRef}
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+            onChange={handleRegistryUpload}
+            style={{ display: 'none' }}
+          />
+          {registryDoc?.fileUrl && (
+            <a
+              href={getFileUrl(registryDoc.fileUrl)}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '6px 10px', borderRadius: '6px',
+                background: '#ffffff', border: '1px solid #86efac',
+                color: '#16a34a', fontSize: '0.75rem', fontWeight: '700',
+                textDecoration: 'none', cursor: 'pointer'
+              }}
+            >
+              <Eye size={13} /> View
+            </a>
+          )}
+          <button
+            type="button"
+            disabled={registryUploading}
+            onClick={() => registryFileInputRef.current?.click()}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '4px',
+              padding: '6px 12px', borderRadius: '6px',
+              background: registryDoc ? '#ffffff' : '#16a34a',
+              border: registryDoc ? '1px solid #cbd5e1' : 'none',
+              color: registryDoc ? '#334155' : '#ffffff',
+              fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer'
+            }}
+          >
+            <Upload size={13} />
+            <span>{registryUploading ? 'Uploading...' : registryDoc ? 'Replace Doc' : 'Upload Doc'}</span>
+          </button>
+          {registryDoc && (
+            <button
+              type="button"
+              disabled={registryUploading}
+              onClick={handleRegistryDelete}
+              style={{
+                padding: '6px 8px', borderRadius: '6px',
+                background: '#fef2f2', border: '1px solid #fecaca',
+                color: '#dc2626', cursor: 'pointer'
+              }}
+              title="Delete Registry Document"
+            >
+              <Trash2 size={13} />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -1067,7 +1217,112 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         </div>
       </div>
 
-      {/* Agreement Upload */}
+      {/* Document Uploads: Registry Document + Rental Agreement */}
+      {/* 1. Owner Registry Document */}
+      <div style={{
+        background: '#f8fafc', border: '1px solid #e2e8f0',
+        borderRadius: '12px', padding: '16px 18px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+          <ShieldCheck size={16} color="#16a34a" />
+          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#15803d', textTransform: 'uppercase' }}>
+            Owner Registry Document (Sale Deed / Registry Proof)
+          </span>
+        </div>
+
+        {registryDoc?.fileUrl ? (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: '#ffffff', border: '1.5px solid #86efac',
+            borderRadius: '10px', padding: '12px 16px', gap: '12px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '8px',
+                background: 'linear-gradient(135deg, #16a34a, #15803d)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <ShieldCheck size={18} color="#ffffff" />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {registryDoc.fileName || 'Owner_Registry_Document.pdf'}
+                </div>
+                <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px' }}>
+                  Uploaded {registryDoc.uploadedAt ? new Date(registryDoc.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  <span style={{
+                    marginLeft: '8px', padding: '1px 6px', borderRadius: '4px',
+                    fontSize: '0.65rem', fontWeight: '700',
+                    background: '#dcfce7', color: '#166534',
+                  }}>
+                    VERIFIED
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+              <a
+                href={getFileUrl(registryDoc.fileUrl)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  width: '32px', height: '32px', borderRadius: '6px',
+                  border: '1px solid #86efac', background: '#f0fdf4',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', textDecoration: 'none',
+                }}
+                title="View / Download"
+              >
+                <Eye size={15} color="#16a34a" />
+              </a>
+              <button
+                type="button"
+                onClick={handleRegistryDelete}
+                disabled={registryUploading}
+                style={{
+                  width: '32px', height: '32px', borderRadius: '6px',
+                  border: '1px solid #fca5a5', background: '#fef2f2',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: registryUploading ? 'not-allowed' : 'pointer',
+                }}
+                title="Remove Registry Document"
+              >
+                <Trash2 size={15} color="#dc2626" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            onClick={() => !registryUploading && registryFileInputRef.current?.click()}
+            style={{
+              border: '2px dashed #86efac', borderRadius: '12px',
+              padding: '20px', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', gap: '6px',
+              cursor: registryUploading ? 'not-allowed' : 'pointer',
+              background: '#f0fdf4', transition: 'all 0.2s ease',
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#16a34a'; e.currentTarget.style.background = '#dcfce7'; }}
+            onMouseOut={(e) => { e.currentTarget.style.borderColor = '#86efac'; e.currentTarget.style.background = '#f0fdf4'; }}
+          >
+            <div style={{
+              width: '38px', height: '38px', borderRadius: '10px',
+              background: 'linear-gradient(135deg, #16a34a, #15803d)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Upload size={18} color="#ffffff" />
+            </div>
+            <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#166534' }}>
+              {registryUploading ? 'Uploading...' : 'Upload Owner Registry Document'}
+            </span>
+            <span style={{ fontSize: '0.7rem', color: '#15803d' }}>
+              Sale Deed, Registry Slip, or Registration Copy — Max 25MB
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* 2. Rental Agreement Upload */}
       <div style={{
         background: '#f8fafc', border: '1px solid #e2e8f0',
         borderRadius: '12px', padding: '16px 18px',
@@ -1075,7 +1330,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
           <FileText size={15} color="#7c3aed" />
           <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5b21b6', textTransform: 'uppercase' }}>
-            Agreement Document
+            Agreement Document (Rent-Back Contract)
           </span>
         </div>
 

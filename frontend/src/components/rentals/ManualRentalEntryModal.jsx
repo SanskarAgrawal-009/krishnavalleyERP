@@ -4,7 +4,7 @@ import { projectService } from '../../services/projectService.js';
 import {
   Building2, Calendar, DollarSign, User, Clock, ShieldCheck,
   CheckCircle2, AlertCircle, Search, Check, X, RefreshCw,
-  Home, Layers, ChevronRight, ArrowLeft, TrendingUp
+  Home, Layers, ChevronRight, ArrowLeft, TrendingUp, Upload, FileText
 } from 'lucide-react';
 
 const STEPS = [
@@ -41,6 +41,7 @@ export const ManualRentalEntryModal = ({
   const [endDate, setEndDate] = useState('');
   const [tenureMonths, setTenureMonths] = useState(36);
   const [totalPaid, setTotalPaid] = useState(0);
+  const [registryFile, setRegistryFile] = useState(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -70,6 +71,7 @@ export const ManualRentalEntryModal = ({
       setTdsAmount(3100);
       setTenureMonths(36);
       setTotalPaid(0);
+      setRegistryFile(null);
       setCurrentStep(1);
     }
   }, [isOpen]);
@@ -180,6 +182,14 @@ export const ManualRentalEntryModal = ({
 
       const res = await rentalService.createManualRental(payload);
       if (res.success) {
+        const createdFlatId = res.data?._id || selectedFlat._id || selectedFlat.id;
+        if (registryFile && createdFlatId) {
+          try {
+            await rentalService.uploadRegistryDocument(createdFlatId, registryFile);
+          } catch (docErr) {
+            console.warn('Could not auto-upload registry document:', docErr);
+          }
+        }
         onClose();
         if (onSuccess) {
           try { onSuccess(); } catch (e) { console.warn('onSuccess callback error:', e); }
@@ -435,6 +445,73 @@ export const ManualRentalEntryModal = ({
           onChange={(e) => setRegistryDate(e.target.value)}
           style={inputStyle} onFocus={applyFocus} onBlur={removeFocus}
         />
+      </div>
+
+      {/* Owner Registry Document Upload Section */}
+      <div>
+        <label style={labelStyle}>
+          Owner Registry Document (Sale Deed / Registry Proof)
+        </label>
+        <div style={{
+          border: registryFile ? '1.5px solid #86efac' : '1.5px dashed #cbd5e1',
+          borderRadius: '10px',
+          padding: '14px',
+          background: registryFile ? '#f0fdf4' : '#fafafa',
+          textAlign: 'center',
+          transition: 'all 0.2s ease'
+        }}>
+          {registryFile ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left', overflow: 'hidden' }}>
+                <div style={{
+                  width: '36px', height: '36px', borderRadius: '8px',
+                  background: '#16a34a', color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                }}>
+                  <FileText size={18} />
+                </div>
+                <div style={{ overflow: 'hidden' }}>
+                  <div style={{ fontSize: '0.84rem', fontWeight: '700', color: '#166534', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {registryFile.name}
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>
+                    {(registryFile.size / 1024).toFixed(1)} KB • Attached for Flat {selectedFlat?.flatNumber || 'Unit'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRegistryFile(null)}
+                style={{
+                  padding: '4px 8px', borderRadius: '6px',
+                  background: '#fee2e2', color: '#dc2626', border: '1px solid #fecaca',
+                  fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer'
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <label style={{ display: 'block', cursor: 'pointer', padding: '6px 0' }}>
+              <Upload size={22} color="#64748b" style={{ margin: '0 auto 6px', display: 'block' }} />
+              <div style={{ fontSize: '0.84rem', fontWeight: '700', color: '#334155' }}>
+                Upload Owner Registry Document
+              </div>
+              <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>
+                Click to attach Sale Deed / Registry Copy (PDF, PNG, JPG up to 25MB)
+              </div>
+              <input
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setRegistryFile(f);
+                }}
+              />
+            </label>
+          )}
+        </div>
       </div>
 
       {/* Selected flat info */}

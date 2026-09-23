@@ -179,6 +179,17 @@ const FlatSchema = new mongoose.Schema(
         ifscCode: String,
         ifsc: String,
       },
+      registryDocument: {
+        fileUrl: String,
+        fileName: String,
+        fileSize: Number,
+        uploadedAt: Date,
+        verificationStatus: {
+          type: String,
+          enum: ['pending', 'verified', 'rejected'],
+          default: 'verified',
+        },
+      },
     },
 
     // Ownership Trail (Past / Old Owners Archive)
@@ -225,6 +236,12 @@ const FlatSchema = new mongoose.Schema(
         paidMonths: {
           type: Number,
           default: 0,
+        },
+        registryDocument: {
+          fileUrl: String,
+          fileName: String,
+          fileSize: Number,
+          uploadedAt: Date,
         },
         remarks: String,
       },
@@ -411,6 +428,21 @@ const FlatSchema = new mongoose.Schema(
           type: String,
           enum: ['pending', 'verified', 'rejected'],
           default: 'pending',
+        },
+      },
+      // Owner Registry Document Upload (Sale Deed / Registry Copy)
+      registryDocument: {
+        fileUrl: String,
+        fileName: String,
+        fileSize: Number,
+        uploadedAt: {
+          type: Date,
+          default: Date.now,
+        },
+        verificationStatus: {
+          type: String,
+          enum: ['pending', 'verified', 'rejected'],
+          default: 'verified',
         },
       },
       // Month-by-Month Passbook Entries

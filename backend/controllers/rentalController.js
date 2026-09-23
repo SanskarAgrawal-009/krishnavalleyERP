@@ -172,6 +172,7 @@ export const getActiveRentals = async (req, res) => {
         paidMonthsCount,
         remainingMonths,
         agreementDocument: rental.agreementDocument || null,
+        registryDocument: rental.registryDocument || flat.currentOwner?.registryDocument || null,
         hasPreviousOwners: Array.isArray(flat.ownershipHistory) && flat.ownershipHistory.length > 0,
         previousOwnersCount: (flat.ownershipHistory || []).length
       };
@@ -308,6 +309,7 @@ export const getPreviousOwnersHistory = async (req, res) => {
           transferDate: hist.transferDate || endDate || null,
           transferReason: hist.transferReason || 'resale',
           transferredTo: transferredToName,
+          registryDocument: hist.registryDocument || null,
           remarks: hist.remarks || ''
         });
       });
@@ -698,6 +700,123 @@ export const deleteAgreementDocument = async (req, res) => {
 };
 
 // ============================================================================
+// 3D. UPLOAD OWNER REGISTRY DOCUMENT
+// ============================================================================
+export const uploadRegistryDocument = async (req, res) => {
+  try {
+    const { flatId } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No registry file uploaded' });
+    }
+
+    const flat = await Flat.findById(flatId);
+    if (!flat) {
+      return res.status(404).json({ success: false, message: 'Flat not found' });
+    }
+
+    if (!flat.rentalDetails) flat.rentalDetails = {};
+    if (!flat.currentOwner) flat.currentOwner = {};
+
+    // Save file to disk
+    const fs = await import('fs');
+    const pathModule = await import('path');
+    const { fileURLToPath } = await import('url');
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = pathModule.default.dirname(__filename);
+
+    const uploadsDir = pathModule.default.resolve(__dirname, '../uploads/registries');
+    if (!fs.default.existsSync(uploadsDir)) {
+      fs.default.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const ext = pathModule.default.extname(req.file.originalname) || '.pdf';
+    const safeFileName = `registry_flat_${flat.flatNumber}_${Date.now()}${ext}`;
+    const filePath = pathModule.default.join(uploadsDir, safeFileName);
+    fs.default.writeFileSync(filePath, req.file.buffer);
+
+    const fileUrl = `/uploads/registries/${safeFileName}`;
+
+    const docObj = {
+      fileUrl,
+      fileName: req.file.originalname,
+      fileSize: req.file.size,
+      uploadedAt: new Date(),
+      verificationStatus: 'verified'
+    };
+
+    flat.rentalDetails.registryDocument = docObj;
+    flat.currentOwner.registryDocument = docObj;
+
+    await flat.save();
+
+    if (apiCache) {
+      apiCache.invalidatePrefix('flats');
+      apiCache.invalidatePrefix('reports');
+    }
+
+    return res.json({
+      success: true,
+      message: `Registry document uploaded for Flat ${flat.flatNumber}`,
+      data: docObj
+    });
+  } catch (error) {
+    console.error('Error uploading registry document:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ============================================================================
+// 3E. DELETE OWNER REGISTRY DOCUMENT
+// ============================================================================
+export const deleteRegistryDocument = async (req, res) => {
+  try {
+    const { flatId } = req.params;
+
+    const flat = await Flat.findById(flatId);
+    if (!flat) {
+      return res.status(404).json({ success: false, message: 'Flat not found' });
+    }
+
+    if (flat.rentalDetails?.registryDocument?.fileUrl) {
+      try {
+        const fs = await import('fs');
+        const pathModule = await import('path');
+        const { fileURLToPath } = await import('url');
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = pathModule.default.dirname(__filename);
+        const filePath = pathModule.default.resolve(__dirname, '..', flat.rentalDetails.registryDocument.fileUrl.replace(/^\//, ''));
+        if (fs.default.existsSync(filePath)) {
+          fs.default.unlinkSync(filePath);
+        }
+      } catch (e) {
+        console.warn('Could not delete physical registry file:', e.message);
+      }
+    }
+
+    if (flat.rentalDetails) {
+      flat.rentalDetails.registryDocument = undefined;
+    }
+    if (flat.currentOwner) {
+      flat.currentOwner.registryDocument = undefined;
+    }
+    await flat.save();
+
+    if (apiCache) {
+      apiCache.invalidatePrefix('flats');
+    }
+
+    return res.json({
+      success: true,
+      message: `Registry document removed for Flat ${flat.flatNumber}`
+    });
+  } catch (error) {
+    console.error('Error deleting registry document:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ============================================================================
 // 4. RECORD RENTAL PAYOUT
 // ============================================================================
 export const recordRentalPayout = async (req, res) => {
@@ -829,6 +948,8 @@ export const transferOwnership = async (req, res) => {
       transferDealValue: Number(transferDealValue) || 0,
       totalRentPaid: Number(currentRental.totalDisbursedToOwner || 0),
       tenureMonths: Number(currentRental.tenureMonths || 36),
+      registryDocument: currentRental.registryDocument || currentOwner.registryDocument || null,
+      agreementDocument: currentRental.agreementDocument || null,
       remarks: remarks || `Ownership transferred to ${newOwnerName} on ${new Date(transferDate).toLocaleDateString('en-IN')}`
     };
 
