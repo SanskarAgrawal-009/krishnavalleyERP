@@ -820,7 +820,7 @@ export const autoCreditAgentBookingCommission = async (salesLead, targetFlat = n
       await siteVisit.save();
     }
 
-    console.log(`✅ [Commission Engine] Automated Commission of ₹${calculatedAmount.toLocaleString('en-IN')} credited to Agent "${agent.firstName} ${agent.lastName}" (Code: ${agent.agentProfile?.agentCode || 'N/A'}) for Booking ID: ${salesLead._id}`);
+    console.log(`[Commission Engine] Automated Commission of ₹${calculatedAmount.toLocaleString('en-IN')} credited to Agent "${agent.firstName} ${agent.lastName}" (Code: ${agent.agentProfile?.agentCode || 'N/A'}) for Booking ID: ${salesLead._id}`);
 
     // Audit Event for Booking Commission Auto-Credit
     await recordAuditEvent({

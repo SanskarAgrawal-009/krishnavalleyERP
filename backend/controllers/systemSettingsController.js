@@ -202,7 +202,7 @@ export const updateSettingsSection = async (req, res) => {
 
     await settings.save();
 
-    console.log(`⚙️ [Settings Updated] Section '${section}' successfully updated by user ${req.user?.username || req.user?.id}`);
+    console.log(`[Settings Updated] Section '${section}' successfully updated by user ${req.user?.username || req.user?.id}`);
 
     return res.json({
       success: true,

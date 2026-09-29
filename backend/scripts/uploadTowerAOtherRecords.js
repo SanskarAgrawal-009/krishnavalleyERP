@@ -290,25 +290,25 @@ async function uploadTowerAOtherRecords() {
   try {
     await connectDB();
     console.log(`\n${'='.repeat(80)}`);
-    console.log(DRY_RUN ? '  🔍 DRY RUN MODE — No data will be written' : '  🚀 LIVE UPLOAD MODE — Data will be written to database');
+    console.log(DRY_RUN ? '  DRY RUN MODE — No data will be written' : '  LIVE UPLOAD MODE — Data will be written to database');
     console.log(`${'='.repeat(80)}\n`);
 
     // Verify project and building exist
     const project = await Project.findById(PROJECT_ID);
     if (!project) {
-      console.error('❌ FATAL: Project not found!');
+      console.error('FATAL: Project not found!');
       process.exit(1);
     }
     const building = project.buildings.find(b => b._id.toString() === BUILDING_ID);
     if (!building) {
-      console.error('❌ FATAL: Building (Tower A) not found in project!');
+      console.error('FATAL: Building (Tower A) not found in project!');
       process.exit(1);
     }
-    console.log(`✅ Project: ${project.projectName} | Building: ${building.buildingName}\n`);
+    console.log(`Project: ${project.projectName} | Building: ${building.buildingName}\n`);
 
     // Load all existing customers for name matching
     const allCustomers = await Customer.find({ customerType: 'owner' });
-    console.log(`📋 Found ${allCustomers.length} existing owner customers\n`);
+    console.log(`Found ${allCustomers.length} existing owner customers\n`);
 
     // Build name-lookup map (normalized name → customer doc)
     const customerNameMap = new Map();
@@ -326,7 +326,7 @@ async function uploadTowerAOtherRecords() {
     // Check for existing flats to prevent duplicates
     const existingFlats = await Flat.find({ projectId: PROJECT_ID, buildingId: BUILDING_ID });
     const existingFlatNos = new Set(existingFlats.map(f => normalizeFlatNo(f.flatNumber)));
-    console.log(`📋 Found ${existingFlats.length} existing flats\n`);
+    console.log(`Found ${existingFlats.length} existing flats\n`);
 
     // Tracking
     const stats = {
@@ -370,7 +370,7 @@ async function uploadTowerAOtherRecords() {
 
         // Skip if flat already exists
         if (existingFlatNos.has(flatNo)) {
-          console.log(`⏭️  [${flatNo}] SKIP — flat already exists`);
+          console.log(`[${flatNo}] SKIP — flat already exists`);
           stats.skippedDuplicate++;
           continue;
         }
@@ -412,8 +412,8 @@ async function uploadTowerAOtherRecords() {
         }
 
         if (DRY_RUN) {
-          const matchStatus = customer ? `✅ MATCHED: ${customer.name}` : '⚠️  NO MATCH — will create new';
-          console.log(`📝 [${flatNo}] ${rec.name} → ${matchStatus} | ₹${rec.installment.toLocaleString('en-IN')}/mo | ${rec.totalMonths}mo | Paid: ${rec.paid}/${rec.totalMonths}`);
+          const matchStatus = customer ? `MATCHED: ${customer.name}` : 'NO MATCH — will create new';
+          console.log(`[${flatNo}] ${rec.name} → ${matchStatus} | ₹${rec.installment.toLocaleString('en-IN')}/mo | ${rec.totalMonths}mo | Paid: ${rec.paid}/${rec.totalMonths}`);
           if (!customer) stats.customerCreated++;
           else stats.customerLinked++;
           stats.created++;
@@ -492,7 +492,7 @@ async function uploadTowerAOtherRecords() {
           await flatDoc.save();
           
           stats.customerLinked++;
-          console.log(`✅ [${flatNo}] Created & linked to ${customer.name} | ₹${rec.installment.toLocaleString('en-IN')}/mo`);
+          console.log(`[${flatNo}] Created & linked to ${customer.name} | ₹${rec.installment.toLocaleString('en-IN')}/mo`);
         } else {
           // Create new customer with unique mobile
           let newMobile = `+91 98000${flatNo.replace(/[^0-9]/g, '').padStart(5, '0')}`;
@@ -525,7 +525,7 @@ async function uploadTowerAOtherRecords() {
         stats.created++;
       } catch (err) {
         stats.errors.push({ flatNo, name: rec.name, error: err.message });
-        console.error(`❌ [${flatNo}] ERROR: ${err.message}`);
+        console.error(`[${flatNo}] ERROR: ${err.message}`);
       }
     }
 
@@ -533,14 +533,14 @@ async function uploadTowerAOtherRecords() {
     if (!DRY_RUN && stats.created > 0) {
       building.totalFlats = building.flats.length;
       await project.save();
-      console.log('\n✅ Project building flats array & totalFlats updated');
+      console.log('\nProject building flats array & totalFlats updated');
     }
 
     // =====================================================================
     // SUMMARY REPORT
     // =====================================================================
     console.log(`\n${'='.repeat(80)}`);
-    console.log('  📊 UPLOAD SUMMARY REPORT');
+    console.log('  UPLOAD SUMMARY REPORT');
     console.log(`${'='.repeat(80)}`);
     console.log(`  Total Records in PDF:    ${stats.total}`);
     console.log(`  Flats Created:           ${stats.created}`);
@@ -551,8 +551,8 @@ async function uploadTowerAOtherRecords() {
     console.log(`  Errors:                  ${stats.errors.length}`);
 
     if (stats.errors.length > 0) {
-      console.log('\n  ⚠️  ERRORS:');
-      stats.errors.forEach(e => console.log(`    ❌ ${e.flatNo} (${e.name}): ${e.error}`));
+      console.log('\nERRORS:');
+      stats.errors.forEach(e => console.log(`    ${e.flatNo} (${e.name}): ${e.error}`));
     }
 
     // =====================================================================
@@ -560,7 +560,7 @@ async function uploadTowerAOtherRecords() {
     // =====================================================================
     if (!DRY_RUN && stats.created > 0) {
       console.log(`\n${'='.repeat(80)}`);
-      console.log('  🔍 POST-UPLOAD VERIFICATION');
+      console.log('  POST-UPLOAD VERIFICATION');
       console.log(`${'='.repeat(80)}`);
 
       // 1. Count flats
@@ -574,7 +574,7 @@ async function uploadTowerAOtherRecords() {
         'currentOwner.customerId': { $exists: false },
         status: { $ne: 'available' },
       });
-      console.log(`  Flats without owner:     ${flatsWithoutOwner} ${flatsWithoutOwner === 0 ? '✅' : '⚠️'}`);
+      console.log(`  Flats without owner:     ${flatsWithoutOwner} ${flatsWithoutOwner === 0 ? '' : ''}`);
 
       // 3. Check for duplicate flat numbers
       const flatNos = await Flat.find({ projectId: PROJECT_ID }).select('flatNumber');
@@ -582,12 +582,12 @@ async function uploadTowerAOtherRecords() {
       let dupes = 0;
       for (const f of flatNos) {
         if (flatNoSet.has(f.flatNumber)) {
-          console.log(`    ⚠️  DUPLICATE: ${f.flatNumber}`);
+          console.log(`DUPLICATE: ${f.flatNumber}`);
           dupes++;
         }
         flatNoSet.add(f.flatNumber);
       }
-      console.log(`  Duplicate flat numbers:  ${dupes} ${dupes === 0 ? '✅' : '❌'}`);
+      console.log(`  Duplicate flat numbers:  ${dupes} ${dupes === 0 ? '' : ''}`);
 
       // 4. Verify customer linkage
       const customersWithProps = await Customer.countDocuments({
@@ -597,7 +597,7 @@ async function uploadTowerAOtherRecords() {
       console.log(`  Customers with flats:    ${customersWithProps}`);
 
       // 5. Spot-check 5 random flats
-      console.log('\n  📌 SPOT CHECK (5 random flats):');
+      console.log('\n  SPOT CHECK (5 random flats):');
       const spotCheck = await Flat.find({ projectId: PROJECT_ID, buildingId: BUILDING_ID })
         .limit(5)
         .populate('currentOwner.customerId', 'name mobileNo');
@@ -610,13 +610,13 @@ async function uploadTowerAOtherRecords() {
       }
 
       console.log(`\n${'='.repeat(80)}`);
-      console.log('  ✅ VERIFICATION COMPLETE');
+      console.log('  VERIFICATION COMPLETE');
       console.log(`${'='.repeat(80)}\n`);
     }
 
     process.exit(0);
   } catch (err) {
-    console.error('\n❌ FATAL ERROR:', err);
+    console.error('\nFATAL ERROR:', err);
     process.exit(1);
   }
 }

@@ -177,7 +177,7 @@ async function testImport() {
     flat.status = 'leased';
     await flat.save();
 
-    console.log('✅ Successfully imported Flat 001 (Ved Prakash Agarwal) Rental Ledger!');
+    console.log('Successfully imported Flat 001 (Ved Prakash Agarwal) Rental Ledger!');
     console.log(`  Total 36-Month Commitment: ₹${totalTenure.toLocaleString('en-IN')}`);
     console.log(`  Total Paid to Owner (13 Mos): ₹${cumPaid.toLocaleString('en-IN')}`);
     console.log(`  Remaining Balance Payable:   ₹${rental.rentBackLedger.remainingPayableToOwner.toLocaleString('en-IN')}`);

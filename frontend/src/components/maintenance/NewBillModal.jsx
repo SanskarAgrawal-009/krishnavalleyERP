@@ -235,7 +235,7 @@ export const NewBillModal = ({ isOpen, onClose, onCreateSingle, onGenerateBatch,
             </div>
 
             <div style={{ background: '#e8f0fe', padding: '12px 14px', borderRadius: '6px', fontSize: '0.78rem', color: '#1a73e8', border: '1px solid #d2e3fc', lineHeight: '1.5' }}>
-              <strong>⚡ Dynamic Occupancy Billing Rules for {billingMonth}:</strong>
+              <strong>Dynamic Occupancy Billing Rules for {billingMonth}:</strong>
               <ul style={{ margin: '6px 0 0 16px', padding: 0, display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 <li><strong>Owner-Occupied Units:</strong> Billed to registered property buyers/owners.</li>
                 <li><strong>Rental / Corporate Leases:</strong> Billed to individual tenants or company entities.</li>

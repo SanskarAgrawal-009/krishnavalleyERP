@@ -130,7 +130,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
 
           <div>
             <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Commission Payable</span>
-            <div style={{ fontWeight: '800', color: '#0d904f', fontSize: '1rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <div style={{ fontWeight: '800', color: '#1a73e8', fontSize: '1rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '2px' }}>
               ₹{estimatedCommission.toLocaleString('en-IN')}
             </div>
           </div>
@@ -161,9 +161,9 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
               style={{
                 padding: '10px',
                 borderRadius: '8px',
-                border: action === 'approve' ? '2px solid #0d904f' : '1px solid #cbd5e1',
-                backgroundColor: action === 'approve' ? '#f0fdf4' : '#ffffff',
-                color: action === 'approve' ? '#0d904f' : '#64748b',
+                border: action === 'approve' ? '2px solid #1a73e8' : '1px solid #cbd5e1',
+                backgroundColor: action === 'approve' ? '#eff6ff' : '#ffffff',
+                color: action === 'approve' ? '#1a73e8' : '#64748b',
                 fontWeight: '700',
                 fontSize: '0.86rem',
                 cursor: 'pointer',
@@ -182,9 +182,9 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
               style={{
                 padding: '10px',
                 borderRadius: '8px',
-                border: action === 'reject' ? '2px solid #dc2626' : '1px solid #cbd5e1',
-                backgroundColor: action === 'reject' ? '#fef2f2' : '#ffffff',
-                color: action === 'reject' ? '#dc2626' : '#64748b',
+                border: action === 'reject' ? '2px solid #0f172a' : '1px solid #cbd5e1',
+                backgroundColor: action === 'reject' ? '#f1f5f9' : '#ffffff',
+                color: action === 'reject' ? '#0f172a' : '#64748b',
                 fontWeight: '700',
                 fontSize: '0.86rem',
                 cursor: 'pointer',
@@ -222,7 +222,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
           </div>
         ) : (
           <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#dc2626', marginBottom: '4px' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px' }}>
               Rejection Reason *
             </label>
             <textarea
@@ -235,7 +235,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
                 width: '100%',
                 padding: '9px 12px',
                 borderRadius: '8px',
-                border: '1px solid #fca5a5',
+                border: '1px solid #cbd5e1',
                 fontSize: '0.86rem',
                 boxSizing: 'border-box',
               }}
@@ -244,7 +244,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
         )}
 
         {error && (
-          <div style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '8px 12px', borderRadius: '8px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ backgroundColor: '#f1f5f9', color: '#0f172a', padding: '8px 12px', borderRadius: '8px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <AlertCircle size={14} /> {error}
           </div>
         )}
@@ -274,7 +274,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
               padding: '9px 22px',
               borderRadius: '8px',
               border: 'none',
-              backgroundColor: action === 'approve' ? '#0d904f' : '#dc2626',
+              backgroundColor: action === 'approve' ? '#1a73e8' : '#0f172a',
               color: '#ffffff',
               fontSize: '0.86rem',
               fontWeight: '700',

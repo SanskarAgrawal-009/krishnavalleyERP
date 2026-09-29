@@ -35,10 +35,10 @@ export const LeadTimelineDrawer = ({
   const getModeInfo = (mode) => {
     switch (mode) {
       case 'call': return { label: 'Phone Call', icon: Phone, color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.12)' };
-      case 'whatsapp': return { label: 'WhatsApp', icon: MessageSquare, color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
-      case 'site_visit': return { label: 'Site Visit', icon: Compass, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' };
-      case 'meeting': return { label: 'Meeting', icon: Users, color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.12)' };
-      case 'email': return { label: 'Email', icon: Mail, color: '#ec4899', bg: 'rgba(236, 72, 153, 0.12)' };
+      case 'whatsapp': return { label: 'WhatsApp', icon: MessageSquare, color: '#1a73e8', bg: 'rgba(16, 185, 129, 0.12)' };
+      case 'site_visit': return { label: 'Site Visit', icon: Compass, color: '#475569', bg: 'rgba(245, 158, 11, 0.12)' };
+      case 'meeting': return { label: 'Meeting', icon: Users, color: '#2563eb', bg: 'rgba(139, 92, 246, 0.12)' };
+      case 'email': return { label: 'Email', icon: Mail, color: '#1e40af', bg: 'rgba(236, 72, 153, 0.12)' };
       default: return { label: 'Other', icon: Tag, color: '#4b5563', bg: 'rgba(148, 163, 184, 0.12)' };
     }
   };
@@ -46,11 +46,11 @@ export const LeadTimelineDrawer = ({
   const getStatusBadge = (status) => {
     switch (status) {
       case 'completed':
-        return { label: 'Completed', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)', icon: CheckCircle2 };
+        return { label: 'Completed', color: '#1a73e8', bg: 'rgba(16, 185, 129, 0.15)', icon: CheckCircle2 };
       case 'cancelled':
-        return { label: 'Cancelled', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)', icon: XCircle };
+        return { label: 'Cancelled', color: '#0f172a', bg: 'rgba(239, 68, 68, 0.15)', icon: XCircle };
       default:
-        return { label: 'Pending', color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.15)', icon: AlertCircle };
+        return { label: 'Pending', color: '#cbd5e1', bg: 'rgba(251, 191, 36, 0.15)', icon: AlertCircle };
     }
   };
 
@@ -80,7 +80,7 @@ export const LeadTimelineDrawer = ({
             <div style={{ display: 'flex', gap: '14px', fontSize: '0.8rem', color: '#374151', marginTop: '4px', flexWrap: 'wrap' }}>
               <a
                 href={`tel:${lead.mobileNo}`}
-                style={{ color: '#10b981', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+                style={{ color: '#1a73e8', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 <Phone size={13} /> {lead.mobileNo}
               </a>
@@ -292,7 +292,7 @@ export const LeadTimelineDrawer = ({
                               padding: '3px 8px',
                               borderRadius: '4px',
                               background: 'rgba(16, 185, 129, 0.15)',
-                              color: '#10b981',
+                              color: '#1a73e8',
                               fontSize: '0.72rem',
                               fontWeight: '600',
                               cursor: 'pointer'
@@ -307,7 +307,7 @@ export const LeadTimelineDrawer = ({
                             padding: '3px 6px',
                             borderRadius: '4px',
                             background: 'rgba(239, 68, 68, 0.15)',
-                            color: '#ef4444',
+                            color: '#0f172a',
                             cursor: 'pointer'
                           }}
                           title="Delete Follow-Up"

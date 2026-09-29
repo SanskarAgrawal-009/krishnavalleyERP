@@ -28,7 +28,7 @@ async function runTests() {
     if (pctEntries[0].tdsDeducted !== 1500 || pctEntries[0].netAmountPaid !== 28500) {
       throw new Error(`Expected TDS 1500 & Net 28500, got TDS ${pctEntries[0].tdsDeducted}, Net ${pctEntries[0].netAmountPaid}`);
     }
-    console.log('✓ Percentage Mode test passed!');
+    console.log('Percentage Mode test passed!');
 
     // 2. Test generatePassbookEntries with Amount Mode
     console.log('\n--- 2. Testing generatePassbookEntries with Amount Mode (Fixed TDS 2,000 on 30,000) ---');
@@ -46,7 +46,7 @@ async function runTests() {
     if (amtEntries[0].tdsDeducted !== 2000 || amtEntries[0].netAmountPaid !== 28000) {
       throw new Error(`Expected TDS 2000 & Net 28000, got TDS ${amtEntries[0].tdsDeducted}, Net ${amtEntries[0].netAmountPaid}`);
     }
-    console.log('✓ Amount Mode test passed!');
+    console.log('Amount Mode test passed!');
 
     // 3. Test Flat model persistence with tdsMode and tdsAmount
     console.log('\n--- 3. Testing Flat model persistence with tdsMode and tdsAmount ---');
@@ -62,7 +62,7 @@ async function runTests() {
       if (reloaded.rentalDetails.tdsMode !== 'amount' || reloaded.rentalDetails.tdsAmount !== 2500) {
         throw new Error('Flat model failed to persist tdsMode and tdsAmount');
       }
-      console.log('✓ Flat model persistence verified!');
+      console.log('Flat model persistence verified!');
     }
 
     console.log('\n========================================');

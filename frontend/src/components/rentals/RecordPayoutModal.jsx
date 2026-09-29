@@ -85,7 +85,7 @@ export const RecordPayoutModal = ({ isOpen, onClose, rental, onUpdated }) => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '1.2rem', fontWeight: '800' }}>Record Rental Payout</span>
               <span style={{
-                background: '#16a34a',
+                background: '#1a73e8',
                 color: '#ffffff',
                 fontSize: '0.72rem',
                 fontWeight: '700',
@@ -134,11 +134,11 @@ export const RecordPayoutModal = ({ isOpen, onClose, rental, onUpdated }) => {
           }}>
             <div>
               <span style={{ color: '#64748b', display: 'block', fontSize: '0.72rem' }}>TOTAL PAID TO DATE</span>
-              <strong style={{ color: '#166534', fontSize: '1rem' }}>{formatINR(rental.totalPaid)}</strong>
+              <strong style={{ color: '#1e40af', fontSize: '1rem' }}>{formatINR(rental.totalPaid)}</strong>
             </div>
             <div style={{ textAlign: 'right' }}>
               <span style={{ color: '#64748b', display: 'block', fontSize: '0.72rem' }}>OUTSTANDING BALANCE</span>
-              <strong style={{ color: '#b91c1c', fontSize: '1rem' }}>{formatINR(rental.amountOutstanding)}</strong>
+              <strong style={{ color: '#0f172a', fontSize: '1rem' }}>{formatINR(rental.amountOutstanding)}</strong>
             </div>
           </div>
 
@@ -294,7 +294,7 @@ export const RecordPayoutModal = ({ isOpen, onClose, rental, onUpdated }) => {
                 padding: '9px 24px',
                 borderRadius: '8px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #16a34a, #15803d)',
+                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
                 color: '#ffffff',
                 fontWeight: '700',
                 fontSize: '0.82rem',

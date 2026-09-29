@@ -22,12 +22,12 @@ async function main() {
     const result = await sendEmail({
       to: 'krishna.valley.tech@gmail.com',
       subject: 'Krishna Valley ERP – Brevo Live Delivery Verification',
-      bodyHtml: '<div style="font-size: 15px; color: #334155;"><p style="font-weight: 700; color: #0f172a;">Hello,</p><p>🎉 This email confirms that the <strong>Krishna Valley ERP Brevo Gateway</strong> is fully active and delivering emails live to your inbox!</p><p>All property documents, client receipts, and CRM reminders can now be dispatched to any client without landing in spam.</p></div>',
+      bodyHtml: '<div style="font-size: 15px; color: #334155;"><p style="font-weight: 700; color: #0f172a;">Hello,</p><p>This email confirms that the <strong>Krishna Valley ERP Brevo Gateway</strong> is fully active and delivering emails live to your inbox!</p><p>All property documents, client receipts, and CRM reminders can now be dispatched to any client without landing in spam.</p></div>',
       variables: { client_name: 'System Admin' },
       isTest: true
     });
 
-    console.log('\n✅ Live Email Dispatched Successfully!');
+    console.log('\nLive Email Dispatched Successfully!');
     console.log('Details:', {
       messageId: result.messageId,
       status: result.status,
@@ -36,7 +36,7 @@ async function main() {
       provider: result.provider
     });
   } catch (err) {
-    console.error('❌ Error during test:', err.message);
+    console.error('Error during test:', err.message);
   } finally {
     await mongoose.disconnect();
     console.log('Disconnected from MongoDB.');

@@ -239,7 +239,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
         {/* Section 1: Basic Identity */}
         <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0' }}>
           <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#1e1b4b', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <User size={16} color="#4338ca" /> 1. Owner Identity &amp; Contact Details
+            <User size={16} color="#00285c" /> 1. Owner Identity &amp; Contact Details
           </h4>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '10px' }}>
@@ -411,7 +411,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                   }}
                 >
                   <span>Flat {flat.flatNumber}</span>
-                  {isSelected && <span style={{ color: '#2563eb' }}>✓</span>}
+                  {isSelected && <span style={{ color: '#2563eb' }}></span>}
                 </button>
               );
             })}
@@ -419,14 +419,14 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
         </div>
 
         {/* Section 3: Owner Bank Details (For Rent Payouts & Transfers) */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #bbf7d0', background: '#f0fdf4' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#166534', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <CreditCard size={16} color="#16a34a" /> 3. Banking &amp; NEFT Payout Account
+        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #dbeafe', background: '#eff6ff' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#1e40af', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <CreditCard size={16} color="#1a73e8" /> 3. Banking &amp; NEFT Payout Account
           </h4>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
                 Bank Name
               </label>
               <input
@@ -434,12 +434,12 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 placeholder="e.g. Punjab National Bank"
                 value={bankDetails.bankName}
                 onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
+                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
                 Branch
               </label>
               <input
@@ -447,12 +447,12 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 placeholder="e.g. Civil Lines, Mathura"
                 value={bankDetails.branch}
                 onChange={(e) => setBankDetails({ ...bankDetails, branch: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
+                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
                 Account Number
               </label>
               <input
@@ -460,12 +460,12 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 placeholder="e.g. 0983000100182033"
                 value={bankDetails.accountNumber}
                 onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
+                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
                 IFSC Code
               </label>
               <input
@@ -473,14 +473,14 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 placeholder="e.g. PUNB0098300"
                 value={bankDetails.ifscCode}
                 onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value.toUpperCase() })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
+                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}
               />
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
                 Account Holder Name
               </label>
               <input
@@ -488,12 +488,12 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 placeholder="e.g. Rajesh Singhal"
                 value={bankDetails.accountHolderName}
                 onChange={(e) => setBankDetails({ ...bankDetails, accountHolderName: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
+                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
                 UPI ID / VPA (Optional)
               </label>
               <input
@@ -501,7 +501,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                 placeholder="e.g. rajesh@upi or 9876543210@paytm"
                 value={bankDetails.upiId || ''}
                 onChange={(e) => setBankDetails({ ...bankDetails, upiId: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #86efac' }}
+                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}
               />
             </div>
           </div>

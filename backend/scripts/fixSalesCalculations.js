@@ -72,10 +72,10 @@ async function fixSalesCalculations() {
 
       sl.salesStatus = 'agreement_completed';
       await sl.save();
-      console.log(`  ✓ Successfully updated SalesLead for Flat ${sl.flatId?.flatNumber}\n`);
+      console.log(`  Successfully updated SalesLead for Flat ${sl.flatId?.flatNumber}\n`);
     }
 
-    console.log('✅ All sales lead calculations fixed in MongoDB!');
+    console.log('All sales lead calculations fixed in MongoDB!');
     process.exit(0);
   } catch (err) {
     console.error('Error fixing sales calculations:', err);

@@ -185,7 +185,7 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
                 border: '1px solid #dadce0',
                 borderRadius: '4px',
                 fontSize: '0.75rem',
-                color: evidenceFile ? '#10b981' : 'var(--text-secondary)',
+                color: evidenceFile ? '#1a73e8' : 'var(--text-secondary)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -206,7 +206,7 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
             disabled={submitting}
             style={{
               padding: '7px 18px',
-              background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+              background: 'linear-gradient(135deg, #0f172a, #0f172a)',
               color: '#111827',
               fontWeight: '700',
               borderRadius: '4px',

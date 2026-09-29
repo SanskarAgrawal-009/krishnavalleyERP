@@ -125,7 +125,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                 alignItems: 'center',
                 gap: '6px',
                 padding: '6px 14px',
-                backgroundColor: '#10b981',
+                backgroundColor: '#1a73e8',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '6px',
@@ -220,12 +220,12 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                     color: '#ffffff',
                     padding: '24px 16px 14px',
                     textAlign: 'center',
-                    borderBottom: '3px solid #f59e0b',
+                    borderBottom: '3px solid #475569',
                     position: 'relative'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <Building2 size={16} color="#fbbf24" />
+                    <Building2 size={16} color="#cbd5e1" />
                     <span style={{ fontSize: '0.92rem', fontWeight: '900', letterSpacing: '0.8px', color: '#ffffff' }}>
                       KRISHNA VALLEY
                     </span>
@@ -238,7 +238,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                     marginTop: '6px',
                     fontSize: '0.6rem',
                     background: 'rgba(255, 255, 255, 0.18)',
-                    color: '#fef08a',
+                    color: '#f1f5f9',
                     padding: '1px 8px',
                     borderRadius: '10px',
                     fontWeight: '800',
@@ -257,7 +257,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                       height: '88px',
                       borderRadius: '50%',
                       padding: '3px',
-                      background: 'linear-gradient(135deg, #1e40af, #f59e0b)',
+                      background: 'linear-gradient(135deg, #1e40af, #475569)',
                       boxShadow: '0 4px 12px rgba(30, 64, 175, 0.25)',
                       marginBottom: '10px',
                       position: 'relative'
@@ -292,7 +292,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                         position: 'absolute',
                         bottom: '2px',
                         right: '2px',
-                        background: '#10b981',
+                        background: '#1a73e8',
                         borderRadius: '50%',
                         width: '18px',
                         height: '18px',
@@ -351,8 +351,8 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                 >
                   <div>
                     <span style={{ color: '#64748b', fontWeight: '600', display: 'block', fontSize: '0.62rem' }}>BLOOD GROUP</span>
-                    <strong style={{ color: '#b91c1c', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                      <Heart size={10} fill="#b91c1c" /> {blood}
+                    <strong style={{ color: '#0f172a', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <Heart size={10} fill="#0f172a" /> {blood}
                     </strong>
                   </div>
 
@@ -368,7 +368,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
 
                   <div>
                     <span style={{ color: '#64748b', fontWeight: '600', display: 'block', fontSize: '0.62rem' }}>VALID TILL</span>
-                    <strong style={{ color: '#047857' }}>{validUntilStr}</strong>
+                    <strong style={{ color: '#1e40af' }}>{validUntilStr}</strong>
                   </div>
                 </div>
 
@@ -465,20 +465,20 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                   {/* Emergency Contact */}
                   <div
                     style={{
-                      background: '#fef2f2',
-                      border: '1px solid #fecaca',
+                      background: '#f1f5f9',
+                      border: '1px solid #e2e8f0',
                       padding: '8px 10px',
                       borderRadius: '8px',
                       fontSize: '0.68rem'
                     }}
                   >
-                    <span style={{ fontSize: '0.6rem', color: '#b91c1c', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '0.6rem', color: '#0f172a', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <Phone size={10} /> IN EMERGENCY NOTIFY:
                     </span>
                     <div style={{ fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
                       {emergencyName} ({emergencyRel})
                     </div>
-                    <div style={{ color: '#b91c1c', fontWeight: '700' }}>
+                    <div style={{ color: '#0f172a', fontWeight: '700' }}>
                       {emergencyPhone}
                     </div>
                   </div>

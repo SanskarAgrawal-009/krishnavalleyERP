@@ -283,11 +283,11 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#b91c1c', marginBottom: '4px' }}>Blood Group</label>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#0f172a', marginBottom: '4px' }}>Blood Group</label>
               <select
                 value={bloodGroup}
                 onChange={(e) => setBloodGroup(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #fca5a5', fontSize: '0.85rem', background: '#fff', fontWeight: '700', color: '#b91c1c' }}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', background: '#fff', fontWeight: '700', color: '#0f172a' }}
               >
                 {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
                   <option key={bg} value={bg}>{bg}</option>
@@ -357,7 +357,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
               <select
                 value={employmentStatus}
                 onChange={(e) => setEmploymentStatus(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem', background: '#fff', fontWeight: '700', color: employmentStatus === 'active' ? '#137333' : '#c5221f' }}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem', background: '#fff', fontWeight: '700', color: employmentStatus === 'active' ? '#1a73e8' : '#0f172a' }}
               >
                 <option value="active">Active (On-Roll)</option>
                 <option value="on_leave">On Leave</option>

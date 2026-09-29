@@ -68,14 +68,14 @@ async function syncSoldUnits() {
             ownershipPercentage: 100
           }
         });
-        console.log(`  ✓ Created Owner Customer: ${owner.name} (${owner.mobileNo})`);
+        console.log(`  Created Owner Customer: ${owner.name} (${owner.mobileNo})`);
       } else {
         if (!owner.ownerDetails) owner.ownerDetails = { propertyIds: [] };
         if (!owner.ownerDetails.propertyIds.some(p => p.toString() === flat._id.toString())) {
           owner.ownerDetails.propertyIds.push(flat._id);
           await owner.save();
         }
-        console.log(`  ✓ Linked to Owner Customer: ${owner.name}`);
+        console.log(`  Linked to Owner Customer: ${owner.name}`);
       }
 
       // 2. Lead & SalesLead
@@ -156,7 +156,7 @@ async function syncSoldUnits() {
             }
           ]
         });
-        console.log(`  ✓ Created Sales Lead & Agreement: ${bbaNum} (Deal: ₹${dealPrice.toLocaleString('en-IN')})`);
+        console.log(`  Created Sales Lead & Agreement: ${bbaNum} (Deal: ₹${dealPrice.toLocaleString('en-IN')})`);
       }
 
       // 3. Rental Contract (3-Year Guaranteed Lock-in)
@@ -202,11 +202,11 @@ async function syncSoldUnits() {
           },
           remarks: `Guaranteed 3-Year Rental Lock-In active for Flat ${flat.flatNumber}. Monthly rent: ₹${monthlyRent}`
         });
-        console.log(`  ✓ Created 3-Year Rental Contract: ${rental.contractCode} (₹${monthlyRent.toLocaleString('en-IN')}/mo)`);
+        console.log(`  Created 3-Year Rental Contract: ${rental.contractCode} (₹${monthlyRent.toLocaleString('en-IN')}/mo)`);
       }
     }
 
-    console.log('\n✅ All sold and rental flats are 100% synchronized across Sales, Rentals, Customers, and Inventory!\n');
+    console.log('\nAll sold and rental flats are 100% synchronized across Sales, Rentals, Customers, and Inventory!\n');
     process.exit(0);
   } catch (err) {
     console.error('Error syncing sold units:', err);

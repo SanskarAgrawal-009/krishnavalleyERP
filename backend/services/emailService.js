@@ -354,7 +354,7 @@ export const wrapInBrandedTemplate = ({ contentHtml, subject, preheader = '', co
         <p style="margin: 0 0 4px 0; font-weight: 600; color: #334155;">Krishna Valley Infrastructure &amp; Developers Pvt. Ltd.</p>
         <p style="margin: 0 0 4px 0;">Vrindavan Campus, NH-19, Mathura - Vrindavan, Uttar Pradesh 281121</p>
         <p style="margin: 0; color: #94a3b8; font-size: 11px;">
-          Direct inquiries: <a href="mailto:${contactEmail}" style="color: #0f766e; text-decoration: none;">${contactEmail}</a>
+          Direct inquiries: <a href="mailto:${contactEmail}" style="color: #005bbf; text-decoration: none;">${contactEmail}</a>
         </p>
       </td>
     </tr>

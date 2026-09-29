@@ -80,8 +80,8 @@ export const LoginPage = () => {
 
   const demoAccounts = [
     { label: 'Super Admin', username: 'admin', pass: 'Admin@12345', icon: ShieldCheck, color: '#1a73e8', bg: '#e8f0fe', desc: 'Full System Control' },
-    { label: 'Sales Head', username: 'sales_head', pass: 'Sales@12345', icon: Users, color: '#0d904f', bg: '#e6f4ea', desc: 'CRM & Bookings' },
-    { label: 'Agent Partner', username: 'agent_rahul', pass: 'Agent@12345', icon: Sparkles, color: '#e37400', bg: '#fef7e0', desc: 'Leads & Commission Wallet' },
+    { label: 'Sales Head', username: 'sales_head', pass: 'Sales@12345', icon: Users, color: '#1a73e8', bg: '#eff6ff', desc: 'CRM & Bookings' },
+    { label: 'Agent Partner', username: 'agent_rahul', pass: 'Agent@12345', icon: Sparkles, color: '#334155', bg: '#f8fafc', desc: 'Leads & Commission Wallet' },
     { label: 'Site Engineer', username: 'site_eng', pass: 'Site@12345', icon: Wrench, color: '#0284c7', bg: '#e0f2fe', desc: 'Inventory & Materials' },
     { label: 'HR Manager', username: 'hr_manager', pass: 'Hr@12345', icon: Briefcase, color: '#9334e6', bg: '#f3e8fd', desc: 'Staff & Attendance' },
     { label: 'Accounts Head', username: 'accounts_head', pass: 'Accounts@12345', icon: DollarSign, color: '#1292b3', bg: '#e4f7fb', desc: 'Finance & Passbooks' },
@@ -221,7 +221,7 @@ export const LoginPage = () => {
             {/* Feature points */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'rgba(13, 144, 79, 0.2)', color: '#34a853', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'rgba(13, 144, 79, 0.2)', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
                   <ShieldCheck size={16} />
                 </div>
                 <div>
@@ -241,7 +241,7 @@ export const LoginPage = () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'rgba(227, 116, 0, 0.2)', color: '#fbbc04', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'rgba(227, 116, 0, 0.2)', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
                   <KeyRound size={16} />
                 </div>
                 <div>
@@ -287,9 +287,9 @@ export const LoginPage = () => {
                 style={{
                   padding: '12px 14px',
                   borderRadius: '10px',
-                  backgroundColor: '#fef2f2',
-                  border: '1px solid #fecaca',
-                  color: '#991b1b',
+                  backgroundColor: '#f1f5f9',
+                  border: '1px solid #e2e8f0',
+                  color: '#0f172a',
                   fontSize: '0.85rem',
                   display: 'flex',
                   alignItems: 'center',
@@ -488,7 +488,7 @@ export const LoginPage = () => {
           <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #e2e8f0' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
               <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                ⚡ Quick 1-Click Role Login (Demo / Testing)
+                Quick 1-Click Role Login (Demo / Testing)
               </span>
             </div>
 

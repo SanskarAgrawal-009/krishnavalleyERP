@@ -29,9 +29,9 @@ import { getFileUrl } from '../../services/api.js';
 // Step configuration
 const STEPS = [
   { id: 1, title: 'Owner Details', subtitle: 'KYC & Registration', icon: User, color: '#2563eb' },
-  { id: 2, title: 'Rent & TDS', subtitle: 'Monthly Pricing', icon: DollarSign, color: '#16a34a' },
-  { id: 3, title: 'Contract Period', subtitle: 'Dates & Tenure', icon: Calendar, color: '#d97706' },
-  { id: 4, title: 'Review & Upload', subtitle: 'Financial Impact', icon: CheckCircle2, color: '#7c3aed' },
+  { id: 2, title: 'Rent & TDS', subtitle: 'Monthly Pricing', icon: DollarSign, color: '#1a73e8' },
+  { id: 3, title: 'Contract Period', subtitle: 'Dates & Tenure', icon: Calendar, color: '#334155' },
+  { id: 4, title: 'Review & Upload', subtitle: 'Financial Impact', icon: CheckCircle2, color: '#1e40af' },
 ];
 
 export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => {
@@ -618,8 +618,8 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
 
       {/* Row 4: Owner Registry Document Box in Step 1 */}
       <div style={{
-        background: registryDoc ? '#f0fdf4' : '#f8fafc',
-        border: registryDoc ? '1.5px solid #86efac' : '1px solid #e2e8f0',
+        background: registryDoc ? '#eff6ff' : '#f8fafc',
+        border: registryDoc ? '1.5px solid #bfdbfe' : '1px solid #e2e8f0',
         borderRadius: '12px',
         padding: '14px 16px',
         display: 'flex',
@@ -631,7 +631,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
             width: '36px', height: '36px', borderRadius: '8px',
-            background: registryDoc ? '#16a34a' : '#64748b',
+            background: registryDoc ? '#1a73e8' : '#64748b',
             display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0
           }}>
             <ShieldCheck size={18} />
@@ -643,8 +643,8 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
               </span>
               <span style={{
                 fontSize: '0.68rem', fontWeight: '700', padding: '1px 6px', borderRadius: '4px',
-                background: registryDoc ? '#dcfce7' : '#f1f5f9',
-                color: registryDoc ? '#15803d' : '#64748b'
+                background: registryDoc ? '#eff6ff' : '#f1f5f9',
+                color: registryDoc ? '#1e40af' : '#64748b'
               }}>
                 {registryDoc ? 'Verified on File' : 'Not Uploaded'}
               </span>
@@ -671,8 +671,8 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '6px 10px', borderRadius: '6px',
-                background: '#ffffff', border: '1px solid #86efac',
-                color: '#16a34a', fontSize: '0.75rem', fontWeight: '700',
+                background: '#ffffff', border: '1px solid #bfdbfe',
+                color: '#1a73e8', fontSize: '0.75rem', fontWeight: '700',
                 textDecoration: 'none', cursor: 'pointer'
               }}
             >
@@ -686,7 +686,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '4px',
               padding: '6px 12px', borderRadius: '6px',
-              background: registryDoc ? '#ffffff' : '#16a34a',
+              background: registryDoc ? '#ffffff' : '#1a73e8',
               border: registryDoc ? '1px solid #cbd5e1' : 'none',
               color: registryDoc ? '#334155' : '#ffffff',
               fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer'
@@ -702,8 +702,8 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
               onClick={handleRegistryDelete}
               style={{
                 padding: '6px 8px', borderRadius: '6px',
-                background: '#fef2f2', border: '1px solid #fecaca',
-                color: '#dc2626', cursor: 'pointer'
+                background: '#f1f5f9', border: '1px solid #e2e8f0',
+                color: '#0f172a', cursor: 'pointer'
               }}
               title="Delete Registry Document"
             >
@@ -723,7 +723,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #16a34a, #15803d)',
+          background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <DollarSign size={16} color="#fff" />
@@ -740,7 +740,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         <div style={{ position: 'relative' }}>
           <span style={{
             position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
-            fontWeight: '800', color: '#16a34a', fontSize: '1rem',
+            fontWeight: '800', color: '#1a73e8', fontSize: '1rem',
           }}>₹</span>
           <input
             type="number"
@@ -844,7 +844,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                 }}>%</span>
               </div>
               <span style={{
-                padding: '8px 14px', background: '#fef3c7', color: '#92400e',
+                padding: '8px 14px', background: '#f1f5f9', color: '#334155',
                 borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', whiteSpace: 'nowrap',
               }}>
                 − {formatINR(newTdsAmt)}
@@ -896,18 +896,18 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
 
       {/* Net Preview Card */}
       <div style={{
-        padding: '14px 18px', background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-        border: '1.5px solid #86efac', borderRadius: '12px',
+        padding: '14px 18px', background: 'linear-gradient(135deg, #eff6ff, #eff6ff)',
+        border: '1.5px solid #bfdbfe', borderRadius: '12px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
-        <span style={{ fontSize: '0.82rem', color: '#166534', fontWeight: '700' }}>
+        <span style={{ fontSize: '0.82rem', color: '#1e40af', fontWeight: '700' }}>
           Net Monthly Payout after TDS:
         </span>
         <div style={{ textAlign: 'right' }}>
-          <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#166534' }}>
+          <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#1e40af' }}>
             {formatINR(newNet)}
           </span>
-          <span style={{ fontSize: '0.72rem', color: '#166534', display: 'block', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.72rem', color: '#1e40af', display: 'block', fontWeight: '600' }}>
             per month
           </span>
         </div>
@@ -923,7 +923,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #d97706, #b45309)',
+          background: 'linear-gradient(135deg, #334155, #334155)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Calendar size={16} color="#fff" />
@@ -1081,7 +1081,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563eb', flexShrink: 0 }} />
           <span style={{ fontSize: '0.78rem', color: '#1e40af', fontWeight: '500', lineHeight: 1.5 }}>
             The new price (
-            <strong style={{ color: '#15803d' }}>
+            <strong style={{ color: '#1e40af' }}>
               {formatINR(newNet > 0 ? newNet : (newGross > 0 ? newGross : 27900))}/mo net
             </strong>
             ) will take effect starting from{' '}
@@ -1117,7 +1117,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+          background: 'linear-gradient(135deg, #1e40af, #1e3a8a)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <CheckCircle2 size={16} color="#fff" />
@@ -1130,18 +1130,18 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
 
       {/* Financial Summary */}
       <div style={{
-        background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-        border: '1.5px solid #86efac', borderRadius: '12px', padding: '16px 20px',
+        background: 'linear-gradient(135deg, #eff6ff, #eff6ff)',
+        border: '1.5px solid #bfdbfe', borderRadius: '12px', padding: '16px 20px',
         display: 'flex', flexDirection: 'column', gap: '12px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <TrendingUp size={18} color="#16a34a" />
-            <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#166534', textTransform: 'uppercase' }}>
+            <TrendingUp size={18} color="#1a73e8" />
+            <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1e40af', textTransform: 'uppercase' }}>
               Financial Impact Summary
             </span>
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700' }}>
+          <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700' }}>
             Ends: {computedEndDateStr}
           </span>
         </div>
@@ -1149,38 +1149,38 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         {appliedFromMonthIndex > 1 && priorMonthsCount > 0 ? (
           <div style={{
             background: 'rgba(255, 255, 255, 0.7)', borderRadius: '8px',
-            padding: '10px 14px', border: '1px solid #bbf7d0',
+            padding: '10px 14px', border: '1px solid #dbeafe',
             display: 'flex', alignItems: 'center', gap: '10px',
-            fontSize: '0.75rem', color: '#14532d', flexWrap: 'wrap',
+            fontSize: '0.75rem', color: '#001a41', flexWrap: 'wrap',
           }}>
             <div>
               <span style={{ fontWeight: '800' }}>Prior Period:</span> {priorMonthsCount} mos @ {formatINR(prevNet)} = <strong>{formatINR(priorMonthsCount * prevNet)}</strong>
             </div>
-            <ArrowRight size={14} color="#16a34a" />
+            <ArrowRight size={14} color="#1a73e8" />
             <div>
               <span style={{ fontWeight: '800' }}>New Period ({formatMonthYearLabel(form.effectiveMonthYear)}):</span> {newMonthsCount} mos @ {formatINR(newNet)} = <strong>{formatINR(newMonthsCount * newNet)}</strong>
             </div>
           </div>
         ) : (
-          <div style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '600' }}>
+          <div style={{ fontSize: '0.78rem', color: '#1e40af', fontWeight: '600' }}>
             Applied uniformly across entire {newTenure} months tenure @ {formatINR(newNet)} Net / month.
           </div>
         )}
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-          <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #bbf7d0' }}>
+          <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #dbeafe' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>TOTAL PAYMENT (TENURE)</span>
             <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1e3a8a' }}>{formatINR(totalCommitment)}</span>
             <span style={{ fontSize: '0.66rem', color: '#2563eb', display: 'block', fontWeight: '600', marginTop: '2px' }}>Gross without TDS</span>
           </div>
-          <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #bbf7d0' }}>
+          <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #dbeafe' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>TOTAL PAID</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#16a34a' }}>{formatINR(totalPaid)}</span>
+            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1a73e8' }}>{formatINR(totalPaid)}</span>
             <span style={{ fontSize: '0.66rem', color: '#64748b', display: 'block', marginTop: '2px' }}>Disbursed so far</span>
           </div>
-          <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #bbf7d0' }}>
+          <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #dbeafe' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>OUTSTANDING</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: outstandingBalance > 0 ? '#dc2626' : '#16a34a' }}>
+            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: outstandingBalance > 0 ? '#0f172a' : '#1a73e8' }}>
               {formatINR(outstandingBalance)}
             </span>
             <span style={{ fontSize: '0.66rem', color: '#64748b', display: 'block', marginTop: '2px' }}>Remaining liability</span>
@@ -1193,7 +1193,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         background: '#f8fafc', border: '1px solid #e2e8f0',
         borderRadius: '12px', padding: '16px 18px',
       }}>
-        <h4 style={{ margin: '0 0 12px', fontSize: '0.82rem', fontWeight: '800', color: '#334155' }}>📋 Terms Summary</h4>
+        <h4 style={{ margin: '0 0 12px', fontSize: '0.82rem', fontWeight: '800', color: '#334155' }}>Terms Summary</h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.82rem' }}>
           {[
             { label: 'Owner', value: form.ownerName || '—' },
@@ -1224,8 +1224,8 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         borderRadius: '12px', padding: '16px 18px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-          <ShieldCheck size={16} color="#16a34a" />
-          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#15803d', textTransform: 'uppercase' }}>
+          <ShieldCheck size={16} color="#1a73e8" />
+          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e40af', textTransform: 'uppercase' }}>
             Owner Registry Document (Sale Deed / Registry Proof)
           </span>
         </div>
@@ -1233,13 +1233,13 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         {registryDoc?.fileUrl ? (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: '#ffffff', border: '1.5px solid #86efac',
+            background: '#ffffff', border: '1.5px solid #bfdbfe',
             borderRadius: '10px', padding: '12px 16px', gap: '12px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
               <div style={{
                 width: '36px', height: '36px', borderRadius: '8px',
-                background: 'linear-gradient(135deg, #16a34a, #15803d)',
+                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}>
                 <ShieldCheck size={18} color="#ffffff" />
@@ -1253,7 +1253,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                   <span style={{
                     marginLeft: '8px', padding: '1px 6px', borderRadius: '4px',
                     fontSize: '0.65rem', fontWeight: '700',
-                    background: '#dcfce7', color: '#166534',
+                    background: '#eff6ff', color: '#1e40af',
                   }}>
                     VERIFIED
                   </span>
@@ -1268,13 +1268,13 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                 rel="noopener noreferrer"
                 style={{
                   width: '32px', height: '32px', borderRadius: '6px',
-                  border: '1px solid #86efac', background: '#f0fdf4',
+                  border: '1px solid #bfdbfe', background: '#eff6ff',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', textDecoration: 'none',
                 }}
                 title="View / Download"
               >
-                <Eye size={15} color="#16a34a" />
+                <Eye size={15} color="#1a73e8" />
               </a>
               <button
                 type="button"
@@ -1282,13 +1282,13 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                 disabled={registryUploading}
                 style={{
                   width: '32px', height: '32px', borderRadius: '6px',
-                  border: '1px solid #fca5a5', background: '#fef2f2',
+                  border: '1px solid #cbd5e1', background: '#f1f5f9',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: registryUploading ? 'not-allowed' : 'pointer',
                 }}
                 title="Remove Registry Document"
               >
-                <Trash2 size={15} color="#dc2626" />
+                <Trash2 size={15} color="#0f172a" />
               </button>
             </div>
           </div>
@@ -1296,26 +1296,26 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           <div
             onClick={() => !registryUploading && registryFileInputRef.current?.click()}
             style={{
-              border: '2px dashed #86efac', borderRadius: '12px',
+              border: '2px dashed #bfdbfe', borderRadius: '12px',
               padding: '20px', display: 'flex', flexDirection: 'column',
               alignItems: 'center', gap: '6px',
               cursor: registryUploading ? 'not-allowed' : 'pointer',
-              background: '#f0fdf4', transition: 'all 0.2s ease',
+              background: '#eff6ff', transition: 'all 0.2s ease',
             }}
-            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#16a34a'; e.currentTarget.style.background = '#dcfce7'; }}
-            onMouseOut={(e) => { e.currentTarget.style.borderColor = '#86efac'; e.currentTarget.style.background = '#f0fdf4'; }}
+            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#1a73e8'; e.currentTarget.style.background = '#eff6ff'; }}
+            onMouseOut={(e) => { e.currentTarget.style.borderColor = '#bfdbfe'; e.currentTarget.style.background = '#eff6ff'; }}
           >
             <div style={{
               width: '38px', height: '38px', borderRadius: '10px',
-              background: 'linear-gradient(135deg, #16a34a, #15803d)',
+              background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Upload size={18} color="#ffffff" />
             </div>
-            <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#166534' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1e40af' }}>
               {registryUploading ? 'Uploading...' : 'Upload Owner Registry Document'}
             </span>
-            <span style={{ fontSize: '0.7rem', color: '#15803d' }}>
+            <span style={{ fontSize: '0.7rem', color: '#1e40af' }}>
               Sale Deed, Registry Slip, or Registration Copy — Max 25MB
             </span>
           </div>
@@ -1328,8 +1328,8 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         borderRadius: '12px', padding: '16px 18px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-          <FileText size={15} color="#7c3aed" />
-          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5b21b6', textTransform: 'uppercase' }}>
+          <FileText size={15} color="#1e40af" />
+          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#00285c', textTransform: 'uppercase' }}>
             Agreement Document (Rent-Back Contract)
           </span>
         </div>
@@ -1337,13 +1337,13 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         {agreementDoc?.fileUrl ? (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: '#ffffff', border: '1.5px solid #c4b5fd',
+            background: '#ffffff', border: '1.5px solid #bfdbfe',
             borderRadius: '10px', padding: '12px 16px', gap: '12px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
               <div style={{
                 width: '36px', height: '36px', borderRadius: '8px',
-                background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                background: 'linear-gradient(135deg, #1e40af, #1e3a8a)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}>
                 <FileText size={18} color="#ffffff" />
@@ -1358,8 +1358,8 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                     <span style={{
                       marginLeft: '8px', padding: '1px 6px', borderRadius: '4px',
                       fontSize: '0.65rem', fontWeight: '700',
-                      background: agreementDoc.verificationStatus === 'verified' ? '#dcfce7' : '#fef3c7',
-                      color: agreementDoc.verificationStatus === 'verified' ? '#166534' : '#92400e',
+                      background: agreementDoc.verificationStatus === 'verified' ? '#eff6ff' : '#f1f5f9',
+                      color: agreementDoc.verificationStatus === 'verified' ? '#1e40af' : '#334155',
                     }}>
                       {agreementDoc.verificationStatus.toUpperCase()}
                     </span>
@@ -1375,13 +1375,13 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                 rel="noopener noreferrer"
                 style={{
                   width: '32px', height: '32px', borderRadius: '6px',
-                  border: '1px solid #c4b5fd', background: '#f5f3ff',
+                  border: '1px solid #bfdbfe', background: '#eff6ff',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', textDecoration: 'none',
                 }}
                 title="View / Download"
               >
-                <Eye size={15} color="#7c3aed" />
+                <Eye size={15} color="#1e40af" />
               </a>
               <a
                 href={getFileUrl(agreementDoc.fileUrl)}
@@ -1402,13 +1402,13 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                 disabled={agreementUploading}
                 style={{
                   width: '32px', height: '32px', borderRadius: '6px',
-                  border: '1px solid #fca5a5', background: '#fef2f2',
+                  border: '1px solid #cbd5e1', background: '#f1f5f9',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: agreementUploading ? 'not-allowed' : 'pointer',
                 }}
                 title="Remove Agreement"
               >
-                <Trash2 size={15} color="#dc2626" />
+                <Trash2 size={15} color="#0f172a" />
               </button>
             </div>
           </div>
@@ -1416,26 +1416,26 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           <div
             onClick={() => !agreementUploading && fileInputRef.current?.click()}
             style={{
-              border: '2px dashed #c4b5fd', borderRadius: '12px',
+              border: '2px dashed #bfdbfe', borderRadius: '12px',
               padding: '24px', display: 'flex', flexDirection: 'column',
               alignItems: 'center', gap: '8px',
               cursor: agreementUploading ? 'not-allowed' : 'pointer',
               background: '#faf5ff', transition: 'all 0.2s ease',
             }}
-            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#8b5cf6'; e.currentTarget.style.background = '#f5f3ff'; }}
-            onMouseOut={(e) => { e.currentTarget.style.borderColor = '#c4b5fd'; e.currentTarget.style.background = '#faf5ff'; }}
+            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.background = '#eff6ff'; }}
+            onMouseOut={(e) => { e.currentTarget.style.borderColor = '#bfdbfe'; e.currentTarget.style.background = '#faf5ff'; }}
           >
             <div style={{
               width: '42px', height: '42px', borderRadius: '10px',
-              background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+              background: 'linear-gradient(135deg, #1e40af, #1e3a8a)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Upload size={20} color="#ffffff" />
             </div>
-            <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#5b21b6' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#00285c' }}>
               {agreementUploading ? 'Uploading...' : 'Upload Rental Agreement'}
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#7c3aed' }}>
+            <span style={{ fontSize: '0.72rem', color: '#1e40af' }}>
               PDF, JPG, PNG — Max 20MB
             </span>
           </div>
@@ -1493,7 +1493,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                       <td style={{ padding: '6px 8px' }}>
                         {formatINR(rev.previousTerms?.netRent || rev.previousTerms?.guaranteedMonthlyRent)}/mo • {rev.previousTerms?.tenureMonths || 36}m
                       </td>
-                      <td style={{ padding: '6px 8px', fontWeight: '700', color: '#16a34a' }}>
+                      <td style={{ padding: '6px 8px', fontWeight: '700', color: '#1a73e8' }}>
                         {formatINR(rev.newTerms?.netRent || rev.newTerms?.guaranteedMonthlyRent)}/mo • {rev.newTerms?.tenureMonths || 36}m
                       </td>
                       <td style={{ padding: '6px 8px', color: '#64748b' }}>{rev.reason || '—'}</td>
@@ -1615,7 +1615,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                   <div style={{
                     width: '30px', height: '30px', borderRadius: '8px',
                     background: isCompleted
-                      ? 'linear-gradient(135deg, #16a34a, #15803d)'
+                      ? 'linear-gradient(135deg, #1a73e8, #1e40af)'
                       : isActive
                         ? `linear-gradient(135deg, ${step.color}, ${step.color}dd)`
                         : '#e2e8f0',
@@ -1632,7 +1632,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                   <div style={{ textAlign: 'left', minWidth: 0 }}>
                     <div style={{
                       fontSize: '0.72rem', fontWeight: '800',
-                      color: isActive ? '#0f172a' : isCompleted ? '#16a34a' : '#94a3b8',
+                      color: isActive ? '#0f172a' : isCompleted ? '#1a73e8' : '#94a3b8',
                       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                     }}>{step.title}</div>
                     {isActive && (
@@ -1645,7 +1645,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
                 {idx < STEPS.length - 1 && (
                   <div style={{
                     width: '24px', height: '2px', flexShrink: 0,
-                    background: isCompleted ? '#16a34a' : '#e2e8f0',
+                    background: isCompleted ? '#1a73e8' : '#e2e8f0',
                     borderRadius: '1px', transition: 'background 0.3s',
                   }} />
                 )}
@@ -1743,7 +1743,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
               disabled={saving}
               style={{
                 padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg, #16a34a, #15803d)',
+                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
                 color: '#ffffff', fontSize: '0.84rem', fontWeight: '800',
                 cursor: saving ? 'not-allowed' : 'pointer',
                 boxShadow: '0 4px 12px rgba(22, 163, 74, 0.35)',

@@ -285,10 +285,10 @@ export const FlatDocumentsModal = ({
           {/* DOCUMENT 1: OWNER REGISTRY DOCUMENT */}
           {/* ========================================================================= */}
           <div style={{
-            border: registryDoc ? '1.5px solid #86efac' : '1.5px dashed #cbd5e1',
+            border: registryDoc ? '1.5px solid #bfdbfe' : '1.5px dashed #cbd5e1',
             borderRadius: '14px',
             padding: '18px 20px',
-            background: registryDoc ? '#f0fdf4' : '#fafafa',
+            background: registryDoc ? '#eff6ff' : '#fafafa',
             transition: 'all 0.2s ease'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
@@ -297,7 +297,7 @@ export const FlatDocumentsModal = ({
                   width: '40px',
                   height: '40px',
                   borderRadius: '10px',
-                  background: registryDoc ? '#16a34a' : '#94a3b8',
+                  background: registryDoc ? '#1a73e8' : '#94a3b8',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -316,11 +316,11 @@ export const FlatDocumentsModal = ({
                       fontWeight: '800',
                       padding: '2px 8px',
                       borderRadius: '10px',
-                      background: registryDoc ? '#dcfce7' : '#f1f5f9',
-                      color: registryDoc ? '#15803d' : '#64748b',
-                      border: registryDoc ? '1px solid #bbf7d0' : '1px solid #e2e8f0'
+                      background: registryDoc ? '#eff6ff' : '#f1f5f9',
+                      color: registryDoc ? '#1e40af' : '#64748b',
+                      border: registryDoc ? '1px solid #dbeafe' : '1px solid #e2e8f0'
                     }}>
-                      {registryDoc ? '✓ Verified on File' : 'Missing / Required'}
+                      {registryDoc ? 'Verified on File' : 'Missing / Required'}
                     </span>
                   </div>
                   <p style={{ margin: '3px 0 0', fontSize: '0.78rem', color: '#64748b' }}>
@@ -352,8 +352,8 @@ export const FlatDocumentsModal = ({
                         padding: '7px 12px',
                         borderRadius: '8px',
                         background: '#ffffff',
-                        border: '1px solid #bbf7d0',
-                        color: '#15803d',
+                        border: '1px solid #dbeafe',
+                        color: '#1e40af',
                         fontSize: '0.78rem',
                         fontWeight: '700',
                         textDecoration: 'none',
@@ -372,8 +372,8 @@ export const FlatDocumentsModal = ({
                         padding: '7px 10px',
                         borderRadius: '8px',
                         background: '#ffffff',
-                        border: '1px solid #fecaca',
-                        color: '#dc2626',
+                        border: '1px solid #e2e8f0',
+                        color: '#0f172a',
                         cursor: 'pointer'
                       }}
                       title="Delete Registry Document"
@@ -393,7 +393,7 @@ export const FlatDocumentsModal = ({
                     gap: '6px',
                     padding: '7px 14px',
                     borderRadius: '8px',
-                    background: registryDoc ? '#ffffff' : '#16a34a',
+                    background: registryDoc ? '#ffffff' : '#1a73e8',
                     border: registryDoc ? '1px solid #cbd5e1' : 'none',
                     color: registryDoc ? '#334155' : '#ffffff',
                     fontSize: '0.78rem',
@@ -417,14 +417,14 @@ export const FlatDocumentsModal = ({
               <div style={{
                 marginTop: '12px',
                 paddingTop: '12px',
-                borderTop: '1px solid #dcfce7',
+                borderTop: '1px solid #eff6ff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
                 gap: '8px',
                 fontSize: '0.75rem',
-                color: '#166534'
+                color: '#1e40af'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <FileText size={14} />
@@ -478,7 +478,7 @@ export const FlatDocumentsModal = ({
                       color: agreementDoc ? '#1d4ed8' : '#64748b',
                       border: agreementDoc ? '1px solid #bfdbfe' : '1px solid #e2e8f0'
                     }}>
-                      {agreementDoc ? '✓ Uploaded' : 'Not Uploaded'}
+                      {agreementDoc ? 'Uploaded' : 'Not Uploaded'}
                     </span>
                   </div>
                   <p style={{ margin: '3px 0 0', fontSize: '0.78rem', color: '#64748b' }}>
@@ -530,8 +530,8 @@ export const FlatDocumentsModal = ({
                         padding: '7px 10px',
                         borderRadius: '8px',
                         background: '#ffffff',
-                        border: '1px solid #fecaca',
-                        color: '#dc2626',
+                        border: '1px solid #e2e8f0',
+                        color: '#0f172a',
                         cursor: 'pointer'
                       }}
                       title="Delete Agreement Document"
@@ -603,12 +603,12 @@ export const FlatDocumentsModal = ({
           {Array.isArray(flat.ownershipHistory) && flat.ownershipHistory.length > 0 && (
             <div style={{
               background: '#faf5ff',
-              border: '1px solid #e9d5ff',
+              border: '1px solid #dbeafe',
               borderRadius: '14px',
               padding: '16px 18px'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <History size={16} color="#7c3aed" />
+                <History size={16} color="#1e40af" />
                 <h4 style={{ margin: 0, fontSize: '0.86rem', fontWeight: '800', color: '#581c87' }}>
                   Historical Ownership Documents Trail ({flat.ownershipHistory.length} previous owner{flat.ownershipHistory.length > 1 ? 's' : ''})
                 </h4>
@@ -622,7 +622,7 @@ export const FlatDocumentsModal = ({
                       padding: '10px 14px',
                       background: '#ffffff',
                       borderRadius: '8px',
-                      border: '1px solid #f3e8ff',
+                      border: '1px solid #eff6ff',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
@@ -647,7 +647,7 @@ export const FlatDocumentsModal = ({
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
-                          color: '#7c3aed',
+                          color: '#1e40af',
                           fontWeight: '700',
                           textDecoration: 'none'
                         }}

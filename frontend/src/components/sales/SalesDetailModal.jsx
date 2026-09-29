@@ -255,7 +255,7 @@ export const SalesDetailModal = ({
             </div>
             <div style={{ display: 'flex', gap: '14px', fontSize: '0.8rem', color: '#374151', marginTop: '4px', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Phone size={13} color="#10b981" /> {salesLead.mobileNo}
+                <Phone size={13} color="#1a73e8" /> {salesLead.mobileNo}
               </span>
               {salesLead.email && (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -276,14 +276,14 @@ export const SalesDetailModal = ({
               </div>
             </div>
             <div style={{ borderLeft: '1px solid #dadce0', paddingLeft: '14px' }}>
-              <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: '600' }}>PAID</div>
-              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#16a34a' }}>
+              <div style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: '600' }}>PAID</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1a73e8' }}>
                 {formatINR(totalPaidVal)}
               </div>
             </div>
             <div style={{ borderLeft: '1px solid #dadce0', paddingLeft: '14px' }}>
-              <div style={{ fontSize: '0.7rem', color: '#dc2626', fontWeight: '600' }}>BALANCE</div>
-              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: balanceRemainingVal > 0 ? '#ea580c' : '#16a34a' }}>
+              <div style={{ fontSize: '0.7rem', color: '#0f172a', fontWeight: '600' }}>BALANCE</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: balanceRemainingVal > 0 ? '#334155' : '#1a73e8' }}>
                 {formatINR(balanceRemainingVal)}
               </div>
             </div>
@@ -342,7 +342,7 @@ export const SalesDetailModal = ({
         {activeTab === 'booking' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <CheckCircle size={16} color="#10b981" /> Unit Booking & Token Verification
+              <CheckCircle size={16} color="#1a73e8" /> Unit Booking & Token Verification
             </h4>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
@@ -389,31 +389,31 @@ export const SalesDetailModal = ({
 
             {/* Universal Sync Notice */}
             <div style={{
-              background: bookingForm.bookingStatus === 'confirmed' ? '#f0fdf4' : (bookingForm.bookingStatus === 'cancelled' ? '#fef2f2' : '#f8f9fa'),
-              border: `1px solid ${bookingForm.bookingStatus === 'confirmed' ? '#bbf7d0' : (bookingForm.bookingStatus === 'cancelled' ? '#fecaca' : '#dadce0')}`,
+              background: bookingForm.bookingStatus === 'confirmed' ? '#eff6ff' : (bookingForm.bookingStatus === 'cancelled' ? '#f1f5f9' : '#f8f9fa'),
+              border: `1px solid ${bookingForm.bookingStatus === 'confirmed' ? '#dbeafe' : (bookingForm.bookingStatus === 'cancelled' ? '#e2e8f0' : '#dadce0')}`,
               borderRadius: '6px',
               padding: '10px 14px',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
               fontSize: '0.76rem',
-              color: bookingForm.bookingStatus === 'confirmed' ? '#166534' : (bookingForm.bookingStatus === 'cancelled' ? '#991b1b' : '#4b5563')
+              color: bookingForm.bookingStatus === 'confirmed' ? '#1e40af' : (bookingForm.bookingStatus === 'cancelled' ? '#0f172a' : '#4b5563')
             }}>
               {bookingForm.bookingStatus === 'confirmed' ? (
-                <CheckCircle2 size={18} color="#16a34a" />
+                <CheckCircle2 size={18} color="#1a73e8" />
               ) : bookingForm.bookingStatus === 'cancelled' ? (
-                <XCircle size={18} color="#dc2626" />
+                <XCircle size={18} color="#0f172a" />
               ) : (
                 <AlertCircle size={18} color="#6b7280" />
               )}
               <div>
                 {bookingForm.bookingStatus === 'confirmed' ? (
                   <>
-                    <strong>Universal Status Synchronization:</strong> Flat {salesLead.flatId?.flatNumber || 'Unit'} is automatically marked as <span style={{ background: '#dcfce7', padding: '1px 6px', borderRadius: '3px', fontWeight: '800' }}>SOLD</span> across Project Inventory, Floor Matrix, CommandCenter, Customer Registry, and Rental Pool.
+                    <strong>Universal Status Synchronization:</strong> Flat {salesLead.flatId?.flatNumber || 'Unit'} is automatically marked as <span style={{ background: '#eff6ff', padding: '1px 6px', borderRadius: '3px', fontWeight: '800' }}>SOLD</span> across Project Inventory, Floor Matrix, CommandCenter, Customer Registry, and Rental Pool.
                   </>
                 ) : bookingForm.bookingStatus === 'cancelled' ? (
                   <>
-                    <strong>Cancellation & Release:</strong> Saving as Cancelled will automatically release Flat {salesLead.flatId?.flatNumber || 'Unit'} back to <span style={{ background: '#fee2e2', padding: '1px 6px', borderRadius: '3px', fontWeight: '800' }}>AVAILABLE</span> across all modules.
+                    <strong>Cancellation & Release:</strong> Saving as Cancelled will automatically release Flat {salesLead.flatId?.flatNumber || 'Unit'} back to <span style={{ background: '#f1f5f9', padding: '1px 6px', borderRadius: '3px', fontWeight: '800' }}>AVAILABLE</span> across all modules.
                   </>
                 ) : (
                   <>
@@ -638,7 +638,7 @@ export const SalesDetailModal = ({
                   }}
                   style={{
                     padding: '6px 12px',
-                    background: 'linear-gradient(135deg, #10b981, var(--primary-700))',
+                    background: 'linear-gradient(135deg, #1a73e8, var(--primary-700))',
                     color: '#111827',
                     borderRadius: 'var(--radius-sm)',
                     fontSize: '0.78rem',
@@ -749,9 +749,9 @@ export const SalesDetailModal = ({
                         onClick={handleAutoBalanceLastMilestone}
                         style={{
                           padding: '4px 10px',
-                          background: '#f0fdf4',
-                          border: '1px solid #bbf7d0',
-                          color: '#16a34a',
+                          background: '#eff6ff',
+                          border: '1px solid #dbeafe',
+                          color: '#1a73e8',
                           borderRadius: '4px',
                           fontSize: '0.75rem',
                           fontWeight: '700',
@@ -806,8 +806,8 @@ export const SalesDetailModal = ({
                           type="button"
                           onClick={() => handleRemoveMilestone(idx)}
                           style={{
-                            background: '#fee2e2',
-                            color: '#dc2626',
+                            background: '#f1f5f9',
+                            color: '#0f172a',
                             border: 'none',
                             borderRadius: '4px',
                             padding: '6px 10px',
@@ -816,8 +816,7 @@ export const SalesDetailModal = ({
                             fontWeight: '700'
                           }}
                         >
-                          ✕
-                        </button>
+                          </button>
                       </div>
                     ))}
                   </div>
@@ -834,17 +833,17 @@ export const SalesDetailModal = ({
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        background: isBalanced ? '#f0fdf4' : '#fffbeb',
-                        border: `1px solid ${isBalanced ? '#86efac' : '#fde68a'}`,
+                        background: isBalanced ? '#eff6ff' : '#f8fafc',
+                        border: `1px solid ${isBalanced ? '#bfdbfe' : '#cbd5e1'}`,
                         padding: '8px 12px',
                         borderRadius: '6px',
                         fontSize: '0.78rem'
                       }}>
-                        <span style={{ color: isBalanced ? '#166534' : '#92400e', fontWeight: '700' }}>
+                        <span style={{ color: isBalanced ? '#1e40af' : '#334155', fontWeight: '700' }}>
                           Custom Milestones Sum: {formatINR(customTotal)} / Deal Value: {formatINR(totalCost)}
                         </span>
-                        <span style={{ color: isBalanced ? '#16a34a' : '#d97706', fontWeight: '800' }}>
-                          {isBalanced ? '✓ 100% Balanced & Verified' : `Difference: ${diff > 0 ? `₹${diff.toLocaleString('en-IN')} unallocated` : `₹${Math.abs(diff).toLocaleString('en-IN')} exceeded`}`}
+                        <span style={{ color: isBalanced ? '#1a73e8' : '#334155', fontWeight: '800' }}>
+                          {isBalanced ? '100% Balanced & Verified' : `Difference: ${diff > 0 ? `₹${diff.toLocaleString('en-IN')} unallocated` : `₹${Math.abs(diff).toLocaleString('en-IN')} exceeded`}`}
                         </span>
                       </div>
                     );
@@ -864,7 +863,7 @@ export const SalesDetailModal = ({
                   }}
                   style={{
                     padding: '8px 18px',
-                    background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+                    background: 'linear-gradient(135deg, #2563eb, #1e3a8a)',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.82rem',
@@ -910,8 +909,8 @@ export const SalesDetailModal = ({
                             {new Date(inst.dueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </td>
                           <td style={{ padding: '8px 12px', fontWeight: '700', color: '#111827' }}>{formatINR(inst.amount)}</td>
-                          <td style={{ padding: '8px 12px', color: '#10b981', fontWeight: '600' }}>{formatINR(inst.paidAmount || 0)}</td>
-                          <td style={{ padding: '8px 12px', color: inst.remainingAmount > 0 ? '#fbbf24' : '#10b981', fontWeight: '600' }}>{formatINR(inst.remainingAmount)}</td>
+                          <td style={{ padding: '8px 12px', color: '#1a73e8', fontWeight: '600' }}>{formatINR(inst.paidAmount || 0)}</td>
+                          <td style={{ padding: '8px 12px', color: inst.remainingAmount > 0 ? '#cbd5e1' : '#1a73e8', fontWeight: '600' }}>{formatINR(inst.remainingAmount)}</td>
                           <td style={{ padding: '8px 12px' }}>
                             <span style={{
                               padding: '2px 8px',
@@ -920,7 +919,7 @@ export const SalesDetailModal = ({
                               fontWeight: '700',
                               textTransform: 'capitalize',
                               background: inst.status === 'paid' ? 'rgba(16, 185, 129, 0.15)' : (inst.status === 'partially_paid' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(251, 191, 36, 0.15)'),
-                              color: inst.status === 'paid' ? '#10b981' : (inst.status === 'partially_paid' ? '#60a5fa' : '#fbbf24')
+                              color: inst.status === 'paid' ? '#1a73e8' : (inst.status === 'partially_paid' ? '#60a5fa' : '#cbd5e1')
                             }}>
                               {inst.status}
                             </span>
@@ -938,7 +937,7 @@ export const SalesDetailModal = ({
                                     });
                                     setPayModalOpen(true);
                                   }}
-                                  style={{ padding: '4px 8px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
+                                  style={{ padding: '4px 8px', background: 'rgba(16, 185, 129, 0.15)', color: '#1a73e8', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
                                 >
                                   Pay
                                 </button>
@@ -954,7 +953,7 @@ export const SalesDetailModal = ({
                                   });
                                   setDemandModalOpen(true);
                                 }}
-                                style={{ padding: '4px 8px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
+                                style={{ padding: '4px 8px', background: 'rgba(245, 158, 11, 0.15)', color: '#475569', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
                               >
                                 Demand
                               </button>
@@ -976,7 +975,7 @@ export const SalesDetailModal = ({
             {/* Receipts */}
             <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Receipt size={15} color="#10b981" /> Payment Receipts ({receipts.length})
+                <Receipt size={15} color="#1a73e8" /> Payment Receipts ({receipts.length})
               </h4>
 
               {receipts.length === 0 ? (
@@ -999,7 +998,7 @@ export const SalesDetailModal = ({
                       }}
                     >
                       <div>
-                        <div style={{ fontWeight: '700', color: '#10b981', fontSize: '0.82rem' }}>{rcp.receiptNumber}</div>
+                        <div style={{ fontWeight: '700', color: '#1a73e8', fontSize: '0.82rem' }}>{rcp.receiptNumber}</div>
                         <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>
                           {new Date(rcp.generatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </div>
@@ -1018,7 +1017,7 @@ export const SalesDetailModal = ({
             <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Send size={15} color="#f59e0b" /> Demand Notices ({demandLetters.length})
+                  <Send size={15} color="#475569" /> Demand Notices ({demandLetters.length})
                 </h4>
 
                 <button
@@ -1032,7 +1031,7 @@ export const SalesDetailModal = ({
                     });
                     setDemandModalOpen(true);
                   }}
-                  style={{ padding: '4px 8px', background: '#f8f9fa', color: '#f59e0b', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
+                  style={{ padding: '4px 8px', background: '#f8f9fa', color: '#475569', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
                 >
                   + New Demand
                 </button>
@@ -1058,14 +1057,14 @@ export const SalesDetailModal = ({
                       }}
                     >
                       <div>
-                        <div style={{ fontWeight: '700', color: '#f59e0b', fontSize: '0.82rem' }}>{dem.demandLetterNumber}</div>
+                        <div style={{ fontWeight: '700', color: '#475569', fontSize: '0.82rem' }}>{dem.demandLetterNumber}</div>
                         <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>
                           Inst #{dem.installmentNumber} • Due: {new Date(dem.dueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                         </div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontWeight: '800', color: '#111827', fontSize: '0.9rem' }}>{formatINR(dem.amountDue)}</div>
-                        <span style={{ fontSize: '0.68rem', color: '#fbbf24', textTransform: 'capitalize' }}>{dem.status}</span>
+                        <span style={{ fontSize: '0.68rem', color: '#cbd5e1', textTransform: 'capitalize' }}>{dem.status}</span>
                       </div>
                     </div>
                   ))}
@@ -1161,7 +1160,7 @@ export const SalesDetailModal = ({
         {activeTab === 'possession' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Key size={16} color="#fbbf24" /> Unit Possession & Key Handover
+              <Key size={16} color="#cbd5e1" /> Unit Possession & Key Handover
             </h4>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -1209,23 +1208,23 @@ export const SalesDetailModal = ({
 
             {/* 3-Year Rental Lock-in Policy Notice */}
             <div style={{
-              background: '#fef3c7',
-              border: '1px solid #fde68a',
+              background: '#f1f5f9',
+              border: '1px solid #cbd5e1',
               borderRadius: '6px',
               padding: '10px 14px',
               fontSize: '0.8rem',
-              color: '#92400e',
+              color: '#334155',
               display: 'flex',
               flexDirection: 'column',
               gap: '6px'
             }}>
               <div style={{ fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>🔒 3-Year Mandatory Rental Program Policy:</span>
+                <span>3-Year Mandatory Rental Program Policy:</span>
               </div>
               <div>
                 All units under Krishna Valley's guaranteed rental program are subject to a mandatory <strong>36-month (3-year) lease term</strong> before possession is granted to the buyer. Early handover requires an authorized administrative override.
               </div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '4px', fontSize: '0.78rem', color: '#78350f', fontWeight: '600' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '4px', fontSize: '0.78rem', color: '#1e293b', fontWeight: '600' }}>
                 <input
                   type="checkbox"
                   checked={possessionForm.forceOverride}
@@ -1241,7 +1240,7 @@ export const SalesDetailModal = ({
                 onClick={() => onUpdatePossession(salesLead._id, possessionForm)}
                 style={{
                   padding: '8px 18px',
-                  background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                  background: 'linear-gradient(135deg, #475569, #334155)',
                   color: '#111827',
                   fontWeight: '700',
                   borderRadius: 'var(--radius-sm)',
@@ -1257,7 +1256,7 @@ export const SalesDetailModal = ({
         {/* ================= TAB 7: CANCELLATION & REFUND ================= */}
         {activeTab === 'cancellation' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <XCircle size={16} /> Unit Cancellation & Customer Refund
             </h4>
 
@@ -1352,8 +1351,8 @@ export const SalesDetailModal = ({
                 style={{
                   padding: '8px 18px',
                   background: 'rgba(239, 68, 68, 0.2)',
-                  border: '1px solid #ef4444',
-                  color: '#ef4444',
+                  border: '1px solid #0f172a',
+                  color: '#0f172a',
                   fontWeight: '700',
                   borderRadius: 'var(--radius-sm)',
                   cursor: 'pointer'
@@ -1409,7 +1408,7 @@ export const SalesDetailModal = ({
                       disabled={isZeroBalance}
                       style={{ color: isZeroBalance ? '#9ca3af' : '#111827', background: isZeroBalance ? '#f3f4f6' : '#ffffff' }}
                     >
-                      Installment #{inst.installmentNumber} ({inst.name || `Milestone ${inst.installmentNumber}`}) — Due: {formatINR(inst.amount)} | Balance: {formatINR(inst.remainingAmount || 0)} {isZeroBalance ? '✓ (FULLY PAID - NO BALANCE)' : ''}
+                      Installment #{inst.installmentNumber} ({inst.name || `Milestone ${inst.installmentNumber}`}) — Due: {formatINR(inst.amount)} | Balance: {formatINR(inst.remainingAmount || 0)} {isZeroBalance ? '(FULLY PAID - NO BALANCE)' : ''}
                     </option>
                   );
                 })}
@@ -1445,7 +1444,7 @@ export const SalesDetailModal = ({
               <button type="button" onClick={() => setPayModalOpen(false)} style={{ padding: '6px 14px', background: '#f8f9fa', color: '#374151', borderRadius: '4px' }}>
                 Cancel
               </button>
-              <button type="submit" style={{ padding: '6px 16px', background: '#10b981', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
+              <button type="submit" style={{ padding: '6px 16px', background: '#1a73e8', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
                 Save Payment & Generate Receipt
               </button>
             </div>
@@ -1513,7 +1512,7 @@ export const SalesDetailModal = ({
               <button type="button" onClick={() => setDemandModalOpen(false)} style={{ padding: '6px 14px', background: '#f8f9fa', color: '#374151', borderRadius: '4px' }}>
                 Cancel
               </button>
-              <button type="submit" style={{ padding: '6px 16px', background: '#f59e0b', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
+              <button type="submit" style={{ padding: '6px 16px', background: '#475569', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
                 Issue Demand Letter
               </button>
             </div>

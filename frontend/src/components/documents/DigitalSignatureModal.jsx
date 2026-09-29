@@ -289,7 +289,7 @@ export const DigitalSignatureModal = ({
             <button
               type="button"
               onClick={clearCanvas}
-              style={{ background: 'transparent', border: 'none', color: '#ef4444', fontSize: '0.72rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}
+              style={{ background: 'transparent', border: 'none', color: '#0f172a', fontSize: '0.72rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}
             >
               <Trash2 size={13} /> Clear Signature Pad
             </button>
@@ -320,7 +320,7 @@ export const DigitalSignatureModal = ({
           <button type="button" onClick={onClose} style={{ padding: '8px 16px', background: '#f8f9fa', color: '#374151', borderRadius: '6px', border: '1px solid #dadce0', cursor: 'pointer' }}>
             Cancel
           </button>
-          <button type="submit" style={{ padding: '8px 20px', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#ffffff', fontWeight: '700', borderRadius: '6px', cursor: 'pointer', border: 'none' }}>
+          <button type="submit" style={{ padding: '8px 20px', background: 'linear-gradient(135deg, #1a73e8, #1e40af)', color: '#ffffff', fontWeight: '700', borderRadius: '6px', cursor: 'pointer', border: 'none' }}>
             Apply Signature & Issue Certificate
           </button>
         </div>

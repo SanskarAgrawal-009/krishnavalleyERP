@@ -4,15 +4,15 @@ import { Trash2, AlertTriangle, CheckSquare, Square, RefreshCw, Layers } from 'l
 import { leadService } from '../../services/leadService.js';
 
 const ALL_STAGES = [
-  { id: 'lost', label: 'Lost / Dropped', color: '#dc2626', bg: '#fef2f2', border: '#fecaca', desc: 'Leads marked as uninterested, budget mismatch, or unresponsive' },
+  { id: 'lost', label: 'Lost / Dropped', color: '#0f172a', bg: '#f1f5f9', border: '#e2e8f0', desc: 'Leads marked as uninterested, budget mismatch, or unresponsive' },
   { id: 'new', label: 'New Prospect', color: '#1a73e8', bg: '#eff6ff', border: '#bfdbfe', desc: 'Freshly ingested leads awaiting first contact' },
   { id: 'contacted', label: 'Contacted', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd', desc: 'Initial contact made, preliminary inquiry completed' },
-  { id: 'in_discussion', label: 'In Discussion', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe', desc: 'Active conversation regarding floor plans and quotations' },
-  { id: 'followup_scheduled', label: 'Follow-Up Scheduled', color: '#b45309', bg: '#fef3c7', border: '#fde68a', desc: 'Specific callback or meeting scheduled in calendar' },
-  { id: 'site_visit_scheduled', label: 'Visit Scheduled', color: '#ea580c', bg: '#fff7ed', border: '#ffedd5', desc: 'Prospect scheduled to visit site and inspect units' },
-  { id: 'site_visit_completed', label: 'Site Visit Done', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', desc: 'Completed walkthrough on site with relationship manager' },
-  { id: 'negotiation', label: 'Negotiation', color: '#4338ca', border: '#c7d2fe', bg: '#e0e7ff', desc: 'Price or payment plan discussions underway' },
-  { id: 'converted', label: 'Converted Deal', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0', desc: 'Booked / converted deals' },
+  { id: 'in_discussion', label: 'In Discussion', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe', desc: 'Active conversation regarding floor plans and quotations' },
+  { id: 'followup_scheduled', label: 'Follow-Up Scheduled', color: '#334155', bg: '#f1f5f9', border: '#cbd5e1', desc: 'Specific callback or meeting scheduled in calendar' },
+  { id: 'site_visit_scheduled', label: 'Visit Scheduled', color: '#334155', bg: '#f8fafc', border: '#f1f5f9', desc: 'Prospect scheduled to visit site and inspect units' },
+  { id: 'site_visit_completed', label: 'Site Visit Done', color: '#1a73e8', bg: '#eff6ff', border: '#dbeafe', desc: 'Completed walkthrough on site with relationship manager' },
+  { id: 'negotiation', label: 'Negotiation', color: '#00285c', border: '#c7d2fe', bg: '#e0e7ff', desc: 'Price or payment plan discussions underway' },
+  { id: 'converted', label: 'Converted Deal', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe', desc: 'Booked / converted deals' },
 ];
 
 export const BulkDeleteByStageModal = ({
@@ -135,15 +135,15 @@ export const BulkDeleteByStageModal = ({
           gap: '12px',
           alignItems: 'flex-start',
           padding: '12px 14px',
-          background: '#fef2f2',
-          border: '1px solid #fecaca',
+          background: '#f1f5f9',
+          border: '1px solid #e2e8f0',
           borderRadius: '8px',
-          color: '#991b1b',
+          color: '#0f172a',
           fontSize: '0.82rem'
         }}>
-          <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px', color: '#dc2626' }} />
+          <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px', color: '#0f172a' }} />
           <div>
-            <strong style={{ display: 'block', fontSize: '0.86rem', marginBottom: '2px', color: '#b91c1c' }}>
+            <strong style={{ display: 'block', fontSize: '0.86rem', marginBottom: '2px', color: '#0f172a' }}>
               Permanent Deletion Warning
             </strong>
             Deleting leads by stage permanently purges all matching lead records, their contact information, follow-up history logs, and notes from MongoDB. This operation cannot be undone.
@@ -262,14 +262,14 @@ export const BulkDeleteByStageModal = ({
           justifyContent: 'space-between',
           padding: '12px 16px',
           background: selectedStages.length > 0 ? '#fff1f2' : '#f8fafc',
-          border: selectedStages.length > 0 ? '1px solid #fecdd3' : '1px solid #e2e8f0',
+          border: selectedStages.length > 0 ? '1px solid #e2e8f0' : '1px solid #e2e8f0',
           borderRadius: '8px'
         }}>
           <div>
             <span style={{ fontSize: '0.78rem', color: '#64748b', display: 'block' }}>
               Stages Selected: <strong>{selectedStages.length}</strong>
             </span>
-            <span style={{ fontSize: '0.94rem', fontWeight: '800', color: selectedStages.length > 0 ? '#be123c' : '#334155' }}>
+            <span style={{ fontSize: '0.94rem', fontWeight: '800', color: selectedStages.length > 0 ? '#0f172a' : '#334155' }}>
               Total Leads to Delete: {totalLeadsToDelete}
             </span>
           </div>
@@ -288,8 +288,8 @@ export const BulkDeleteByStageModal = ({
                     fontSize: '0.68rem',
                     fontWeight: '700',
                     background: '#ffffff',
-                    border: '1px solid #fda4af',
-                    color: '#be123c',
+                    border: '1px solid #cbd5e1',
+                    color: '#0f172a',
                     padding: '2px 6px',
                     borderRadius: '4px'
                   }}
@@ -310,7 +310,7 @@ export const BulkDeleteByStageModal = ({
             padding: '12px 14px'
           }}>
             <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
-              Type <span style={{ color: '#dc2626', fontWeight: '900', letterSpacing: '0.05em' }}>DELETE</span> below to confirm:
+              Type <span style={{ color: '#0f172a', fontWeight: '900', letterSpacing: '0.05em' }}>DELETE</span> below to confirm:
             </label>
             <input
               type="text"
@@ -324,7 +324,7 @@ export const BulkDeleteByStageModal = ({
                 width: '100%',
                 padding: '8px 12px',
                 borderRadius: '6px',
-                border: isConfirmed ? '2px solid #16a34a' : '1px solid #cbd5e1',
+                border: isConfirmed ? '2px solid #1a73e8' : '1px solid #cbd5e1',
                 fontSize: '0.86rem',
                 fontWeight: '700',
                 outline: 'none',
@@ -335,7 +335,7 @@ export const BulkDeleteByStageModal = ({
         )}
 
         {errorMsg && (
-          <div style={{ color: '#dc2626', fontSize: '0.80rem', fontWeight: '700' }}>
+          <div style={{ color: '#0f172a', fontSize: '0.80rem', fontWeight: '700' }}>
             {errorMsg}
           </div>
         )}
@@ -367,7 +367,7 @@ export const BulkDeleteByStageModal = ({
               padding: '9px 20px',
               background: (loading || selectedStages.length === 0 || totalLeadsToDelete === 0 || !isConfirmed)
                 ? '#9ca3af'
-                : 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                : 'linear-gradient(135deg, #0f172a 0%, #0f172a 100%)',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

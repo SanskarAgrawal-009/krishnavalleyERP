@@ -115,21 +115,21 @@ export const ApplyLeaveModal = ({ isOpen, onClose, employees, onSubmit }) => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginTop: '2px' }}>
               <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
                 <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#1d4ed8', display: 'block' }}>CASUAL (CL)</span>
-                <strong style={{ fontSize: '0.92rem', color: clRemaining > 0 ? '#1e40af' : '#dc2626' }}>
+                <strong style={{ fontSize: '0.92rem', color: clRemaining > 0 ? '#1e40af' : '#0f172a' }}>
                   {clRemaining} <span style={{ fontSize: '0.65rem', fontWeight: '500', color: '#64748b' }}>/ {leaveBalance.casualLeave?.total || 12}</span>
                 </strong>
               </div>
 
-              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#fef3c7', border: '1px solid #fde68a' }}>
-                <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#b45309', display: 'block' }}>SICK (SL)</span>
-                <strong style={{ fontSize: '0.92rem', color: slRemaining > 0 ? '#92400e' : '#dc2626' }}>
+              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#f1f5f9', border: '1px solid #cbd5e1' }}>
+                <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#334155', display: 'block' }}>SICK (SL)</span>
+                <strong style={{ fontSize: '0.92rem', color: slRemaining > 0 ? '#334155' : '#0f172a' }}>
                   {slRemaining} <span style={{ fontSize: '0.65rem', fontWeight: '500', color: '#64748b' }}>/ {leaveBalance.sickLeave?.total || 10}</span>
                 </strong>
               </div>
 
-              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#ecfdf5', border: '1px solid #a7f3d0' }}>
-                <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#047857', display: 'block' }}>EARNED (EL)</span>
-                <strong style={{ fontSize: '0.92rem', color: elRemaining > 0 ? '#065f46' : '#dc2626' }}>
+              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+                <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#1e40af', display: 'block' }}>EARNED (EL)</span>
+                <strong style={{ fontSize: '0.92rem', color: elRemaining > 0 ? '#1e3a8a' : '#0f172a' }}>
                   {elRemaining} <span style={{ fontSize: '0.65rem', fontWeight: '500', color: '#64748b' }}>/ {leaveBalance.earnedLeave?.total || 15}</span>
                 </strong>
               </div>
@@ -234,7 +234,7 @@ export const ApplyLeaveModal = ({ isOpen, onClose, employees, onSubmit }) => {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              style={{ width: '100%', fontSize: '0.85rem', fontWeight: '700', color: status === 'approved' ? '#047857' : '#b45309' }}
+              style={{ width: '100%', fontSize: '0.85rem', fontWeight: '700', color: status === 'approved' ? '#1e40af' : '#334155' }}
             >
               <option value="approved">Approved by HR (Immediate)</option>
               <option value="pending">Mark Pending / Verification Required</option>

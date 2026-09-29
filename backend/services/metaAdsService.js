@@ -230,7 +230,7 @@ export const ingestMetaLead = async ({
           assignedAt: new Date(),
           reason: 'Meta Ads Auto-Assignment (Sequential 1-by-1 Round-Robin)',
         });
-        console.log(`⚡ Meta lead auto-assigned to @${nextInQueue.user.username} via 1-by-1 Round-Robin`);
+        console.log(`Meta lead auto-assigned to @${nextInQueue.user.username} via 1-by-1 Round-Robin`);
       }
     } catch (assignErr) {
       console.error('Error during round-robin assignment for Meta lead:', assignErr);

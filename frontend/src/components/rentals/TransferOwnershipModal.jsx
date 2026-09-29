@@ -96,7 +96,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
         {/* Header */}
         <div style={{
           padding: '18px 24px',
-          background: 'linear-gradient(135deg, #4338ca, #312e81)',
+          background: 'linear-gradient(135deg, #00285c, #312e81)',
           color: '#ffffff',
           display: 'flex',
           justifyContent: 'space-between',
@@ -145,7 +145,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
           
           {/* ARCHIVE NOTICE BOX */}
           <div style={{
-            background: '#eef2ff',
+            background: '#eff6ff',
             border: '1.5px solid #c7d2fe',
             borderRadius: '12px',
             padding: '14px 18px',
@@ -155,7 +155,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
             gap: '12px'
           }}>
             <div>
-              <span style={{ fontSize: '0.72rem', color: '#4338ca', fontWeight: '800', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.72rem', color: '#00285c', fontWeight: '800', textTransform: 'uppercase' }}>
                 CURRENT OWNER (TO BE ARCHIVED AS "LAST OWNER")
               </span>
               <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1e1b4b', marginTop: '2px' }}>
@@ -174,7 +174,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
           {/* SECTION: NEW OWNER DETAILS */}
           <div>
             <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <UserPlus size={16} color="#4338ca" /> New Buyer / Transferee Information (Table 1)
+              <UserPlus size={16} color="#00285c" /> New Buyer / Transferee Information (Table 1)
             </h4>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
@@ -358,7 +358,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
                 padding: '9px 24px',
                 borderRadius: '8px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #4338ca, #3730a3)',
+                background: 'linear-gradient(135deg, #00285c, #3730a3)',
                 color: '#ffffff',
                 fontWeight: '700',
                 fontSize: '0.82rem',

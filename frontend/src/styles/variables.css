@@ -37,21 +37,21 @@
   --on-secondary-fixed: #001a41;
   --on-secondary-fixed-variant: #004494;
 
-  /* Tertiary / Success (Green #006D2C / #34A853) */
-  --tertiary: #006d2c;
-  --tertiary-container: #008939;
+  /* Tertiary / Success (Replaced with Sapphire Blue & Slate) */
+  --tertiary: #1a73e8;
+  --tertiary-container: #005bbf;
   --on-tertiary: #ffffff;
   --on-tertiary-container: #ffffff;
-  --tertiary-fixed: #89fa9b;
-  --tertiary-fixed-dim: #6ddd81;
-  --on-tertiary-fixed: #002108;
-  --on-tertiary-fixed-variant: #005320;
+  --tertiary-fixed: #d8e2ff;
+  --tertiary-fixed-dim: #adc7ff;
+  --on-tertiary-fixed: #001a41;
+  --on-tertiary-fixed-variant: #004493;
 
-  /* Error / Warning (Red #BA1A1A) */
-  --error: #ba1a1a;
-  --error-container: #ffdad6;
+  /* Error / Warning (Replaced with High-Contrast Charcoal & Black Slate) */
+  --error: #0f172a;
+  --error-container: #f1f5f9;
   --on-error: #ffffff;
-  --on-error-container: #93000a;
+  --on-error-container: #0f172a;
 
   /* High-Contrast On-Surface Text */
   --on-surface: #191c1d;
@@ -90,20 +90,20 @@
   --primary-800: #185abc;
   --primary-900: #174ea6;
 
-  /* Status Colors */
-  --status-available: #137333;
-  --status-available-bg: #e6f4ea;
-  --status-available-border: #ceead6;
+  /* Status Colors (Blue, Black, White, Gray Only) */
+  --status-available: #1a73e8;
+  --status-available-bg: #eff6ff;
+  --status-available-border: #bfdbfe;
   
-  --status-booked: #c5221f;
-  --status-booked-bg: #fce8e6;
-  --status-booked-border: #fad2cf;
+  --status-booked: #0f172a;
+  --status-booked-bg: #f1f5f9;
+  --status-booked-border: #cbd5e1;
   
-  --status-hold: #b06000;
-  --status-hold-bg: #fef7e0;
-  --status-hold-border: #feefc3;
+  --status-hold: #475569;
+  --status-hold-bg: #f8fafc;
+  --status-hold-border: #e2e8f0;
   
-  --status-blocked: #374151;
+  --status-blocked: #18181b;
   --status-blocked-bg: #f1f3f4;
   --status-blocked-border: #dadce0;
 

@@ -215,7 +215,7 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
 
         {/* Material & Quantity */}
         <div className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#8b5cf6' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#2563eb' }}>
             Transfer Material & Quantity
           </h4>
 
@@ -257,7 +257,7 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
 
           {selectedStock && (
             <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', padding: '10px 14px', borderRadius: '6px', fontSize: '0.78rem', color: '#4b5563' }}>
-              Available in Source Store: <strong style={{ color: '#137333' }}>{selectedStock.availableQuantity} {selectedStock.materialId?.unit}</strong>
+              Available in Source Store: <strong style={{ color: '#1a73e8' }}>{selectedStock.availableQuantity} {selectedStock.materialId?.unit}</strong>
             </div>
           )}
         </div>
@@ -282,7 +282,7 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
             type="submit"
             style={{
               padding: '9px 22px',
-              background: '#8b5cf6',
+              background: '#2563eb',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

@@ -38,7 +38,7 @@ async function cleanResetDB() {
         const countBefore = await col.countDocuments();
         if (countBefore > 0) {
           const res = await col.deleteMany({});
-          console.log(`✓ Cleared ${colName}: deleted ${res.deletedCount} documents (was ${countBefore})`);
+          console.log(`Cleared ${colName}: deleted ${res.deletedCount} documents (was ${countBefore})`);
         } else {
           console.log(`- ${colName}: already empty (0 documents)`);
         }
@@ -67,7 +67,7 @@ async function cleanResetDB() {
         }
       }
     );
-    console.log(`✓ Reset all ${totalFlats} flats: ${updateRes.modifiedCount} updated to status "available" (takenForRental = false)`);
+    console.log(`Reset all ${totalFlats} flats: ${updateRes.modifiedCount} updated to status "available" (takenForRental = false)`);
 
     // 3. Keep Default Seed for Auth & Notification Templates intact
     console.log('\n--- RE-VERIFYING AUTH & ROLES ---');
@@ -82,7 +82,7 @@ async function cleanResetDB() {
       console.log(`  ${c.name.padEnd(25)}: ${count} documents`);
     }
 
-    console.log('\n✅ Clean Reset Completed Successfully! All test data wiped & inventory reset to AVAILABLE.\n');
+    console.log('\nClean Reset Completed Successfully! All test data wiped & inventory reset to AVAILABLE.\n');
     process.exit(0);
   } catch (error) {
     console.error('Fatal error during clean reset:', error);

@@ -240,7 +240,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
             <select
               value={bloodGroup}
               onChange={(e) => setBloodGroup(e.target.value)}
-              style={{ width: '100%', fontSize: '0.8rem', borderColor: '#ef4444' }}
+              style={{ width: '100%', fontSize: '0.8rem', borderColor: '#0f172a' }}
             >
               {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
                 <option key={bg} value={bg}>{bg}</option>
@@ -461,7 +461,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
           <button type="button" onClick={onClose} style={{ padding: '7px 14px', background: '#f8f9fa', color: '#374151', borderRadius: '4px' }}>
             Cancel
           </button>
-          <button type="submit" style={{ padding: '7px 18px', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
+          <button type="submit" style={{ padding: '7px 18px', background: 'linear-gradient(135deg, #1a73e8, #1e40af)', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
             Onboard Employee & Issue Staff ID
           </button>
         </div>

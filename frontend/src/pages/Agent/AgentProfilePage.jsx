@@ -132,7 +132,7 @@ export const AgentProfilePage = () => {
   const tierColor = (tier) => {
     switch (tier) {
       case 'Platinum': return { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
-      case 'Gold': return { bg: '#fffbeb', color: '#b45309', border: '#fde68a' };
+      case 'Gold': return { bg: '#f8fafc', color: '#334155', border: '#cbd5e1' };
       case 'Silver': return { bg: '#f1f5f9', color: '#475569', border: '#cbd5e1' };
       default: return { bg: '#f9fafb', color: '#6b7280', border: '#e5e7eb' };
     }
@@ -176,14 +176,14 @@ export const AgentProfilePage = () => {
     switch (action) {
       case 'SITE_VISIT_APPROVED':
       case 'APPROVE':
-        return { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0' };
+        return { bg: '#eff6ff', color: '#1e40af', border: '#dbeafe' };
       case 'SITE_VISIT_REJECTED':
       case 'REJECT':
-        return { bg: '#fee2e2', color: '#b91c1c', border: '#fecaca' };
+        return { bg: '#f1f5f9', color: '#0f172a', border: '#e2e8f0' };
       case 'COMMISSION_CREDIT':
-        return { bg: '#f0fdf4', color: '#0d9488', border: '#99f6e4' };
+        return { bg: '#eff6ff', color: '#0284c7', border: '#bfdbfe' };
       case 'COMMISSION_DEBIT':
-        return { bg: '#fff1f2', color: '#e11d48', border: '#fecdd3' };
+        return { bg: '#fff1f2', color: '#0f172a', border: '#e2e8f0' };
       case 'LEAD_SUBMITTED':
       case 'SITE_VISIT_LOGGED':
       case 'CREATE':
@@ -198,18 +198,18 @@ export const AgentProfilePage = () => {
       case 'new':
         return { label: 'New Lead', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
       case 'contacted':
-        return { label: 'Contacted', bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
+        return { label: 'Contacted', bg: '#f1f5f9', color: '#334155', border: '#cbd5e1' };
       case 'site_visit_scheduled':
-        return { label: 'Visit Scheduled', bg: '#ede9fe', color: '#6d28d9', border: '#ddd6fe' };
+        return { label: 'Visit Scheduled', bg: '#eff6ff', color: '#1e3a8a', border: '#bfdbfe' };
       case 'site_visit_completed_pending_approval':
-        return { label: 'Pending Approval', bg: '#fef3c7', color: '#b45309', border: '#f59e0b' };
+        return { label: 'Pending Approval', bg: '#f1f5f9', color: '#334155', border: '#475569' };
       case 'site_visit_completed':
       case 'matured':
-        return { label: 'Visit Approved', bg: '#dcfce7', color: '#15803d', border: '#86efac' };
+        return { label: 'Visit Approved', bg: '#eff6ff', color: '#1e40af', border: '#bfdbfe' };
       case 'site_visit_rejected':
-        return { label: 'Visit Rejected', bg: '#fee2e2', color: '#b91c1c', border: '#fca5a5' };
+        return { label: 'Visit Rejected', bg: '#f1f5f9', color: '#0f172a', border: '#cbd5e1' };
       case 'booked':
-        return { label: 'Deal Booked', bg: '#d1fae5', color: '#065f46', border: '#6ee7b7' };
+        return { label: 'Deal Booked', bg: '#eff6ff', color: '#1e3a8a', border: '#93c5fd' };
       case 'lost':
         return { label: 'Lost / Closed', bg: '#f1f5f9', color: '#64748b', border: '#cbd5e1' };
       default:
@@ -229,7 +229,7 @@ export const AgentProfilePage = () => {
             zIndex: 9999,
             padding: '14px 22px',
             borderRadius: '12px',
-            backgroundColor: feedbackToast.type === 'error' ? '#ba1a1a' : '#0d904f',
+            backgroundColor: feedbackToast.type === 'error' ? '#0f172a' : '#1a73e8',
             color: '#ffffff',
             fontWeight: '600',
             fontSize: '0.9rem',
@@ -389,7 +389,7 @@ export const AgentProfilePage = () => {
           <div style={{ fontSize: '0.75rem', color: '#93c5fd', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Commission Setup
           </div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#6ee7b7' }}>
+          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#93c5fd' }}>
             {ap.commissionRate || 2}% Comm Rate
           </div>
           <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
@@ -403,12 +403,12 @@ export const AgentProfilePage = () => {
         <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '18px 20px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Wallet Balance</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0d904f', marginTop: '2px' }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '2px' }}>
               ₹{(ap.walletBalance || 0).toLocaleString('en-IN')}
             </div>
             <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>Available for payout</div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#e6f4ea', color: '#0d904f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Wallet size={22} />
           </div>
         </div>
@@ -436,7 +436,7 @@ export const AgentProfilePage = () => {
               {leads.filter(l => l.status === 'site_visit_completed_pending_approval').length} awaiting review
             </div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#faf5ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#faf5ff', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Users size={22} />
           </div>
         </div>
@@ -444,14 +444,14 @@ export const AgentProfilePage = () => {
         <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '18px 20px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Site Visits Logged</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#ea580c', marginTop: '2px' }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#334155', marginTop: '2px' }}>
               {siteVisits.length}
             </div>
             <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
               {siteVisits.filter(v => v.verificationStatus === 'approved').length} verified & approved
             </div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#fff7ed', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#f8fafc', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <ShieldCheck size={22} />
           </div>
         </div>
@@ -662,7 +662,7 @@ export const AgentProfilePage = () => {
 
                           <td style={{ padding: '14px 18px' }}>
                             <div style={{ fontWeight: '600', color: '#334155' }}>{lead.requirement || '2BHK Apartment'}</div>
-                            <div style={{ fontSize: '0.74rem', color: '#0d904f', fontWeight: '700', marginTop: '2px' }}>
+                            <div style={{ fontSize: '0.74rem', color: '#1a73e8', fontWeight: '700', marginTop: '2px' }}>
                               ₹{(lead.budget || 4500000).toLocaleString('en-IN')}
                             </div>
                           </td>
@@ -700,12 +700,12 @@ export const AgentProfilePage = () => {
                           <td style={{ padding: '14px 18px' }}>
                             {lead.siteVisitDetails?.completedDate ? (
                               meta.isHandedOver || meta.isDebited ? (
-                                <span style={{ fontSize: '0.72rem', color: '#dc2626', fontWeight: '700', backgroundColor: '#fee2e2', padding: '2px 8px', borderRadius: '6px' }}>
+                                <span style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '700', backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '6px' }}>
                                   Handed over to inhouse CRM
                                 </span>
                               ) : (
                                 <div>
-                                  <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#15803d' }}>
+                                  <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#1e40af' }}>
                                     {meta.daysRemainingInMaturity || 5} day{meta.daysRemainingInMaturity > 1 ? 's' : ''} left
                                   </div>
                                   <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
@@ -739,7 +739,7 @@ export const AgentProfilePage = () => {
                                   style={{
                                     padding: '5px 12px',
                                     borderRadius: '8px',
-                                    backgroundColor: '#10b981',
+                                    backgroundColor: '#1a73e8',
                                     color: '#ffffff',
                                     border: 'none',
                                     fontSize: '0.74rem',
@@ -931,9 +931,9 @@ export const AgentProfilePage = () => {
                                 borderRadius: '14px',
                                 fontSize: '0.72rem',
                                 fontWeight: '700',
-                                backgroundColor: isApproved ? '#dcfce7' : isRejected ? '#fee2e2' : '#fef3c7',
-                                color: isApproved ? '#15803d' : isRejected ? '#b91c1c' : '#b45309',
-                                border: isApproved ? '1px solid #86efac' : isRejected ? '1px solid #fca5a5' : '1px solid #fde68a',
+                                backgroundColor: isApproved ? '#eff6ff' : isRejected ? '#f1f5f9' : '#f1f5f9',
+                                color: isApproved ? '#1e40af' : isRejected ? '#0f172a' : '#334155',
+                                border: isApproved ? '1px solid #bfdbfe' : isRejected ? '1px solid #cbd5e1' : '1px solid #cbd5e1',
                               }}
                             >
                               {isApproved ? 'Approved' : isRejected ? 'Rejected' : 'Pending Approval'}
@@ -1050,8 +1050,8 @@ export const AgentProfilePage = () => {
                                 borderRadius: '6px',
                                 fontSize: '0.72rem',
                                 fontWeight: '800',
-                                backgroundColor: isDebit ? '#fee2e2' : '#dcfce7',
-                                color: isDebit ? '#b91c1c' : '#15803d',
+                                backgroundColor: isDebit ? '#f1f5f9' : '#eff6ff',
+                                color: isDebit ? '#0f172a' : '#1e40af',
                               }}
                             >
                               {isDebit ? '▼ DEBIT' : '▲ CREDIT'}
@@ -1071,7 +1071,7 @@ export const AgentProfilePage = () => {
                             </div>
                           </td>
 
-                          <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: '800', fontSize: '0.92rem', color: isDebit ? '#dc2626' : '#0d904f' }}>
+                          <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: '800', fontSize: '0.92rem', color: isDebit ? '#0f172a' : '#1a73e8' }}>
                             {isDebit ? '-' : '+'}₹{(comm.calculatedAmount || 0).toLocaleString('en-IN')}
                           </td>
 
@@ -1080,8 +1080,8 @@ export const AgentProfilePage = () => {
                               style={{
                                 padding: '2px 8px',
                                 borderRadius: '4px',
-                                backgroundColor: isDebit ? '#fee2e2' : '#e6f4ea',
-                                color: isDebit ? '#dc2626' : '#0d904f',
+                                backgroundColor: isDebit ? '#f1f5f9' : '#eff6ff',
+                                color: isDebit ? '#0f172a' : '#1a73e8',
                                 fontSize: '0.72rem',
                                 fontWeight: '700',
                               }}
@@ -1291,7 +1291,7 @@ export const AgentProfilePage = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700' }}>BUDGET</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0d904f' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1a73e8' }}>
                     ₹{(selectedLeadForTimeline.budget || 4500000).toLocaleString('en-IN')}
                   </div>
                 </div>
@@ -1332,7 +1332,7 @@ export const AgentProfilePage = () => {
                           day: '2-digit',
                           month: 'short',
                           year: 'numeric',
-                        })} • Mode: <strong style={{ color: '#1e293b' }}>{fu.mode}</strong> • Status: <strong style={{ color: fu.status === 'completed' ? '#15803d' : '#b45309' }}>{fu.status}</strong>
+                        })} • Mode: <strong style={{ color: '#1e293b' }}>{fu.mode}</strong> • Status: <strong style={{ color: fu.status === 'completed' ? '#1e40af' : '#334155' }}>{fu.status}</strong>
                       </div>
                       <div style={{ fontSize: '0.84rem', color: '#1e293b', marginTop: '2px', backgroundColor: '#f8fafc', padding: '8px 12px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
                         {fu.notes || 'Activity recorded.'}

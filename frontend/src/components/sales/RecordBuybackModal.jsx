@@ -224,14 +224,14 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
                 padding: '10px 14px',
                 borderRadius: '8px',
                 border: '2px solid',
-                borderColor: transferType === 'buyback' ? '#16a34a' : '#cbd5e1',
-                background: transferType === 'buyback' ? '#f0fdf4' : '#ffffff',
-                color: transferType === 'buyback' ? '#166534' : '#475569',
+                borderColor: transferType === 'buyback' ? '#1a73e8' : '#cbd5e1',
+                background: transferType === 'buyback' ? '#eff6ff' : '#ffffff',
+                color: transferType === 'buyback' ? '#1e40af' : '#475569',
                 cursor: 'pointer',
                 textAlign: 'left'
               }}
             >
-              <strong style={{ display: 'block', fontSize: '0.85rem' }}>🔄 1. Company Buyback</strong>
+              <strong style={{ display: 'block', fontSize: '0.85rem' }}>1. Company Buyback</strong>
               <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
                 Company repurchases flat. Moves current owner to History and resets unit to Available.
               </span>
@@ -251,7 +251,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
                 textAlign: 'left'
               }}
             >
-              <strong style={{ display: 'block', fontSize: '0.85rem' }}>🤝 2. Direct Resale / Allotment</strong>
+              <strong style={{ display: 'block', fontSize: '0.85rem' }}>2. Direct Resale / Allotment</strong>
               <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
                 Archives old owner into History and registers a new buyer title immediately.
               </span>
@@ -302,8 +302,8 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
 
         {/* Rent Given to Outgoing / Previous Owner */}
         <div style={{
-          background: '#fefce8',
-          border: '1px solid #fef08a',
+          background: '#f8fafc',
+          border: '1px solid #f1f5f9',
           borderRadius: '8px',
           padding: '12px 16px',
           display: 'flex',
@@ -311,17 +311,17 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
           gap: '10px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#854d0e' }}>
-              💰 Rent Disbursed to Outgoing / Prior Owner
+            <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#334155' }}>
+              Rent Disbursed to Outgoing / Prior Owner
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#a16207' }}>
+            <span style={{ fontSize: '0.72rem', color: '#334155' }}>
               Archive historical payout records for audit trail
             </span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e293b', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
                 Total Rent Paid (₹)
               </label>
               <input
@@ -334,7 +334,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e293b', display: 'block', marginBottom: '2px' }}>
                 Monthly Rent (₹/mo)
               </label>
               <input
@@ -347,7 +347,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e293b', display: 'block', marginBottom: '2px' }}>
                 Paid Months Count
               </label>
               <input
@@ -362,7 +362,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e293b', display: 'block', marginBottom: '2px' }}>
                 Previous Owner PAN
               </label>
               <input
@@ -375,7 +375,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e293b', display: 'block', marginBottom: '2px' }}>
                 Bank Name
               </label>
               <input
@@ -388,7 +388,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#713f12', display: 'block', marginBottom: '2px' }}>
+              <label style={{ fontSize: '0.72rem', color: '#1e293b', display: 'block', marginBottom: '2px' }}>
                 Account Number
               </label>
               <input
@@ -485,10 +485,10 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
         {error && (
           <div style={{
             padding: '8px 12px',
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
+            background: '#f1f5f9',
+            border: '1px solid #e2e8f0',
             borderRadius: '6px',
-            color: '#991b1b',
+            color: '#0f172a',
             fontSize: '0.8rem'
           }}>
             {error}
@@ -518,7 +518,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
             disabled={loading}
             style={{
               padding: '8px 20px',
-              background: transferType === 'buyback' ? '#16a34a' : '#0284c7',
+              background: transferType === 'buyback' ? '#1a73e8' : '#0284c7',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

@@ -251,7 +251,7 @@ export const QuickMessageModal = ({
                   background: '#f8f9fa',
                   border: '1px solid #dadce0',
                   borderRadius: 'var(--radius-sm)',
-                  color: '#25d366',
+                  color: '#0f172a',
                   fontSize: '0.8rem',
                   fontWeight: '600'
                 }}
@@ -271,7 +271,7 @@ export const QuickMessageModal = ({
                   background: '#f8f9fa',
                   border: '1px solid #dadce0',
                   borderRadius: 'var(--radius-sm)',
-                  color: '#fbbf24',
+                  color: '#cbd5e1',
                   fontSize: '0.8rem'
                 }}
               />
@@ -285,7 +285,7 @@ export const QuickMessageModal = ({
             borderRadius: 'var(--radius-sm)',
             border: '1px solid #dadce0'
           }}>
-            <div style={{ fontSize: '0.72rem', color: '#25d366', fontWeight: '700', marginBottom: '4px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '700', marginBottom: '4px' }}>
               WhatsApp & SMS Message Preview:
             </div>
             <div style={{ fontSize: '0.78rem', color: '#111827', lineHeight: '1.45', whiteSpace: 'pre-line' }}>
@@ -295,12 +295,12 @@ export const QuickMessageModal = ({
 
           {/* Channel selector */}
           <div style={{ display: 'flex', gap: '10px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', color: '#25d366', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', color: '#0f172a', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={channels.whatsapp}
                 onChange={(e) => setChannels({ ...channels, whatsapp: e.target.checked })}
-                style={{ accentColor: '#25d366' }}
+                style={{ accentColor: '#0f172a' }}
               />
               WhatsApp
             </label>
@@ -313,25 +313,25 @@ export const QuickMessageModal = ({
               />
               SMS
             </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', color: '#fbbf24', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', color: '#cbd5e1', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={channels.email}
                 onChange={(e) => setChannels({ ...channels, email: e.target.checked })}
-                style={{ accentColor: '#f59e0b' }}
+                style={{ accentColor: '#475569' }}
               />
               Email
             </label>
           </div>
 
           {result && (
-            <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '8px 12px', borderRadius: '4px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#1a73e8', padding: '8px 12px', borderRadius: '4px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <CheckCircle size={14} /> Message sent successfully!
             </div>
           )}
 
           {error && (
-            <div style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '8px 12px', borderRadius: '4px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#0f172a', padding: '8px 12px', borderRadius: '4px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <AlertCircle size={14} /> {error}
             </div>
           )}
@@ -361,10 +361,10 @@ export const QuickMessageModal = ({
                 rel="noopener noreferrer"
                 style={{
                   padding: '8px 14px',
-                  background: '#e6f4ea',
-                  border: '1px solid #10b981',
+                  background: '#eff6ff',
+                  border: '1px solid #1a73e8',
                   borderRadius: 'var(--radius-sm)',
-                  color: '#137333',
+                  color: '#1a73e8',
                   fontSize: '0.8rem',
                   fontWeight: '700',
                   textDecoration: 'none',

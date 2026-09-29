@@ -247,7 +247,7 @@ export const RentalLedgersPage = () => {
               width: '44px',
               height: '44px',
               borderRadius: '12px',
-              background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+              background: 'linear-gradient(135deg, #1e40af, #4f46e5)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
@@ -266,8 +266,8 @@ export const RentalLedgersPage = () => {
                 style={{
                   padding: '2px 8px',
                   borderRadius: '6px',
-                  backgroundColor: '#f3e8ff',
-                  color: '#7c3aed',
+                  backgroundColor: '#eff6ff',
+                  color: '#1e40af',
                   fontSize: '0.75rem',
                   fontWeight: '800'
                 }}
@@ -313,7 +313,7 @@ export const RentalLedgersPage = () => {
               gap: '6px',
               padding: '9px 16px',
               borderRadius: '8px',
-              background: '#7c3aed',
+              background: '#1e40af',
               color: '#ffffff',
               border: 'none',
               fontSize: '0.82rem',
@@ -342,7 +342,7 @@ export const RentalLedgersPage = () => {
               cursor: 'pointer'
             }}
           >
-            <FileSpreadsheet size={15} color="#16a34a" /> Export Master CSV
+            <FileSpreadsheet size={15} color="#1a73e8" /> Export Master CSV
           </button>
 
           <button
@@ -407,7 +407,7 @@ export const RentalLedgersPage = () => {
             <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
               Enrolled Passbooks
             </span>
-            <Users size={16} color="#7c3aed" />
+            <Users size={16} color="#1e40af" />
           </div>
           <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a' }}>
             {kpis.totalAccounts} Flats
@@ -431,12 +431,12 @@ export const RentalLedgersPage = () => {
             <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
               Total Paid to Owners
             </span>
-            <CheckCircle2 size={16} color="#16a34a" />
+            <CheckCircle2 size={16} color="#1a73e8" />
           </div>
-          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#16a34a' }}>
+          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#1a73e8' }}>
             {formatINR(kpis.totalDisbursedAll)}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '600' }}>
             {kpis.totalPaidMonthsAll} Total months settled
           </span>
         </div>
@@ -455,9 +455,9 @@ export const RentalLedgersPage = () => {
             <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
               Remaining Liability
             </span>
-            <TrendingUp size={16} color="#dc2626" />
+            <TrendingUp size={16} color="#0f172a" />
           </div>
-          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#dc2626' }}>
+          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a' }}>
             {formatINR(kpis.totalOutstandingAll)}
           </div>
           <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -712,7 +712,7 @@ export const RentalLedgersPage = () => {
 
                     {/* Total Disbursed */}
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                      <div style={{ fontWeight: '800', color: '#16a34a' }}>
+                      <div style={{ fontWeight: '800', color: '#1a73e8' }}>
                         {formatINR(item.totalPaid)}
                       </div>
                       <span
@@ -721,7 +721,7 @@ export const RentalLedgersPage = () => {
                           alignItems: 'center',
                           gap: '2px',
                           fontSize: '0.72rem',
-                          color: '#15803d',
+                          color: '#1e40af',
                           fontWeight: '700'
                         }}
                       >
@@ -731,7 +731,7 @@ export const RentalLedgersPage = () => {
 
                     {/* Remaining Balance */}
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                      <div style={{ fontWeight: '800', color: '#dc2626' }}>
+                      <div style={{ fontWeight: '800', color: '#0f172a' }}>
                         {formatINR(item.amountOutstanding)}
                       </div>
                       <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -754,7 +754,7 @@ export const RentalLedgersPage = () => {
                           style={{
                             width: `${item.completionPercentage}%`,
                             height: '100%',
-                            backgroundColor: item.completionPercentage === 100 ? '#16a34a' : '#2563eb'
+                            backgroundColor: item.completionPercentage === 100 ? '#1a73e8' : '#2563eb'
                           }}
                         />
                       </div>
@@ -803,7 +803,7 @@ export const RentalLedgersPage = () => {
                             gap: '6px',
                             padding: '6px 12px',
                             borderRadius: '6px',
-                            backgroundColor: '#7c3aed',
+                            backgroundColor: '#1e40af',
                             color: '#ffffff',
                             border: 'none',
                             fontSize: '0.78rem',
@@ -825,9 +825,9 @@ export const RentalLedgersPage = () => {
                             justifyContent: 'center',
                             padding: '6px 8px',
                             borderRadius: '6px',
-                            border: '1px solid #fecaca',
-                            backgroundColor: '#fef2f2',
-                            color: '#dc2626',
+                            border: '1px solid #e2e8f0',
+                            backgroundColor: '#f1f5f9',
+                            color: '#0f172a',
                             cursor: 'pointer'
                           }}
                         >

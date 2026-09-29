@@ -184,9 +184,9 @@ export const getActiveRentals = async (req, res) => {
       const term = search.toLowerCase();
       filtered = filtered.filter(
         (item) =>
-          item.flatNumber.toLowerCase().includes(term) ||
-          item.ownerName.toLowerCase().includes(term) ||
-          item.ownerMobile.includes(term)
+          (item.flatNumber && item.flatNumber.toLowerCase().includes(term)) ||
+          (item.ownerName && item.ownerName.toLowerCase().includes(term)) ||
+          (item.ownerMobile && String(item.ownerMobile).toLowerCase().includes(term))
       );
     }
 

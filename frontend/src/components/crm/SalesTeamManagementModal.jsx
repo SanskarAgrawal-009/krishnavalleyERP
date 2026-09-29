@@ -112,7 +112,7 @@ export const SalesTeamManagementModal = ({
         {/* Info Banner */}
         <div style={{
           padding: '14px 18px',
-          background: 'linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%)',
+          background: 'linear-gradient(135deg, #eff6ff 0%, #eff6ff 100%)',
           borderRadius: '10px',
           border: '1px solid #bfdbfe',
           display: 'flex',
@@ -307,7 +307,7 @@ export const SalesTeamManagementModal = ({
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontWeight: '800', color: '#16a34a', fontSize: '0.95rem' }}>
+                      <div style={{ fontWeight: '800', color: '#1a73e8', fontSize: '0.95rem' }}>
                         {member.metrics?.convertedLeads || 0}
                       </div>
                       <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Converted</div>
@@ -324,8 +324,8 @@ export const SalesTeamManagementModal = ({
                         cursor: 'pointer',
                         fontSize: '0.75rem',
                         fontWeight: '700',
-                        background: member.isActiveInRoundRobin ? '#dcfce7' : '#fee2e2',
-                        color: member.isActiveInRoundRobin ? '#15803d' : '#b91c1c',
+                        background: member.isActiveInRoundRobin ? '#eff6ff' : '#f1f5f9',
+                        color: member.isActiveInRoundRobin ? '#1e40af' : '#0f172a',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '5px'
@@ -356,7 +356,7 @@ export const SalesTeamManagementModal = ({
                       }}
                       title="Remove from Sales Team Pool"
                     >
-                      <Trash2 size={16} color="#ef4444" />
+                      <Trash2 size={16} color="#0f172a" />
                     </button>
                   </div>
                 </div>

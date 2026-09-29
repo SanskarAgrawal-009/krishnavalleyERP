@@ -381,7 +381,7 @@ export const FlatProfilePage = () => {
               cursor: 'pointer'
             }}
           >
-            <FileText size={13} color="#137333" /> Update MOU Terms
+            <FileText size={13} color="#1a73e8" /> Update MOU Terms
           </button>
 
           <button
@@ -392,7 +392,7 @@ export const FlatProfilePage = () => {
               gap: '6px',
               padding: '7px 14px',
               borderRadius: '6px',
-              background: '#137333',
+              background: '#1a73e8',
               border: 'none',
               color: '#ffffff',
               fontSize: '0.8rem',
@@ -414,7 +414,7 @@ export const FlatProfilePage = () => {
               borderRadius: '6px',
               background: '#ffffff',
               border: '1px solid #dadce0',
-              color: '#8b5cf6',
+              color: '#2563eb',
               fontSize: '0.8rem',
               fontWeight: '600',
               cursor: 'pointer'
@@ -489,8 +489,8 @@ export const FlatProfilePage = () => {
                         fontWeight: '700',
                         padding: '3px 9px',
                         borderRadius: '12px',
-                        background: '#e6f4ea',
-                        color: '#137333',
+                        background: '#eff6ff',
+                        color: '#1a73e8',
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '4px'
@@ -506,8 +506,8 @@ export const FlatProfilePage = () => {
                         fontWeight: '700',
                         padding: '3px 9px',
                         borderRadius: '12px',
-                        background: '#f3e8ff',
-                        color: '#8b5cf6'
+                        background: '#eff6ff',
+                        color: '#2563eb'
                       }}
                     >
                       REGISTRY COMPLETED
@@ -547,8 +547,8 @@ export const FlatProfilePage = () => {
                 width: '40px',
                 height: '40px',
                 borderRadius: '8px',
-                background: '#f3e8ff',
-                color: '#8b5cf6',
+                background: '#eff6ff',
+                color: '#2563eb',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -562,7 +562,7 @@ export const FlatProfilePage = () => {
               <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {owner.name || 'Unassigned / Available'}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: '600' }}>
+              <div style={{ fontSize: '0.75rem', color: '#1a73e8', fontWeight: '600' }}>
                 {owner.mobileNo || 'Contact on file'}
               </div>
             </div>
@@ -598,11 +598,11 @@ export const FlatProfilePage = () => {
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Monthly Assured Rent</span>
-            <div style={{ padding: '5px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+            <div style={{ padding: '5px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
               <DollarSign size={15} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
             {formatINR(monthlyRent)}
             <span style={{ fontSize: '0.75rem', color: '#5f6368', fontWeight: '600' }}> /mo</span>
           </div>
@@ -639,15 +639,15 @@ export const FlatProfilePage = () => {
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Total Assured Amount</span>
-            <div style={{ padding: '5px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+            <div style={{ padding: '5px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
               <Receipt size={15} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
             {formatINR(totalCommitment)}
           </div>
           <div style={{ fontSize: '0.74rem', color: '#4b5563', marginTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
-            <span>Disbursed: <strong style={{ color: '#137333' }}>{formatINR(totalDisbursed)}</strong></span>
+            <span>Disbursed: <strong style={{ color: '#1a73e8' }}>{formatINR(totalDisbursed)}</strong></span>
             <span>Bal: <strong>{formatINR(balancePayable)}</strong></span>
           </div>
         </div>
@@ -656,7 +656,7 @@ export const FlatProfilePage = () => {
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Possession & Lock-in</span>
-            <div style={{ padding: '5px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+            <div style={{ padding: '5px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
               <Key size={15} />
             </div>
           </div>
@@ -773,19 +773,19 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Installment Amount</span>
-                <strong style={{ fontSize: '0.92rem', color: '#137333' }}>{formatINR(monthlyRent)}</strong>
+                <strong style={{ fontSize: '0.92rem', color: '#1a73e8' }}>{formatINR(monthlyRent)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>TDS Withheld (10%)</span>
-                <strong style={{ fontSize: '0.92rem', color: '#c62828' }}>- {formatINR(tdsAmount)}</strong>
+                <strong style={{ fontSize: '0.92rem', color: '#0f172a' }}>- {formatINR(tdsAmount)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Net Monthly Disbursal</span>
-                <strong style={{ fontSize: '1rem', color: '#137333' }}>{formatINR(netMonthlyRent)}</strong>
+                <strong style={{ fontSize: '1rem', color: '#1a73e8' }}>{formatINR(netMonthlyRent)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Registry Status</span>
-                <strong style={{ fontSize: '0.92rem', color: flat.salesDetails?.salesStatus === 'fully_paid' ? '#137333' : '#b06000' }}>
+                <strong style={{ fontSize: '0.92rem', color: flat.salesDetails?.salesStatus === 'fully_paid' ? '#1a73e8' : '#475569' }}>
                   {flat.salesDetails?.salesStatus === 'fully_paid' ? 'DONE' : 'PENDING'}
                 </strong>
               </div>
@@ -830,7 +830,7 @@ export const FlatProfilePage = () => {
                   gap: '6px',
                   padding: '7px 16px',
                   borderRadius: '6px',
-                  background: '#137333',
+                  background: '#1a73e8',
                   border: 'none',
                   color: '#ffffff',
                   fontSize: '0.82rem',
@@ -877,7 +877,7 @@ export const FlatProfilePage = () => {
                         <td style={{ padding: '10px 12px', color: '#3c4043' }}>
                           {formatDate(entry.dueDate)}
                         </td>
-                        <td style={{ padding: '10px 12px', color: isPaid ? '#137333' : '#9aa0a6' }}>
+                        <td style={{ padding: '10px 12px', color: isPaid ? '#1a73e8' : '#9aa0a6' }}>
                           {formatDate(entry.paymentDate)}
                         </td>
                         <td style={{ padding: '10px 12px', color: '#5f6368' }}>
@@ -889,10 +889,10 @@ export const FlatProfilePage = () => {
                         <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '600' }}>
                           {formatINR(entry.grossAmount || monthlyRent)}
                         </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right', color: '#c62828' }}>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', color: '#0f172a' }}>
                           - {formatINR(entry.tdsDeducted || tdsAmount)}
                         </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '700', color: '#137333' }}>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '700', color: '#1a73e8' }}>
                           {formatINR(entry.netAmountPaid || netMonthlyRent)}
                         </td>
                         <td style={{ padding: '10px 12px', textAlign: 'right', color: '#5f6368' }}>
@@ -905,8 +905,8 @@ export const FlatProfilePage = () => {
                               fontWeight: '700',
                               padding: '2px 8px',
                               borderRadius: '4px',
-                              background: isPaid ? '#e6f4ea' : (isDue ? '#fef7e0' : '#f1f3f4'),
-                              color: isPaid ? '#137333' : (isDue ? '#b06000' : '#5f6368'),
+                              background: isPaid ? '#eff6ff' : (isDue ? '#f8fafc' : '#f1f3f4'),
+                              color: isPaid ? '#1a73e8' : (isDue ? '#475569' : '#5f6368'),
                               textTransform: 'uppercase'
                             }}
                           >
@@ -931,7 +931,7 @@ export const FlatProfilePage = () => {
                               Mark Paid
                             </button>
                           ) : (
-                            <span style={{ color: '#137333', fontSize: '0.8rem' }}>✓</span>
+                            <span style={{ color: '#1a73e8', fontSize: '0.8rem' }}></span>
                           )}
                         </td>
                       </tr>
@@ -967,9 +967,9 @@ export const FlatProfilePage = () => {
                   gap: '6px',
                   padding: '6px 14px',
                   borderRadius: '6px',
-                  background: '#f3e8ff',
+                  background: '#eff6ff',
                   border: '1px solid #d8b4fe',
-                  color: '#8b5cf6',
+                  color: '#2563eb',
                   fontSize: '0.8rem',
                   fontWeight: '700',
                   cursor: 'pointer'
@@ -986,7 +986,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Primary Mobile</span>
-                <strong style={{ fontSize: '0.95rem', color: '#10b981' }}>{owner.mobileNo || '—'}</strong>
+                <strong style={{ fontSize: '0.95rem', color: '#1a73e8' }}>{owner.mobileNo || '—'}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Email Address</span>
@@ -1014,7 +1014,7 @@ export const FlatProfilePage = () => {
           {/* Ownership Trail / Resale History */}
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-              <History size={18} color="#8b5cf6" />
+              <History size={18} color="#2563eb" />
               <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                 Ownership Trail & Resale History ({flat.ownershipHistory?.length || 0})
               </h3>
@@ -1053,8 +1053,8 @@ export const FlatProfilePage = () => {
                               fontWeight: '700',
                               padding: '2px 8px',
                               borderRadius: '4px',
-                              background: '#f3e8ff',
-                              color: '#8b5cf6',
+                              background: '#eff6ff',
+                              color: '#2563eb',
                               textTransform: 'uppercase'
                             }}
                           >
@@ -1064,7 +1064,7 @@ export const FlatProfilePage = () => {
                         <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '600' }}>
                           {formatINR(item.transferDealValue || 0)}
                         </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right', color: '#137333', fontWeight: '600' }}>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', color: '#1a73e8', fontWeight: '600' }}>
                           {formatINR(item.totalRentPaid || 0)}
                         </td>
                         <td style={{ padding: '10px 12px', color: '#5f6368', fontStyle: 'italic' }}>
@@ -1152,7 +1152,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Current Valuation / Price</span>
-                <strong style={{ fontSize: '1.05rem', color: '#137333' }}>{formatINR(flat.basePrice || 2500000)}</strong>
+                <strong style={{ fontSize: '1.05rem', color: '#1a73e8' }}>{formatINR(flat.basePrice || 2500000)}</strong>
               </div>
             </div>
           </div>
@@ -1253,7 +1253,7 @@ export const FlatProfilePage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <DollarSign size={18} color="#137333" />
+              <DollarSign size={18} color="#1a73e8" />
               <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                 Sales Allotment & Financial Deal Summary
               </h3>
@@ -1270,7 +1270,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Agreed Deal Price</span>
-                <strong style={{ fontSize: '1.05rem', color: '#137333' }}>{formatINR(sales.agreedDealPrice || sales.booking?.agreedDealPrice || flat.basePrice)}</strong>
+                <strong style={{ fontSize: '1.05rem', color: '#1a73e8' }}>{formatINR(sales.agreedDealPrice || sales.booking?.agreedDealPrice || flat.basePrice)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Booking Amount Paid</span>
@@ -1278,11 +1278,11 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Total Paid Towards Deal</span>
-                <strong style={{ fontSize: '0.92rem', color: '#137333' }}>{formatINR(sales.totalAmountPaid || sales.booking?.bookingAmount || 0)}</strong>
+                <strong style={{ fontSize: '0.92rem', color: '#1a73e8' }}>{formatINR(sales.totalAmountPaid || sales.booking?.bookingAmount || 0)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Balance Deal Due</span>
-                <strong style={{ fontSize: '0.92rem', color: '#c62828' }}>{formatINR(sales.balanceAmountDue || 0)}</strong>
+                <strong style={{ fontSize: '0.92rem', color: '#0f172a' }}>{formatINR(sales.balanceAmountDue || 0)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Sales Status</span>
@@ -1296,7 +1296,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Possession Status</span>
-                <strong style={{ fontSize: '0.92rem', color: sales.possessionStatus === 'handed_over' ? '#137333' : '#b06000', textTransform: 'capitalize' }}>
+                <strong style={{ fontSize: '0.92rem', color: sales.possessionStatus === 'handed_over' ? '#1a73e8' : '#475569', textTransform: 'capitalize' }}>
                   {(sales.possessionStatus || 'handed_over').replace(/_/g, ' ')}
                 </strong>
               </div>
@@ -1331,7 +1331,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Outstanding Due</span>
-                <strong style={{ fontSize: '0.92rem', color: flat.maintenanceDetails?.outstandingMaintenanceDue > 0 ? '#c62828' : '#137333' }}>
+                <strong style={{ fontSize: '0.92rem', color: flat.maintenanceDetails?.outstandingMaintenanceDue > 0 ? '#0f172a' : '#1a73e8' }}>
                   {formatINR(flat.maintenanceDetails?.outstandingMaintenanceDue || 0)}
                 </strong>
               </div>
@@ -1343,8 +1343,8 @@ export const FlatProfilePage = () => {
                     fontWeight: '700',
                     padding: '2px 8px',
                     borderRadius: '4px',
-                    background: '#e6f4ea',
-                    color: '#137333',
+                    background: '#eff6ff',
+                    color: '#1a73e8',
                     textTransform: 'uppercase'
                   }}
                 >
@@ -1592,7 +1592,7 @@ export const FlatProfilePage = () => {
                 >
                   Cancel
                 </button>
-                <LoadingButton loading={savingMou} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#137333', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
+                <LoadingButton loading={savingMou} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#1a73e8', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
                   Save MOU Terms
                 </LoadingButton>
               </div>
@@ -1619,14 +1619,14 @@ export const FlatProfilePage = () => {
         >
           <div style={{ background: '#ffffff', borderRadius: '12px', width: '100%', maxWidth: '480px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: '#137333' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: '#1a73e8' }}>
                 Record Rental Disbursement Payout
               </h3>
               <button onClick={() => setIsPayoutModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={18} /></button>
             </div>
 
             <form onSubmit={handleSavePayout} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ background: '#e6f4ea', border: '1px solid #c6f6d5', padding: '10px 14px', borderRadius: '6px', fontSize: '0.82rem', color: '#137333' }}>
+              <div style={{ background: '#eff6ff', border: '1px solid #e0f2fe', padding: '10px 14px', borderRadius: '6px', fontSize: '0.82rem', color: '#1a73e8' }}>
                 Recording payout for <strong>Flat {flat.flatNumber}</strong> • Owner: <strong>{owner.name}</strong>
               </div>
 
@@ -1708,7 +1708,7 @@ export const FlatProfilePage = () => {
                 >
                   Cancel
                 </button>
-                <LoadingButton loading={savingPayout} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#137333', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
+                <LoadingButton loading={savingPayout} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#1a73e8', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
                   Commit Payout to Ledger
                 </LoadingButton>
               </div>
@@ -1735,14 +1735,14 @@ export const FlatProfilePage = () => {
         >
           <div style={{ background: '#ffffff', borderRadius: '12px', width: '100%', maxWidth: '540px', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: '#8b5cf6' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: '#2563eb' }}>
                 Record Resale or Ownership Transfer
               </h3>
               <button onClick={() => setIsResaleModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={18} /></button>
             </div>
 
             <form onSubmit={handleSaveResale} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ background: '#f5f3ff', border: '1px solid #e9d5ff', padding: '10px 14px', borderRadius: '6px', fontSize: '0.8rem', color: '#6b21a8' }}>
+              <div style={{ background: '#eff6ff', border: '1px solid #dbeafe', padding: '10px 14px', borderRadius: '6px', fontSize: '0.8rem', color: '#00285c' }}>
                 Current Owner <strong>{owner.name}</strong> will be archived into the permanent ownership history trail, and the new purchaser will become the active owner.
               </div>
 
@@ -1823,7 +1823,7 @@ export const FlatProfilePage = () => {
                 >
                   Cancel
                 </button>
-                <LoadingButton loading={savingResale} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#8b5cf6', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
+                <LoadingButton loading={savingResale} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
                   Execute Transfer
                 </LoadingButton>
               </div>

@@ -306,13 +306,13 @@ export const LeadDetailDrawer = ({
   const getStatusColor = (status) => {
     switch (status) {
       case 'new': return { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd', label: 'New Prospect' };
-      case 'contacted': return { bg: '#fef3c7', color: '#92400e', border: '#fde68a', label: 'Contacted' };
-      case 'in_discussion': return { bg: '#f3e8ff', color: '#7e22ce', border: '#e9d5ff', label: 'In Discussion' };
-      case 'followup_scheduled': return { bg: '#ffedd5', color: '#c2410c', border: '#fed7aa', label: 'Follow-Up Scheduled' };
-      case 'site_visit_scheduled': return { bg: '#fef3c7', color: '#b45309', border: '#fde68a', label: 'Visit Scheduled' };
-      case 'site_visit_completed': return { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0', label: 'Site Visit Done' };
-      case 'converted': return { bg: '#e6f4ea', color: '#137333', border: '#ceead6', label: 'Won Deal (Converted)' };
-      case 'lost': return { bg: '#fee2e2', color: '#991b1b', border: '#fecaca', label: 'Lost Prospect' };
+      case 'contacted': return { bg: '#f1f5f9', color: '#334155', border: '#cbd5e1', label: 'Contacted' };
+      case 'in_discussion': return { bg: '#eff6ff', color: '#7e22ce', border: '#dbeafe', label: 'In Discussion' };
+      case 'followup_scheduled': return { bg: '#f1f5f9', color: '#334155', border: '#e2e8f0', label: 'Follow-Up Scheduled' };
+      case 'site_visit_scheduled': return { bg: '#f1f5f9', color: '#334155', border: '#cbd5e1', label: 'Visit Scheduled' };
+      case 'site_visit_completed': return { bg: '#eff6ff', color: '#1e40af', border: '#dbeafe', label: 'Site Visit Done' };
+      case 'converted': return { bg: '#eff6ff', color: '#1a73e8', border: '#bfdbfe', label: 'Won Deal (Converted)' };
+      case 'lost': return { bg: '#f1f5f9', color: '#0f172a', border: '#e2e8f0', label: 'Lost Prospect' };
       default: return { bg: '#f1f5f9', color: '#334155', border: '#cbd5e1', label: (status || 'Lead').replace(/_/g, ' ') };
     }
   };
@@ -366,9 +366,9 @@ export const LeadDetailDrawer = ({
               width: '48px',
               height: '48px',
               borderRadius: '50%',
-              background: isAssignedToCurrentUser ? '#dcfce7' : '#e0f2fe',
-              color: isAssignedToCurrentUser ? '#15803d' : '#0369a1',
-              border: isAssignedToCurrentUser ? '2px solid #86efac' : '2px solid #bae6fd',
+              background: isAssignedToCurrentUser ? '#eff6ff' : '#e0f2fe',
+              color: isAssignedToCurrentUser ? '#1e40af' : '#0369a1',
+              border: isAssignedToCurrentUser ? '2px solid #bfdbfe' : '2px solid #bae6fd',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -409,7 +409,7 @@ export const LeadDetailDrawer = ({
                 {/* Agent Tag */}
                 {lead.agentId && (
                   <span style={{ fontSize: '0.68rem', fontWeight: '700', background: '#eff6ff', color: '#1d4ed8', padding: '2px 6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}>
-                    🏢 Agent ({lead.agentId.firstName || lead.agentId.username})
+                    Agent ({lead.agentId.firstName || lead.agentId.username})
                   </span>
                 )}
               </div>
@@ -449,8 +449,8 @@ export const LeadDetailDrawer = ({
                     gap: '4px',
                     padding: '3px 8px',
                     borderRadius: '5px',
-                    background: '#dcfce7',
-                    color: '#15803d',
+                    background: '#eff6ff',
+                    color: '#1e40af',
                     fontSize: '0.76rem',
                     fontWeight: '800',
                     textDecoration: 'none'
@@ -470,8 +470,8 @@ export const LeadDetailDrawer = ({
                     gap: '4px',
                     padding: '3px 8px',
                     borderRadius: '5px',
-                    background: '#fffbeb',
-                    color: '#b45309',
+                    background: '#f8fafc',
+                    color: '#334155',
                     fontSize: '0.76rem',
                     fontWeight: '800',
                     border: 'none',
@@ -486,7 +486,7 @@ export const LeadDetailDrawer = ({
                 <button
                   type="button"
                   onClick={() => handleCopy(`${lead.name} - ${lead.mobileNo}`)}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: copiedText ? '#16a34a' : '#94a3b8', display: 'inline-flex', alignItems: 'center' }}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: copiedText ? '#1a73e8' : '#94a3b8', display: 'inline-flex', alignItems: 'center' }}
                   title="Copy Contact"
                 >
                   {copiedText ? <Check size={13} /> : <Copy size={13} />}
@@ -536,14 +536,14 @@ export const LeadDetailDrawer = ({
                   }
                 }}
                 style={{
-                  background: '#fee2e2',
-                  border: '1px solid #fecaca',
+                  background: '#f1f5f9',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '6px',
                   padding: '5px 8px',
                   display: 'flex',
                   alignItems: 'center',
                   fontSize: '0.74rem',
-                  color: '#b91c1c',
+                  color: '#0f172a',
                   cursor: 'pointer'
                 }}
                 title="Delete Lead"
@@ -648,7 +648,7 @@ export const LeadDetailDrawer = ({
               borderRadius: '7px',
               border: '1px solid #cbd5e1',
               background: '#ffffff',
-              color: '#15803d',
+              color: '#1e40af',
               fontSize: '0.78rem',
               fontWeight: '700',
               display: 'inline-flex',
@@ -659,7 +659,7 @@ export const LeadDetailDrawer = ({
               transition: 'all 0.15s ease'
             }}
           >
-            <Car size={14} color="#16a34a" />
+            <Car size={14} color="#1a73e8" />
             <span>Site Visit</span>
           </button>
 
@@ -673,7 +673,7 @@ export const LeadDetailDrawer = ({
               borderRadius: '7px',
               border: '1px solid #cbd5e1',
               background: '#ffffff',
-              color: '#b45309',
+              color: '#334155',
               fontSize: '0.78rem',
               fontWeight: '700',
               display: 'inline-flex',
@@ -684,7 +684,7 @@ export const LeadDetailDrawer = ({
               transition: 'all 0.15s ease'
             }}
           >
-            <Zap size={14} color="#f59e0b" />
+            <Zap size={14} color="#475569" />
             <span>Change Stage</span>
           </button>
 
@@ -698,7 +698,7 @@ export const LeadDetailDrawer = ({
               borderRadius: '7px',
               border: '1px solid #cbd5e1',
               background: '#ffffff',
-              color: '#4338ca',
+              color: '#00285c',
               fontSize: '0.78rem',
               fontWeight: '700',
               display: 'inline-flex',
@@ -724,7 +724,7 @@ export const LeadDetailDrawer = ({
                 padding: '0 14px',
                 borderRadius: '7px',
                 border: 'none',
-                background: '#16a34a',
+                background: '#1a73e8',
                 color: '#ffffff',
                 fontSize: '0.78rem',
                 fontWeight: '800',
@@ -750,9 +750,9 @@ export const LeadDetailDrawer = ({
           {/* Success Banner */}
           {fuSuccessMsg && (
             <div style={{
-              background: '#dcfce7',
-              border: '1px solid #86efac',
-              color: '#15803d',
+              background: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              color: '#1e40af',
               padding: '10px 14px',
               borderRadius: '8px',
               fontSize: '0.84rem',
@@ -789,7 +789,7 @@ export const LeadDetailDrawer = ({
                   width: '26px',
                   height: '26px',
                   borderRadius: '50%',
-                  background: isAssignedToCurrentUser ? '#16a34a' : '#4f46e5',
+                  background: isAssignedToCurrentUser ? '#1a73e8' : '#4f46e5',
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
@@ -804,7 +804,7 @@ export const LeadDetailDrawer = ({
                     {assignee?.firstName ? `${assignee.firstName} ${assignee.lastName || ''}` : (assignee?.username || 'Unassigned (In Queue)')}
                   </span>
                   {isAssignedToCurrentUser && (
-                    <span style={{ marginLeft: '6px', fontSize: '0.68rem', fontWeight: '800', background: '#dcfce7', color: '#15803d', padding: '1px 6px', borderRadius: '4px' }}>
+                    <span style={{ marginLeft: '6px', fontSize: '0.68rem', fontWeight: '800', background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px' }}>
                       Assigned to You
                     </span>
                   )}
@@ -821,7 +821,7 @@ export const LeadDetailDrawer = ({
             {/* Sales Head Reassignment Quick-Picker */}
             <div>
               <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', marginBottom: '3px' }}>
-                👑 Sales Head Reassign:
+                Sales Head Reassign:
               </div>
               <select
                 value={assignee?._id || assignee || 'unassigned'}
@@ -857,7 +857,7 @@ export const LeadDetailDrawer = ({
           {/* ========================================================================= */}
           {isMetaLead && (
             <div style={{
-              background: 'linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%)',
+              background: 'linear-gradient(135deg, #f0f9ff 0%, #eff6ff 100%)',
               border: '1px solid #bae6fd',
               borderRadius: '10px',
               padding: '14px 18px',
@@ -866,7 +866,7 @@ export const LeadDetailDrawer = ({
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Globe size={14} color="#0284c7" />
-                  📋 Meta Ads Leadgen Submission
+                  Meta Ads Leadgen Submission
                 </span>
                 <span style={{ background: '#0284c7', color: '#ffffff', fontSize: '0.66rem', padding: '2px 8px', borderRadius: '12px', fontWeight: '800' }}>
                   {lead.metaAdDetails?.platform ? lead.metaAdDetails.platform.toUpperCase() : 'FACEBOOK & INSTAGRAM'}
@@ -1001,7 +1001,7 @@ export const LeadDetailDrawer = ({
                               alignItems: 'center',
                               gap: '4px'
                             }}>
-                              👑 Scheduled by Sales Head ({fu.scheduledBy?.firstName || fu.scheduledBy?.username || 'Management'})
+                              Scheduled by Sales Head ({fu.scheduledBy?.firstName || fu.scheduledBy?.username || 'Management'})
                             </span>
                           ) : (
                             <span style={{
@@ -1022,8 +1022,8 @@ export const LeadDetailDrawer = ({
                             fontSize: '0.72rem',
                             fontWeight: '800',
                             textTransform: 'uppercase',
-                            background: fu.mode === 'site_visit' ? '#fef3c7' : '#dbeafe',
-                            color: fu.mode === 'site_visit' ? '#b45309' : '#1e40af',
+                            background: fu.mode === 'site_visit' ? '#f1f5f9' : '#dbeafe',
+                            color: fu.mode === 'site_visit' ? '#334155' : '#1e40af',
                             padding: '2px 8px',
                             borderRadius: '4px'
                           }}>
@@ -1035,9 +1035,9 @@ export const LeadDetailDrawer = ({
                         <div style={{
                           fontSize: '0.78rem',
                           fontWeight: '800',
-                          color: '#b45309',
-                          background: '#fffbeb',
-                          border: '1px solid #fde68a',
+                          color: '#334155',
+                          background: '#f8fafc',
+                          border: '1px solid #cbd5e1',
                           padding: '2px 8px',
                           borderRadius: '6px',
                           display: 'flex',
@@ -1084,7 +1084,7 @@ export const LeadDetailDrawer = ({
                           /* View State: Quick Action Triggers */
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                             <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
-                              Status: <strong style={{ color: '#d97706' }}>Pending Execution</strong>
+                              Status: <strong style={{ color: '#334155' }}>Pending Execution</strong>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                               {/* Google Calendar Action Link / Button */}
@@ -1150,7 +1150,7 @@ export const LeadDetailDrawer = ({
                                 style={{
                                   padding: '5px 12px',
                                   borderRadius: '6px',
-                                  background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                                  background: 'linear-gradient(135deg, #1a73e8 0%, #1e40af 100%)',
                                   color: '#ffffff',
                                   fontSize: '0.76rem',
                                   fontWeight: '800',
@@ -1170,9 +1170,9 @@ export const LeadDetailDrawer = ({
                                 style={{
                                   padding: '5px 8px',
                                   borderRadius: '6px',
-                                  background: '#fee2e2',
-                                  color: '#b91c1c',
-                                  border: '1px solid #fecaca',
+                                  background: '#f1f5f9',
+                                  color: '#0f172a',
+                                  border: '1px solid #e2e8f0',
                                   fontSize: '0.76rem',
                                   cursor: 'pointer'
                                 }}
@@ -1194,15 +1194,15 @@ export const LeadDetailDrawer = ({
                             gap: '10px'
                           }}>
                             <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <CheckCircle2 size={14} color="#16a34a" /> Update Follow-Up Status (Team Member)
+                              <CheckCircle2 size={14} color="#1a73e8" /> Update Follow-Up Status (Team Member)
                             </div>
 
                             {/* Status Choice Segmented Buttons */}
                             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                               {[
-                                { id: 'completed', label: '✅ Mark Completed', color: '#15803d', bg: '#dcfce7', border: '#86efac' },
-                                { id: 'rescheduled', label: '⏰ Reschedule', color: '#1d4ed8', bg: '#dbeafe', border: '#93c5fd' },
-                                { id: 'cancelled', label: '❌ Cancelled', color: '#b91c1c', bg: '#fee2e2', border: '#fca5a5' },
+                                { id: 'completed', label: 'Mark Completed', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
+                                { id: 'rescheduled', label: 'Reschedule', color: '#1d4ed8', bg: '#dbeafe', border: '#93c5fd' },
+                                { id: 'cancelled', label: 'Cancelled', color: '#0f172a', bg: '#f1f5f9', border: '#cbd5e1' },
                               ].map((opt) => (
                                 <button
                                   key={opt.id}
@@ -1273,14 +1273,14 @@ export const LeadDetailDrawer = ({
                                   padding: '5px 16px',
                                   fontSize: '0.76rem',
                                   fontWeight: '800',
-                                  background: '#16a34a',
+                                  background: '#1a73e8',
                                   color: '#ffffff',
                                   border: 'none',
                                   borderRadius: '5px',
                                   cursor: updatingFu ? 'not-allowed' : 'pointer'
                                 }}
                               >
-                                {updatingFu ? 'Saving...' : '💾 Save Status & Remarks'}
+                                {updatingFu ? 'Saving...' : 'Save Status & Remarks'}
                               </button>
                             </div>
                           </div>
@@ -1328,11 +1328,11 @@ export const LeadDetailDrawer = ({
                       onChange={(e) => setNewFuMode(e.target.value)}
                       style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.8rem', fontWeight: '600' }}
                     >
-                      <option value="call">📞 Phone Call</option>
-                      <option value="whatsapp">💬 WhatsApp</option>
-                      <option value="site_visit">🚗 Site Visit</option>
-                      <option value="meeting">🤝 Meeting</option>
-                      <option value="email">✉️ Email</option>
+                      <option value="call">Phone Call</option>
+                      <option value="whatsapp">WhatsApp</option>
+                      <option value="site_visit">Site Visit</option>
+                      <option value="meeting">Meeting</option>
+                      <option value="email">Email</option>
                     </select>
                   </div>
 
@@ -1398,7 +1398,7 @@ export const LeadDetailDrawer = ({
           {externalSiteVisits.length > 0 && (
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <Car size={16} color="#16a34a" />
+                <Car size={16} color="#1a73e8" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
                   Recorded Site Visits ({externalSiteVisits.length})
                 </h3>
@@ -1409,19 +1409,19 @@ export const LeadDetailDrawer = ({
                   <div
                     key={svIdx}
                     style={{
-                      background: '#f0fdf4',
-                      border: '1px solid #bbf7d0',
+                      background: '#eff6ff',
+                      border: '1px solid #dbeafe',
                       borderRadius: '8px',
                       padding: '12px 16px'
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#166534' }}>
+                        <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#1e40af' }}>
                           Visited: {sv.flatLabel || 'Project Site'}
                         </span>
-                        <span style={{ fontSize: '0.72rem', background: '#dcfce7', color: '#15803d', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>
-                          Rating: {sv.interestRating}/5 ⭐
+                        <span style={{ fontSize: '0.72rem', background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>
+                          Rating: {sv.interestRating}/5 
                         </span>
                       </div>
                       <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
@@ -1477,8 +1477,8 @@ export const LeadDetailDrawer = ({
                           fontSize: '0.7rem',
                           fontWeight: '800',
                           textTransform: 'uppercase',
-                          background: fu.status === 'completed' ? '#dcfce7' : '#fee2e2',
-                          color: fu.status === 'completed' ? '#15803d' : '#b91c1c',
+                          background: fu.status === 'completed' ? '#eff6ff' : '#f1f5f9',
+                          color: fu.status === 'completed' ? '#1e40af' : '#0f172a',
                           padding: '1px 6px',
                           borderRadius: '4px'
                         }}>
@@ -1588,8 +1588,8 @@ export const LeadDetailDrawer = ({
             </div>
 
             {overviewMsg && (
-              <div style={{ padding: '6px 10px', borderRadius: '6px', backgroundColor: '#dcfce7', color: '#15803d', fontSize: '0.74rem', fontWeight: '700', marginBottom: '10px' }}>
-                ✓ {overviewMsg}
+              <div style={{ padding: '6px 10px', borderRadius: '6px', backgroundColor: '#eff6ff', color: '#1e40af', fontSize: '0.74rem', fontWeight: '700', marginBottom: '10px' }}>
+                {overviewMsg}
               </div>
             )}
 

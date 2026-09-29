@@ -52,228 +52,260 @@ import {
   AlertTriangle,
   Clock,
   BookOpen,
-  History
+  History,
+  Target
 } from 'lucide-react';
 
-const NAV_ITEMS = [
+export const NAV_CATEGORIES = [
   {
-    path: '/dashboard',
-    label: 'Dashboard',
-    icon: LayoutDashboard,
-    badge: 'Live',
-    permission: 'dashboard:view'
-  },
-  {
-    path: '/inventory',
-    label: 'Sites & Inventory',
-    icon: Building2,
-    badge: 'Master',
-    permission: 'inventory:view',
-    subItems: [
-      { path: '/inventory?view=projects', label: 'All Projects & Sites', icon: Building2 },
-      { path: '/inventory?view=buildings', label: 'Buildings & Towers', icon: Layers },
-      { path: '/inventory?view=flats', label: 'Flats & Availability Matrix', icon: Building2 }
+    categoryKey: 'command',
+    categoryLabel: 'Executive & Strategy',
+    items: [
+      {
+        path: '/dashboard',
+        label: 'Executive Dashboard',
+        icon: LayoutDashboard,
+        badge: 'Live',
+        permission: 'dashboard:view'
+      },
+      {
+        path: '/taskforce',
+        label: 'Taskforce & Allocation',
+        icon: Target,
+        badge: 'Directives',
+        subItems: [
+          { path: '/taskforce?view=kanban', label: 'Taskforce Board', icon: Layers },
+          { path: '/taskforce?view=radar', label: 'Follow-up Radar', icon: Clock },
+          { path: '/taskforce?view=list', label: 'Directives Register', icon: FileText }
+        ]
+      },
+      {
+        path: '/reports',
+        label: 'BI Reports & Analytics',
+        icon: BarChart3,
+        highlight: true,
+        badge: 'BI',
+        permission: 'reports:view',
+        subItems: [
+          { path: '/reports/sales', label: 'Sales Report' },
+          { path: '/reports/rental', label: 'Rental Report' },
+          { path: '/reports/collection', label: 'Collection & Aging' },
+          { path: '/reports/maintenance', label: 'Maintenance Report' },
+          { path: '/reports/inventory', label: 'Inventory Report' },
+          { path: '/reports/finance', label: 'Finance & P&L' },
+          { path: '/reports/crm', label: 'CRM Funnel' },
+          { path: '/reports/hr', label: 'HR & Payroll' }
+        ]
+      }
     ]
   },
   {
-    path: '/materials',
-    label: 'Material & Stores',
-    icon: Package,
-    permission: 'materials:view',
-    subItems: [
-      { path: '/materials?tab=stocks', label: 'Stock Ledger', icon: DollarSign },
-      { path: '/materials?tab=materials', label: 'Materials Catalog', icon: Package },
-      { path: '/materials?tab=stores', label: 'Stores & Warehouses', icon: Building2 },
-      { path: '/materials?tab=vendors', label: 'Vendors Register', icon: Truck },
-      { path: '/materials?tab=pos', label: 'Purchase Orders (POs)', icon: ShoppingCart },
-      { path: '/materials?tab=grns', label: 'Goods Receipts (GRN)', icon: CheckCircle },
-      { path: '/materials?tab=issues', label: 'Material Issues', icon: ArrowUpRight },
-      { path: '/materials?tab=transfers', label: 'Site Transfers', icon: Repeat }
+    categoryKey: 'property',
+    categoryLabel: 'Property & Engineering',
+    items: [
+      {
+        path: '/inventory',
+        label: 'Sites & Inventory',
+        icon: Building2,
+        badge: 'Master',
+        permission: 'inventory:view',
+        subItems: [
+          { path: '/inventory?view=projects', label: 'All Projects & Sites', icon: Building2 },
+          { path: '/inventory?view=buildings', label: 'Buildings & Towers', icon: Layers },
+          { path: '/inventory?view=flats', label: 'Flats & Availability Matrix', icon: Building2 }
+        ]
+      },
+      {
+        path: '/materials',
+        label: 'Material & Stores',
+        icon: Package,
+        permission: 'materials:view',
+        subItems: [
+          { path: '/materials?tab=stocks', label: 'Stock Ledger', icon: DollarSign },
+          { path: '/materials?tab=materials', label: 'Materials Catalog', icon: Package },
+          { path: '/materials?tab=stores', label: 'Stores & Warehouses', icon: Building2 },
+          { path: '/materials?tab=vendors', label: 'Vendors Register', icon: Truck },
+          { path: '/materials?tab=pos', label: 'Purchase Orders (POs)', icon: ShoppingCart },
+          { path: '/materials?tab=grns', label: 'Goods Receipts (GRN)', icon: CheckCircle },
+          { path: '/materials?tab=issues', label: 'Material Issues', icon: ArrowUpRight },
+          { path: '/materials?tab=transfers', label: 'Site Transfers', icon: Repeat }
+        ]
+      },
+      {
+        path: '/maintenance',
+        label: 'Maintenance & Facility',
+        icon: Wrench,
+        permission: 'maintenance:view',
+        subItems: [
+          { path: '/maintenance?tab=bills', label: 'Maintenance Bills', icon: DollarSign },
+          { path: '/maintenance?tab=tickets', label: 'Service Tickets & SLA', icon: Wrench },
+          { path: '/maintenance?tab=penalties', label: 'Rule Infractions & Penalties', icon: AlertTriangle }
+        ]
+      }
     ]
   },
   {
-    path: '/agent-portal',
-    label: 'Agent Portal & Leads',
-    icon: Sparkles,
-    badge: 'Partner',
-    permission: 'agent:leads',
-    subItems: [
-      { path: '/agent-portal?tab=leads', label: 'My Leads Pipeline', icon: Users },
-      { path: '/site-visits', label: 'Site Visits & Verifications', icon: ShieldCheck },
-      { path: '/agent-portal?tab=commissions', label: 'Commission Statement', icon: DollarSign }
+    categoryKey: 'sales',
+    categoryLabel: 'Sales & Customer CRM',
+    items: [
+      {
+        path: '/crm',
+        label: 'CRM & Lead Engine',
+        icon: Users,
+        permission: 'crm:view',
+        subItems: [
+          { path: '/crm?tab=inquiries', label: 'Inquiries & Leads', icon: Users },
+          { path: '/crm?tab=visits', label: 'Scheduled Visits Calendar', icon: Calendar },
+          { path: '/crm?tab=pipeline', label: 'Follow-up Pipeline', icon: Sliders }
+        ]
+      },
+      {
+        path: '/sales',
+        label: 'Sales & Allotments',
+        icon: ShoppingBag,
+        permission: 'sales:view',
+        subItems: [
+          { path: '/sales?tab=deals', label: 'Sales Deals Register', icon: ShoppingBag },
+          { path: '/sales?tab=lifecycle', label: 'Milestone Demands', icon: DollarSign },
+          { path: '/sales?tab=resale', label: 'Resale & Ownership History', icon: History },
+          { path: '/sales?tab=messaging', label: 'Buyer Messaging Center', icon: MessageSquare }
+        ]
+      },
+      {
+        path: '/customers',
+        label: 'Customer Accounts',
+        icon: UserCheck,
+        permission: 'customers:view',
+        subItems: [
+          { path: '/customers?tab=directory', label: 'Customer Directory', icon: UserCheck },
+          { path: '/customers?tab=passbook', label: 'Customer Passbooks', icon: FileText }
+        ]
+      },
+      {
+        path: '/rentals',
+        label: 'Rental Management',
+        icon: Repeat,
+        badge: 'Assured',
+        permission: 'inventory:view',
+        subItems: [
+          { path: '/rentals?tab=active', label: 'Active Rental Register', icon: Building2 },
+          { path: '/rentals?tab=history', label: 'Previous Owners Trail', icon: History },
+          { path: '/rentals/ledgers', label: 'Rental Passbooks & Ledgers', icon: BookOpen }
+        ]
+      }
     ]
   },
   {
-    path: '/agent-network',
-    label: 'Agent Network',
-    icon: Users,
-    subItems: [
-      { path: '/agent-network', label: 'Channel Partner Directory', icon: Users },
-      { path: '/site-visits', label: 'Site Visit Approvals', icon: ShieldCheck },
+    categoryKey: 'partners',
+    categoryLabel: 'Channel Partners',
+    items: [
+      {
+        path: '/agent-portal',
+        label: 'Agent Portal & Leads',
+        icon: Sparkles,
+        badge: 'Partner',
+        permission: 'agent:leads',
+        subItems: [
+          { path: '/agent-portal?tab=leads', label: 'My Leads Pipeline', icon: Users },
+          { path: '/site-visits', label: 'Site Visits & Verifications', icon: ShieldCheck },
+          { path: '/agent-portal?tab=commissions', label: 'Commission Statement', icon: DollarSign }
+        ]
+      },
+      {
+        path: '/agent-network',
+        label: 'Agent Network',
+        icon: Users,
+        subItems: [
+          { path: '/agent-network', label: 'Channel Partner Directory', icon: Users },
+          { path: '/site-visits', label: 'Site Visit Approvals', icon: ShieldCheck },
+        ]
+      }
     ]
   },
   {
-    path: '/crm',
-    label: 'CRM & Lead Engine',
-    icon: Users,
-    permission: 'crm:view',
-    subItems: [
-      { path: '/crm?tab=inquiries', label: 'Inquiries & Leads', icon: Users },
-      { path: '/crm?tab=visits', label: 'Scheduled Visits Calendar', icon: Calendar },
-      { path: '/crm?tab=pipeline', label: 'Follow-up Pipeline', icon: Sliders }
+    categoryKey: 'workforce',
+    categoryLabel: 'Workforce & Assets',
+    items: [
+      {
+        path: '/hr',
+        label: 'Workforce & HR',
+        icon: Briefcase,
+        permission: 'hr:view',
+        subItems: [
+          { path: '/hr?tab=directory', label: 'Staff Directory', icon: Users },
+          { path: '/hr?tab=id_cards', label: 'Staff ID Badges & Identity', icon: ShieldCheck },
+          { path: '/hr?tab=leaves', label: 'Leave Quotas & Approvals', icon: Clock },
+          { path: '/hr?tab=attendance', label: 'Daily Shift Attendance', icon: Calendar },
+          { path: '/hr?tab=payroll', label: 'Monthly Payroll Register', icon: DollarSign },
+          { path: '/hr?tab=dept_roles', label: 'Departments & Roles', icon: Building2 }
+        ]
+      },
+      {
+        path: '/documents',
+        label: 'Documents Vault',
+        icon: Folder,
+        permission: 'documents:view',
+        subItems: [
+          { path: '/documents?tab=sales', label: 'Sales Agreements', icon: FileText },
+          { path: '/documents?tab=rental', label: 'Rental Leases', icon: Repeat },
+          { path: '/documents?tab=blueprints', label: 'Floor Blueprints', icon: Layers },
+          { path: '/documents?tab=legal', label: 'Legal & Title Vault', icon: ShieldCheck },
+          { path: '/documents?tab=signatures', label: 'Digital Signatures', icon: Award }
+        ]
+      },
+      {
+        path: '/notifications',
+        label: 'Notifications & Comms',
+        icon: Bell,
+        badge: 'Hub',
+        permission: 'notifications:view',
+        subItems: [
+          { path: '/notifications?tab=templates', label: 'Reminder Templates', icon: FileText },
+          { path: '/notifications?tab=calling', label: 'Telephony & Calling API', icon: PhoneCall },
+          { path: '/notifications?tab=whatsapp', label: 'WhatsApp Gateway', icon: MessageSquare },
+          { path: '/notifications?tab=sms', label: 'SMS Gateway', icon: Smartphone },
+          { path: '/notifications?tab=email', label: 'Email Engine', icon: Mail },
+          { path: '/notifications?tab=push', label: 'Push Notifications', icon: Bell },
+          { path: '/notifications?tab=logs', label: 'Audit Logs', icon: CheckCircle }
+        ]
+      }
     ]
   },
   {
-    path: '/sales',
-    label: 'Sales & Allotments',
-    icon: ShoppingBag,
-    permission: 'sales:view',
-    subItems: [
-      { path: '/sales?tab=deals', label: 'Sales Deals Register', icon: ShoppingBag },
-      { path: '/sales?tab=lifecycle', label: 'Milestone Demands', icon: DollarSign },
-      { path: '/sales?tab=resale', label: 'Resale & Ownership History', icon: History },
-      { path: '/sales?tab=messaging', label: 'Buyer Messaging Center', icon: MessageSquare }
-    ]
-  },
-  {
-    path: '/customers',
-    label: 'Customer Management',
-    icon: UserCheck,
-    permission: 'customers:view',
-    subItems: [
-      { path: '/customers?tab=directory', label: 'Customer Directory', icon: UserCheck },
-      { path: '/customers?tab=passbook', label: 'Customer Passbooks', icon: FileText }
-    ]
-  },
-  {
-    path: '/rentals',
-    label: 'Rental Management',
-    icon: Repeat,
-    badge: 'Assured',
-    permission: 'inventory:view',
-    subItems: [
-      { path: '/rentals?tab=active', label: 'Active Rental Register', icon: Building2 },
-      { path: '/rentals?tab=history', label: 'Previous Owners Trail', icon: History },
-      { path: '/rentals/ledgers', label: 'Rental Passbooks & Ledgers', icon: BookOpen }
-    ]
-  },
-  {
-    path: '/maintenance',
-    label: 'Maintenance & Services',
-    icon: Wrench,
-    permission: 'maintenance:view',
-    subItems: [
-      { path: '/maintenance?tab=bills', label: 'Maintenance Bills', icon: DollarSign },
-      { path: '/maintenance?tab=tickets', label: 'Service Tickets & SLA', icon: Wrench },
-      { path: '/maintenance?tab=penalties', label: 'Rule Infractions & Penalties', icon: AlertTriangle }
-    ]
-  },
-  {
-    path: '/hr',
-    label: 'Workforce & HR',
-    icon: Briefcase,
-    permission: 'hr:view',
-    subItems: [
-      { path: '/hr?tab=directory', label: 'Staff Directory', icon: Users },
-      { path: '/hr?tab=id_cards', label: 'Staff ID Badges & Identity', icon: ShieldCheck },
-      { path: '/hr?tab=leaves', label: 'Leave Quotas & Approvals', icon: Clock },
-      { path: '/hr?tab=attendance', label: 'Daily Shift Attendance', icon: Calendar },
-      { path: '/hr?tab=payroll', label: 'Monthly Payroll Register', icon: DollarSign },
-      { path: '/hr?tab=dept_roles', label: 'Departments & Roles', icon: Building2 }
-    ]
-  },
-  {
-    path: '/documents',
-    label: 'Documents Vault',
-    icon: Folder,
-    permission: 'documents:view',
-    subItems: [
-      { path: '/documents?tab=sales', label: 'Sales Agreements', icon: FileText },
-      { path: '/documents?tab=rental', label: 'Rental Leases', icon: Repeat },
-      { path: '/documents?tab=blueprints', label: 'Floor Blueprints', icon: Layers },
-      { path: '/documents?tab=legal', label: 'Legal & Title Vault', icon: ShieldCheck },
-      { path: '/documents?tab=signatures', label: 'Digital Signatures', icon: Award }
-    ]
-  },
-  {
-    path: '/notifications',
-    label: 'Notifications & Telephony',
-    icon: Bell,
-    badge: 'Hub',
-    permission: 'notifications:view',
-    subItems: [
-      { path: '/notifications?tab=templates', label: 'Reminder Templates', icon: FileText },
-      { path: '/notifications?tab=calling', label: 'Telephony & Calling API', icon: PhoneCall },
-      { path: '/notifications?tab=whatsapp', label: 'WhatsApp Gateway', icon: MessageSquare },
-      { path: '/notifications?tab=sms', label: 'SMS Gateway', icon: Smartphone },
-      { path: '/notifications?tab=email', label: 'Email Engine', icon: Mail },
-      { path: '/notifications?tab=push', label: 'Push Notifications', icon: Bell },
-      { path: '/notifications?tab=logs', label: 'Audit Logs', icon: CheckCircle }
-    ]
-  },
-  {
-    path: '/reports',
-    label: 'BI Reports & Analytics',
-    icon: BarChart3,
-    highlight: true,
-    badge: 'BI',
-    permission: 'reports:view',
-    subItems: [
-      { path: '/reports/sales', label: 'Sales Report' },
-      { path: '/reports/rental', label: 'Rental Report' },
-      { path: '/reports/collection', label: 'Collection & Aging' },
-      { path: '/reports/maintenance', label: 'Maintenance Report' },
-      { path: '/reports/inventory', label: 'Inventory Report' },
-      { path: '/reports/finance', label: 'Finance & P&L' },
-      { path: '/reports/crm', label: 'CRM Funnel' },
-      { path: '/reports/hr', label: 'HR & Payroll' }
-    ]
-  },
-  {
-    path: '/access-control',
-    label: 'Access Control & Users',
-    icon: ShieldCheck,
-    highlight: false,
-    badge: 'Admin',
-    permission: 'users:view',
-    subItems: [
-      { path: '/access-control?tab=users', label: 'User Directory', icon: Users },
-      { path: '/access-control?tab=roles', label: 'Role Permissions Matrix', icon: ShieldCheck },
-      { path: '/access-control?tab=branches', label: 'Branch Locations', icon: Building2 }
-    ]
-  },
-  {
-    path: '/settings',
-    label: 'Settings',
-    icon: Settings,
-    badge: 'Core',
-    permission: 'settings:view',
-    subItems: [
-      { path: '/settings?tab=company', label: 'Company Profile', icon: Building2 },
-      { path: '/settings?tab=financialYear', label: 'Financial Year', icon: Calendar },
-      { path: '/settings?tab=taxes', label: 'Taxes & GST Slabs', icon: DollarSign },
-      { path: '/settings?tab=paymentGateway', label: 'Payment Gateway', icon: DollarSign },
-      { path: '/settings?tab=email', label: 'Email (SMTP)', icon: Mail },
-      { path: '/settings?tab=whatsappApi', label: 'WhatsApp Cloud API', icon: MessageSquare },
-      { path: '/settings?tab=backup', label: 'Database Backup', icon: Folder },
-      { path: '/settings?tab=systemPreferences', label: 'System Preferences', icon: Sliders }
-    ]
-  },
-  {
-    path: '/audit-logs',
-    label: 'Audit Logs',
-    icon: ShieldCheck,
-    badge: 'Sec',
-    permission: 'users:view',
-    subItems: [
-      { path: '/audit-logs?tab=activity', label: 'Activity Logs (CRUD)', icon: FileText },
-      { path: '/audit-logs?tab=deleted', label: 'Deleted Records Vault', icon: FileText },
-      { path: '/audit-logs?tab=updated', label: 'Updated Records (Diffs)', icon: FileText },
-      { path: '/audit-logs?tab=logins', label: 'Login History', icon: User },
-      { path: '/audit-logs?tab=errors', label: 'Error & Exception Logs', icon: FileText }
+    categoryKey: 'governance',
+    categoryLabel: 'Administration & Security',
+    items: [
+      {
+        path: '/access-control',
+        label: 'Access Control & Users',
+        icon: ShieldCheck,
+        badge: 'Admin',
+        permission: 'users:view',
+        subItems: [
+          { path: '/access-control?tab=users', label: 'User Directory', icon: Users },
+          { path: '/access-control?tab=roles', label: 'Role Permissions Matrix', icon: ShieldCheck },
+          { path: '/access-control?tab=branches', label: 'Branch Locations', icon: Building2 }
+        ]
+      },
+      {
+        path: '/audit-logs',
+        label: 'Audit Logs & Vault',
+        icon: ShieldCheck,
+        badge: 'Sec',
+        permission: 'users:view',
+        subItems: [
+          { path: '/audit-logs?tab=activity', label: 'Activity Logs (CRUD)', icon: FileText },
+          { path: '/audit-logs?tab=deleted', label: 'Deleted Records Vault', icon: FileText },
+          { path: '/audit-logs?tab=updated', label: 'Updated Records (Diffs)', icon: FileText },
+          { path: '/audit-logs?tab=logins', label: 'Login History', icon: User },
+          { path: '/audit-logs?tab=errors', label: 'Error & Exception Logs', icon: FileText }
+        ]
+      }
     ]
   }
 ];
+
+export const NAV_ITEMS = NAV_CATEGORIES.flatMap((category) => category.items);
 
 export const AppLayout = () => {
   const location = useLocation();
@@ -473,6 +505,46 @@ export const AppLayout = () => {
       navigate(`/crm?search=${encodeURIComponent(globalSearch.trim())}`);
     }
   };
+
+  const filteredCategories = NAV_CATEGORIES.map((category) => {
+    const visibleCategoryItems = category.items.filter((item) => {
+      if (item.path === '/agent-portal') return isAgentUser;
+      if (item.path === '/agent-network') return !isAgentUser;
+      if (!item.permission) return true;
+      return hasPermission(item.permission);
+    });
+
+    if (!navSearch.trim()) {
+      return {
+        ...category,
+        items: visibleCategoryItems
+      };
+    }
+
+    const query = navSearch.toLowerCase();
+    const categoryMatches = category.categoryLabel.toLowerCase().includes(query);
+
+    const matchingItems = visibleCategoryItems.map((item) => {
+      const parentMatches = item.label.toLowerCase().includes(query);
+      const matchingSubs = (item.subItems || []).filter((sub) =>
+        sub.label.toLowerCase().includes(query)
+      );
+
+      if (categoryMatches || parentMatches || matchingSubs.length > 0) {
+        return {
+          ...item,
+          subItems: matchingSubs.length > 0 ? matchingSubs : item.subItems,
+          forceOpen: true
+        };
+      }
+      return null;
+    }).filter(Boolean);
+
+    return {
+      ...category,
+      items: matchingItems
+    };
+  }).filter((category) => category.items.length > 0);
 
   const filteredNavItems = visibleNavItems.map((item) => {
     if (!navSearch.trim()) return item;
@@ -798,11 +870,55 @@ export const AppLayout = () => {
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: isCollapsed && !isMobile ? '12px 6px' : '12px 0',
+            padding: isCollapsed && !isMobile ? '10px 6px' : '8px 0',
             WebkitOverflowScrolling: 'touch'
           }}
         >
-          {filteredNavItems.map((item) => {
+          {filteredCategories.map((category, catIdx) => (
+            <div key={category.categoryKey} style={{ marginBottom: isCollapsed && !isMobile ? '4px' : '10px' }}>
+              {/* Category Header (when expanded) */}
+              {(!isCollapsed || isMobile) && (
+                <div
+                  style={{
+                    padding: catIdx === 0 ? '4px 18px 6px' : '14px 18px 6px',
+                    fontSize: '0.67rem',
+                    fontWeight: '800',
+                    color: '#94a3b8',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    userSelect: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span>{category.categoryLabel}</span>
+                  <span
+                    style={{
+                      fontSize: '0.62rem',
+                      fontWeight: '700',
+                      color: '#94a3b8',
+                      backgroundColor: '#e2e8f0',
+                      padding: '1px 5px',
+                      borderRadius: '10px',
+                    }}
+                  >
+                    {category.items.length}
+                  </span>
+                </div>
+              )}
+
+              {/* Collapsed Category Divider */}
+              {isCollapsed && !isMobile && catIdx > 0 && (
+                <div
+                  style={{
+                    margin: '8px 10px',
+                    borderTop: '1px solid #e2e8f0',
+                  }}
+                />
+              )}
+
+              {category.items.map((item) => {
             const IconComp = item.icon;
             const isDashboard = item.path === '/dashboard';
             const isSelected = isItemActive(item);
@@ -829,10 +945,10 @@ export const AppLayout = () => {
                     marginRight: isCollapsed && !isMobile ? '0' : '12px',
                     borderRadius: isCollapsed && !isMobile ? '8px' : '0 9999px 9999px 0',
                     backgroundColor: isSelected
-                      ? (item.highlight ? '#fee2e2' : '#4d8efe')
+                      ? (item.highlight ? '#d8e2ff' : '#4d8efe')
                       : 'transparent',
                     color: isSelected
-                      ? (item.highlight ? '#991b1b' : '#00285c')
+                      ? (item.highlight ? '#00285c' : '#00285c')
                       : 'var(--on-surface-variant)',
                     fontWeight: isSelected ? '700' : '500',
                     fontSize: '0.86rem',
@@ -860,7 +976,7 @@ export const AppLayout = () => {
                       size={19}
                       color={
                         isSelected
-                          ? (item.highlight ? '#991b1b' : '#00285c')
+                          ? '#00285c'
                           : 'var(--on-surface-variant)'
                       }
                       strokeWidth={isSelected ? 2.5 : 2}
@@ -891,7 +1007,7 @@ export const AppLayout = () => {
                             fontWeight: '700',
                             backgroundColor: isSelected
                               ? '#00285c'
-                              : (item.highlight ? '#ba1a1a' : '#1a73e8'),
+                              : (item.highlight ? '#005bbf' : '#1a73e8'),
                             color: '#ffffff',
                             padding: '1px 6px',
                             borderRadius: '9999px'
@@ -908,7 +1024,7 @@ export const AppLayout = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: isSelected
-                              ? (item.highlight ? '#991b1b' : '#00285c')
+                              ? (item.highlight ? '#00285c' : '#00285c')
                               : 'var(--on-surface-variant)',
                             transition: 'transform 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
                             transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
@@ -1057,144 +1173,93 @@ export const AppLayout = () => {
             );
           })}
         </div>
+      ))}
+    </div>
 
         {/* Bottom Pinned Area */}
-        <div
-          style={{
-            padding: isCollapsed && !isMobile ? '12px 6px' : '14px 16px',
-            borderTop: '1px solid #dadce0',
-            backgroundColor: '#f8f9fa'
-          }}
-        >
-          {/* Operational Status Pill */}
-          {(!isCollapsed || isMobile) ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                backgroundColor: '#e6f4ea',
-                color: '#137333',
-                fontSize: '0.74rem',
-                fontWeight: '600',
-                marginBottom: '10px'
-              }}
-            >
-              <ShieldCheck size={14} style={{ flexShrink: 0 }} />
-              <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                System Online • All 12 Active
-              </span>
-            </div>
-          ) : (
-            <div
-              title="System Online • All 12 Modules Active"
-              style={{
-                width: '32px',
-                height: '32px',
-                margin: '0 auto 8px',
-                borderRadius: '50%',
-                backgroundColor: '#e6f4ea',
-                color: '#137333',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <ShieldCheck size={16} />
-            </div>
-          )}
-
-          {/* Quick Footer Links */}
-          {(!isCollapsed || isMobile) ? (
-            <div style={{ display: 'flex', gap: '6px', flexDirection: 'column' }}>
+        {(isSuperAdmin || hasPermission('settings:view')) && (
+          <div
+            style={{
+              padding: isCollapsed && !isMobile ? '10px 8px' : '10px 14px',
+              borderTop: '1px solid #dadce0',
+              backgroundColor: '#f8f9fa'
+            }}
+          >
+            {(!isCollapsed || isMobile) ? (
               <NavLink
-                to="/notifications"
+                to="/settings"
                 onClick={() => isMobile && setMobileMenuOpen(false)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  padding: '6px 10px',
-                  borderRadius: '6px',
-                  color: 'var(--on-surface-variant)',
+                  gap: '12px',
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  color: location.pathname.startsWith('/settings') ? '#00285c' : 'var(--on-surface-variant)',
+                  backgroundColor: location.pathname.startsWith('/settings') ? '#d8e2ff' : 'transparent',
+                  fontWeight: location.pathname.startsWith('/settings') ? '700' : '600',
                   textDecoration: 'none',
-                  fontSize: '0.8rem',
-                  fontWeight: '500'
+                  fontSize: '0.84rem',
+                  transition: 'all 0.15s ease'
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                onMouseEnter={(e) => {
+                  if (!location.pathname.startsWith('/settings')) {
+                    e.currentTarget.style.backgroundColor = '#edeeef';
+                    e.currentTarget.style.color = 'var(--on-surface)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!location.pathname.startsWith('/settings')) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'var(--on-surface-variant)';
+                  }
+                }}
               >
-                <HelpCircle size={16} /> Help & Documentation
+                <Settings
+                  size={18}
+                  color={location.pathname.startsWith('/settings') ? '#00285c' : 'var(--on-surface-variant)'}
+                  strokeWidth={location.pathname.startsWith('/settings') ? 2.5 : 2}
+                />
+                <span style={{ flex: 1 }}>System Settings</span>
               </NavLink>
-
-              {(isSuperAdmin || hasPermission('settings:view')) && (
-                <NavLink
-                  to="/settings"
-                  onClick={() => isMobile && setMobileMenuOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '6px 10px',
-                    borderRadius: '6px',
-                    color: 'var(--on-surface-variant)',
-                    textDecoration: 'none',
-                    fontSize: '0.8rem',
-                    fontWeight: '500'
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                >
-                  <Settings size={16} /> System Settings
-                </NavLink>
-              )}
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
-              <button
-                onClick={() => navigate('/notifications')}
-                title="Help & Documentation"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '6px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'var(--on-surface-variant)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-              >
-                <HelpCircle size={17} />
-              </button>
-
-              {(isSuperAdmin || hasPermission('settings:view')) && (
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <button
                   onClick={() => navigate('/settings')}
                   title="System Settings"
                   style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '6px',
-                    backgroundColor: 'transparent',
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '8px',
+                    backgroundColor: location.pathname.startsWith('/settings') ? '#d8e2ff' : 'transparent',
                     border: 'none',
-                    color: 'var(--on-surface-variant)',
+                    color: location.pathname.startsWith('/settings') ? '#00285c' : 'var(--on-surface-variant)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    transition: 'background-color 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!location.pathname.startsWith('/settings')) {
+                      e.currentTarget.style.backgroundColor = '#edeeef';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!location.pathname.startsWith('/settings')) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
                   }}
                 >
-                  <Settings size={17} />
+                  <Settings
+                    size={18}
+                    strokeWidth={location.pathname.startsWith('/settings') ? 2.5 : 2}
+                  />
                 </button>
-              )}
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
+        )}
       </nav>
 
       {/* ======================================================== */}
@@ -1346,7 +1411,7 @@ export const AppLayout = () => {
                       height: '16px',
                       padding: '0 4px',
                       borderRadius: '8px',
-                      backgroundColor: '#ef4444',
+                      backgroundColor: '#0f172a',
                       color: '#ffffff',
                       fontSize: '0.65rem',
                       fontWeight: '800',
@@ -1354,7 +1419,7 @@ export const AppLayout = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       border: '1.5px solid #ffffff',
-                      boxShadow: '0 0 0 1px rgba(239, 68, 68, 0.3)'
+                      boxShadow: '0 0 0 1px rgba(15, 23, 42, 0.3)'
                     }}
                   >
                     {unreadNotifCount}
@@ -1532,7 +1597,7 @@ export const AppLayout = () => {
                   {isOfflineDev && (
                     <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
                       <div style={{ fontSize: '0.7rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', marginBottom: '6px' }}>
-                        ⚡ Quick Role Switch (Demo)
+                        Quick Role Switch (Demo)
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                         {[
@@ -1586,8 +1651,8 @@ export const AppLayout = () => {
                         padding: '8px 10px',
                         borderRadius: '8px',
                         border: 'none',
-                        backgroundColor: '#fff5f5',
-                        color: '#dc2626',
+                        backgroundColor: '#f1f5f9',
+                        color: '#0f172a',
                         fontSize: '0.85rem',
                         fontWeight: '600',
                         cursor: 'pointer'

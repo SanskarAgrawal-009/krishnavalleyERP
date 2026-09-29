@@ -364,7 +364,7 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
                       type="button"
                       onClick={() => handleRemoveItem(idx)}
                       title="Remove Item"
-                      style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                      style={{ background: 'transparent', border: 'none', color: '#0f172a', cursor: 'pointer', padding: '4px' }}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -382,7 +382,7 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
           </div>
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700', textTransform: 'uppercase' }}>TOTAL PO VALUE:</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#137333' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8' }}>
               ₹{Math.round(grandTotal).toLocaleString('en-IN')}
             </div>
           </div>

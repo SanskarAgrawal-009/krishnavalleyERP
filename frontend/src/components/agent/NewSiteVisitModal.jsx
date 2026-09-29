@@ -201,7 +201,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
                 fontWeight: '700',
                 fontSize: '0.9rem',
                 textTransform: 'uppercase',
-                borderColor: agentInfo ? '#16a34a' : agentError ? '#dc2626' : '#cbd5e1'
+                borderColor: agentInfo ? '#1a73e8' : agentError ? '#0f172a' : '#cbd5e1'
               }}
             />
             <button
@@ -229,17 +229,17 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
 
           {/* AGENT AUTO-LOOKUP SUCCESS BADGE */}
           {agentInfo && (
-            <div style={{ marginTop: '10px', padding: '10px 12px', background: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ marginTop: '10px', padding: '10px 12px', background: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontWeight: '800', color: '#166534', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={15} color="#16a34a" /> {agentInfo.agentName} ({agentInfo.agentCode})
+                <div style={{ fontWeight: '800', color: '#1e40af', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={15} color="#1a73e8" /> {agentInfo.agentName} ({agentInfo.agentCode})
                 </div>
-                <div style={{ fontSize: '0.74rem', color: '#15803d', marginTop: '2px' }}>
-                  🏢 {agentInfo.agencyName} • 📞 {agentInfo.phone}
+                <div style={{ fontSize: '0.74rem', color: '#1e40af', marginTop: '2px' }}>
+                  {agentInfo.agencyName} • {agentInfo.phone}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', background: '#dcfce7', color: '#14532d', borderRadius: '12px', fontWeight: '800' }}>
+                <span style={{ fontSize: '0.7rem', padding: '2px 8px', background: '#eff6ff', color: '#001a41', borderRadius: '12px', fontWeight: '800' }}>
                   {agentInfo.commissionType === 'percentage' ? `${agentInfo.commissionRate}% Commission Rate` : `₹${agentInfo.commissionRate} Flat Rate`}
                 </span>
               </div>
@@ -247,7 +247,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
           )}
 
           {agentError && (
-            <div style={{ marginTop: '8px', padding: '8px 12px', background: '#fef2f2', borderRadius: '6px', border: '1px solid #fecaca', color: '#b91c1c', fontSize: '0.76rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ marginTop: '8px', padding: '8px 12px', background: '#f1f5f9', borderRadius: '6px', border: '1px solid #e2e8f0', color: '#0f172a', fontSize: '0.76rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <AlertCircle size={14} /> {agentError}
             </div>
           )}

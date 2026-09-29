@@ -126,7 +126,7 @@ export const UploadBlueprintModal = ({ isOpen, onClose, onUpload, onSubmit }) =>
               borderRadius: '4px',
               fontSize: '0.8rem',
               cursor: 'pointer',
-              color: file ? '#10b981' : 'var(--text-secondary)'
+              color: file ? '#1a73e8' : 'var(--text-secondary)'
             }}
           >
             <Upload size={16} />
@@ -138,7 +138,7 @@ export const UploadBlueprintModal = ({ isOpen, onClose, onUpload, onSubmit }) =>
           <button type="button" onClick={onClose} style={{ padding: '7px 14px', background: '#f8f9fa', color: '#374151', borderRadius: '4px' }}>
             Cancel
           </button>
-          <button type="submit" disabled={uploading || !file} style={{ padding: '7px 18px', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
+          <button type="submit" disabled={uploading || !file} style={{ padding: '7px 18px', background: 'linear-gradient(135deg, #1a73e8, #1e40af)', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
             {uploading ? 'Uploading to S3...' : 'Upload Blueprint to S3'}
           </button>
         </div>

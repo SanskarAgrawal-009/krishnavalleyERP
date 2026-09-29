@@ -11,7 +11,7 @@ import Project from '../models/Project.js';
 import jwt from 'jsonwebtoken';
 
 async function testRentalFlow() {
-  console.log('🧪 Running Comprehensive Rental Flow Test...');
+  console.log('Running Comprehensive Rental Flow Test...');
   await mongoose.connect(process.env.MONGO_URI);
 
   const project = await Project.findOne();
@@ -69,7 +69,7 @@ async function testRentalFlow() {
   });
   await testFlat.save();
 
-  console.log('✅ Created test flat TEST-101 with owner Padam Kumar');
+  console.log('Created test flat TEST-101 with owner Padam Kumar');
 
   // Generate Admin JWT token
   const token = jwt.sign({ id: 'admin-test', role: 'admin' }, process.env.JWT_SECRET || 'super_secret_jwt_key_change_in_production');
@@ -92,9 +92,9 @@ async function testRentalFlow() {
   console.log('Outstanding Balance:', row1.amountOutstanding, '| Expected: 1116000');
 
   if (row1.netAmount === 27900 && row1.totalCommitment === 1116000 && row1.amountOutstanding === 1116000) {
-    console.log('✅ TABLE 1 INITIAL CALCULATIONS PASSED!');
+    console.log('TABLE 1 INITIAL CALCULATIONS PASSED!');
   } else {
-    console.error('❌ Table 1 calculation mismatch!');
+    console.error('Table 1 calculation mismatch!');
   }
 
   // Test 4: Record Payout of ₹62,000 (2 months)
@@ -121,7 +121,7 @@ async function testRentalFlow() {
   console.log('Updated Total Paid:', row3.totalPaid, '| Expected: 62000');
   console.log('Updated Outstanding:', row3.amountOutstanding, '| Expected: 1054000');
   if (row3.totalPaid === 62000 && row3.amountOutstanding === 1054000) {
-    console.log('✅ PAYOUT & OUTSTANDING DECREMENT PASSED!');
+    console.log('PAYOUT & OUTSTANDING DECREMENT PASSED!');
   }
 
   // Test 5: Edit Tenure from 36 to 48 months
@@ -147,7 +147,7 @@ async function testRentalFlow() {
   console.log('New Total Commitment:', row5.totalCommitment, '| Expected: 1488000');
   console.log('New Outstanding:', row5.amountOutstanding, '| Expected: 1426000 (1488000 - 62000)');
   if (row5.tenureMonths === 48 && row5.totalCommitment === 1488000 && row5.amountOutstanding === 1426000) {
-    console.log('✅ TENURE EDIT & AUTO-COMMITMENT PASSED!');
+    console.log('TENURE EDIT & AUTO-COMMITMENT PASSED!');
   }
 
   // Test 6: Resale Transfer to Nitin Kumar (Archive Padam Kumar into Table 2)
@@ -193,16 +193,16 @@ async function testRentalFlow() {
   console.log('Transferred To:', histRow?.transferredTo, '| Expected: Nitin Kumar');
 
   if (histRow?.previousOwnerName === 'Padam Kumar' && histRow?.totalRentPaid === 62000 && histRow?.transferredTo === 'Nitin Kumar') {
-    console.log('✅ TABLE 2 PREVIOUS OWNERS ARCHIVE PASSED 100%!');
+    console.log('TABLE 2 PREVIOUS OWNERS ARCHIVE PASSED 100%!');
   }
 
   // Clean up test records
-  console.log('\n🧹 Cleaning up test records to preserve clean state...');
+  console.log('\nCleaning up test records to preserve clean state...');
   await Flat.deleteOne({ _id: testFlat._id });
   await Customer.deleteMany({ mobileNo: { $in: ['+91 9999900101', '+91 9999900102'] } });
-  console.log('✓ Cleaned up test flat and customers.\n');
+  console.log('Cleaned up test flat and customers.\n');
 
-  console.log('🎉 ALL RENTAL FLOW TESTS COMPLETED WITH 100% SUCCESS!');
+  console.log('ALL RENTAL FLOW TESTS COMPLETED WITH 100% SUCCESS!');
   await mongoose.disconnect();
 }
 

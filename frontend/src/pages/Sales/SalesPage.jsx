@@ -324,7 +324,7 @@ export const SalesPage = () => {
         <div>
           <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '12px' }}>
             Property Sales & Deal Lifecycle
-            <span style={{ fontSize: '0.74rem', background: '#e6f4ea', color: '#137333', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.74rem', background: '#eff6ff', color: '#1a73e8', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
               ALLOTMENT PIPELINE
             </span>
           </div>
@@ -343,7 +343,7 @@ export const SalesPage = () => {
               padding: '9px 18px',
               borderRadius: '8px',
               border: 'none',
-              background: 'linear-gradient(135deg, #10b981, #059669)',
+              background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
               color: '#ffffff',
               fontWeight: '700',
               fontSize: '0.85rem',
@@ -461,11 +461,11 @@ export const SalesPage = () => {
       {/* Error Alert Banner */}
       {errorMsg && (
         <div style={{
-          background: '#fef2f2',
-          border: '1px solid #fecaca',
+          background: '#f1f5f9',
+          border: '1px solid #e2e8f0',
           borderRadius: '8px',
           padding: '14px 18px',
-          color: '#991b1b',
+          color: '#0f172a',
           fontSize: '0.85rem',
           display: 'flex',
           justifyContent: 'space-between',
@@ -477,7 +477,7 @@ export const SalesPage = () => {
           <button
             onClick={fetchSalesLeads}
             style={{
-              background: '#991b1b',
+              background: '#0f172a',
               color: '#ffffff',
               border: 'none',
               borderRadius: '4px',
@@ -510,33 +510,33 @@ export const SalesPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>BOOKED & ALLOTTED</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
                   <CheckCircle size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>{bookedCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>{bookedCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Token confirmed</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>IN PAYMENT PROGRESS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
                   <CreditCard size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{inPaymentCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>{inPaymentCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active milestone demands</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>POSSESSION COMPLETED</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
                   <Key size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>{possessedCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>{possessedCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Keys handed over</span>
             </div>
 
@@ -672,8 +672,8 @@ export const SalesPage = () => {
 
                     {/* Property Details */}
                     <div style={{
-                      background: '#f3e8ff',
-                      border: '1px solid #e9d5ff',
+                      background: '#eff6ff',
+                      border: '1px solid #dbeafe',
                       padding: '8px 10px',
                       borderRadius: '6px',
                       display: 'flex',
@@ -681,14 +681,14 @@ export const SalesPage = () => {
                       justifyContent: 'space-between',
                       fontSize: '0.78rem'
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#8b5cf6', fontWeight: '700' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2563eb', fontWeight: '700' }}>
                         <Home size={14} />
                         <span>Flat {sl.flatId?.flatNumber || 'N/A'}</span>
                         {sl.projectId?.projectName && (
                           <span style={{ color: '#4b5563', fontWeight: '600' }}>• {sl.projectId.projectName}</span>
                         )}
                       </div>
-                      <span style={{ fontSize: '0.72rem', color: '#6b21a8', fontWeight: '700' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#00285c', fontWeight: '700' }}>
                         {sl.agreement?.agreementNumber ? `AGR: ${sl.agreement.agreementNumber}` : 'Agreement Pending'}
                       </span>
                     </div>
@@ -733,8 +733,8 @@ export const SalesPage = () => {
                           justifyContent: 'center',
                           gap: '4px',
                           padding: '5px 10px',
-                          background: '#e6f4ea',
-                          color: '#137333',
+                          background: '#eff6ff',
+                          color: '#1a73e8',
                           borderRadius: '4px',
                           textDecoration: 'none',
                           fontSize: '0.78rem',
@@ -794,9 +794,9 @@ export const SalesPage = () => {
                         }}
                         style={{
                           padding: '6px 12px',
-                          background: '#e6f4ea',
-                          border: '1px solid #ceead6',
-                          color: '#137333',
+                          background: '#eff6ff',
+                          border: '1px solid #bfdbfe',
+                          color: '#1a73e8',
                           fontWeight: '700',
                           borderRadius: '6px',
                           fontSize: '0.76rem',
@@ -816,9 +816,9 @@ export const SalesPage = () => {
                           title="Delete Sales Allotment"
                           style={{
                             padding: '6px 8px',
-                            background: '#fef2f2',
-                            border: '1px solid #fecaca',
-                            color: '#dc2626',
+                            background: '#f1f5f9',
+                            border: '1px solid #e2e8f0',
+                            color: '#0f172a',
                             borderRadius: '6px',
                             cursor: 'pointer',
                             display: 'flex',
@@ -879,33 +879,33 @@ export const SalesPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL PORTFOLIO VALUE</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
                   <DollarSign size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>{formatINR(totalPortfolioValue)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#137333', fontWeight: '700' }}>Total agreed property value</span>
+              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>{formatINR(totalPortfolioValue)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#1a73e8', fontWeight: '700' }}>Total agreed property value</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>IN PAYMENT SCHEDULE</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
                   <CheckCircle size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>{inPaymentCount || bookedCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>{inPaymentCount || bookedCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active construction demands</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>POSSESSION READY</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
                   <Building2 size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{possessedCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>{possessedCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Handover completed</span>
             </div>
           </div>
@@ -998,9 +998,9 @@ export const SalesPage = () => {
                             {formatINR(totalAmt)}
                           </td>
 
-                          <td style={{ fontWeight: '800', color: '#137333', fontSize: '0.92rem' }}>
+                          <td style={{ fontWeight: '800', color: '#1a73e8', fontSize: '0.92rem' }}>
                             {formatINR(bookingAmt)}
-                            <div style={{ fontSize: '0.7rem', color: '#137333', fontWeight: '600' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#1a73e8', fontWeight: '600' }}>
                               Receipt Verified
                             </div>
                           </td>
@@ -1009,7 +1009,7 @@ export const SalesPage = () => {
                             <div style={{ fontWeight: '700', color: '#111827', fontSize: '0.82rem' }}>
                               {activeMilestone.name || 'Plinth Slab Casting'}
                             </div>
-                            <div style={{ fontSize: '0.7rem', color: '#8b5cf6', fontWeight: '700' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#2563eb', fontWeight: '700' }}>
                               {activeMilestone.percentage || 15}% Demand Stage
                             </div>
                           </td>
@@ -1160,12 +1160,12 @@ export const SalesPage = () => {
                   <span style={{ fontSize: '0.74rem', color: '#2563eb', fontWeight: '600' }}>Active in resale ledger</span>
                 </div>
 
-                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #16a34a' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #1a73e8' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>DEVELOPER BUYBACKS</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
                     {totalBuybacks} Transactions
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: '600' }}>Repurchased under MOU</span>
+                  <span style={{ fontSize: '0.74rem', color: '#1e40af', fontWeight: '600' }}>Repurchased under MOU</span>
                 </div>
 
                 <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #0284c7' }}>
@@ -1176,12 +1176,12 @@ export const SalesPage = () => {
                   <span style={{ fontSize: '0.74rem', color: '#0369a1', fontWeight: '600' }}>Title transferred to buyer B</span>
                 </div>
 
-                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #d97706' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #334155' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>RENT PAID TO PRIOR OWNERS</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#d97706', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#334155', marginTop: '4px' }}>
                     {formatINR(totalRentPaidToPrior)}
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#b45309', fontWeight: '600' }}>Archived payout ledger</span>
+                  <span style={{ fontSize: '0.74rem', color: '#334155', fontWeight: '600' }}>Archived payout ledger</span>
                 </div>
               </div>
             );
@@ -1344,15 +1344,15 @@ export const SalesPage = () => {
                               borderRadius: '6px',
                               fontSize: '0.74rem',
                               fontWeight: '700',
-                              background: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#dcfce7' : '#e0f2fe',
-                              color: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#166534' : '#0369a1',
+                              background: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#eff6ff' : '#e0f2fe',
+                              color: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#1e40af' : '#0369a1',
                               textTransform: 'uppercase'
                             }}>
                               {latestHist?.transferReason || (f.status ? f.status.replace(/_/g, ' ') : 'Allotted')}
                             </span>
                           </td>
 
-                          <td style={{ padding: '12px 16px', fontWeight: '700', color: '#b45309' }}>
+                          <td style={{ padding: '12px 16px', fontWeight: '700', color: '#334155' }}>
                             {formatINR(priorRent)}
                           </td>
 

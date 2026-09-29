@@ -6,6 +6,7 @@ import { User } from '../models/User.js';
 import { Lead } from '../models/Lead.js';
 import { CommissionLedger } from '../models/CommissionLedger.js';
 import { SalesTeamMember } from '../models/SalesTeamMember.js';
+import { Task } from '../models/Task.js';
 
 const PERMISSION_DEFINITIONS = [
   // Dashboard
@@ -77,11 +78,17 @@ const PERMISSION_DEFINITIONS = [
   // User & Access Control
   { permissionName: 'View Users & Roles', permissionCode: 'users:view', module: 'AccessControl', action: 'view', description: 'View system user directory and role permissions' },
   { permissionName: 'Manage Users & Permissions', permissionCode: 'users:manage', module: 'AccessControl', action: 'manage', description: 'Create users, assign roles, and modify access privileges' },
+
+  // Taskforce & Task Management
+  { permissionName: 'View Tasks & Directives', permissionCode: 'tasks:view', module: 'Taskforce', action: 'view', description: 'View assigned tasks, department works, and follow-ups' },
+  { permissionName: 'Assign & Create Tasks', permissionCode: 'tasks:create', module: 'Taskforce', action: 'create', description: 'Create and assign works to departments and multiple staff members' },
+  { permissionName: 'Update Progress & Follow-ups', permissionCode: 'tasks:edit', module: 'Taskforce', action: 'edit', description: 'Log follow-up remarks, report roadblocks, update task completion' },
+  { permissionName: 'Manage Taskforce Operations', permissionCode: 'tasks:manage', module: 'Taskforce', action: 'manage', description: 'Full taskforce administration, reassignment, and archiving' },
 ];
 
 export const seedAuthDefaults = async () => {
   try {
-    console.log('🔄 Checking and initializing Authentication & Role-Based Access Control data...');
+    console.log('Checking and initializing Authentication & Role-Based Access Control data...');
 
     // 1. Seed Permissions
     const permissionDocs = [];
@@ -501,7 +508,7 @@ export const seedAuthDefaults = async () => {
             isActiveInRoundRobin: true,
             leadsAssignedCount: 0,
           });
-          console.log(`✅ [Sales Team] Registered @${st.username} (${st.roleTitle}) in Round-Robin queue`);
+          console.log(`[Sales Team] Registered @${st.username} (${st.roleTitle}) in Round-Robin queue`);
         }
       }
     }
@@ -623,9 +630,116 @@ export const seedAuthDefaults = async () => {
       }
     }
 
-    console.log('✅ Auth, Agent Roles & Commission seed data ready!');
+    // 5. Seed Initial Taskforce Directives if empty
+    const taskCount = await Task.countDocuments();
+    if (taskCount === 0) {
+      const adminUser = await User.findOne({ username: 'admin' });
+      const siteEng = await User.findOne({ username: 'site_eng' });
+      const salesHead = await User.findOne({ username: 'sales_head' });
+      const accountsHead = await User.findOne({ username: 'accounts_head' });
+
+      if (adminUser) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const assigneesCivil = [siteEng?._id, adminUser._id].filter(Boolean);
+        const assigneesSales = [salesHead?._id, adminUser._id].filter(Boolean);
+        const assigneesAccounts = [accountsHead?._id, adminUser._id].filter(Boolean);
+
+        await Task.create([
+          {
+            taskCode: 'TSK-2026-0001',
+            title: 'Tower A - Flat 402 Final Snagging Inspection & Balcony Waterproofing',
+            description: 'MD Sir Directive: Immediate inspection required of Tower A Flat 402 for balcony joint waterproofing and electrical panel check prior to buyer walkthrough.',
+            department: 'construction',
+            isApartmentRelated: true,
+            apartmentDetails: {
+              projectName: 'Krishna Valley Vrindavan',
+              tower: 'Tower A',
+              flatNumber: 'Flat 402',
+            },
+            isMDDirective: true,
+            priority: 'urgent',
+            status: 'in_progress',
+            progress: 60,
+            assignedBy: adminUser._id,
+            assignedTo: assigneesCivil,
+            startDate: new Date(),
+            dueDate: new Date(Date.now() + 2 * 86400000),
+            followUpSchedule: {
+              nextFollowUpDate: today,
+              frequency: 'daily',
+              followUpCount: 1,
+              lastFollowUpDate: new Date(),
+            },
+            followUpLogs: [
+              {
+                loggedBy: adminUser._id,
+                loggedAt: new Date(),
+                remarks: 'Spoke with Amit (Site Engg). Balcony sealant completed. Water ponding test underway today.',
+                outcome: 'on_track',
+                previousProgress: 30,
+                newProgress: 60,
+                nextFollowUpDate: today,
+              },
+            ],
+            comments: [
+              {
+                sender: adminUser._id,
+                message: 'Ensure no leakage stains on the lower flat ceiling before certifying.',
+                isMDNote: true,
+                createdAt: new Date(),
+              },
+            ],
+          },
+          {
+            taskCode: 'TSK-2026-0002',
+            title: 'Q3 Direct Buyer Follow-up & Demand Notices Dispatch',
+            department: 'sales',
+            isApartmentRelated: false,
+            isMDDirective: true,
+            priority: 'high',
+            status: 'pending',
+            progress: 25,
+            assignedBy: adminUser._id,
+            assignedTo: assigneesSales,
+            startDate: new Date(),
+            dueDate: new Date(Date.now() + 5 * 86400000),
+            followUpSchedule: {
+              nextFollowUpDate: today,
+              frequency: 'alternate_days',
+              followUpCount: 0,
+            },
+            description: 'Audit pending 3rd slab milestone collections and dispatch formal reminder notices to all enrolled buyers.',
+          },
+          {
+            taskCode: 'TSK-2026-0003',
+            title: 'Vendor Ledger Reconciliation & Sub-contractor Payout Clearances',
+            department: 'accounts',
+            isApartmentRelated: false,
+            isMDDirective: false,
+            priority: 'medium',
+            status: 'in_progress',
+            progress: 40,
+            assignedBy: adminUser._id,
+            assignedTo: assigneesAccounts,
+            startDate: new Date(),
+            dueDate: new Date(Date.now() + 7 * 86400000),
+            followUpSchedule: {
+              nextFollowUpDate: tomorrow,
+              frequency: 'weekly',
+              followUpCount: 0,
+            },
+            description: 'Verify cement and steel invoice delivery receipts before approving weekly vendor disbursements.',
+          },
+        ]);
+      }
+    }
+
+    console.log('Auth, Agent Roles & Commission seed data ready!');
   } catch (error) {
-    console.error('❌ Error during Auth Seeding:', error.message);
+    console.error('Error during Auth Seeding:', error.message);
   }
 };
 

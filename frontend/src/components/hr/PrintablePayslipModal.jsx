@@ -223,8 +223,8 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
                   <td style={{ padding: '8px 14px', fontWeight: '700', color: '#475569' }}>Status:</td>
                   <td style={{ padding: '8px 14px' }}>
                     <span style={{
-                      backgroundColor: payrollItem.status === 'paid' ? '#dcfce7' : '#fef3c7',
-                      color: payrollItem.status === 'paid' ? '#166534' : '#92400e',
+                      backgroundColor: payrollItem.status === 'paid' ? '#eff6ff' : '#f1f5f9',
+                      color: payrollItem.status === 'paid' ? '#1e40af' : '#334155',
                       padding: '2px 8px',
                       borderRadius: '4px',
                       fontWeight: '800',
@@ -233,7 +233,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      {payrollItem.status === 'paid' ? '✓ DISBURSED' : 'PROCESSED / PENDING'}
+                      {payrollItem.status === 'paid' ? 'DISBURSED' : 'PROCESSED / PENDING'}
                     </span>
                   </td>
                 </tr>
@@ -245,7 +245,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '20px 0' }}>
             {/* Left: Earnings */}
             <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
-              <div style={{ backgroundColor: '#f0fdf4', padding: '10px 14px', borderBottom: '1px solid #bbf7d0', fontWeight: '800', color: '#166534', fontSize: '0.85rem' }}>
+              <div style={{ backgroundColor: '#eff6ff', padding: '10px 14px', borderBottom: '1px solid #dbeafe', fontWeight: '800', color: '#1e40af', fontSize: '0.85rem' }}>
                 EARNINGS & ALLOWANCES
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
@@ -268,7 +268,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
                   </tr>
                   <tr style={{ backgroundColor: '#f8fafc', fontWeight: '800', borderTop: '2px solid #e2e8f0' }}>
                     <td style={{ padding: '10px 14px', color: '#0f172a' }}>GROSS EARNINGS (A)</td>
-                    <td style={{ padding: '10px 14px', textAlign: 'right', color: '#16a34a', fontSize: '0.92rem' }}>{formatINR(gross)}</td>
+                    <td style={{ padding: '10px 14px', textAlign: 'right', color: '#1a73e8', fontSize: '0.92rem' }}>{formatINR(gross)}</td>
                   </tr>
                 </tbody>
               </table>
@@ -276,7 +276,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
 
             {/* Right: Deductions */}
             <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
-              <div style={{ backgroundColor: '#fef2f2', padding: '10px 14px', borderBottom: '1px solid #fecaca', fontWeight: '800', color: '#991b1b', fontSize: '0.85rem' }}>
+              <div style={{ backgroundColor: '#f1f5f9', padding: '10px 14px', borderBottom: '1px solid #e2e8f0', fontWeight: '800', color: '#0f172a', fontSize: '0.85rem' }}>
                 STATUTORY DEDUCTIONS
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
@@ -291,7 +291,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
                   </tr>
                   <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '8px 14px', color: '#334155' }}>Leave Without Pay (LWP) Deductions</td>
-                    <td style={{ padding: '8px 14px', textAlign: 'right', color: lwp > 0 ? '#dc2626' : '#0f172a' }}>{formatINR(lwp)}</td>
+                    <td style={{ padding: '8px 14px', textAlign: 'right', color: lwp > 0 ? '#0f172a' : '#0f172a' }}>{formatINR(lwp)}</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '8px 14px', color: '#334155' }}>Professional Tax / TDS</td>
@@ -299,7 +299,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
                   </tr>
                   <tr style={{ backgroundColor: '#f8fafc', fontWeight: '800', borderTop: '2px solid #e2e8f0' }}>
                     <td style={{ padding: '10px 14px', color: '#0f172a' }}>TOTAL DEDUCTIONS (B)</td>
-                    <td style={{ padding: '10px 14px', textAlign: 'right', color: '#dc2626', fontSize: '0.92rem' }}>{formatINR(totalDeductions)}</td>
+                    <td style={{ padding: '10px 14px', textAlign: 'right', color: '#0f172a', fontSize: '0.92rem' }}>{formatINR(totalDeductions)}</td>
                   </tr>
                 </tbody>
               </table>

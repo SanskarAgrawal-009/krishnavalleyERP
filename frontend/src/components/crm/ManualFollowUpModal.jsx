@@ -51,10 +51,10 @@ export const ManualFollowUpModal = ({
 
   const modes = [
     { value: 'call', label: 'Call', icon: Phone, color: '#3b82f6' },
-    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#10b981' },
-    { value: 'site_visit', label: 'Site Visit', icon: Compass, color: '#f59e0b' },
-    { value: 'meeting', label: 'Meeting', icon: Users, color: '#8b5cf6' },
-    { value: 'email', label: 'Email', icon: Mail, color: '#ec4899' },
+    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#1a73e8' },
+    { value: 'site_visit', label: 'Site Visit', icon: Compass, color: '#475569' },
+    { value: 'meeting', label: 'Meeting', icon: Users, color: '#2563eb' },
+    { value: 'email', label: 'Email', icon: Mail, color: '#1e40af' },
     { value: 'other', label: 'Other', icon: Tag, color: '#4b5563' }
   ];
 

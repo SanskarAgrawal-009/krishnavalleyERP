@@ -216,7 +216,7 @@ export const SettingsPage = () => {
             zIndex: 9999,
             padding: '14px 22px',
             borderRadius: '12px',
-            backgroundColor: toast.type === 'error' ? '#ba1a1a' : '#0d904f',
+            backgroundColor: toast.type === 'error' ? '#0f172a' : '#1a73e8',
             color: '#ffffff',
             fontWeight: '600',
             fontSize: '0.9rem',
@@ -234,7 +234,7 @@ export const SettingsPage = () => {
       {/* Header Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 60%, #43a047 100%)',
+          background: 'linear-gradient(135deg, #00285c 0%, #1a73e8 60%, #2563eb 100%)',
           borderRadius: '20px',
           padding: '28px 32px',
           color: '#ffffff',
@@ -333,13 +333,13 @@ export const SettingsPage = () => {
                   gap: '12px',
                   padding: '12px 14px',
                   borderRadius: '12px',
-                  border: tab.danger ? '1px solid #fecaca' : 'none',
+                  border: tab.danger ? '1px solid #e2e8f0' : 'none',
                   backgroundColor: isActive
-                    ? (tab.danger ? '#fef2f2' : '#e8f5e9')
+                    ? (tab.danger ? '#f1f5f9' : '#e8f5e9')
                     : 'transparent',
                   color: isActive
-                    ? (tab.danger ? '#991b1b' : '#1b5e20')
-                    : (tab.danger ? '#dc2626' : '#475569'),
+                    ? (tab.danger ? '#0f172a' : '#00285c')
+                    : (tab.danger ? '#0f172a' : '#475569'),
                   textAlign: 'left',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
@@ -352,11 +352,11 @@ export const SettingsPage = () => {
                     height: '36px',
                     borderRadius: '10px',
                     backgroundColor: isActive
-                      ? (tab.danger ? '#dc2626' : '#2e7d32')
-                      : (tab.danger ? '#fef2f2' : '#f1f5f9'),
+                      ? (tab.danger ? '#0f172a' : '#1a73e8')
+                      : (tab.danger ? '#f1f5f9' : '#f1f5f9'),
                     color: isActive
                       ? '#ffffff'
-                      : (tab.danger ? '#dc2626' : '#64748b'),
+                      : (tab.danger ? '#0f172a' : '#64748b'),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -369,7 +369,7 @@ export const SettingsPage = () => {
                   <div style={{ fontSize: '0.9rem', fontWeight: isActive ? '800' : '600' }}>
                     {tab.label}
                   </div>
-                  <div style={{ fontSize: '0.74rem', color: isActive ? (tab.danger ? '#b91c1c' : '#2e7d32') : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '0.74rem', color: isActive ? (tab.danger ? '#0f172a' : '#1a73e8') : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {tab.desc}
                   </div>
                 </div>
@@ -411,7 +411,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#1b5e20',
+                    backgroundColor: '#00285c',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -591,7 +591,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#1b5e20',
+                    backgroundColor: '#00285c',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -605,20 +605,20 @@ export const SettingsPage = () => {
               </div>
 
               {/* Active FY Card */}
-              <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '18px 22px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ backgroundColor: '#eff6ff', border: '1px solid #dbeafe', padding: '18px 22px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                  <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: '700', textTransform: 'uppercase' }}>Current Active Accounting Year</div>
-                  <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#14532d', marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.8rem', color: '#1e40af', fontWeight: '700', textTransform: 'uppercase' }}>Current Active Accounting Year</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#001a41', marginTop: '2px' }}>
                     FY {fyForm.activeFY || '2025-2026'}
                   </div>
-                  <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '4px' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#1e40af', marginTop: '4px' }}>
                     Period: 01-Apr-2025 to 31-Mar-2026 • Transactions & Demand Letters are mapped to this period
                   </div>
                 </div>
                 <select
                   value={fyForm.activeFY || '2025-2026'}
                   onChange={(e) => setFyForm({ ...fyForm, activeFY: e.target.value })}
-                  style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid #86efac', backgroundColor: '#ffffff', fontWeight: '700', fontSize: '0.9rem', color: '#166534' }}
+                  style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid #bfdbfe', backgroundColor: '#ffffff', fontWeight: '700', fontSize: '0.9rem', color: '#1e40af' }}
                 >
                   <option value="2024-2025">FY 2024 - 2025</option>
                   <option value="2025-2026">FY 2025 - 2026 (Active)</option>
@@ -696,7 +696,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#1b5e20',
+                    backgroundColor: '#00285c',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -732,7 +732,7 @@ export const SettingsPage = () => {
                             {slab.label}
                             <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '400', marginTop: '2px' }}>{slab.description}</div>
                           </td>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#1b5e20' }}>{slab.rate}%</td>
+                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#00285c' }}>{slab.rate}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.cgst}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.sgst}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.igst}%</td>
@@ -763,7 +763,7 @@ export const SettingsPage = () => {
                         <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '12px 16px', fontWeight: '800', color: '#1e293b' }}>{rule.section}</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{rule.label}</td>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#0d904f' }}>{rule.rate}%</td>
+                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#1a73e8' }}>{rule.rate}%</td>
                           <td style={{ padding: '12px 16px', color: '#64748b' }}>₹{(rule.threshold || 0).toLocaleString('en-IN')}</td>
                         </tr>
                       ))}
@@ -797,7 +797,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#1b5e20',
+                    backgroundColor: '#00285c',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -921,7 +921,7 @@ export const SettingsPage = () => {
                       gap: '8px',
                       padding: '10px 20px',
                       borderRadius: '10px',
-                      backgroundColor: '#1b5e20',
+                      backgroundColor: '#00285c',
                       color: '#ffffff',
                       fontWeight: '700',
                       fontSize: '0.88rem',
@@ -1026,7 +1026,7 @@ export const SettingsPage = () => {
                       gap: '8px',
                       padding: '10px 20px',
                       borderRadius: '10px',
-                      backgroundColor: '#1b5e20',
+                      backgroundColor: '#00285c',
                       color: '#ffffff',
                       fontWeight: '700',
                       fontSize: '0.88rem',
@@ -1099,7 +1099,7 @@ export const SettingsPage = () => {
                     style={{
                       padding: '10px 18px',
                       borderRadius: '10px',
-                      backgroundColor: '#1b5e20',
+                      backgroundColor: '#00285c',
                       color: '#ffffff',
                       fontWeight: '700',
                       fontSize: '0.88rem',
@@ -1162,7 +1162,7 @@ export const SettingsPage = () => {
                           <td style={{ padding: '12px 16px', color: '#475569' }}>
                             {new Date(bkp.timestamp).toLocaleString('en-IN')}
                           </td>
-                          <td style={{ padding: '12px 16px', fontWeight: '700', color: '#1b5e20' }}>
+                          <td style={{ padding: '12px 16px', fontWeight: '700', color: '#00285c' }}>
                             {bkp.totalRecords || 142} entities
                           </td>
                           <td style={{ padding: '12px 16px', color: '#64748b' }}>
@@ -1170,9 +1170,8 @@ export const SettingsPage = () => {
                           </td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{bkp.triggeredBy}</td>
                           <td style={{ padding: '12px 16px' }}>
-                            <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '6px', backgroundColor: '#e8f5e9', color: '#1b5e20', fontWeight: '700', fontSize: '0.75rem' }}>
-                              Completed ✓
-                            </span>
+                            <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '6px', backgroundColor: '#e8f5e9', color: '#00285c', fontWeight: '700', fontSize: '0.75rem' }}>
+                              Completed </span>
                           </td>
                         </tr>
                       ))}
@@ -1206,7 +1205,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#1b5e20',
+                    backgroundColor: '#00285c',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -1285,12 +1284,12 @@ export const SettingsPage = () => {
 
           {/* ===== DANGER ZONE TAB (Super Admin Only) ===== */}
           {activeTab === 'dangerZone' && isSuperAdmin && (
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '2px solid #dc2626', overflow: 'hidden' }}>
-              <div style={{ padding: '24px 28px', background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)' }}>
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '2px solid #0f172a', overflow: 'hidden' }}>
+              <div style={{ padding: '24px 28px', background: 'linear-gradient(135deg, #0f172a 0%, #0f172a 50%, #0f172a 100%)' }}>
                 <h2 style={{ margin: 0, color: '#ffffff', fontWeight: '800', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <AlertTriangle size={24} /> Danger Zone
                 </h2>
-                <p style={{ margin: '6px 0 0', color: '#fca5a5', fontSize: '0.85rem' }}>
+                <p style={{ margin: '6px 0 0', color: '#cbd5e1', fontSize: '0.85rem' }}>
                   Irreversible destructive operations. Proceed with extreme caution.
                 </p>
               </div>
@@ -1298,20 +1297,20 @@ export const SettingsPage = () => {
               <div style={{ padding: '28px' }}>
                 {/* Wipe All Customers */}
                 <div style={{
-                  border: '1px solid #fecaca',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '12px',
                   padding: '20px 24px',
-                  backgroundColor: '#fef2f2',
+                  backgroundColor: '#f1f5f9',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   gap: '20px'
                 }}>
                   <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: '800', color: '#991b1b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Trash2 size={18} /> Wipe All Customer Data
                     </h3>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#7f1d1d', lineHeight: '1.5' }}>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#0f172a', lineHeight: '1.5' }}>
                       Permanently deletes <strong>ALL customers</strong>, <strong>ALL sales leads</strong>, and clears ownership references from all flats.
                       This action <strong>cannot be undone</strong>.
                     </p>
@@ -1321,8 +1320,8 @@ export const SettingsPage = () => {
                     style={{
                       padding: '10px 22px',
                       borderRadius: '10px',
-                      border: '2px solid #dc2626',
-                      backgroundColor: '#dc2626',
+                      border: '2px solid #0f172a',
+                      backgroundColor: '#0f172a',
                       color: '#ffffff',
                       fontWeight: '800',
                       fontSize: '0.85rem',
@@ -1330,16 +1329,16 @@ export const SettingsPage = () => {
                       whiteSpace: 'nowrap',
                       transition: 'all 0.2s',
                     }}
-                    onMouseEnter={(e) => { e.target.style.backgroundColor = '#b91c1c'; }}
-                    onMouseLeave={(e) => { e.target.style.backgroundColor = '#dc2626'; }}
+                    onMouseEnter={(e) => { e.target.style.backgroundColor = '#0f172a'; }}
+                    onMouseLeave={(e) => { e.target.style.backgroundColor = '#0f172a'; }}
                   >
                     Wipe All Customers
                   </button>
                 </div>
 
-                <div style={{ marginTop: '20px', padding: '14px 18px', backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                  <AlertTriangle size={18} style={{ color: '#d97706', flexShrink: 0, marginTop: '2px' }} />
-                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#92400e', lineHeight: '1.5' }}>
+                <div style={{ marginTop: '20px', padding: '14px 18px', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                  <AlertTriangle size={18} style={{ color: '#334155', flexShrink: 0, marginTop: '2px' }} />
+                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#334155', lineHeight: '1.5' }}>
                     <strong>Warning:</strong> These operations are restricted to Super Admin accounts only.
                     All destructive actions are logged in the audit trail and require a typed confirmation phrase.
                   </p>
@@ -1365,7 +1364,7 @@ export const SettingsPage = () => {
               />
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <button type="button" onClick={() => setTestEmailModal(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff' }}>Cancel</button>
-                <button type="submit" disabled={testEmailLoading} style={{ padding: '8px 18px', borderRadius: '8px', backgroundColor: '#1b5e20', color: '#ffffff', border: 'none', fontWeight: '700' }}>
+                <button type="submit" disabled={testEmailLoading} style={{ padding: '8px 18px', borderRadius: '8px', backgroundColor: '#00285c', color: '#ffffff', border: 'none', fontWeight: '700' }}>
                   {testEmailLoading ? 'Sending...' : 'Send'}
                 </button>
               </div>
@@ -1391,7 +1390,7 @@ export const SettingsPage = () => {
               />
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <button type="button" onClick={() => setTestWaModal(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff' }}>Cancel</button>
-                <button type="submit" disabled={testWaLoading} style={{ padding: '8px 18px', borderRadius: '8px', backgroundColor: '#1b5e20', color: '#ffffff', border: 'none', fontWeight: '700' }}>
+                <button type="submit" disabled={testWaLoading} style={{ padding: '8px 18px', borderRadius: '8px', backgroundColor: '#00285c', color: '#ffffff', border: 'none', fontWeight: '700' }}>
                   {testWaLoading ? 'Connecting...' : 'Test Now'}
                 </button>
               </div>
@@ -1403,22 +1402,22 @@ export const SettingsPage = () => {
       {/* Wipe All Customers Confirmation Modal */}
       {wipeConfirmModal && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #dc2626' }}>
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #0f172a' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <AlertTriangle size={22} style={{ color: '#dc2626' }} />
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <AlertTriangle size={22} style={{ color: '#0f172a' }} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#991b1b' }}>Confirm: Wipe All Customers</h3>
-                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#b91c1c' }}>This action is permanent and irreversible</p>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>Confirm: Wipe All Customers</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#0f172a' }}>This action is permanent and irreversible</p>
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#fef2f2', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', border: '1px solid #fecaca' }}>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#7f1d1d', lineHeight: '1.6' }}>
+            <div style={{ backgroundColor: '#f1f5f9', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', border: '1px solid #e2e8f0' }}>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#0f172a', lineHeight: '1.6' }}>
                 This will permanently delete:
               </p>
-              <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontSize: '0.85rem', color: '#991b1b', lineHeight: '1.8' }}>
+              <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontSize: '0.85rem', color: '#0f172a', lineHeight: '1.8' }}>
                 <li>All customer records</li>
                 <li>All sales lead records</li>
                 <li>All flat ownership references & history</li>
@@ -1426,7 +1425,7 @@ export const SettingsPage = () => {
             </div>
 
             <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '8px' }}>
-              Type <span style={{ color: '#dc2626', fontFamily: 'monospace', fontSize: '0.9rem' }}>DELETE ALL CUSTOMERS</span> to confirm:
+              Type <span style={{ color: '#0f172a', fontFamily: 'monospace', fontSize: '0.9rem' }}>DELETE ALL CUSTOMERS</span> to confirm:
             </label>
             <input
               type="text"
@@ -1437,11 +1436,11 @@ export const SettingsPage = () => {
                 width: '100%',
                 padding: '10px 14px',
                 borderRadius: '8px',
-                border: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '2px solid #dc2626' : '1px solid #cbd5e1',
+                border: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '2px solid #0f172a' : '1px solid #cbd5e1',
                 fontSize: '0.9rem',
                 fontFamily: 'monospace',
                 marginBottom: '20px',
-                backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#fef2f2' : '#ffffff'
+                backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#f1f5f9' : '#ffffff'
               }}
             />
 
@@ -1472,7 +1471,7 @@ export const SettingsPage = () => {
                 style={{
                   padding: '9px 22px',
                   borderRadius: '8px',
-                  backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#dc2626' : '#e5e7eb',
+                  backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#0f172a' : '#e5e7eb',
                   color: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#ffffff' : '#9ca3af',
                   border: 'none',
                   fontWeight: '800',

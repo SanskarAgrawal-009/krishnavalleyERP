@@ -213,17 +213,17 @@ export const testCalendarConnection = async (overrideConfig = null) => {
 const getModeDisplay = (mode) => {
   switch (mode) {
     case 'site_visit':
-      return { icon: '🏡', label: 'Site Visit' };
+      return { icon: '', label: 'Site Visit' };
     case 'call':
-      return { icon: '📞', label: 'Phone Call' };
+      return { icon: '', label: 'Phone Call' };
     case 'meeting':
-      return { icon: '🤝', label: 'Meeting' };
+      return { icon: '', label: 'Meeting' };
     case 'whatsapp':
-      return { icon: '💬', label: 'WhatsApp' };
+      return { icon: '', label: 'WhatsApp' };
     case 'email':
-      return { icon: '✉️', label: 'Email Follow-up' };
+      return { icon: '', label: 'Email Follow-up' };
     default:
-      return { icon: '📋', label: 'Follow-up' };
+      return { icon: '', label: 'Follow-up' };
   }
 };
 
@@ -311,21 +311,21 @@ export const createOrUpdateFollowUpEvent = async ({
 
     const eventDescription = [
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-      `🏢 KRISHNA VALLEY ERP - SCHEDULED FOLLOW-UP`,
+      `KRISHNA VALLEY ERP - SCHEDULED FOLLOW-UP`,
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-      `👤 Client Name: ${lead.name}`,
-      `📞 Phone: ${lead.mobileNo}`,
-      lead.email ? `✉️ Email: ${lead.email}` : null,
-      `🏷️ Status: ${(lead.status || 'Active').toUpperCase()}`,
-      `📍 City/Location: ${lead.city || 'N/A'}, ${lead.state || ''}`,
-      lead.budget ? `💰 Budget Range: ${lead.budget}` : null,
-      lead.propertyInterest ? `🏡 Interest: ${lead.propertyInterest}` : null,
-      assignedUser?.firstName ? `👔 Assigned Rep: ${assignedUser.firstName} ${assignedUser.lastName || ''} (${assignedUser.mobileNo || ''})` : null,
-      `📌 Follow-Up Mode: ${modeInfo.label}`,
-      `📝 Notes / Agenda:`,
+      `Client Name: ${lead.name}`,
+      `Phone: ${lead.mobileNo}`,
+      lead.email ? `Email: ${lead.email}` : null,
+      `Status: ${(lead.status || 'Active').toUpperCase()}`,
+      `City/Location: ${lead.city || 'N/A'}, ${lead.state || ''}`,
+      lead.budget ? `Budget Range: ${lead.budget}` : null,
+      lead.propertyInterest ? `Interest: ${lead.propertyInterest}` : null,
+      assignedUser?.firstName ? `Assigned Rep: ${assignedUser.firstName} ${assignedUser.lastName || ''} (${assignedUser.mobileNo || ''})` : null,
+      `Follow-Up Mode: ${modeInfo.label}`,
+      `Notes / Agenda:`,
       `${followUp.notes || 'Follow-up with client regarding property tour/pricing.'}`,
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-      `🔗 Open Lead in ERP: ${leadLink}`,
+      `Open Lead in ERP: ${leadLink}`,
     ]
       .filter(Boolean)
       .join('\n');

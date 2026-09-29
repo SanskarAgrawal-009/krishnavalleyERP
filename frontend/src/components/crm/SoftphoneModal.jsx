@@ -161,7 +161,7 @@ export const SoftphoneModal = ({
 
       setFeedback({
         type: 'success',
-        message: `✓ Call record auto-uploaded to DB (${finalDuration}s). You can refine remarks below.`
+        message: `Call record auto-uploaded to DB (${finalDuration}s). You can refine remarks below.`
       });
 
       if (onCallLogged) onCallLogged();
@@ -201,7 +201,7 @@ export const SoftphoneModal = ({
         callStatus: callDuration > 0 ? 'completed' : 'no_answer'
       });
 
-      setFeedback({ type: 'success', message: '✓ Call outcome and notes updated in CRM ledger!' });
+      setFeedback({ type: 'success', message: 'Call outcome and notes updated in CRM ledger!' });
       if (onCallLogged) onCallLogged();
 
       setTimeout(() => {
@@ -241,7 +241,7 @@ export const SoftphoneModal = ({
         {/* Header */}
         <div style={{
           padding: '16px 20px',
-          background: 'linear-gradient(135deg, #0f766e 0%, #115e59 100%)',
+          background: 'linear-gradient(135deg, #005bbf 0%, #00285c 100%)',
           color: '#ffffff',
           display: 'flex',
           justifyContent: 'space-between',
@@ -280,7 +280,7 @@ export const SoftphoneModal = ({
                 {recipientName}
               </h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px', fontSize: '0.8rem', color: '#475569' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: '700', color: '#0f766e' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: '700', color: '#005bbf' }}>
                   <Phone size={12} /> {recipientPhone}
                 </span>
                 <span>•</span>
@@ -314,7 +314,7 @@ export const SoftphoneModal = ({
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: callState === 'in_call' ? '#f0fdfa' : (callState === 'calling' ? '#fefce8' : '#ffffff'),
+          background: callState === 'in_call' ? '#f8fafc' : (callState === 'calling' ? '#f8fafc' : '#ffffff'),
           borderBottom: '1px solid #e2e8f0',
           transition: 'all 0.2s ease'
         }}>
@@ -324,9 +324,9 @@ export const SoftphoneModal = ({
                 width: '68px',
                 height: '68px',
                 borderRadius: '50%',
-                background: '#ecfdf5',
-                border: '2px solid #10b981',
-                color: '#059669',
+                background: '#eff6ff',
+                border: '2px solid #1a73e8',
+                color: '#1e40af',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -354,9 +354,9 @@ export const SoftphoneModal = ({
                       padding: '4px 10px',
                       fontSize: '0.72rem',
                       borderRadius: '12px',
-                      border: selectedProvider === p.id ? '1px solid #0d9488' : '1px solid #cbd5e1',
-                      background: selectedProvider === p.id ? '#ccfbf1' : '#f8fafc',
-                      color: selectedProvider === p.id ? '#0f766e' : '#64748b',
+                      border: selectedProvider === p.id ? '1px solid #0284c7' : '1px solid #cbd5e1',
+                      background: selectedProvider === p.id ? '#eff6ff' : '#f8fafc',
+                      color: selectedProvider === p.id ? '#005bbf' : '#64748b',
                       fontWeight: '600',
                       cursor: 'pointer'
                     }}
@@ -374,9 +374,9 @@ export const SoftphoneModal = ({
                 width: '68px',
                 height: '68px',
                 borderRadius: '50%',
-                background: '#fef9c3',
-                border: '2px dashed #ca8a04',
-                color: '#ca8a04',
+                background: '#f8fafc',
+                border: '2px dashed #475569',
+                color: '#475569',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -384,10 +384,10 @@ export const SoftphoneModal = ({
               }}>
                 <RefreshCw size={28} className="spin" />
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: '800', color: '#854d0e' }}>
+              <div style={{ fontSize: '1rem', fontWeight: '800', color: '#334155' }}>
                 Connecting &amp; Ringing...
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#a16207', marginTop: '4px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#334155', marginTop: '4px' }}>
                 Bridging call to {recipientPhone}...
               </div>
             </div>
@@ -398,14 +398,14 @@ export const SoftphoneModal = ({
               <div style={{
                 fontSize: '2rem',
                 fontWeight: '900',
-                color: '#0f766e',
+                color: '#005bbf',
                 fontFamily: 'monospace',
                 letterSpacing: '1px'
               }}>
                 {formatTimer(callDuration)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '6px', fontSize: '0.78rem', color: '#059669', fontWeight: '700' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '6px', fontSize: '0.78rem', color: '#1e40af', fontWeight: '700' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1a73e8', display: 'inline-block' }}></span>
                 CALL IN PROGRESS • HD AUDIO
               </div>
 
@@ -419,8 +419,8 @@ export const SoftphoneModal = ({
                     height: '42px',
                     borderRadius: '50%',
                     border: '1px solid #cbd5e1',
-                    background: isMuted ? '#fee2e2' : '#ffffff',
-                    color: isMuted ? '#dc2626' : '#475569',
+                    background: isMuted ? '#f1f5f9' : '#ffffff',
+                    color: isMuted ? '#0f172a' : '#475569',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -438,7 +438,7 @@ export const SoftphoneModal = ({
                     padding: '0 20px',
                     height: '42px',
                     borderRadius: '24px',
-                    background: '#dc2626',
+                    background: '#0f172a',
                     color: '#ffffff',
                     border: 'none',
                     fontWeight: '700',
@@ -489,7 +489,7 @@ export const SoftphoneModal = ({
                 marginTop: '16px',
                 padding: '10px 24px',
                 borderRadius: '24px',
-                background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                background: 'linear-gradient(135deg, #1e40af 0%, #1e40af 100%)',
                 color: '#ffffff',
                 border: 'none',
                 fontWeight: '800',
@@ -526,14 +526,14 @@ export const SoftphoneModal = ({
                 fontWeight: '600'
               }}
             >
-              <option value="interested_site_visit">🎉 Interested - Site Visit Scheduled</option>
-              <option value="interested_followup">📞 Interested - Follow-up Call Requested</option>
-              <option value="general_discussion">💬 General Inquiry / Discussion</option>
-              <option value="ringing_unanswered">🔔 Ringing - No Answer</option>
-              <option value="busy">⏳ Busy / Asked to Call Back Later</option>
-              <option value="not_reachable">📵 Phone Switched Off / Out of Coverage</option>
-              <option value="wrong_number">❌ Wrong / Invalid Number</option>
-              <option value="not_interested">🚫 Not Interested / Budget Mismatch</option>
+              <option value="interested_site_visit">Interested - Site Visit Scheduled</option>
+              <option value="interested_followup">Interested - Follow-up Call Requested</option>
+              <option value="general_discussion">General Inquiry / Discussion</option>
+              <option value="ringing_unanswered">Ringing - No Answer</option>
+              <option value="busy">Busy / Asked to Call Back Later</option>
+              <option value="not_reachable">Phone Switched Off / Out of Coverage</option>
+              <option value="wrong_number">Wrong / Invalid Number</option>
+              <option value="not_interested">Not Interested / Budget Mismatch</option>
             </select>
           </div>
 
@@ -567,9 +567,9 @@ export const SoftphoneModal = ({
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              background: feedback.type === 'success' ? '#ecfdf5' : '#fef2f2',
-              color: feedback.type === 'success' ? '#059669' : '#dc2626',
-              border: feedback.type === 'success' ? '1px solid #a7f3d0' : '1px solid #fecaca'
+              background: feedback.type === 'success' ? '#eff6ff' : '#f1f5f9',
+              color: feedback.type === 'success' ? '#1e40af' : '#0f172a',
+              border: feedback.type === 'success' ? '1px solid #bfdbfe' : '1px solid #e2e8f0'
             }}>
               {feedback.type === 'success' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
               {feedback.message}
@@ -601,7 +601,7 @@ export const SoftphoneModal = ({
                 padding: '8px 18px',
                 borderRadius: '6px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 100%)',
+                background: 'linear-gradient(135deg, #005bbf 0%, #0284c7 100%)',
                 color: '#ffffff',
                 fontSize: '0.8rem',
                 fontWeight: '800',

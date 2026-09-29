@@ -321,7 +321,7 @@ export const RentalsPage = () => {
         <div>
           <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '12px' }}>
             36-Month Guaranteed Rent-Back Hub
-            <span style={{ fontSize: '0.74rem', background: '#ecfdf5', color: '#059669', padding: '3px 10px', borderRadius: '6px', fontWeight: '700', border: '1px solid #a7f3d0' }}>
+            <span style={{ fontSize: '0.74rem', background: '#eff6ff', color: '#1e40af', padding: '3px 10px', borderRadius: '6px', fontWeight: '700', border: '1px solid #bfdbfe' }}>
               DEVELOPER DISBURSEMENTS
             </span>
           </div>
@@ -463,34 +463,34 @@ export const RentalsPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY GROSS DISBURSEMENTS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#7c3aed' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1e40af' }}>
                   <DollarSign size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#7c3aed', marginTop: '4px' }}>{formatINR(totalMonthlyGrossPayouts)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#6b21a8', fontWeight: '600' }}>Total developer rent commitment</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1e40af', marginTop: '4px' }}>{formatINR(totalMonthlyGrossPayouts)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#00285c', fontWeight: '600' }}>Total developer rent commitment</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY TDS DEDUCTED</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#fee2e2', color: '#ef4444' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f1f5f9', color: '#0f172a' }}>
                   <TrendingUp size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#ef4444', marginTop: '4px' }}>{formatINR(totalMonthlyTds)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#b91c1c', fontWeight: '600' }}>Tax withholdings</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>{formatINR(totalMonthlyTds)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: '600' }}>Tax withholdings</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>NET TRANSFERS TO OWNERS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
                   <ShieldCheck size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>{formatINR(totalMonthlyNetDisbursed)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#137333', fontWeight: '700' }}>Direct bank NEFT transfers</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>{formatINR(totalMonthlyNetDisbursed)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#1a73e8', fontWeight: '700' }}>Direct bank NEFT transfers</span>
             </div>
 
             <div className="stat-card">
@@ -637,14 +637,14 @@ export const RentalsPage = () => {
                           width: '42px',
                           height: '42px',
                           borderRadius: '10px',
-                          background: '#f3e8ff',
-                          color: '#7c3aed',
+                          background: '#eff6ff',
+                          color: '#1e40af',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontWeight: '800',
                           fontSize: '1.1rem',
-                          border: '1px solid #ddd6fe'
+                          border: '1px solid #bfdbfe'
                         }}>
                           <User size={20} />
                         </div>
@@ -658,12 +658,12 @@ export const RentalsPage = () => {
                             </span>
                             <span style={{
                               fontSize: '0.68rem',
-                              background: '#ecfdf5',
-                              color: '#059669',
+                              background: '#eff6ff',
+                              color: '#1e40af',
                               padding: '2px 8px',
                               borderRadius: '4px',
                               fontWeight: '800',
-                              border: '1px solid #a7f3d0'
+                              border: '1px solid #bfdbfe'
                             }}>
                               3-YEAR RENT-BACK
                             </span>
@@ -692,7 +692,7 @@ export const RentalsPage = () => {
                           <span>Flat {flatNumber}</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: '#334155', fontWeight: '700' }}>
-                          <Building2 size={15} color="#7c3aed" />
+                          <Building2 size={15} color="#1e40af" />
                           <span>{towerName}</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: '#475569', fontWeight: '600' }}>
@@ -720,7 +720,7 @@ export const RentalsPage = () => {
                     }}>
                       <div>
                         <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Gross Monthly Rent</span>
-                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#7c3aed', marginTop: '2px' }}>
+                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#1e40af', marginTop: '2px' }}>
                           {formatINR(grossRent)} <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>/ mo</span>
                         </div>
                       </div>
@@ -729,15 +729,15 @@ export const RentalsPage = () => {
                         <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>
                           {isTdsEnabled && tds > 0 ? `TDS Deducted (${tdsPercentage}%)` : 'TDS Deduction'}
                         </span>
-                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: isTdsEnabled && tds > 0 ? '#ef4444' : '#059669', marginTop: '2px' }}>
+                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: isTdsEnabled && tds > 0 ? '#0f172a' : '#1e40af', marginTop: '2px' }}>
                           {isTdsEnabled && tds > 0 ? `- ${formatINR(tds)}` : '0% (No TDS / Exempt)'}
                         </div>
                       </div>
 
                       <div>
-                        <span style={{ fontSize: '0.72rem', color: '#047857', fontWeight: '700', textTransform: 'uppercase' }}>Net Disbursed to Owner</span>
-                        <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#16a34a', marginTop: '2px' }}>
-                          {formatINR(netRent)} <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>/ mo</span>
+                        <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', textTransform: 'uppercase' }}>Net Disbursed to Owner</span>
+                        <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1a73e8', marginTop: '2px' }}>
+                          {formatINR(netRent)} <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '600' }}>/ mo</span>
                         </div>
                       </div>
 
@@ -791,10 +791,10 @@ export const RentalsPage = () => {
                             justifyContent: 'center',
                             gap: '4px',
                             padding: '6px 12px',
-                            background: '#ecfdf5',
-                            color: '#059669',
+                            background: '#eff6ff',
+                            color: '#1e40af',
                             borderRadius: '5px',
-                            border: '1px solid #a7f3d0',
+                            border: '1px solid #bfdbfe',
                             textDecoration: 'none',
                             fontSize: '0.76rem',
                             fontWeight: '700'
@@ -823,9 +823,9 @@ export const RentalsPage = () => {
                         }}
                         style={{
                           padding: '7px 14px',
-                          background: '#ecfdf5',
-                          border: '1px solid #a7f3d0',
-                          color: '#047857',
+                          background: '#eff6ff',
+                          border: '1px solid #bfdbfe',
+                          color: '#1e40af',
                           fontWeight: '700',
                           borderRadius: '6px',
                           fontSize: '0.78rem',
@@ -931,33 +931,33 @@ export const RentalsPage = () => {
                 <div className="stat-card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL PAID TO OWNERS</span>
-                    <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#16a34a' }}>
+                    <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
                       <DollarSign size={16} />
                     </div>
                   </div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#15803d', marginTop: '4px' }}>{formatINR(totalDisbursed)}</div>
-                  <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: '700' }}>Disbursed payouts</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1e40af', marginTop: '4px' }}>{formatINR(totalDisbursed)}</div>
+                  <span style={{ fontSize: '0.74rem', color: '#1e40af', fontWeight: '700' }}>Disbursed payouts</span>
                 </div>
 
                 <div className="stat-card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>REMAINING TENURE LIABILITY</span>
-                    <div style={{ padding: '6px', borderRadius: '6px', background: '#fffbeb', color: '#b45309' }}>
+                    <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#334155' }}>
                       <TrendingUp size={16} />
                     </div>
                   </div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#b45309', marginTop: '4px' }}>{formatINR(totalRemaining)}</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#334155', marginTop: '4px' }}>{formatINR(totalRemaining)}</div>
                   <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Future payable balance</span>
                 </div>
 
                 <div className="stat-card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY RENT POOL</span>
-                    <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+                    <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
                       <ShieldCheck size={16} />
                     </div>
                   </div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{formatINR(monthlyRentPool || totalMonthlyGrossPayouts)}</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>{formatINR(monthlyRentPool || totalMonthlyGrossPayouts)}</div>
                   <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Monthly assured payout</span>
                 </div>
               </div>
@@ -977,7 +977,7 @@ export const RentalsPage = () => {
             }}>
               <div>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <BookOpen size={18} color="#16a34a" /> 36-Month Owner Rent-Back Passbook Register
+                  <BookOpen size={18} color="#1a73e8" /> 36-Month Owner Rent-Back Passbook Register
                 </h3>
                 <p style={{ fontSize: '0.8rem', color: '#4b5563', marginTop: '2px' }}>
                   Filter and print monthly owner payout lists by due date (e.g. 10th, 20th, 25th of month).
@@ -1274,8 +1274,8 @@ export const RentalsPage = () => {
                               </td>
                               <td>
                                 <span style={{
-                                  background: dueDay === 10 ? '#fef3c7' : (dueDay === 20 ? '#e0f2fe' : '#f0fdf4'),
-                                  color: dueDay === 10 ? '#92400e' : (dueDay === 20 ? '#0369a1' : '#166534'),
+                                  background: dueDay === 10 ? '#f1f5f9' : (dueDay === 20 ? '#e0f2fe' : '#eff6ff'),
+                                  color: dueDay === 10 ? '#334155' : (dueDay === 20 ? '#0369a1' : '#1e40af'),
                                   padding: '3px 8px',
                                   borderRadius: '6px',
                                   fontWeight: '800',
@@ -1290,22 +1290,22 @@ export const RentalsPage = () => {
                                   36 Months
                                 </div>
                               </td>
-                              <td style={{ fontWeight: '800', color: '#16a34a' }}>
+                              <td style={{ fontWeight: '800', color: '#1a73e8' }}>
                                 {formatINR(totalPaid)}
-                                <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: '700' }}>
+                                <div style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: '700' }}>
                                   {paidMonths} / 36 Mos
                                 </div>
                               </td>
-                              <td style={{ fontWeight: '800', color: '#b45309' }}>
+                              <td style={{ fontWeight: '800', color: '#334155' }}>
                                 {formatINR(remainingBal)}
-                                <div style={{ fontSize: '0.7rem', color: '#92400e' }}>
+                                <div style={{ fontSize: '0.7rem', color: '#334155' }}>
                                   {36 - paidMonths} Mos Left
                                 </div>
                               </td>
                               <td>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                   <div style={{ width: '70px', height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                                    <div style={{ width: `${progress}%`, height: '100%', background: progress >= 100 ? '#16a34a' : '#3b82f6' }} />
+                                    <div style={{ width: `${progress}%`, height: '100%', background: progress >= 100 ? '#1a73e8' : '#3b82f6' }} />
                                   </div>
                                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155' }}>{progress}%</span>
                                 </div>
@@ -1320,7 +1320,7 @@ export const RentalsPage = () => {
                                     }}
                                     style={{
                                       padding: '6px 12px',
-                                      background: '#16a34a',
+                                      background: '#1a73e8',
                                       color: '#ffffff',
                                       border: 'none',
                                       borderRadius: '6px',
@@ -1371,8 +1371,8 @@ export const RentalsPage = () => {
                           </td>
                           <td style={{ padding: '10px 14px', color: '#64748b' }}>—</td>
                           <td style={{ padding: '10px 14px', color: '#1e293b' }}>{formatINR(batchTotalCommitment)}</td>
-                          <td style={{ padding: '10px 14px', color: '#16a34a' }}>{formatINR(batchTotalPaid)}</td>
-                          <td style={{ padding: '10px 14px', color: '#b45309' }}>{formatINR(batchTotalRemaining)}</td>
+                          <td style={{ padding: '10px 14px', color: '#1a73e8' }}>{formatINR(batchTotalPaid)}</td>
+                          <td style={{ padding: '10px 14px', color: '#334155' }}>{formatINR(batchTotalRemaining)}</td>
                           <td colSpan="2"></td>
                         </tr>
                       </>
@@ -1399,7 +1399,7 @@ export const RentalsPage = () => {
           }}>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={20} color="#7c3aed" /> 3-Year Rental Units Pool &amp; Asset Management
+                <Sparkles size={20} color="#1e40af" /> 3-Year Rental Units Pool &amp; Asset Management
               </h3>
               <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
                 Manage all property units committed to the 36-month guaranteed rent-back program, track owner yield allocations, and monitor tenant occupancy.
@@ -1413,7 +1413,7 @@ export const RentalsPage = () => {
                 style={{
                   padding: '9px 18px',
                   borderRadius: '8px',
-                  background: '#7c3aed',
+                  background: '#1e40af',
                   color: '#ffffff',
                   border: 'none',
                   fontSize: '0.84rem',
@@ -1466,20 +1466,20 @@ export const RentalsPage = () => {
 
             return (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #7c3aed' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #1e40af' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>UNITS IN RENTAL POOL</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
                     {rentalFlats.length} Flats
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#7c3aed', fontWeight: '600' }}>Committed to 3-Yr Scheme</span>
+                  <span style={{ fontSize: '0.74rem', color: '#1e40af', fontWeight: '600' }}>Committed to 3-Yr Scheme</span>
                 </div>
 
-                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #16a34a' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #1a73e8' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>MONTHLY GUARANTEED YIELD</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
                     {formatINR(totalYield)}/mo
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: '600' }}>Total owner disbursements</span>
+                  <span style={{ fontSize: '0.74rem', color: '#1e40af', fontWeight: '600' }}>Total owner disbursements</span>
                 </div>
 
                 <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #0284c7' }}>
@@ -1490,12 +1490,12 @@ export const RentalsPage = () => {
                   <span style={{ fontSize: '0.74rem', color: '#0369a1', fontWeight: '600' }}>Tenants generating revenue</span>
                 </div>
 
-                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #d97706' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #334155' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>VACANT IN RENTAL POOL</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#d97706', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#334155', marginTop: '4px' }}>
                     {vacantPoolCount} Units
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#b45309', fontWeight: '600' }}>Ready for tenant allotment</span>
+                  <span style={{ fontSize: '0.74rem', color: '#334155', fontWeight: '600' }}>Ready for tenant allotment</span>
                 </div>
               </div>
             );
@@ -1574,7 +1574,7 @@ export const RentalsPage = () => {
                         <tr key={f._id || f.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '12px 16px', fontWeight: '800', color: '#0f172a' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <Building2 size={14} color="#7c3aed" /> Flat {f.flatNumber}
+                              <Building2 size={14} color="#1e40af" /> Flat {f.flatNumber}
                             </div>
                             <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
                               {f.buildingName || 'Tower A'}
@@ -1599,9 +1599,9 @@ export const RentalsPage = () => {
                             </div>
                           </td>
 
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#166534' }}>
+                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#1e40af' }}>
                             {formatINR(monthlyRent)}/mo
-                            <div style={{ fontSize: '0.7rem', color: '#7c3aed', fontWeight: '700' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: '700' }}>
                               3-Year Guaranteed
                             </div>
                           </td>
@@ -1619,11 +1619,11 @@ export const RentalsPage = () => {
                               borderRadius: '6px',
                               fontSize: '0.74rem',
                               fontWeight: '700',
-                              background: isLeased ? '#ecfdf5' : '#fef3c7',
-                              color: isLeased ? '#065f46' : '#92400e',
-                              border: isLeased ? '1px solid #a7f3d0' : '1px solid #fde68a'
+                              background: isLeased ? '#eff6ff' : '#f1f5f9',
+                              color: isLeased ? '#1e3a8a' : '#334155',
+                              border: isLeased ? '1px solid #bfdbfe' : '1px solid #cbd5e1'
                             }}>
-                              {isLeased ? '✓ LEASED TO TENANT' : 'VACANT IN POOL'}
+                              {isLeased ? 'LEASED TO TENANT' : 'VACANT IN POOL'}
                             </span>
                           </td>
 
@@ -1638,7 +1638,7 @@ export const RentalsPage = () => {
                                   }}
                                   style={{
                                     padding: '5px 10px',
-                                    background: '#7c3aed',
+                                    background: '#1e40af',
                                     color: '#ffffff',
                                     border: 'none',
                                     borderRadius: '6px',

@@ -36,7 +36,7 @@ async function syncUnifiedFlats() {
         takenForRental: true
       });
       await flat001.save();
-      console.log('✅ Created Flat 001 (Service Apartment) in Inventory');
+      console.log('Created Flat 001 (Service Apartment) in Inventory');
 
       // Update Project building flats array
       const project = await Project.findById(sampleFlat.projectId);
@@ -104,7 +104,7 @@ async function syncUnifiedFlats() {
           ownershipStartDate: salesLead?.booking?.bookingDate || rental?.rentBack?.startDate || new Date(),
           ownershipType: 'individual'
         };
-        console.log(`  ✓ Owner Linked: ${owner.name} (${owner.mobileNo})`);
+        console.log(`  Owner Linked: ${owner.name} (${owner.mobileNo})`);
       }
 
       // Update Sales Details
@@ -130,7 +130,7 @@ async function syncUnifiedFlats() {
           salesStatus: salesLead.salesStatus || 'agreement_completed'
         };
         flat.isSold = true;
-        console.log(`  ✓ Sales Allotment: Deal ₹${deal.toLocaleString('en-IN')}, Paid: ₹${totalPaid.toLocaleString('en-IN')}, Balance: ₹${balance.toLocaleString('en-IN')}`);
+        console.log(`  Sales Allotment: Deal ₹${deal.toLocaleString('en-IN')}, Paid: ₹${totalPaid.toLocaleString('en-IN')}, Balance: ₹${balance.toLocaleString('en-IN')}`);
       } else {
         flat.isSold = false;
       }
@@ -173,7 +173,7 @@ async function syncUnifiedFlats() {
         };
         flat.takenForRental = true;
         flat.status = 'leased';
-        console.log(`  ✓ 36-Month Rental Ledger: Rent ₹${mRent.toLocaleString('en-IN')}/mo, 3-Yr Commitment: ₹${totalCommitment.toLocaleString('en-IN')}, Disbursed: ₹${totalPaid.toLocaleString('en-IN')}`);
+        console.log(`  36-Month Rental Ledger: Rent ₹${mRent.toLocaleString('en-IN')}/mo, 3-Yr Commitment: ₹${totalCommitment.toLocaleString('en-IN')}, Disbursed: ₹${totalPaid.toLocaleString('en-IN')}`);
       }
 
       // Maintenance Config
@@ -186,11 +186,11 @@ async function syncUnifiedFlats() {
       };
 
       await flat.save();
-      console.log(`  ✅ Flat ${flat.flatNumber} Unified Document Saved Successfully!\n`);
+      console.log(`  Flat ${flat.flatNumber} Unified Document Saved Successfully!\n`);
     }
 
     console.log('======================================================');
-    console.log('✅ ALL FLATS FULLY SYNCHRONIZED UNDER UNIFIED SCHEMA!');
+    console.log('ALL FLATS FULLY SYNCHRONIZED UNDER UNIFIED SCHEMA!');
     console.log('======================================================');
     process.exit(0);
   } catch (err) {

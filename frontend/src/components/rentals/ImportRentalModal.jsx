@@ -305,8 +305,8 @@ export const ImportRentalModal = ({
 
         {/* Template Download Banner */}
         <div style={{
-          background: '#f0fdf4',
-          border: '1px solid #bbf7d0',
+          background: '#eff6ff',
+          border: '1px solid #dbeafe',
           borderRadius: '8px',
           padding: '14px 18px',
           display: 'flex',
@@ -316,10 +316,10 @@ export const ImportRentalModal = ({
           gap: '12px'
         }}>
           <div>
-            <div style={{ fontWeight: '700', fontSize: '0.88rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ fontWeight: '700', fontSize: '0.88rem', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FileSpreadsheet size={16} /> Rental Register Template
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#15803d', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#1e40af', marginTop: '2px' }}>
               Columns: Flat No, Owner Name, Registry Date, Rent Amount, TDS, Starting Date, Tenure, Total Paid.
             </div>
           </div>
@@ -329,7 +329,7 @@ export const ImportRentalModal = ({
             style={{
               padding: '7px 14px',
               borderRadius: '6px',
-              background: '#16a34a',
+              background: '#1a73e8',
               color: '#ffffff',
               border: 'none',
               fontWeight: '700',
@@ -388,7 +388,7 @@ export const ImportRentalModal = ({
                 justifyContent: 'space-between'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <FileSpreadsheet size={24} color="#16a34a" />
+                  <FileSpreadsheet size={24} color="#1a73e8" />
                   <div>
                     <div style={{ fontWeight: '700', fontSize: '0.86rem', color: '#0f172a' }}>{fileName}</div>
                     <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
@@ -402,9 +402,9 @@ export const ImportRentalModal = ({
                   style={{
                     padding: '6px 10px',
                     borderRadius: '6px',
-                    background: '#fee2e2',
-                    border: '1px solid #fca5a5',
-                    color: '#991b1b',
+                    background: '#f1f5f9',
+                    border: '1px solid #cbd5e1',
+                    color: '#0f172a',
                     fontSize: '0.78rem',
                     fontWeight: '600',
                     cursor: 'pointer',
@@ -423,11 +423,11 @@ export const ImportRentalModal = ({
         {/* Error Alert */}
         {errorMsg && (
           <div style={{
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
+            background: '#f1f5f9',
+            border: '1px solid #e2e8f0',
             borderRadius: '8px',
             padding: '12px 14px',
-            color: '#991b1b',
+            color: '#0f172a',
             fontSize: '0.82rem',
             display: 'flex',
             alignItems: 'center',
@@ -440,20 +440,20 @@ export const ImportRentalModal = ({
         {/* Success Alert */}
         {successResult && (
           <div style={{
-            background: '#f0fdf4',
-            border: '1px solid #bbf7d0',
+            background: '#eff6ff',
+            border: '1px solid #dbeafe',
             borderRadius: '8px',
             padding: '16px 20px',
             textAlign: 'center'
           }}>
-            <CheckCircle2 size={36} color="#16a34a" style={{ margin: '0 auto 8px', display: 'block' }} />
-            <div style={{ fontWeight: '800', fontSize: '1.05rem', color: '#166534' }}>
+            <CheckCircle2 size={36} color="#1a73e8" style={{ margin: '0 auto 8px', display: 'block' }} />
+            <div style={{ fontWeight: '800', fontSize: '1.05rem', color: '#1e40af' }}>
               Rental Register Imported Successfully!
             </div>
-            <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '6px' }}>
+            <div style={{ fontSize: '0.82rem', color: '#1e40af', marginTop: '6px' }}>
               Enrolled / Updated: <strong>{successResult.enrolledCount}</strong> rental unit(s) in Table 1
               {successResult.notFoundFlats?.length > 0 && (
-                <span style={{ color: '#b91c1c', display: 'block', marginTop: '4px' }}>
+                <span style={{ color: '#0f172a', display: 'block', marginTop: '4px' }}>
                   Note: {successResult.notFoundFlats.length} flat(s) were not found in inventory ({successResult.notFoundFlats.join(', ')})
                 </span>
               )}
@@ -505,7 +505,7 @@ export const ImportRentalModal = ({
                   {parsedRows.map((r, idx) => (
                     <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', background: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
                       <td style={{ padding: '8px 10px', color: '#94a3b8' }}>{r.rowIdx}</td>
-                      <td style={{ padding: '8px 10px', fontWeight: '700', color: r.isValid ? '#0f172a' : '#ef4444' }}>
+                      <td style={{ padding: '8px 10px', fontWeight: '700', color: r.isValid ? '#0f172a' : '#0f172a' }}>
                         {r.flatNumber || 'Missing!'}
                       </td>
                       <td style={{ padding: '8px 10px', fontWeight: '600', color: '#1e293b' }}>
@@ -521,8 +521,8 @@ export const ImportRentalModal = ({
                             borderRadius: '4px',
                             fontSize: '0.68rem',
                             fontWeight: '700',
-                            background: '#fef3c7',
-                            color: '#b45309'
+                            background: '#f1f5f9',
+                            color: '#334155'
                           }}>
                             {r.tdsMode === 'amount'
                               ? `₹${r.tdsAmount.toLocaleString('en-IN')}`
@@ -541,7 +541,7 @@ export const ImportRentalModal = ({
                           </span>
                         )}
                       </td>
-                      <td style={{ padding: '8px 10px', fontWeight: '700', color: '#15803d' }}>
+                      <td style={{ padding: '8px 10px', fontWeight: '700', color: '#1e40af' }}>
                         {formatINR(r.netAmount)}
                       </td>
                       <td style={{ padding: '8px 10px', color: '#475569' }}>{r.startDate || '—'}</td>
@@ -550,10 +550,10 @@ export const ImportRentalModal = ({
                       <td style={{ padding: '8px 10px', fontWeight: '700', color: '#1e3a8a' }}>
                         {formatINR(r.totalCommitment)}
                       </td>
-                      <td style={{ padding: '8px 10px', color: '#15803d' }}>
+                      <td style={{ padding: '8px 10px', color: '#1e40af' }}>
                         {formatINR(r.totalPaid)}
                       </td>
-                      <td style={{ padding: '8px 10px', fontWeight: '700', color: r.outstanding > 0 ? '#b91c1c' : '#15803d' }}>
+                      <td style={{ padding: '8px 10px', fontWeight: '700', color: r.outstanding > 0 ? '#0f172a' : '#1e40af' }}>
                         {formatINR(r.outstanding)}
                       </td>
                     </tr>
@@ -590,7 +590,7 @@ export const ImportRentalModal = ({
               loadingText="Importing Rentals..."
               disabled={parsedRows.length === 0}
               variant="primary"
-              style={{ background: '#16a34a' }}
+              style={{ background: '#1a73e8' }}
             >
               Import {parsedRows.length} Rentals into Table 1
             </LoadingButton>

@@ -52,15 +52,15 @@ export const SendReminderModal = ({
     const cab = visit?.cabDetails || {};
 
     if (isSiteVisit) {
-      let msg = `Namaste ${lead.name}! 🙏\n\n`;
+      let msg = `Namaste ${lead.name}!\n\n`;
       msg += `This is a reminder from *Krishna Valley* that your private property tour is scheduled in 30 minutes at *${timeStr}* (${dateStr}).\n\n`;
-      msg += `🏡 *Property:* ${flatStr}\n`;
-      msg += `👤 *Your Property Advisor:* ${execName} (📞 ${execPhone})\n`;
+      msg += `*Property:* ${flatStr}\n`;
+      msg += `*Your Property Advisor:* ${execName} (${execPhone})\n`;
       if (cab.isCabProvided) {
-        msg += `🚗 *Cab:* ${cab.cabNumber || 'Confirmed'} • Driver: ${cab.driverName || 'Assigned'} (📞 ${cab.driverPhone || 'On duty'})\n`;
-        if (cab.pickupLocation) msg += `📍 *Pickup Point:* ${cab.pickupLocation}\n`;
+        msg += `*Cab:* ${cab.cabNumber || 'Confirmed'} • Driver: ${cab.driverName || 'Assigned'} (${cab.driverPhone || 'On duty'})\n`;
+        if (cab.pickupLocation) msg += `*Pickup Point:* ${cab.pickupLocation}\n`;
       }
-      msg += `\n🗺️ *Location Map:* https://maps.google.com/?q=Krishna+Valley+Vrindavan\n\n`;
+      msg += `\n*Location Map:* https://maps.google.com/?q=Krishna+Valley+Vrindavan\n\n`;
       msg += `Your advisor *${execName}* is ready to assist and welcome you to Krishna Valley!`;
       setCustomText(msg);
 
@@ -68,13 +68,13 @@ export const SendReminderModal = ({
       const phoneWithCode = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
       setWhatsappWebUrl(`https://wa.me/${phoneWithCode}?text=${encodeURIComponent(msg)}`);
     } else {
-      let msg = `🔔 *30-Minute Follow-Up Reminder!*\n\n`;
-      msg += `Prospect: *${lead.name}* (📞 ${lead.mobileNo})\n`;
+      let msg = `*30-Minute Follow-Up Reminder!*\n\n`;
+      msg += `Prospect: *${lead.name}* (${lead.mobileNo})\n`;
       msg += `Task: *${(followUp?.mode || 'Call').toUpperCase()}*\n`;
       msg += `Scheduled Time: *${timeStr}* (in ~30 minutes)\n`;
       msg += `Unit / Interest: *${flatStr}*\n`;
       if (followUp?.notes) msg += `Notes: "${followUp.notes}"\n`;
-      msg += `\n⚡ Open Lead Workspace: https://erp.krishnavalley.com/crm`;
+      msg += `\nOpen Lead Workspace: https://erp.krishnavalley.com/crm`;
       setCustomText(msg);
 
       const cleanPhone = (lead.mobileNo || '').replace(/\D/g, '');
@@ -130,20 +130,20 @@ export const SendReminderModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="🔔 Send 30-Minute Reminder"
+      title="Send 30-Minute Reminder"
       maxWidth="640px"
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {errorMsg && (
-          <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '10px 14px', borderRadius: '8px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#0f172a', padding: '10px 14px', borderRadius: '8px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <AlertCircle size={16} />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {successMsg && (
-          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', padding: '10px 14px', borderRadius: '8px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ background: '#eff6ff', border: '1px solid #dbeafe', color: '#1e40af', padding: '10px 14px', borderRadius: '8px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <CheckCircle2 size={16} />
             <span>{successMsg}</span>
           </div>
@@ -160,8 +160,8 @@ export const SendReminderModal = ({
                 {lead.name}
               </div>
               <div style={{ fontSize: '0.78rem', color: '#475569', display: 'flex', gap: '10px', marginTop: '2px' }}>
-                <span>📞 {lead.mobileNo}</span>
-                {lead.email && <span>✉️ {lead.email}</span>}
+                <span>{lead.mobileNo}</span>
+                {lead.email && <span>{lead.email}</span>}
               </div>
             </div>
 
@@ -175,9 +175,9 @@ export const SendReminderModal = ({
                   borderRadius: '6px',
                   fontSize: '0.75rem',
                   fontWeight: '800',
-                  border: targetType === 'client' ? '2px solid #16a34a' : '1px solid #cbd5e1',
-                  background: targetType === 'client' ? '#dcfce7' : '#ffffff',
-                  color: targetType === 'client' ? '#15803d' : '#475569',
+                  border: targetType === 'client' ? '2px solid #1a73e8' : '1px solid #cbd5e1',
+                  background: targetType === 'client' ? '#eff6ff' : '#ffffff',
+                  color: targetType === 'client' ? '#1e40af' : '#475569',
                   cursor: 'pointer'
                 }}
               >
@@ -204,9 +204,9 @@ export const SendReminderModal = ({
 
           {/* Sender Context: Highlight that client reminders are sent by the handling team member */}
           {targetType === 'client' && (
-            <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '6px', padding: '6px 10px', fontSize: '0.74rem', color: '#065f46', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-              <span>👤 <strong>Handling Executive (Sender):</strong> {handlingAdvisorName} {handlingAdvisorPhone ? `(📞 ${handlingAdvisorPhone})` : ''}</span>
-              <span style={{ fontSize: '0.7rem', color: '#047857', fontWeight: '600' }}>✓ Sent directly by handling member to client</span>
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px 10px', fontSize: '0.74rem', color: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+              <span><strong>Handling Executive (Sender):</strong> {handlingAdvisorName} {handlingAdvisorPhone ? `(${handlingAdvisorPhone})` : ''}</span>
+              <span style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: '600' }}>Sent directly by handling member to client</span>
             </div>
           )}
         </div>
@@ -223,9 +223,9 @@ export const SendReminderModal = ({
               style={{
                 padding: '10px 12px',
                 borderRadius: '8px',
-                border: channel === 'whatsapp' ? '2px solid #25D366' : '1px solid #cbd5e1',
-                background: channel === 'whatsapp' ? '#f0fdf4' : '#ffffff',
-                color: channel === 'whatsapp' ? '#166534' : '#334155',
+                border: channel === 'whatsapp' ? '2px solid #0f172a' : '1px solid #cbd5e1',
+                background: channel === 'whatsapp' ? '#eff6ff' : '#ffffff',
+                color: channel === 'whatsapp' ? '#1e40af' : '#334155',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -235,7 +235,7 @@ export const SendReminderModal = ({
                 fontSize: '0.82rem'
               }}
             >
-              <MessageSquare size={16} color="#25D366" />
+              <MessageSquare size={16} color="#0f172a" />
               <span>WhatsApp</span>
             </button>
 
@@ -267,9 +267,9 @@ export const SendReminderModal = ({
               style={{
                 padding: '10px 12px',
                 borderRadius: '8px',
-                border: channel === 'sms' ? '2px solid #7c3aed' : '1px solid #cbd5e1',
+                border: channel === 'sms' ? '2px solid #1e40af' : '1px solid #cbd5e1',
                 background: channel === 'sms' ? '#faf5ff' : '#ffffff',
-                color: channel === 'sms' ? '#6d28d9' : '#334155',
+                color: channel === 'sms' ? '#1e3a8a' : '#334155',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -279,7 +279,7 @@ export const SendReminderModal = ({
                 fontSize: '0.82rem'
               }}
             >
-              <Smartphone size={16} color="#7c3aed" />
+              <Smartphone size={16} color="#1e40af" />
               <span>SMS Gateway</span>
             </button>
           </div>
@@ -323,7 +323,7 @@ export const SendReminderModal = ({
               style={{
                 padding: '9px 16px',
                 borderRadius: '8px',
-                background: '#25D366',
+                background: '#0f172a',
                 color: '#ffffff',
                 textDecoration: 'none',
                 fontWeight: '800',
@@ -360,7 +360,7 @@ export const SendReminderModal = ({
                 borderRadius: '8px',
                 border: 'none',
                 background: channel === 'whatsapp'
-                  ? 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)'
+                  ? 'linear-gradient(135deg, #1a73e8 0%, #1e40af 100%)'
                   : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
                 color: '#ffffff',
                 fontWeight: '800',

@@ -235,7 +235,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '8px',
-                backgroundColor: '#16a34a',
+                backgroundColor: '#1a73e8',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.82rem',
@@ -312,22 +312,22 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
           </div>
 
           <div>
-            <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', textTransform: 'uppercase' }}>
               Total Paid to Date
             </span>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#16a34a' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1a73e8' }}>
               {formatINR(ledger.totalPaid)}
             </div>
-            <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700' }}>
               {ledger.paidCount} of {ledger.tenureMonths} Months Disbursed
             </span>
           </div>
 
           <div>
-            <span style={{ fontSize: '0.72rem', color: '#b91c1c', fontWeight: '700', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '700', textTransform: 'uppercase' }}>
               Remaining Liability
             </span>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#dc2626' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>
               {formatINR(ledger.amountOutstanding)}
             </div>
             <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -351,7 +351,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
               style={{
                 width: `${ledger.completionPercentage}%`,
                 height: '100%',
-                backgroundColor: ledger.completionPercentage === 100 ? '#16a34a' : '#2563eb',
+                backgroundColor: ledger.completionPercentage === 100 ? '#1a73e8' : '#2563eb',
                 transition: 'width 0.4s ease'
               }}
             />
@@ -424,7 +424,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                   key={e.monthIndex || idx}
                   style={{
                     borderBottom: '1px solid #f1f5f9',
-                    backgroundColor: e.status === 'paid' ? '#ffffff' : (e.status === 'due' ? '#fffbeb' : '#fafafa')
+                    backgroundColor: e.status === 'paid' ? '#ffffff' : (e.status === 'due' ? '#f8fafc' : '#fafafa')
                   }}
                 >
                   <td style={{ padding: '12px 10px', fontWeight: '800', color: '#0f172a' }}>
@@ -433,7 +433,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                   <td style={{ padding: '12px 10px', color: '#475569' }}>
                     {formatDate(e.dueDate)}
                   </td>
-                  <td style={{ padding: '12px 10px', color: e.paymentDate ? '#15803d' : '#94a3b8', fontWeight: e.paymentDate ? '600' : '400' }}>
+                  <td style={{ padding: '12px 10px', color: e.paymentDate ? '#1e40af' : '#94a3b8', fontWeight: e.paymentDate ? '600' : '400' }}>
                     {formatDate(e.paymentDate)}
                   </td>
                   <td style={{ padding: '12px 10px' }}>
@@ -456,10 +456,10 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                   <td style={{ padding: '12px 10px', textAlign: 'right', color: '#64748b' }}>
                     {formatINR(e.grossAmount)}
                   </td>
-                  <td style={{ padding: '12px 10px', textAlign: 'right', color: '#dc2626' }}>
+                  <td style={{ padding: '12px 10px', textAlign: 'right', color: '#0f172a' }}>
                     {e.tdsDeducted > 0 ? `-${formatINR(e.tdsDeducted)}` : '₹0'}
                   </td>
-                  <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: '800', color: e.status === 'paid' ? '#16a34a' : '#0f172a' }}>
+                  <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: '800', color: e.status === 'paid' ? '#1a73e8' : '#0f172a' }}>
                     {formatINR(e.netAmountPaid)}
                   </td>
                   <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: '700', color: '#2563eb' }}>
@@ -477,8 +477,8 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                           gap: '3px',
                           padding: '3px 8px',
                           borderRadius: '6px',
-                          backgroundColor: '#dcfce7',
-                          color: '#15803d',
+                          backgroundColor: '#eff6ff',
+                          color: '#1e40af',
                           fontWeight: '800',
                           fontSize: '0.74rem'
                         }}
@@ -493,8 +493,8 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                           gap: '3px',
                           padding: '3px 8px',
                           borderRadius: '6px',
-                          backgroundColor: '#fee2e2',
-                          color: '#b91c1c',
+                          backgroundColor: '#f1f5f9',
+                          color: '#0f172a',
                           fontWeight: '800',
                           fontSize: '0.74rem'
                         }}
@@ -545,8 +545,8 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                         Disburse
                       </button>
                     ) : (
-                      <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '700' }}>
-                        ✓ Settled
+                      <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>
+                        Settled
                       </span>
                     )}
                   </td>
@@ -598,9 +598,9 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                 gap: '6px',
                 padding: '8px 16px',
                 borderRadius: '8px',
-                border: '1px solid #fecaca',
-                backgroundColor: '#fef2f2',
-                color: '#dc2626',
+                border: '1px solid #e2e8f0',
+                backgroundColor: '#f1f5f9',
+                color: '#0f172a',
                 fontSize: '0.82rem',
                 fontWeight: '700',
                 cursor: 'pointer'
@@ -668,7 +668,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
             </div>
 
             <p style={{ margin: '0 0 16px', fontSize: '0.82rem', color: '#475569' }}>
-              Amount: <strong style={{ color: '#15803d' }}>{formatINR(ledger.netRent)}</strong> for Flat {ledger.flatNumber} ({ledger.ownerName})
+              Amount: <strong style={{ color: '#1e40af' }}>{formatINR(ledger.netRent)}</strong> for Flat {ledger.flatNumber} ({ledger.ownerName})
             </p>
 
             <form onSubmit={handleDisburseSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -725,7 +725,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                 </button>
                 <button
                   type="submit"
-                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', background: '#16a34a', color: '#ffffff', cursor: 'pointer', fontWeight: '800' }}
+                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', background: '#1a73e8', color: '#ffffff', cursor: 'pointer', fontWeight: '800' }}
                 >
                   Confirm Paid
                 </button>

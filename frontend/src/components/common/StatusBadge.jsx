@@ -28,9 +28,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'completed':
       case 'approved':
         return {
-          bg: '#e6f4ea',
-          color: '#137333',
-          border: '#ceead6',
+          bg: '#eff6ff',
+          color: '#1d4ed8',
+          border: '#bfdbfe',
           label: status === 'on_track' ? 'On Track' : status?.replace(/_/g, ' ') || 'Active',
           Icon: CheckCircle
         };
@@ -38,9 +38,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'resell':
       case 'resold':
         return {
-          bg: '#f3e8ff',
-          color: '#7c3aed',
-          border: '#ddd6fe',
+          bg: '#f1f5f9',
+          color: '#1e293b',
+          border: '#cbd5e1',
           label: 'Resell',
           Icon: Repeat
         };
@@ -58,9 +58,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'possession_renewal':
       case 'renewal':
         return {
-          bg: '#ecfdf5',
-          color: '#059669',
-          border: '#a7f3d0',
+          bg: '#eff6ff',
+          color: '#1e40af',
+          border: '#bfdbfe',
           label: 'Possession Renewal',
           Icon: RefreshCw
         };
@@ -70,17 +70,17 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'pending':
       case 'in_progress':
       case 'payment_in_progress':
-      case 'booked':
       case 'draft':
       case 'under_review':
         return {
-          bg: '#fef7e0',
-          color: '#b06000',
-          border: '#feefc3',
+          bg: '#f8fafc',
+          color: '#475569',
+          border: '#e2e8f0',
           label: status?.replace(/_/g, ' ') || 'Pending',
           Icon: Clock
         };
 
+      case 'booked':
       case 'sold':
       case 'leased':
       case 'agreement_signed':
@@ -109,9 +109,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'critical':
       case 'high_risk':
         return {
-          bg: '#ffdad6',
-          color: '#ba1a1a',
-          border: '#fad2cf',
+          bg: '#0f172a',
+          color: '#ffffff',
+          border: '#1e293b',
           label: status === 'at_risk' ? 'At Risk' : status?.replace(/_/g, ' ') || 'Cancelled',
           Icon: AlertTriangle
         };

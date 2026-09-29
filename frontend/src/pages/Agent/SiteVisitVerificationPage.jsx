@@ -178,11 +178,11 @@ export const SiteVisitVerificationPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>AWAITING APPROVAL</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
               <Clock size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
             {pendingVisits}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Pending maker-checker review</span>
@@ -191,11 +191,11 @@ export const SiteVisitVerificationPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>APPROVED VISITS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
               <ShieldCheck size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
             {approvedVisits}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Eligible for auto-commission</span>
@@ -204,11 +204,11 @@ export const SiteVisitVerificationPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>AUTOMATED COMMISSIONS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>
             {formatINR(totalCommissionCredited)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Credited on booked deals</span>
@@ -235,9 +235,9 @@ export const SiteVisitVerificationPage = () => {
             style={{ width: '100%', fontSize: '0.82rem' }}
           >
             <option value="">All Verification Statuses</option>
-            <option value="pending">⏳ Pending Review</option>
-            <option value="approved">✓ Approved</option>
-            <option value="rejected">✕ Rejected</option>
+            <option value="pending">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
           </select>
         </div>
 
@@ -266,9 +266,9 @@ export const SiteVisitVerificationPage = () => {
             }}
             style={{
               padding: '6px 12px',
-              background: '#fef2f2',
-              color: '#ba1a1a',
-              border: '1px solid #fecaca',
+              background: '#f1f5f9',
+              color: '#0f172a',
+              border: '1px solid #e2e8f0',
               borderRadius: '6px',
               fontSize: '0.76rem',
               fontWeight: '700',
@@ -335,7 +335,7 @@ export const SiteVisitVerificationPage = () => {
                           <strong style={{ color: '#1e293b', fontSize: '0.84rem' }}>{visit.agentName}</strong>
                         </div>
                         <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '2px' }}>
-                          {visit.agencyName || 'Independent Partner'} • 📞 {visit.agentPhone || ''}
+                          {visit.agencyName || 'Independent Partner'} • {visit.agentPhone || ''}
                         </div>
                       </td>
 
@@ -345,7 +345,7 @@ export const SiteVisitVerificationPage = () => {
                           {visit.partyName}
                         </div>
                         <div style={{ fontSize: '0.74rem', color: '#1a73e8', fontWeight: '700' }}>
-                          📞 {visit.partyMobile}
+                          {visit.partyMobile}
                         </div>
                       </td>
 
@@ -391,13 +391,13 @@ export const SiteVisitVerificationPage = () => {
                       {/* 6. Verification Status */}
                       <td>
                         {isPending && (
-                          <span style={{ padding: '4px 8px', borderRadius: '12px', background: '#fef3c7', color: '#b45309', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ padding: '4px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#334155', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                             <Clock size={11} /> Pending Review
                           </span>
                         )}
                         {isApproved && (
                           <div>
-                            <span style={{ padding: '4px 8px', borderRadius: '12px', background: '#dcfce7', color: '#15803d', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ padding: '4px 8px', borderRadius: '12px', background: '#eff6ff', color: '#1e40af', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                               <CheckCircle2 size={11} /> Approved
                             </span>
                             {visit.verifiedBy && (
@@ -408,7 +408,7 @@ export const SiteVisitVerificationPage = () => {
                           </div>
                         )}
                         {isRejected && (
-                          <span title={visit.rejectionReason} style={{ padding: '4px 8px', borderRadius: '12px', background: '#fee2e2', color: '#b91c1c', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'help' }}>
+                          <span title={visit.rejectionReason} style={{ padding: '4px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#0f172a', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'help' }}>
                             <AlertCircle size={11} /> Rejected
                           </span>
                         )}
@@ -418,15 +418,15 @@ export const SiteVisitVerificationPage = () => {
                       <td>
                         {isBooked ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                            <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#f3e8ff', color: '#7e22ce', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#eff6ff', color: '#7e22ce', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                               <Award size={12} /> Deal Booked
                             </span>
-                            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#15803d' }}>
+                            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#1e40af' }}>
                               {formatINR(visit.commissionAmount)} Credited
                             </span>
                           </div>
                         ) : isApproved ? (
-                          <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700' }}>
+                          <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700' }}>
                             Eligible for Auto-Credit upon Booking
                           </span>
                         ) : (

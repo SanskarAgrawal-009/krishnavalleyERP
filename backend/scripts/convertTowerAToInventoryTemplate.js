@@ -373,13 +373,13 @@ function convertTowerA() {
   XLSX.writeFile(wbHist, histPath2);
 
   // ------- 6. VERIFICATION -------
-  console.log('✅ FILE 1: Site Inventory (Ved Prakash Format)');
+  console.log('FILE 1: Site Inventory (Ved Prakash Format)');
   console.log(`   Total Rows: ${inventoryRows.length}`);
   console.log(`   Sold Units: ${inventoryRows.filter(r => r.Status === 'Sold').length}`);
   console.log(`   Available (Vacant): ${inventoryRows.filter(r => r.Status === 'Available').length}`);
   console.log(`   Path: ${invPath1}`);
 
-  console.log('\n✅ FILE 2: Ownership History & Resale Archive');
+  console.log('\nFILE 2: Ownership History & Resale Archive');
   console.log(`   Total Transfer Records: ${historyRows.length}`);
   console.log(`   Unique Flats with History: ${new Set(historyRows.map(r => r['Flat No'])).size}`);
   console.log(`   Path: ${histPath1}`);
@@ -387,7 +387,7 @@ function convertTowerA() {
   // Cross-check: verify every flat in inventory exists once
   const flatNosInv = inventoryRows.map(r => r['Flat No']);
   const uniqueFlats = new Set(flatNosInv);
-  console.log(`\n🔍 VERIFICATION:`);
+  console.log(`\nVERIFICATION:`);
   console.log(`   Inventory rows: ${inventoryRows.length}`);
   console.log(`   Unique flats in inventory: ${uniqueFlats.size}`);
   console.log(`   Duplicates in inventory: ${inventoryRows.length - uniqueFlats.size}`);
@@ -395,20 +395,20 @@ function convertTowerA() {
   // Verify all history flats exist in inventory
   const histFlatNos = new Set(historyRows.map(r => r['Flat No']));
   const missingInInventory = [...histFlatNos].filter(f => !uniqueFlats.has(f));
-  console.log(`   History flat IDs missing from inventory: ${missingInInventory.length === 0 ? 'NONE ✓' : missingInInventory.join(', ')}`);
+  console.log(`   History flat IDs missing from inventory: ${missingInInventory.length === 0 ? 'NONE' : missingInInventory.join(', ')}`);
 
   // Verify history entries have different previous vs current owner
   const sameName = historyRows.filter(r => r['Previous Owner Name'].toLowerCase().trim() === r['Current Owner Name'].toLowerCase().trim());
   console.log(`   History entries with same prev/current owner: ${sameName.length} (these should be 0)`);
 
   // Print sample inventory rows
-  console.log('\n📋 SAMPLE INVENTORY ROWS:');
+  console.log('\nSAMPLE INVENTORY ROWS:');
   [inventoryRows[0], inventoryRows.find(r => r['Flat No'] === '105'), inventoryRows.find(r => r.Status === 'Available')].filter(Boolean).forEach(r => {
     console.log(`   Flat ${r['Flat No']}: ${r['Owner Name'] || 'VACANT'} | ₹${r['Amount Per Month']}/mo × ${r['Tenure (Months)']}mo | Status: ${r.Status}`);
   });
 
   // Print sample history rows
-  console.log('\n📋 SAMPLE HISTORY ROWS:');
+  console.log('\nSAMPLE HISTORY ROWS:');
   historyRows.slice(0, 5).forEach(r => {
     console.log(`   Flat ${r['Flat No']}: ${r['Previous Owner Name']} → ${r['Current Owner Name']} (${r['Transfer Reason']})`);
   });

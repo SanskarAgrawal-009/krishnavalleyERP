@@ -29,6 +29,7 @@ import callingRoutes from './routes/callingRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import auditLogRoutes from './routes/auditLogRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
 import { autoAuditMiddleware } from './middleware/auditMiddleware.js';
 
 import { initReminderScheduler } from './services/reminderSchedulerService.js';
@@ -96,7 +97,7 @@ app.use('/uploads', (req, res) => {
     <text x="300" y="210" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="20" font-weight="700" fill="#0F172A">Payment Verified &amp; Disbursed</text>
     <text x="300" y="240" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="14" font-weight="500" fill="#475569">Document: ${cleanTitle.slice(0, 45)}</text>
     <rect x="140" y="270" width="320" height="44" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
-    <text x="300" y="297" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="600" fill="#166534">✓ Transaction Recorded in ERP Ledger</text>
+    <text x="300" y="297" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="600" fill="#166534">Transaction Recorded in ERP Ledger</text>
     <text x="300" y="350" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#94A3B8">Krishna Valley ERP • Digital Audit Vault</text>
   </svg>
   `;
@@ -133,6 +134,7 @@ app.use('/api/calls', callingRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
+app.use('/api/tasks', taskRoutes);
 
 // Serve static frontend build if present (unified production / Docker)
 const frontendDist = path.resolve(__dirname, '../frontend/dist');
@@ -152,11 +154,11 @@ app.use(errorHandler);
 
 // Global Uncaught Exception & Rejection Handlers (Prevents backend crashes)
 process.on('uncaughtException', (err) => {
-  console.error('💥 [Uncaught Exception]:', err);
+  console.error('[Uncaught Exception]:', err);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('💥 [Unhandled Rejection at Promise]:', reason);
+  console.error('[Unhandled Rejection at Promise]:', reason);
 });
 
 const server = app.listen(PORT, () => {

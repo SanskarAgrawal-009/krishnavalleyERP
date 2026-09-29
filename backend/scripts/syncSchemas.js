@@ -33,23 +33,23 @@ import '../models/SystemSettings.js';
 import '../models/AuditLog.js';
 
 async function syncDatabaseSchemas() {
-  console.log('🔄 STARTING DATABASE SCHEMA SYNCHRONIZATION...');
+  console.log('STARTING DATABASE SCHEMA SYNCHRONIZATION...');
 
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('✅ Connected to MongoDB Atlas.');
+    console.log('Connected to MongoDB Atlas.');
 
     const modelNames = mongoose.modelNames();
-    console.log(`📋 Total Registered Mongoose Models: ${modelNames.length}`);
+    console.log(`Total Registered Mongoose Models: ${modelNames.length}`);
 
     for (const name of modelNames) {
       const model = mongoose.model(name);
       try {
         await model.init();
         const docCount = await model.countDocuments();
-        console.log(`  ✓ Synced schema & indexes for: ${name} (${docCount} records)`);
+        console.log(`  Synced schema & indexes for: ${name} (${docCount} records)`);
       } catch (err) {
-        console.warn(`  ⚠️ Warning syncing ${name}:`, err.message);
+        console.warn(`Warning syncing ${name}:`, err.message);
       }
     }
 
@@ -57,14 +57,14 @@ async function syncDatabaseSchemas() {
     const Customer = mongoose.model('Customer');
     const custWithoutAlt = await Customer.find({ alternateMobileNo: { $exists: false } });
     if (custWithoutAlt.length > 0) {
-      console.log(`  🔧 Standardizing ${custWithoutAlt.length} customers missing alternateMobileNo field...`);
+      console.log(`  Standardizing ${custWithoutAlt.length} customers missing alternateMobileNo field...`);
       await Customer.updateMany({ alternateMobileNo: { $exists: false } }, { $set: { alternateMobileNo: '' } });
-      console.log('  ✓ Updated Customer schema records.');
+      console.log('  Updated Customer schema records.');
     }
 
-    console.log('\n🎉 ALL DATABASE SCHEMAS ARE 100% IN SYNC WITH MONGOOSE!');
+    console.log('\nALL DATABASE SCHEMAS ARE 100% IN SYNC WITH MONGOOSE!');
   } catch (err) {
-    console.error('❌ Schema Sync Error:', err);
+    console.error('Schema Sync Error:', err);
     process.exit(1);
   } finally {
     await mongoose.disconnect();

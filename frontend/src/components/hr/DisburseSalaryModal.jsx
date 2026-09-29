@@ -73,7 +73,7 @@ export const DisburseSalaryModal = ({ isOpen, onClose, onDisburse, payrollItem }
             <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
               Code: <strong style={{ color: '#334151' }}>{payrollItem.employeeCode}</strong> • {payrollItem.departmentName || payrollItem.roleName || 'Staff'}
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', marginTop: '3px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', marginTop: '3px' }}>
               Period: {payrollItem.monthName} {payrollItem.year}
             </div>
           </div>
@@ -81,7 +81,7 @@ export const DisburseSalaryModal = ({ isOpen, onClose, onDisburse, payrollItem }
             <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>
               Net Payable
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#15803d' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1e40af' }}>
               {formatINR(payrollItem.netSalary)}
             </div>
           </div>
@@ -147,8 +147,8 @@ export const DisburseSalaryModal = ({ isOpen, onClose, onDisburse, payrollItem }
             borderRadius: '8px',
             padding: '14px',
             textAlign: 'center',
-            backgroundColor: paymentProofFile ? '#f0fdf4' : '#ffffff',
-            borderColor: paymentProofFile ? '#86efac' : '#cbd5e1',
+            backgroundColor: paymentProofFile ? '#eff6ff' : '#ffffff',
+            borderColor: paymentProofFile ? '#bfdbfe' : '#cbd5e1',
             transition: 'all 0.2s ease'
           }}>
             <input
@@ -166,8 +166,8 @@ export const DisburseSalaryModal = ({ isOpen, onClose, onDisburse, payrollItem }
               htmlFor="paymentSlipInput"
               style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
             >
-              <Upload size={22} color={paymentProofFile ? '#16a34a' : '#64748b'} />
-              <span style={{ fontSize: '0.8rem', fontWeight: '600', color: paymentProofFile ? '#166534' : '#1e293b' }}>
+              <Upload size={22} color={paymentProofFile ? '#1a73e8' : '#64748b'} />
+              <span style={{ fontSize: '0.8rem', fontWeight: '600', color: paymentProofFile ? '#1e40af' : '#1e293b' }}>
                 {paymentProofFile ? paymentProofFile.name : 'Choose Payment Screenshot or Slip (PDF/JPG/PNG)'}
               </span>
               <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
@@ -214,7 +214,7 @@ export const DisburseSalaryModal = ({ isOpen, onClose, onDisburse, payrollItem }
             disabled={isSubmitting}
             style={{
               padding: '7px 20px',
-              backgroundColor: isSubmitting ? '#93c5fd' : '#15803d',
+              backgroundColor: isSubmitting ? '#93c5fd' : '#1e40af',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

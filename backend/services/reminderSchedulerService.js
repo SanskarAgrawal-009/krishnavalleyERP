@@ -85,7 +85,7 @@ export const composeClientSiteVisitReminder = (lead, visit) => {
     </table>
 
     <div style="margin: 22px 0;">
-      <a href="https://maps.google.com/?q=Krishna+Valley+Vrindavan" style="background-color: #0f766e; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13px; display: inline-block;">
+      <a href="https://maps.google.com/?q=Krishna+Valley+Vrindavan" style="background-color: #005bbf; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 13px; display: inline-block;">
         Open Location in Google Maps
       </a>
     </div>
@@ -141,7 +141,7 @@ export const composeTeamFollowUpReminder = (lead, fu) => {
     </table>
 
     <p style="margin: 18px 0 0 0;">
-      <a href="https://erp.krishnavalley.com/crm" style="color: #0f766e; font-weight: 600; text-decoration: none; font-size: 14px;">
+      <a href="https://erp.krishnavalley.com/crm" style="color: #005bbf; font-weight: 600; text-decoration: none; font-size: 14px;">
         Open CRM Pipeline &rarr;
       </a>
     </p>
@@ -172,7 +172,7 @@ export const composeClientFollowUpReminder = (lead, fu) => {
 
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 580px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
-      <div style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); padding: 24px; color: #ffffff;">
+      <div style="background: linear-gradient(135deg, #005bbf 0%, #00285c 100%); padding: 24px; color: #ffffff;">
         <h2 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Krishna Valley</h2>
         <p style="margin: 6px 0 0 0; font-size: 14px; opacity: 0.9;">Upcoming ${modeCapital} Consultation Reminder</p>
       </div>
@@ -190,7 +190,7 @@ export const composeClientFollowUpReminder = (lead, fu) => {
           </tr>
           <tr>
             <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Scheduled Time:</td>
-            <td style="padding: 12px 16px; font-size: 14px; color: #0f766e; font-weight: 700; border-bottom: 1px solid #edf2f7;">${timeStr} (${dateStr})</td>
+            <td style="padding: 12px 16px; font-size: 14px; color: #005bbf; font-weight: 700; border-bottom: 1px solid #edf2f7;">${timeStr} (${dateStr})</td>
           </tr>
           <tr>
             <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #edf2f7;">Requirement / Interest:</td>
@@ -275,7 +275,7 @@ export const checkAndDispatchReminders = async () => {
                   text
                 });
                 channelsSent.push('email');
-                console.log(`📧 [Reminder Engine] Automatically sent 30-min reminder email to sales rep ${assignee.email} for lead "${lead.name}".`);
+                console.log(`[Reminder Engine] Automatically sent 30-min reminder email to sales rep ${assignee.email} for lead "${lead.name}".`);
               } catch (err) {
                 console.warn(`Could not dispatch sales rep email reminder for lead ${lead._id}:`, err.message);
               }
@@ -291,7 +291,7 @@ export const checkAndDispatchReminders = async () => {
                   variables: { client_name: lead.name }
                 });
                 channelsSent.push('whatsapp');
-                console.log(`💬 [Reminder Engine] Sent 30-min WhatsApp reminder to sales rep ${assignee.mobileNo} for lead "${lead.name}".`);
+                console.log(`[Reminder Engine] Sent 30-min WhatsApp reminder to sales rep ${assignee.mobileNo} for lead "${lead.name}".`);
               } catch (err) {
                 console.warn(`Could not dispatch sales rep WhatsApp reminder for lead ${lead._id}:`, err.message);
               }
@@ -321,7 +321,7 @@ export const checkAndDispatchReminders = async () => {
                   text: clientText
                 });
                 clientChannels.push('email');
-                console.log(`📧 [Reminder Engine] Automatically sent 30-min reminder email to client ${lead.email} for "${lead.name}".`);
+                console.log(`[Reminder Engine] Automatically sent 30-min reminder email to client ${lead.email} for "${lead.name}".`);
               } catch (err) {
                 console.warn(`Could not dispatch client email reminder for lead ${lead._id}:`, err.message);
               }
@@ -337,7 +337,7 @@ export const checkAndDispatchReminders = async () => {
                   variables: { client_name: lead.name }
                 });
                 clientChannels.push('whatsapp');
-                console.log(`💬 [Reminder Engine] Sent 30-min WhatsApp reminder to client ${lead.mobileNo} for "${lead.name}".`);
+                console.log(`[Reminder Engine] Sent 30-min WhatsApp reminder to client ${lead.mobileNo} for "${lead.name}".`);
               } catch (err) {
                 console.warn(`Could not dispatch client WhatsApp reminder for lead ${lead._id}:`, err.message);
               }
@@ -393,7 +393,7 @@ export const checkAndDispatchReminders = async () => {
                 text
               });
               channelsSent.push('email');
-              console.log(`📧 [Reminder Engine] Sent 30-min external site visit email to client ${lead.email} for "${lead.name}".`);
+              console.log(`[Reminder Engine] Sent 30-min external site visit email to client ${lead.email} for "${lead.name}".`);
             } catch (err) {
               console.warn(`Could not dispatch client site visit email for lead ${lead._id}:`, err.message);
             }
@@ -658,7 +658,7 @@ export const initReminderScheduler = () => {
     clearInterval(schedulerInterval);
   }
 
-  console.log('⏰ [Reminder Engine] Initialized automated 30-minute reminder ticker (interval: 60s).');
+  console.log('[Reminder Engine] Initialized automated 30-minute reminder ticker (interval: 60s).');
 
   // Run initial check after 5 seconds to catch current reminders
   setTimeout(() => {

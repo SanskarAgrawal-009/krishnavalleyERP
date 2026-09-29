@@ -21,7 +21,7 @@ export const LoadingButton = ({
     switch (variant) {
       case 'success':
         return {
-          background: '#16a34a',
+          background: '#1a73e8',
           color: '#ffffff',
           border: 'none',
           boxShadow: '0 2px 4px rgba(22,163,74,0.25)'
@@ -35,7 +35,7 @@ export const LoadingButton = ({
         };
       case 'danger':
         return {
-          background: '#dc2626',
+          background: '#0f172a',
           color: '#ffffff',
           border: 'none',
           boxShadow: '0 2px 4px rgba(220,38,38,0.25)'

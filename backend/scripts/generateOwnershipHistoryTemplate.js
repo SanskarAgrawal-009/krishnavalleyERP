@@ -47,7 +47,7 @@ function generateOwnershipHistoryTemplate() {
   XLSX.writeFile(workbook, outPath1);
   XLSX.writeFile(workbook, outPath2);
 
-  console.log('✅ Generated Ownership History & Resale Excel Template at:');
+  console.log('Generated Ownership History & Resale Excel Template at:');
   console.log('  1.', outPath1);
   console.log('  2.', outPath2);
 }

@@ -164,8 +164,8 @@ async function resetTwoAgents() {
       },
     });
 
-    console.log('✅ Created Agent 1: Rahul Sharma (@agent.rahul / Agent@123)');
-    console.log('✅ Created Agent 2: Amit Verma (@agent.amit / Agent@123)');
+    console.log('Created Agent 1: Rahul Sharma (@agent.rahul / Agent@123)');
+    console.log('Created Agent 2: Amit Verma (@agent.amit / Agent@123)');
 
     // =========================================================
     // SEED SAMPLE LEADS & VISITS FOR AGENT 1 (Rahul Sharma)
@@ -404,25 +404,25 @@ async function resetTwoAgents() {
     await agent2.save();
 
     console.log('\n=========================================================');
-    console.log('🎉 EXACTLY TWO AGENTS CONFIGURED IN MONGODB:');
+    console.log('EXACTLY TWO AGENTS CONFIGURED IN MONGODB:');
     console.log('=========================================================');
-    console.log('1️⃣ AGENT 1:');
-    console.log('   👤 Name:       Rahul Sharma');
-    console.log('   🔑 Username:   agent.rahul');
-    console.log('   📧 Email:      agent.rahul@krishnavalley.com');
-    console.log('   🔒 Password:   Agent@123');
-    console.log('   🏷️ Agent Code: AGT-101');
-    console.log('   🏢 Agency:     Vrindavan Prime Realtors (Vrindavan)');
-    console.log('   ⭐ Tier:       Platinum (2.5% Commission)');
+    console.log('1⃣ AGENT 1:');
+    console.log('   Name:       Rahul Sharma');
+    console.log('   Username:   agent.rahul');
+    console.log('   Email:      agent.rahul@krishnavalley.com');
+    console.log('   Password:   Agent@123');
+    console.log('Agent Code: AGT-101');
+    console.log('   Agency:     Vrindavan Prime Realtors (Vrindavan)');
+    console.log('    Tier:       Platinum (2.5% Commission)');
     console.log('---------------------------------------------------------');
-    console.log('2️⃣ AGENT 2:');
-    console.log('   👤 Name:       Amit Verma');
-    console.log('   🔑 Username:   agent.amit');
-    console.log('   📧 Email:      agent.amit@krishnavalley.com');
-    console.log('   🔒 Password:   Agent@123');
-    console.log('   🏷️ Agent Code: AGT-102');
-    console.log('   🏢 Agency:     Braj Bhoomi Properties (Mathura)');
-    console.log('   ⭐ Tier:       Gold (2.0% Commission)');
+    console.log('2⃣ AGENT 2:');
+    console.log('   Name:       Amit Verma');
+    console.log('   Username:   agent.amit');
+    console.log('   Email:      agent.amit@krishnavalley.com');
+    console.log('   Password:   Agent@123');
+    console.log('Agent Code: AGT-102');
+    console.log('   Agency:     Braj Bhoomi Properties (Mathura)');
+    console.log('    Tier:       Gold (2.0% Commission)');
     console.log('=========================================================\n');
 
     process.exit(0);

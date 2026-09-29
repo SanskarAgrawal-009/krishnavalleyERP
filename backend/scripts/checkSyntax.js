@@ -14,7 +14,7 @@ function checkDir(dir) {
         execSync(`node --check "${full}"`);
         count++;
       } catch (err) {
-        console.error('❌ Syntax error in file:', full);
+        console.error('Syntax error in file:', full);
         process.exit(1);
       }
     }
@@ -22,6 +22,6 @@ function checkDir(dir) {
   return count;
 }
 
-console.log('🔍 Checking all backend JavaScript files for syntax & compile errors...');
+console.log('Checking all backend JavaScript files for syntax & compile errors...');
 const total = checkDir('.');
-console.log(`✅ All ${total} backend JavaScript files passed syntax verification cleanly!`);
+console.log(`All ${total} backend JavaScript files passed syntax verification cleanly!`);

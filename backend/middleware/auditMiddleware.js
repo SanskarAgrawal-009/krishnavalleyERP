@@ -61,7 +61,7 @@ export const recordAuditEvent = async ({
 
     return logEntry;
   } catch (err) {
-    console.error('⚠️ [AuditLog Failed to record event]:', err.message);
+    console.error('[AuditLog Failed to record event]:', err.message);
     return null;
   }
 };
@@ -206,7 +206,7 @@ export const autoAuditMiddleware = (req, res, next) => {
           } : null,
         });
       } catch (logErr) {
-        console.error('⚠️ [AutoAudit Middleware error]:', logErr);
+        console.error('[AutoAudit Middleware error]:', logErr);
       }
     });
 

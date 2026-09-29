@@ -16,7 +16,7 @@ import RentalManagement from '../models/RentalManagement.js';
 export async function syncRentalOwnersToCustomers() {
   await connectDB();
 
-  console.log('🔄 Starting full rental owner synchronization...');
+  console.log('Starting full rental owner synchronization...');
 
   // 1. Read Excel file for authentic contact and banking details
   const excelPath = path.resolve('Tower_A_Standardized_Inventory_Upload.xlsx');
@@ -25,9 +25,9 @@ export async function syncRentalOwnersToCustomers() {
     const buf = fs.readFileSync(excelPath);
     const wb = XLSX.read(buf, { type: 'buffer' });
     excelRows = XLSX.utils.sheet_to_json(wb.Sheets['Site_Inventory'] || wb.Sheets[wb.SheetNames[0]] || {});
-    console.log(`📊 Loaded ${excelRows.length} rows from ${excelPath}`);
+    console.log(`Loaded ${excelRows.length} rows from ${excelPath}`);
   } else {
-    console.warn(`⚠️ Excel file not found at ${excelPath}`);
+    console.warn(`Excel file not found at ${excelPath}`);
   }
 
   // Build lookup by normalized flat number
@@ -55,7 +55,7 @@ export async function syncRentalOwnersToCustomers() {
     ]
   }).sort({ flatNumber: 1 });
 
-  console.log(`🏢 Found ${flats.length} flats with rental or ownership to synchronize.`);
+  console.log(`Found ${flats.length} flats with rental or ownership to synchronize.`);
 
   let createdCustomersCount = 0;
   let updatedCustomersCount = 0;
@@ -152,7 +152,7 @@ export async function syncRentalOwnersToCustomers() {
     group.flats.push(flat);
   }
 
-  console.log(`👥 Identified ${ownerGroups.size} unique property owner entities.`);
+  console.log(`Identified ${ownerGroups.size} unique property owner entities.`);
 
   // 3. Upsert Customer documents and link flats
   for (const [key, info] of ownerGroups) {
@@ -259,10 +259,10 @@ export async function syncRentalOwnersToCustomers() {
   console.log('\n======================================================');
   console.log('           RENTAL OWNERS SYNC SUMMARY                 ');
   console.log('======================================================');
-  console.log(`✅ New Customers Created:     ${createdCustomersCount}`);
-  console.log(`🔄 Existing Customers Synced: ${updatedCustomersCount}`);
-  console.log(`🏠 Total Flats Linked:        ${updatedFlatsCount}`);
-  console.log(`👥 Total Customer Directory:  ${await Customer.countDocuments()}`);
+  console.log(`New Customers Created:     ${createdCustomersCount}`);
+  console.log(`Existing Customers Synced: ${updatedCustomersCount}`);
+  console.log(`Total Flats Linked:        ${updatedFlatsCount}`);
+  console.log(`Total Customer Directory:  ${await Customer.countDocuments()}`);
   console.log('======================================================\n');
 }
 
@@ -271,7 +271,7 @@ if (process.argv[1]?.endsWith('syncRentalOwnersToCustomers.js')) {
   syncRentalOwnersToCustomers()
     .then(() => process.exit(0))
     .catch((err) => {
-      console.error('❌ Sync failed:', err);
+      console.error('Sync failed:', err);
       process.exit(1);
     });
 }

@@ -162,7 +162,7 @@ export const NewIssueModal = ({ isOpen, onClose, onSubmit, stores: propStores })
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
           <div>
             <label style={{ fontSize: '0.78rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px', fontWeight: '700' }}>
-              <HardHat size={14} color="#b06000" /> Contractor / Person Name *
+              <HardHat size={14} color="#475569" /> Contractor / Person Name *
             </label>
             <input
               type="text"
@@ -272,7 +272,7 @@ export const NewIssueModal = ({ isOpen, onClose, onSubmit, stores: propStores })
 
           {selectedStock && (
             <div style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '10px 14px', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem' }}>
-              <span style={{ color: '#4b5563' }}>Current Available: <strong style={{ color: '#137333' }}>{selectedStock.availableQuantity} {selectedStock.materialId?.unit}</strong></span>
+              <span style={{ color: '#4b5563' }}>Current Available: <strong style={{ color: '#1a73e8' }}>{selectedStock.availableQuantity} {selectedStock.materialId?.unit}</strong></span>
               <span style={{ color: '#4b5563' }}>Valuation Rate: <strong style={{ color: '#1a73e8' }}>₹{selectedStock.averageRate}</strong></span>
             </div>
           )}
@@ -298,7 +298,7 @@ export const NewIssueModal = ({ isOpen, onClose, onSubmit, stores: propStores })
             type="submit"
             style={{
               padding: '9px 22px',
-              background: '#b06000',
+              background: '#475569',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

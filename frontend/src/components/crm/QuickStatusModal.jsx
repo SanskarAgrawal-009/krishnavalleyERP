@@ -43,12 +43,12 @@ export const QuickStatusModal = ({
   const statusWorkflow = [
     { value: 'new', label: 'New Lead', color: '#64748b', desc: 'Fresh inquiry awaiting first contact' },
     { value: 'contacted', label: 'Contacted', color: '#2563eb', desc: 'Spoke with buyer / requirements gathered' },
-    { value: 'site_visit_scheduled', label: 'Site Visit Scheduled', color: '#d97706', desc: 'Tour date and time fixed' },
-    { value: 'site_visit_completed', label: 'Site Visit Completed', color: '#16a34a', desc: 'Buyer visited Krishna Valley site' },
-    { value: 'negotiation', label: 'In Negotiation', color: '#8b5cf6', desc: 'Price, payment plan, or unit selection discussions' },
-    { value: 'booked', label: 'Booked / Token Paid', color: '#059669', desc: 'Booking form signed or token paid' },
-    { value: 'converted', label: 'Converted to Sale', color: '#0d9488', desc: 'Moved to Sales Allotment ledger' },
-    { value: 'lost', label: 'Lost / Disqualified', color: '#dc2626', desc: 'Out of budget, uninterested, or invalid' },
+    { value: 'site_visit_scheduled', label: 'Site Visit Scheduled', color: '#334155', desc: 'Tour date and time fixed' },
+    { value: 'site_visit_completed', label: 'Site Visit Completed', color: '#1a73e8', desc: 'Buyer visited Krishna Valley site' },
+    { value: 'negotiation', label: 'In Negotiation', color: '#2563eb', desc: 'Price, payment plan, or unit selection discussions' },
+    { value: 'booked', label: 'Booked / Token Paid', color: '#1e40af', desc: 'Booking form signed or token paid' },
+    { value: 'converted', label: 'Converted to Sale', color: '#0284c7', desc: 'Moved to Sales Allotment ledger' },
+    { value: 'lost', label: 'Lost / Disqualified', color: '#0f172a', desc: 'Out of budget, uninterested, or invalid' },
   ];
 
   return (

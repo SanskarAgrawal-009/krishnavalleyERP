@@ -63,7 +63,7 @@ export const SiteVisitsWindow = ({
                 transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#7c3aed';
+                e.target.style.borderColor = '#1e40af';
                 e.target.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.12)';
               }}
               onBlur={(e) => {
@@ -156,7 +156,7 @@ export const SiteVisitsWindow = ({
                 padding: '0 16px',
                 borderRadius: '8px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                background: 'linear-gradient(135deg, #1a73e8 0%, #1e40af 100%)',
                 color: '#ffffff',
                 fontWeight: '800',
                 fontSize: '0.82rem',
@@ -191,11 +191,11 @@ export const SiteVisitsWindow = ({
           </span>
 
           {[
-            { id: 'all', label: 'All Site Visits', count: allSiteVisits.length, color: '#7c3aed' },
-            { id: 'scheduled', label: '📅 Scheduled & Upcoming', count: scheduledVisitsCount, color: '#2563eb' },
-            { id: 'completed', label: '✅ Completed Tours', count: completedVisitsCount, color: '#16a34a' },
-            { id: 'high_interest', label: '⭐ High Interest (4-5★)', count: highInterestVisitsCount, color: '#d97706' },
-            { id: 'cab', label: '🚗 Cab Assisted', count: cabVisitsCount, color: '#0284c7' },
+            { id: 'all', label: 'All Site Visits', count: allSiteVisits.length, color: '#1e40af' },
+            { id: 'scheduled', label: 'Scheduled & Upcoming', count: scheduledVisitsCount, color: '#2563eb' },
+            { id: 'completed', label: 'Completed Tours', count: completedVisitsCount, color: '#1a73e8' },
+            { id: 'high_interest', label: ' High Interest (4-5)', count: highInterestVisitsCount, color: '#334155' },
+            { id: 'cab', label: 'Cab Assisted', count: cabVisitsCount, color: '#0284c7' },
           ].map((tab) => {
             const isActive = siteVisitFilter === tab.id;
             return (
@@ -209,7 +209,7 @@ export const SiteVisitsWindow = ({
                   fontSize: '0.76rem',
                   fontWeight: isActive ? '800' : '600',
                   border: isActive ? `1px solid ${tab.color}` : '1px solid #e2e8f0',
-                  background: isActive ? (tab.id === 'scheduled' ? '#eff6ff' : (tab.id === 'completed' ? '#f0fdf4' : (tab.id === 'high_interest' ? '#fffbeb' : (tab.id === 'cab' ? '#f0f9ff' : '#f5f3ff')))) : '#ffffff',
+                  background: isActive ? (tab.id === 'scheduled' ? '#eff6ff' : (tab.id === 'completed' ? '#eff6ff' : (tab.id === 'high_interest' ? '#f8fafc' : (tab.id === 'cab' ? '#f0f9ff' : '#eff6ff')))) : '#ffffff',
                   color: isActive ? tab.color : '#475569',
                   cursor: 'pointer',
                   display: 'inline-flex',
@@ -244,9 +244,9 @@ export const SiteVisitsWindow = ({
               style={{
                 padding: '4px 10px',
                 borderRadius: '14px',
-                border: '1px solid #fecaca',
-                background: '#fef2f2',
-                color: '#dc2626',
+                border: '1px solid #e2e8f0',
+                background: '#f1f5f9',
+                color: '#0f172a',
                 fontSize: '0.74rem',
                 fontWeight: '700',
                 cursor: 'pointer',
@@ -267,7 +267,7 @@ export const SiteVisitsWindow = ({
       {/* ========================================================================= */}
       {displayedSiteVisits.length === 0 ? (
         <div className="g-card" style={{ textAlign: 'center', padding: '60px 24px', borderRadius: '12px' }}>
-          <Car size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#7c3aed' }} />
+          <Car size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#1e40af' }} />
           <h3 style={{ color: '#111827', marginBottom: '8px', fontWeight: '800', fontSize: '1.2rem' }}>
             No Site Visits Found
           </h3>
@@ -363,8 +363,8 @@ export const SiteVisitsWindow = ({
                           fontWeight: '800',
                           padding: '1px 6px',
                           borderRadius: '4px',
-                          background: visit.source === 'Site Visit Log' ? '#ede9fe' : (visit.source === 'Scheduled Follow-Up' ? '#eff6ff' : '#f1f5f9'),
-                          color: visit.source === 'Site Visit Log' ? '#7c3aed' : (visit.source === 'Scheduled Follow-Up' ? '#1d4ed8' : '#475569'),
+                          background: visit.source === 'Site Visit Log' ? '#eff6ff' : (visit.source === 'Scheduled Follow-Up' ? '#eff6ff' : '#f1f5f9'),
+                          color: visit.source === 'Site Visit Log' ? '#1e40af' : (visit.source === 'Scheduled Follow-Up' ? '#1d4ed8' : '#475569'),
                           border: '1px solid rgba(0,0,0,0.06)'
                         }}>
                           {visit.source}
@@ -373,7 +373,7 @@ export const SiteVisitsWindow = ({
 
                       <div style={{ fontSize: '0.78rem', color: '#475569', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                         <span style={{ fontWeight: '700', color: '#334155' }}>
-                          📞 {visit.visitorPhone || 'No phone'}
+                          {visit.visitorPhone || 'No phone'}
                         </span>
                         {(visit.city || visit.state) && (
                           <>
@@ -387,8 +387,7 @@ export const SiteVisitsWindow = ({
                       </div>
 
                       {visit.visitorEmail && (
-                        <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>
-                          ✉️ {visit.visitorEmail}
+                        <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>{visit.visitorEmail}
                         </div>
                       )}
                     </td>
@@ -399,21 +398,20 @@ export const SiteVisitsWindow = ({
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
                         {isScheduled ? (
                           isPastDue ? (
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecaca', padding: '2px 7px', borderRadius: '5px' }}>
-                              ⚠️ Tour Due
+                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#f1f5f9', color: '#0f172a', border: '1px solid #e2e8f0', padding: '2px 7px', borderRadius: '5px' }}>Tour Due
                             </span>
                           ) : isToday ? (
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', padding: '2px 7px', borderRadius: '5px' }}>
-                              ⏰ Today's Visit
+                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '2px 7px', borderRadius: '5px' }}>
+                              Today's Visit
                             </span>
                           ) : (
                             <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '2px 7px', borderRadius: '5px' }}>
-                              📅 Upcoming Visit
+                              Upcoming Visit
                             </span>
                           )
                         ) : (
-                          <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', padding: '2px 7px', borderRadius: '5px' }}>
-                            ✅ Tour Completed
+                          <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#eff6ff', color: '#1e40af', border: '1px solid #dbeafe', padding: '2px 7px', borderRadius: '5px' }}>
+                            Tour Completed
                           </span>
                         )}
 
@@ -433,12 +431,12 @@ export const SiteVisitsWindow = ({
                               <Star
                                 key={s}
                                 size={13}
-                                color="#f59e0b"
-                                fill={visit.interestRating >= s ? '#f59e0b' : 'none'}
+                                color="#475569"
+                                fill={visit.interestRating >= s ? '#475569' : 'none'}
                               />
                             ))}
                           </div>
-                          <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#b45309' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#334155' }}>
                             ({visit.interestRating}/5 {visit.interestRating >= 4 ? 'High Interest' : ''})
                           </span>
                         </div>
@@ -452,7 +450,7 @@ export const SiteVisitsWindow = ({
                       )}
                       {visit.nextStep && (
                         <div style={{ fontSize: '0.7rem', color: '#2563eb', fontWeight: '600', marginTop: '2px' }}>
-                          🎯 Next: {visit.nextStep}
+                          Next: {visit.nextStep}
                         </div>
                       )}
                     </td>
@@ -461,7 +459,7 @@ export const SiteVisitsWindow = ({
                     <td style={{ padding: '14px 16px', verticalAlign: 'top' }}>
                       <div style={{
                         background: '#faf5ff',
-                        border: '1px solid #e9d5ff',
+                        border: '1px solid #dbeafe',
                         padding: '3px 8px',
                         borderRadius: '6px',
                         display: 'inline-flex',
@@ -469,7 +467,7 @@ export const SiteVisitsWindow = ({
                         gap: '5px',
                         marginBottom: '4px'
                       }}>
-                        <Home size={12} color="#9333ea" />
+                        <Home size={12} color="#1d4ed8" />
                         <span style={{ fontWeight: '800', color: '#7e22ce', fontSize: '0.76rem' }}>
                           {visit.flatNumber ? `Flat ${visit.flatNumber}` : (visit.flatLabel || 'Project Tour')}
                         </span>
@@ -485,7 +483,7 @@ export const SiteVisitsWindow = ({
                     {/* Column 4: EXECUTIVE & CAB LOGISTICS */}
                     <td style={{ padding: '14px 16px', verticalAlign: 'top' }}>
                       <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
-                        <UserCheck size={13} color="#16a34a" />
+                        <UserCheck size={13} color="#1a73e8" />
                         <span>{visit.accompaniedBy || 'Sales Executive'}</span>
                       </div>
 
@@ -498,18 +496,18 @@ export const SiteVisitsWindow = ({
                           </div>
                           {visit.cabDetails?.driverName && (
                             <div style={{ color: '#0284c7', marginTop: '2px' }}>
-                              Driver: {visit.cabDetails.driverName} {visit.cabDetails.driverPhone ? `(📞 ${visit.cabDetails.driverPhone})` : ''}
+                              Driver: {visit.cabDetails.driverName} {visit.cabDetails.driverPhone ? `(${visit.cabDetails.driverPhone})` : ''}
                             </div>
                           )}
                           {visit.cabDetails?.pickupLocation && (
                             <div style={{ color: '#64748b', marginTop: '1px', fontSize: '0.68rem' }}>
-                              📍 {visit.cabDetails.pickupLocation}
+                              {visit.cabDetails.pickupLocation}
                             </div>
                           )}
                         </div>
                       ) : (
                         <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-                          🚶 Self-Arranged / Walk-in
+                          Self-Arranged / Walk-in
                         </div>
                       )}
                     </td>
@@ -528,9 +526,9 @@ export const SiteVisitsWindow = ({
                               style={{
                                 padding: '5px 8px',
                                 borderRadius: '6px',
-                                border: '1px solid #fde68a',
-                                background: '#fffbeb',
-                                color: '#b45309',
+                                border: '1px solid #cbd5e1',
+                                background: '#f8fafc',
+                                color: '#334155',
                                 fontSize: '0.72rem',
                                 fontWeight: '800',
                                 cursor: 'pointer',
@@ -541,7 +539,7 @@ export const SiteVisitsWindow = ({
                               }}
                               title="Send 30-Minute Reminder to Client (by Handling Executive) or Sales Rep via WhatsApp / Email"
                             >
-                              <Bell size={11} color="#b45309" />
+                              <Bell size={11} color="#334155" />
                               <span>Remind</span>
                             </button>
 
@@ -555,7 +553,7 @@ export const SiteVisitsWindow = ({
                                 padding: '5px 10px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                background: '#16a34a',
+                                background: '#1a73e8',
                                 color: '#ffffff',
                                 fontSize: '0.72rem',
                                 fontWeight: '800',
@@ -628,8 +626,8 @@ export const SiteVisitsWindow = ({
             </div>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
               <span>Scheduled: <strong style={{ color: '#2563eb' }}>{scheduledVisitsCount}</strong></span>
-              <span>Completed: <strong style={{ color: '#16a34a' }}>{completedVisitsCount}</strong></span>
-              <span>High Interest: <strong style={{ color: '#d97706' }}>{highInterestVisitsCount}</strong></span>
+              <span>Completed: <strong style={{ color: '#1a73e8' }}>{completedVisitsCount}</strong></span>
+              <span>High Interest: <strong style={{ color: '#334155' }}>{highInterestVisitsCount}</strong></span>
               <span>Cab Logistics: <strong style={{ color: '#0284c7' }}>{cabVisitsCount}</strong></span>
             </div>
           </div>

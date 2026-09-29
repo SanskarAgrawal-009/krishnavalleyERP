@@ -9,9 +9,9 @@ import {
 
 const STEPS = [
   { id: 1, title: 'Select Flat', subtitle: 'Choose Unit', icon: Home, color: '#2563eb' },
-  { id: 2, title: 'Owner Details', subtitle: 'KYC & Registry', icon: User, color: '#7c3aed' },
-  { id: 3, title: 'Rent & TDS', subtitle: 'Monthly Pricing', icon: DollarSign, color: '#16a34a' },
-  { id: 4, title: 'Contract', subtitle: 'Dates & Review', icon: Calendar, color: '#ea580c' },
+  { id: 2, title: 'Owner Details', subtitle: 'KYC & Registry', icon: User, color: '#1e40af' },
+  { id: 3, title: 'Rent & TDS', subtitle: 'Monthly Pricing', icon: DollarSign, color: '#1a73e8' },
+  { id: 4, title: 'Contract', subtitle: 'Dates & Review', icon: Calendar, color: '#334155' },
 ];
 
 export const ManualRentalEntryModal = ({
@@ -266,33 +266,33 @@ export const ManualRentalEntryModal = ({
 
       {selectedFlat ? (
         <div style={{
-          background: '#f0fdf4', border: '2px solid #22c55e', borderRadius: '12px',
+          background: '#eff6ff', border: '2px solid #2563eb', borderRadius: '12px',
           padding: '14px 18px', display: 'flex', alignItems: 'center',
           justifyContent: 'space-between', boxShadow: '0 2px 8px rgba(34,197,94,0.15)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
               width: '42px', height: '42px', borderRadius: '10px',
-              background: 'linear-gradient(135deg, #16a34a, #15803d)',
+              background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
               color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Check size={22} />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.1rem', fontWeight: '800', color: '#166534' }}>
+                <span style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1e40af' }}>
                   Flat {selectedFlat.flatNumber}
                 </span>
                 <span style={{
                   padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem',
-                  fontWeight: '700', background: '#dcfce7', color: '#15803d',
+                  fontWeight: '700', background: '#eff6ff', color: '#1e40af',
                 }}>{selectedFlat.bhkType || '2BHK'}</span>
                 <span style={{
                   padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem',
                   fontWeight: '600', background: '#e2e8f0', color: '#475569',
                 }}>Floor {selectedFlat.floor}</span>
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#15803d', marginTop: '3px' }}>
+              <div style={{ fontSize: '0.78rem', color: '#1e40af', marginTop: '3px' }}>
                 {selectedFlat.buildingName ? `${selectedFlat.buildingName} • ` : ''}
                 {selectedFlat.carpetArea ? `${selectedFlat.carpetArea} sq.ft` : ''}
                 {selectedFlat.currentOwner?.name ? ` • Owner: ${selectedFlat.currentOwner.name}` : ''}
@@ -371,7 +371,7 @@ export const ManualRentalEntryModal = ({
                       Floor {f.floor} {f.carpetArea ? `• ${f.carpetArea} sq.ft` : ''}
                     </div>
                     {f.currentOwner?.name && (
-                      <div style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#1a73e8', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         Owner: {f.currentOwner.name}
                       </div>
                     )}
@@ -396,7 +396,7 @@ export const ManualRentalEntryModal = ({
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+          background: 'linear-gradient(135deg, #1e40af, #1e3a8a)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <User size={16} color="#fff" />
@@ -453,10 +453,10 @@ export const ManualRentalEntryModal = ({
           Owner Registry Document (Sale Deed / Registry Proof)
         </label>
         <div style={{
-          border: registryFile ? '1.5px solid #86efac' : '1.5px dashed #cbd5e1',
+          border: registryFile ? '1.5px solid #bfdbfe' : '1.5px dashed #cbd5e1',
           borderRadius: '10px',
           padding: '14px',
-          background: registryFile ? '#f0fdf4' : '#fafafa',
+          background: registryFile ? '#eff6ff' : '#fafafa',
           textAlign: 'center',
           transition: 'all 0.2s ease'
         }}>
@@ -465,13 +465,13 @@ export const ManualRentalEntryModal = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left', overflow: 'hidden' }}>
                 <div style={{
                   width: '36px', height: '36px', borderRadius: '8px',
-                  background: '#16a34a', color: '#fff',
+                  background: '#1a73e8', color: '#fff',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                 }}>
                   <FileText size={18} />
                 </div>
                 <div style={{ overflow: 'hidden' }}>
-                  <div style={{ fontSize: '0.84rem', fontWeight: '700', color: '#166534', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '0.84rem', fontWeight: '700', color: '#1e40af', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {registryFile.name}
                   </div>
                   <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>
@@ -484,7 +484,7 @@ export const ManualRentalEntryModal = ({
                 onClick={() => setRegistryFile(null)}
                 style={{
                   padding: '4px 8px', borderRadius: '6px',
-                  background: '#fee2e2', color: '#dc2626', border: '1px solid #fecaca',
+                  background: '#f1f5f9', color: '#0f172a', border: '1px solid #e2e8f0',
                   fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer'
                 }}
               >
@@ -517,11 +517,11 @@ export const ManualRentalEntryModal = ({
       {/* Selected flat info */}
       {selectedFlat && (
         <div style={{
-          padding: '10px 14px', background: '#f0fdf4', borderRadius: '10px',
-          border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '8px',
+          padding: '10px 14px', background: '#eff6ff', borderRadius: '10px',
+          border: '1px solid #dbeafe', display: 'flex', alignItems: 'center', gap: '8px',
         }}>
-          <CheckCircle2 size={16} color="#16a34a" />
-          <span style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '600' }}>
+          <CheckCircle2 size={16} color="#1a73e8" />
+          <span style={{ fontSize: '0.78rem', color: '#1e40af', fontWeight: '600' }}>
             Enrolling <strong>Flat {selectedFlat.flatNumber}</strong> • {selectedFlat.buildingName || 'Tower'} • Floor {selectedFlat.floor}
           </span>
         </div>
@@ -537,7 +537,7 @@ export const ManualRentalEntryModal = ({
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #16a34a, #15803d)',
+          background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <DollarSign size={16} color="#fff" />
@@ -554,7 +554,7 @@ export const ManualRentalEntryModal = ({
         <div style={{ position: 'relative' }}>
           <span style={{
             position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
-            fontWeight: '800', color: '#16a34a', fontSize: '1rem',
+            fontWeight: '800', color: '#1a73e8', fontSize: '1rem',
           }}>₹</span>
           <input
             type="number" required min="1000" step="500"
@@ -624,7 +624,7 @@ export const ManualRentalEntryModal = ({
                 <span style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.85rem', color: '#64748b', fontWeight: '700' }}>%</span>
               </div>
               <span style={{
-                padding: '8px 14px', background: '#fef3c7', color: '#92400e',
+                padding: '8px 14px', background: '#f1f5f9', color: '#334155',
                 borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', whiteSpace: 'nowrap',
               }}>− {formatINR(finalTdsAmount)}</span>
             </div>
@@ -660,14 +660,14 @@ export const ManualRentalEntryModal = ({
 
       {/* Net Preview */}
       <div style={{
-        padding: '14px 18px', background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-        border: '1.5px solid #86efac', borderRadius: '12px',
+        padding: '14px 18px', background: 'linear-gradient(135deg, #eff6ff, #eff6ff)',
+        border: '1.5px solid #bfdbfe', borderRadius: '12px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
-        <span style={{ fontSize: '0.82rem', color: '#166534', fontWeight: '700' }}>Net Monthly Payout:</span>
+        <span style={{ fontSize: '0.82rem', color: '#1e40af', fontWeight: '700' }}>Net Monthly Payout:</span>
         <div style={{ textAlign: 'right' }}>
-          <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#166534' }}>{formatINR(netAmount)}</span>
-          <span style={{ fontSize: '0.72rem', color: '#166534', display: 'block', fontWeight: '600' }}>per month</span>
+          <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#1e40af' }}>{formatINR(netAmount)}</span>
+          <span style={{ fontSize: '0.72rem', color: '#1e40af', display: 'block', fontWeight: '600' }}>per month</span>
         </div>
       </div>
     </div>
@@ -681,7 +681,7 @@ export const ManualRentalEntryModal = ({
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #ea580c, #c2410c)',
+          background: 'linear-gradient(135deg, #334155, #334155)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Calendar size={16} color="#fff" />
@@ -748,29 +748,29 @@ export const ManualRentalEntryModal = ({
 
       {/* Financial Summary */}
       <div style={{
-        background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-        border: '1.5px solid #86efac', borderRadius: '12px', padding: '16px 20px',
+        background: 'linear-gradient(135deg, #eff6ff, #eff6ff)',
+        border: '1.5px solid #bfdbfe', borderRadius: '12px', padding: '16px 20px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-          <TrendingUp size={16} color="#16a34a" />
-          <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#166534', textTransform: 'uppercase' }}>Financial Summary</span>
+          <TrendingUp size={16} color="#1a73e8" />
+          <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1e40af', textTransform: 'uppercase' }}>Financial Summary</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-          <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #bbf7d0' }}>
+          <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #dbeafe' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>TOTAL PAYMENT</span>
             <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1e3a8a' }}>{formatINR(totalCommitment)}</span>
             <span style={{ fontSize: '0.66rem', color: '#2563eb', display: 'block', marginTop: '2px' }}>
               {formatINR(grossRent)} × {tenure} mos
             </span>
           </div>
-          <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #bbf7d0' }}>
+          <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #dbeafe' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>TOTAL PAID</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#16a34a' }}>{formatINR(paid)}</span>
+            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1a73e8' }}>{formatINR(paid)}</span>
             <span style={{ fontSize: '0.66rem', color: '#64748b', display: 'block', marginTop: '2px' }}>Disbursed</span>
           </div>
-          <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #bbf7d0' }}>
+          <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #dbeafe' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>OUTSTANDING</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: outstandingBalance > 0 ? '#dc2626' : '#16a34a' }}>
+            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: outstandingBalance > 0 ? '#0f172a' : '#1a73e8' }}>
               {formatINR(outstandingBalance)}
             </span>
             <span style={{ fontSize: '0.66rem', color: '#64748b', display: 'block', marginTop: '2px' }}>Remaining</span>
@@ -780,7 +780,7 @@ export const ManualRentalEntryModal = ({
 
       {/* Summary Table */}
       <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 16px' }}>
-        <h4 style={{ margin: '0 0 10px', fontSize: '0.78rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase' }}>📋 Enrollment Summary</h4>
+        <h4 style={{ margin: '0 0 10px', fontSize: '0.78rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase' }}>Enrollment Summary</h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px', fontSize: '0.82rem' }}>
           {[
             { label: 'Flat', value: `Flat ${selectedFlat?.flatNumber || '—'}` },
@@ -879,7 +879,7 @@ export const ManualRentalEntryModal = ({
                 >
                   <div style={{
                     width: '28px', height: '28px', borderRadius: '8px',
-                    background: isCompleted ? 'linear-gradient(135deg, #16a34a, #15803d)'
+                    background: isCompleted ? 'linear-gradient(135deg, #1a73e8, #1e40af)'
                       : isActive ? `linear-gradient(135deg, ${step.color}, ${step.color}dd)` : '#e2e8f0',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.3s ease', flexShrink: 0,
@@ -889,7 +889,7 @@ export const ManualRentalEntryModal = ({
                   <div style={{ textAlign: 'left', minWidth: 0 }}>
                     <div style={{
                       fontSize: '0.7rem', fontWeight: '800',
-                      color: isActive ? '#0f172a' : isCompleted ? '#16a34a' : '#94a3b8',
+                      color: isActive ? '#0f172a' : isCompleted ? '#1a73e8' : '#94a3b8',
                       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                     }}>{step.title}</div>
                     {isActive && <div style={{ fontSize: '0.6rem', color: '#64748b', fontWeight: '600' }}>{step.subtitle}</div>}
@@ -898,7 +898,7 @@ export const ManualRentalEntryModal = ({
                 {idx < STEPS.length - 1 && (
                   <div style={{
                     width: '20px', height: '2px', flexShrink: 0,
-                    background: isCompleted ? '#16a34a' : '#e2e8f0', borderRadius: '1px',
+                    background: isCompleted ? '#1a73e8' : '#e2e8f0', borderRadius: '1px',
                   }} />
                 )}
               </React.Fragment>
@@ -914,9 +914,9 @@ export const ManualRentalEntryModal = ({
         {/* ERROR */}
         {errorMsg && (
           <div style={{
-            margin: '0 24px 12px', padding: '10px 14px', background: '#fef2f2',
-            border: '1px solid #fca5a5', borderRadius: '8px', fontSize: '0.82rem',
-            color: '#dc2626', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px',
+            margin: '0 24px 12px', padding: '10px 14px', background: '#f1f5f9',
+            border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.82rem',
+            color: '#0f172a', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px',
           }}>
             <AlertCircle size={16} /> {errorMsg}
           </div>
@@ -971,7 +971,7 @@ export const ManualRentalEntryModal = ({
               type="button" onClick={handleSubmit} disabled={submitting}
               style={{
                 padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg, #16a34a, #15803d)',
+                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
                 color: '#ffffff', fontSize: '0.84rem', fontWeight: '800',
                 cursor: submitting ? 'not-allowed' : 'pointer',
                 boxShadow: '0 4px 12px rgba(22,163,74,0.35)',

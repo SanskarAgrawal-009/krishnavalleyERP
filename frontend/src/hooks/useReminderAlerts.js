@@ -88,7 +88,7 @@ export const useReminderAlerts = () => {
           setLastChimedId(newest30Min.id);
           playChimeSound();
           triggerDesktopNotification(
-            `⏰ 30-Min Reminder: ${newest30Min.leadName}`,
+            `30-Min Reminder: ${newest30Min.leadName}`,
             `Upcoming ${newest30Min.mode?.toUpperCase()} scheduled in ${newest30Min.minutesRemaining} mins.`
           );
         }

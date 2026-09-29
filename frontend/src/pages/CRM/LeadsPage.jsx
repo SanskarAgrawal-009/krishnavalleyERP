@@ -611,21 +611,21 @@ export const LeadsPage = ({ onNavigateToSales }) => {
       case 'contacted':
         return { label: 'Contacted', bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' };
       case 'in_discussion':
-        return { label: 'In Discussion', bg: '#f3e8ff', color: '#7e22ce', border: '#e9d5ff' };
+        return { label: 'In Discussion', bg: '#eff6ff', color: '#7e22ce', border: '#dbeafe' };
       case 'followup_scheduled':
-        return { label: 'Follow-Up Scheduled', bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
+        return { label: 'Follow-Up Scheduled', bg: '#f1f5f9', color: '#334155', border: '#cbd5e1' };
       case 'site_visit_scheduled':
-        return { label: 'Visit Scheduled', bg: '#ffedd5', color: '#c2410c', border: '#fed7aa' };
+        return { label: 'Visit Scheduled', bg: '#f1f5f9', color: '#334155', border: '#e2e8f0' };
       case 'site_visit_completed':
-        return { label: 'Site Visit Done', bg: '#dcfce7', color: '#15803d', border: '#bbf7d0' };
+        return { label: 'Site Visit Done', bg: '#eff6ff', color: '#1e40af', border: '#dbeafe' };
       case 'site_visit_completed_pending_approval':
-        return { label: 'Visit Pending Review', bg: '#fef9c3', color: '#a16207', border: '#fef08a' };
+        return { label: 'Visit Pending Review', bg: '#f8fafc', color: '#334155', border: '#f1f5f9' };
       case 'negotiation':
-        return { label: 'Negotiation', bg: '#e0e7ff', color: '#4338ca', border: '#c7d2fe' };
+        return { label: 'Negotiation', bg: '#e0e7ff', color: '#00285c', border: '#c7d2fe' };
       case 'converted':
-        return { label: 'Converted Deal', bg: '#d1fae5', color: '#065f46', border: '#a7f3d0' };
+        return { label: 'Converted Deal', bg: '#eff6ff', color: '#1e3a8a', border: '#bfdbfe' };
       case 'lost':
-        return { label: 'Lost / Dropped', bg: '#fee2e2', color: '#b91c1c', border: '#fecaca' };
+        return { label: 'Lost / Dropped', bg: '#f1f5f9', color: '#0f172a', border: '#e2e8f0' };
       default:
         return { label: (status || 'New').replace(/_/g, ' '), bg: '#f3f4f6', color: '#374151', border: '#e5e7eb' };
     }
@@ -682,9 +682,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
             style={{
               padding: '8px 14px',
               borderRadius: '8px',
-              border: '1px solid #dcfce7',
-              background: '#f0fdf4',
-              color: '#15803d',
+              border: '1px solid #eff6ff',
+              background: '#eff6ff',
+              color: '#1e40af',
               fontSize: '0.82rem',
               fontWeight: '700',
               cursor: 'pointer',
@@ -693,11 +693,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               gap: '6px',
               transition: 'all 0.15s ease'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#dcfce7'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#f0fdf4'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
             title="Log an external lead or walk-in site visit"
           >
-            <Car size={14} color="#16a34a" />
+            <Car size={14} color="#1a73e8" />
             Log Site Visit
           </button>
 
@@ -776,7 +776,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <FileSpreadsheet size={15} color="#2563eb" />
-                    <span>📥 Bulk Excel Upload</span>
+                    <span>Bulk Excel Upload</span>
                   </button>
 
                   {/* Bulk Delete by Stage */}
@@ -795,18 +795,18 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       borderRadius: '6px',
                       fontSize: '0.82rem',
                       fontWeight: '700',
-                      color: '#dc2626',
+                      color: '#0f172a',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
                       cursor: 'pointer',
                       textAlign: 'left'
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
-                    <Trash2 size={15} color="#dc2626" />
-                    <span>🗑️ Bulk Delete by Stage</span>
+                    <Trash2 size={15} color="#0f172a" />
+                    <span>Bulk Delete by Stage</span>
                   </button>
 
                   <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
@@ -837,7 +837,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <Globe size={15} color="#0284c7" />
-                    <span>⚡ Meta Ads Integration</span>
+                    <span>Meta Ads Integration</span>
                   </button>
 
                   {/* Sales Team Pool */}
@@ -1031,7 +1031,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               fontSize: '0.82rem',
               fontWeight: activeWindow === 'site_visits' ? '800' : '600',
               background: activeWindow === 'site_visits' ? '#ffffff' : 'transparent',
-              color: activeWindow === 'site_visits' ? '#15803d' : '#64748b',
+              color: activeWindow === 'site_visits' ? '#1e40af' : '#64748b',
               boxShadow: activeWindow === 'site_visits' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
               cursor: 'pointer',
               display: 'inline-flex',
@@ -1040,15 +1040,15 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               transition: 'all 0.15s ease'
             }}
           >
-            <Car size={14} color={activeWindow === 'site_visits' ? '#15803d' : '#64748b'} />
+            <Car size={14} color={activeWindow === 'site_visits' ? '#1e40af' : '#64748b'} />
             <span>Site Visits</span>
             <span style={{
               fontSize: '0.70rem',
               padding: '1px 6px',
               borderRadius: '10px',
               fontWeight: '800',
-              background: activeWindow === 'site_visits' ? '#dcfce7' : '#e2e8f0',
-              color: activeWindow === 'site_visits' ? '#15803d' : '#475569'
+              background: activeWindow === 'site_visits' ? '#eff6ff' : '#e2e8f0',
+              color: activeWindow === 'site_visits' ? '#1e40af' : '#475569'
             }}>
               {allSiteVisits.length}
             </span>
@@ -1076,12 +1076,12 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               gap: '14px',
               borderRadius: '12px',
               cursor: 'pointer',
-              border: siteVisitFilter === 'all' ? '2px solid #7c3aed' : '1px solid #e2e8f0',
+              border: siteVisitFilter === 'all' ? '2px solid #1e40af' : '1px solid #e2e8f0',
               background: siteVisitFilter === 'all' ? '#faf5ff' : '#ffffff',
               transition: 'all 0.15s ease'
             }}
           >
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f5f3ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Car size={20} />
             </div>
             <div>
@@ -1134,19 +1134,19 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               gap: '14px',
               borderRadius: '12px',
               cursor: 'pointer',
-              border: siteVisitFilter === 'completed' ? '2px solid #16a34a' : '1px solid #e2e8f0',
-              background: siteVisitFilter === 'completed' ? '#f0fdf4' : '#ffffff',
+              border: siteVisitFilter === 'completed' ? '2px solid #1a73e8' : '1px solid #e2e8f0',
+              background: siteVisitFilter === 'completed' ? '#eff6ff' : '#ffffff',
               transition: 'all 0.15s ease'
             }}
           >
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CheckCircle2 size={20} />
             </div>
             <div>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Completed Tours
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#15803d' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#1e40af' }}>
                 {completedVisitsCount}
               </div>
             </div>
@@ -1163,19 +1163,19 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               gap: '14px',
               borderRadius: '12px',
               cursor: 'pointer',
-              border: siteVisitFilter === 'high_interest' ? '2px solid #d97706' : '1px solid #e2e8f0',
-              background: siteVisitFilter === 'high_interest' ? '#fffbeb' : '#ffffff',
+              border: siteVisitFilter === 'high_interest' ? '2px solid #334155' : '1px solid #e2e8f0',
+              background: siteVisitFilter === 'high_interest' ? '#f8fafc' : '#ffffff',
               transition: 'all 0.15s ease'
             }}
           >
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f8fafc', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Star size={20} />
             </div>
             <div>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 High Interest Leads
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#b45309' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#334155' }}>
                 {highInterestVisitsCount}
               </div>
             </div>
@@ -1233,7 +1233,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
           {/* Card 2: Next Up in Rotation (Window 1) or My Portfolio Share (Window 2) */}
           <div className="g-card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px', borderRadius: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Zap size={20} />
             </div>
             <div>
@@ -1251,14 +1251,14 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           {/* Card 3: Unassigned Queue / 1-Click Distribute */}
           <div className="g-card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f8fafc', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <UserX size={20} />
               </div>
               <div>
                 <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Unassigned Queue
                 </div>
-                <div style={{ fontSize: '1.35rem', fontWeight: '900', color: unassignedCount > 0 ? '#b45309' : '#0f172a' }}>
+                <div style={{ fontSize: '1.35rem', fontWeight: '900', color: unassignedCount > 0 ? '#334155' : '#0f172a' }}>
                   {unassignedCount}
                 </div>
               </div>
@@ -1269,7 +1269,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                 onClick={handleDistributeRoundRobin}
                 style={{
                   padding: '6px 10px',
-                  background: '#16a34a',
+                  background: '#1a73e8',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '6px',
@@ -1290,7 +1290,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
           {/* Card 4: Pending Action / Site Visits */}
           <div className="g-card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px', borderRadius: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#faf5ff', color: '#9333ea', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#faf5ff', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Calendar size={20} />
             </div>
             <div>
@@ -1449,7 +1449,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     }}
                     title="Filter by assigned sales representative"
                   >
-                    <option value="all">👤 All Sales Reps ({leads.filter(l => l.status !== 'converted').length})</option>
+                    <option value="all">All Sales Reps ({leads.filter(l => l.status !== 'converted').length})</option>
                     {(salesTeamOverview?.teamMembers || []).map((member) => {
                       const u = member.userId;
                       if (!u) return null;
@@ -1457,11 +1457,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       const repLeadCount = leads.filter(l => (l.assignedTo?._id?.toString() || l.assignedTo?.toString()) === repId && l.status !== 'converted').length;
                       return (
                         <option key={repId} value={repId}>
-                          {member.isActiveInRoundRobin ? '🟢' : '⚪'} {u.firstName || u.username} ({repLeadCount})
+                          {member.isActiveInRoundRobin ? '' : ''} {u.firstName || u.username} ({repLeadCount})
                         </option>
                       );
                     })}
-                    <option value="unassigned">⚠️ Unassigned Only ({unassignedCount})</option>
+                    <option value="unassigned">Unassigned Only ({unassignedCount})</option>
                   </select>
                 )}
 
@@ -1479,25 +1479,25 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     margin: 0,
                     boxSizing: 'border-box',
                     fontSize: '0.80rem',
-                    color: stageFilter ? '#b91c1c' : '#1e293b',
+                    color: stageFilter ? '#0f172a' : '#1e293b',
                     fontWeight: '700',
                     borderRadius: '8px',
-                    border: stageFilter ? '1.5px solid #f87171' : '1px solid #cbd5e1',
-                    background: stageFilter ? '#fef2f2' : '#ffffff',
+                    border: stageFilter ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
+                    background: stageFilter ? '#f1f5f9' : '#ffffff',
                     cursor: 'pointer'
                   }}
                   title="Filter by CRM pipeline stage"
                 >
                   <option value="">All Pipeline Stages</option>
-                  <option value="new">🔵 New Prospect</option>
-                  <option value="contacted">🔷 Contacted</option>
-                  <option value="in_discussion">🟣 In Discussion</option>
-                  <option value="followup_scheduled">🟡 Follow-Up Scheduled</option>
-                  <option value="site_visit_scheduled">🟠 Visit Scheduled</option>
-                  <option value="site_visit_completed">🟢 Site Visit Done</option>
-                  <option value="negotiation">🔹 Negotiation</option>
-                  <option value="lost">🔴 Lost / Dropped</option>
-                  <option value="converted">🏆 Converted Deal</option>
+                  <option value="new">New Prospect</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="in_discussion">In Discussion</option>
+                  <option value="followup_scheduled">Follow-Up Scheduled</option>
+                  <option value="site_visit_scheduled">Visit Scheduled</option>
+                  <option value="site_visit_completed">Site Visit Done</option>
+                  <option value="negotiation">Negotiation</option>
+                  <option value="lost">Lost / Dropped</option>
+                  <option value="converted">Converted Deal</option>
                 </select>
 
                 {/* Contextual Bulk Delete for the selected stage */}
@@ -1512,8 +1512,8 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       height: '38px',
                       padding: '0 12px',
                       borderRadius: '8px',
-                      border: '1px solid #dc2626',
-                      background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                      border: '1px solid #0f172a',
+                      background: 'linear-gradient(135deg, #0f172a 0%, #0f172a 100%)',
                       color: '#ffffff',
                       fontSize: '0.78rem',
                       fontWeight: '800',
@@ -1609,9 +1609,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       height: '38px',
                       padding: '0 12px',
                       borderRadius: '8px',
-                      border: '1px solid #fecaca',
-                      background: '#fef2f2',
-                      color: '#dc2626',
+                      border: '1px solid #e2e8f0',
+                      background: '#f1f5f9',
+                      color: '#0f172a',
                       fontSize: '0.78rem',
                       fontWeight: '700',
                       cursor: 'pointer',
@@ -1665,11 +1665,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   title="Filter by interaction channel"
                 >
                   <option value="">All Interaction Modes</option>
-                  <option value="call">📞 Phone Calls</option>
-                  <option value="whatsapp">💬 WhatsApp</option>
-                  <option value="site_visit">🚗 Site Visits</option>
-                  <option value="meeting">🤝 In-Person Meetings</option>
-                  <option value="email">✉️ Emails</option>
+                  <option value="call">Phone Calls</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="site_visit">Site Visits</option>
+                  <option value="meeting">In-Person Meetings</option>
+                  <option value="email">Emails</option>
                 </select>
 
                 {/* Follow-up Status Selector */}
@@ -1695,9 +1695,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   title="Filter by task progress"
                 >
                   <option value="">All Follow-up Statuses</option>
-                  <option value="pending">⏳ Pending Action</option>
-                  <option value="completed">✅ Completed</option>
-                  <option value="cancelled">❌ Cancelled</option>
+                  <option value="pending">Pending Action</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
                 </select>
 
                 {(modeFilter || statusFilter) && (
@@ -1736,10 +1736,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
           {[
             { id: 'all', label: 'All Leads', count: totalLeads },
-            { id: 'pending', label: 'Pending Action', count: pendingFollowUps, color: '#d97706' },
-            { id: 'visits', label: 'Site Visits', count: siteVisitsCount, icon: Car, color: '#15803d' },
+            { id: 'pending', label: 'Pending Action', count: pendingFollowUps, color: '#334155' },
+            { id: 'visits', label: 'Site Visits', count: siteVisitsCount, icon: Car, color: '#1e40af' },
             { id: 'meta_ads', label: 'Meta Ads', count: metaLeadsCount, icon: Globe, color: '#0284c7' },
-            { id: 'sales_unassigned', label: 'Unassigned', count: unassignedCount, icon: UserX, color: '#b45309' },
+            { id: 'sales_unassigned', label: 'Unassigned', count: unassignedCount, icon: UserX, color: '#334155' },
             { id: 'assigned', label: 'Unit Assigned', count: assignedFlatsCount, icon: Home, color: '#7e22ce' },
           ].map((tab) => {
             const isActive = quickFilter === tab.id;
@@ -1823,7 +1823,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               }}
             >
               <FileSpreadsheet size={15} color="#2563eb" />
-              📥 Bulk Upload via Excel
+              Bulk Upload via Excel
             </button>
           </div>
         </div>
@@ -1885,15 +1885,15 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           width: '40px',
                           height: '40px',
                           borderRadius: '50%',
-                          background: isAssignedToCurrentUser ? '#dcfce7' : '#e8f0fe',
-                          color: isAssignedToCurrentUser ? '#15803d' : '#1a73e8',
+                          background: isAssignedToCurrentUser ? '#eff6ff' : '#e8f0fe',
+                          color: isAssignedToCurrentUser ? '#1e40af' : '#1a73e8',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontWeight: '800',
                           fontSize: '0.92rem',
                           flexShrink: 0,
-                          border: isAssignedToCurrentUser ? '2px solid #86efac' : '1px solid #d2e3fc',
+                          border: isAssignedToCurrentUser ? '2px solid #bfdbfe' : '1px solid #d2e3fc',
                           position: 'relative'
                         }}>
                           {lead.name ? lead.name.charAt(0).toUpperCase() : 'P'}
@@ -1907,7 +1907,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 width: '10px',
                                 height: '10px',
                                 borderRadius: '50%',
-                                backgroundColor: '#16a34a',
+                                backgroundColor: '#1a73e8',
                                 border: '2px solid #ffffff'
                               }}
                             />
@@ -1945,11 +1945,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 style={{
                                   fontSize: '0.66rem',
                                   fontWeight: '800',
-                                  backgroundColor: '#f0fdf4',
-                                  color: '#166534',
+                                  backgroundColor: '#eff6ff',
+                                  color: '#1e40af',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
-                                  border: '1px solid #bbf7d0',
+                                  border: '1px solid #dbeafe',
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px'
@@ -1964,11 +1964,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 style={{
                                   fontSize: '0.66rem',
                                   fontWeight: '800',
-                                  backgroundColor: '#f5f3ff',
-                                  color: '#6d28d9',
+                                  backgroundColor: '#eff6ff',
+                                  color: '#1e3a8a',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
-                                  border: '1px solid #ddd6fe',
+                                  border: '1px solid #bfdbfe',
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px'
@@ -1992,14 +1992,14 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 }}
                                 title={`Transferred from Agent ${lead.agentId?.firstName || ''}`}
                               >
-                                🏢 Agent
+                                Agent
                               </span>
                             )}
                           </div>
 
                           <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '3px' }}>
                             <span style={{ fontWeight: '600', color: '#475569' }}>
-                              📞 {lead.mobileNo || 'No phone'}
+                              {lead.mobileNo || 'No phone'}
                             </span>
                             {(lead.city || lead.state) && (
                               <>
@@ -2023,7 +2023,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                             width: '28px',
                             height: '28px',
                             borderRadius: '50%',
-                            background: isAssignedToCurrentUser ? '#16a34a' : '#4f46e5',
+                            background: isAssignedToCurrentUser ? '#1a73e8' : '#4f46e5',
                             color: '#ffffff',
                             display: 'flex',
                             alignItems: 'center',
@@ -2043,11 +2043,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 <span style={{
                                   fontSize: '0.64rem',
                                   fontWeight: '800',
-                                  background: '#dcfce7',
-                                  color: '#15803d',
+                                  background: '#eff6ff',
+                                  color: '#1e40af',
                                   padding: '1px 5px',
                                   borderRadius: '4px',
-                                  border: '1px solid #86efac'
+                                  border: '1px solid #bfdbfe'
                                 }}>
                                   You
                                 </span>
@@ -2068,9 +2068,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           gap: '5px',
                           padding: '4px 9px',
                           borderRadius: '6px',
-                          background: '#fffbeb',
-                          color: '#b45309',
-                          border: '1px dashed #f59e0b',
+                          background: '#f8fafc',
+                          color: '#334155',
+                          border: '1px dashed #475569',
                           fontSize: '0.74rem',
                           fontWeight: '800'
                         }}>
@@ -2105,7 +2105,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       {assignedFlat ? (
                         <div style={{
                           background: '#faf5ff',
-                          border: '1px solid #e9d5ff',
+                          border: '1px solid #dbeafe',
                           padding: '3px 8px',
                           borderRadius: '5px',
                           display: 'inline-flex',
@@ -2113,7 +2113,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           gap: '4px',
                           marginBottom: '4px'
                         }}>
-                          <Home size={11} color="#9333ea" />
+                          <Home size={11} color="#1d4ed8" />
                           <span style={{ fontWeight: '800', color: '#7e22ce', fontSize: '0.74rem' }}>
                             Flat {assignedFlat.flatNumber}
                           </span>
@@ -2133,11 +2133,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               <span style={{
                                 fontSize: '0.67rem',
                                 fontWeight: '800',
-                                color: '#047857',
-                                background: '#ecfdf5',
+                                color: '#1e40af',
+                                background: '#eff6ff',
                                 padding: '1px 6px',
                                 borderRadius: '4px',
-                                border: '1px solid #a7f3d0'
+                                border: '1px solid #bfdbfe'
                               }}>
                                 ₹{typeof lead.budget === 'number' ? lead.budget.toLocaleString('en-IN') : lead.budget}
                               </span>
@@ -2146,13 +2146,13 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               <span style={{
                                 fontSize: '0.67rem',
                                 fontWeight: '700',
-                                color: '#4338ca',
+                                color: '#00285c',
                                 background: '#e0e7ff',
                                 padding: '1px 6px',
                                 borderRadius: '4px',
                                 border: '1px solid #c7d2fe'
                               }}>
-                                ⏳ {lead.purchaseTimeline}
+                                {lead.purchaseTimeline}
                               </span>
                             )}
                           </div>
@@ -2162,16 +2162,16 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       {/* Scheduled Task Pill */}
                       {pendingFollowUp && pendingFollowUp.nextFollowUpDate ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <div style={{ fontSize: '0.72rem', color: isScheduledByHead ? '#1d4ed8' : '#b45309', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div style={{ fontSize: '0.72rem', color: isScheduledByHead ? '#1d4ed8' : '#334155', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {isScheduledByHead ? (
                               <span style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '1px 5px', borderRadius: '4px', fontSize: '0.65rem' }}>
-                                👑 Head Task
+                                Head Task
                               </span>
                             ) : (
                               <Calendar size={11} />
                             )}
                             <span>{new Date(pendingFollowUp.nextFollowUpDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
-                            <span style={{ textTransform: 'capitalize', background: '#fef3c7', color: '#b45309', padding: '1px 5px', borderRadius: '3px', fontSize: '0.65rem' }}>
+                            <span style={{ textTransform: 'capitalize', background: '#f1f5f9', color: '#334155', padding: '1px 5px', borderRadius: '3px', fontSize: '0.65rem' }}>
                               {pendingFollowUp.mode}
                             </span>
                           </div>
@@ -2252,9 +2252,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
             </div>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
               <span>Meta Ads: <strong style={{ color: '#0284c7' }}>{metaLeadsCount}</strong></span>
-              <span>Unassigned: <strong style={{ color: '#b45309' }}>{unassignedCount}</strong></span>
+              <span>Unassigned: <strong style={{ color: '#334155' }}>{unassignedCount}</strong></span>
               <span>Assigned Flats: <strong style={{ color: '#7e22ce' }}>{assignedFlatsCount}</strong></span>
-              <span>Pending Action: <strong style={{ color: '#d97706' }}>{pendingFollowUps}</strong></span>
+              <span>Pending Action: <strong style={{ color: '#334155' }}>{pendingFollowUps}</strong></span>
             </div>
           </div>
         </div>

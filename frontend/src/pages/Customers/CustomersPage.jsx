@@ -299,9 +299,9 @@ export const CustomersPage = () => {
               style={{
                 padding: '9px 16px',
                 fontSize: '0.84rem',
-                backgroundColor: '#fef2f2',
-                color: '#dc2626',
-                border: '1px solid #fecaca',
+                backgroundColor: '#f1f5f9',
+                color: '#0f172a',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
                 fontWeight: '700',
                 display: 'flex',
@@ -418,12 +418,12 @@ export const CustomersPage = () => {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>ALLOTTED FLAT UNITS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
               <Key size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>{totalPropertiesCount || totalCount}</div>
-          <span style={{ fontSize: '0.74rem', color: '#6b21a8', fontWeight: '600' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>{totalPropertiesCount || totalCount}</div>
+          <span style={{ fontSize: '0.74rem', color: '#00285c', fontWeight: '600' }}>
             Properties in registry
           </span>
         </div>
@@ -433,20 +433,20 @@ export const CustomersPage = () => {
           onClick={() => setQuickFilter(quickFilter === 'rentback' ? 'all' : 'rentback')}
           style={{
             cursor: 'pointer',
-            border: quickFilter === 'rentback' ? '2px solid #16a34a' : '1px solid #dadce0',
-            background: quickFilter === 'rentback' ? '#f0fdf4' : '#ffffff',
+            border: quickFilter === 'rentback' ? '2px solid #1a73e8' : '1px solid #dadce0',
+            background: quickFilter === 'rentback' ? '#eff6ff' : '#ffffff',
             transition: 'all 0.15s ease'
           }}
           title="Click to filter Rent-Back beneficiaries"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK BENEFICIARIES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#dcfce7', color: '#16a34a' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
               <Repeat size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>{rentBackOwnerCount || totalCount}</div>
-          <span style={{ fontSize: '0.74rem', color: quickFilter === 'rentback' ? '#16a34a' : '#4b5563', fontWeight: '700' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>{rentBackOwnerCount || totalCount}</div>
+          <span style={{ fontSize: '0.74rem', color: quickFilter === 'rentback' ? '#1a73e8' : '#4b5563', fontWeight: '700' }}>
             {quickFilter === 'rentback' ? 'Active Filter' : 'Receiving 3-yr assured rent'}
           </span>
         </div>
@@ -460,14 +460,14 @@ export const CustomersPage = () => {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY DISBURSEMENTS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
             {formatINR(totalMonthlyDisbursements || (totalCount * 31000))}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#b06000', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: '600' }}>
             Company rent commitment
           </span>
         </div>
@@ -574,8 +574,8 @@ export const CustomersPage = () => {
                             width: '36px',
                             height: '36px',
                             borderRadius: '50%',
-                            background: isOwner ? '#f3e8ff' : '#e8f0fe',
-                            color: isOwner ? '#8b5cf6' : '#1a73e8',
+                            background: isOwner ? '#eff6ff' : '#e8f0fe',
+                            color: isOwner ? '#2563eb' : '#1a73e8',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -623,8 +623,8 @@ export const CustomersPage = () => {
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px',
-                                  background: '#e6f4ea',
-                                  color: '#137333',
+                                  background: '#eff6ff',
+                                  color: '#1a73e8',
                                   padding: '2px 7px',
                                   borderRadius: '4px',
                                   textDecoration: 'none',
@@ -644,7 +644,7 @@ export const CustomersPage = () => {
                                   border: 'none',
                                   padding: '2px',
                                   cursor: 'pointer',
-                                  color: copiedText === cust.mobileNo ? '#137333' : '#727785',
+                                  color: copiedText === cust.mobileNo ? '#1a73e8' : '#727785',
                                   display: 'inline-flex',
                                   alignItems: 'center'
                                 }}
@@ -660,12 +660,12 @@ export const CustomersPage = () => {
                       <td style={{ padding: '14px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
                         <span style={{
                           fontSize: '0.72rem',
-                          background: '#ecfdf5',
-                          color: '#059669',
+                          background: '#eff6ff',
+                          color: '#1e40af',
                           padding: '3px 8px',
                           borderRadius: '6px',
                           fontWeight: '800',
-                          border: '1px solid #a7f3d0',
+                          border: '1px solid #bfdbfe',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px'
@@ -688,9 +688,9 @@ export const CustomersPage = () => {
                                     style={{
                                       fontSize: '0.74rem',
                                       fontWeight: '700',
-                                      color: '#166534',
-                                      background: '#f0fdf4',
-                                      border: '1px solid #bbf7d0',
+                                      color: '#1e40af',
+                                      background: '#eff6ff',
+                                      border: '1px solid #dbeafe',
                                       padding: '2px 7px',
                                       borderRadius: '5px',
                                       display: 'inline-flex',
@@ -698,7 +698,7 @@ export const CustomersPage = () => {
                                       gap: '4px'
                                     }}
                                   >
-                                    <Home size={11} color="#16a34a" />
+                                    <Home size={11} color="#1a73e8" />
                                     Flat {fNum} {flr ? `(${flr})` : ''}
                                   </span>
                                 );
@@ -750,14 +750,14 @@ export const CustomersPage = () => {
                           const hasBank = Boolean(bank.accountNumber || bank.bankName);
                           return (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                              <span style={{ fontSize: '0.84rem', color: '#7c3aed', fontWeight: '800' }}>
+                              <span style={{ fontSize: '0.84rem', color: '#1e40af', fontWeight: '800' }}>
                                 {formatINR(totalRent || (units.length * 31000) || 31000)} / mo
                               </span>
                               {hasBank ? (
                                 <span style={{
                                   fontSize: '0.68rem',
-                                  color: '#065f46',
-                                  background: '#d1fae5',
+                                  color: '#1e3a8a',
+                                  background: '#eff6ff',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
                                   display: 'inline-flex',
@@ -771,8 +771,8 @@ export const CustomersPage = () => {
                               ) : (
                                 <span style={{
                                   fontSize: '0.68rem',
-                                  color: '#b45309',
-                                  background: '#fef3c7',
+                                  color: '#334155',
+                                  background: '#f1f5f9',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
                                   display: 'inline-flex',
@@ -831,10 +831,10 @@ export const CustomersPage = () => {
                             title="Delete Customer Profile"
                             style={{
                               padding: '5px 7px',
-                              background: '#ffdad6',
-                              border: '1px solid #ffdad6',
+                              background: '#f1f5f9',
+                              border: '1px solid #f1f5f9',
                               borderRadius: '5px',
-                              color: '#ba1a1a',
+                              color: '#0f172a',
                               cursor: 'pointer',
                               display: 'inline-flex',
                               alignItems: 'center',
@@ -871,7 +871,7 @@ export const CustomersPage = () => {
                                 {/* Sub-Panel 1: Contact & Address */}
                                 <div>
                                   <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <User size={13} color="#4338ca" /> Basic Information
+                                    <User size={13} color="#00285c" /> Basic Information
                                   </div>
                                   <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '5px' }}>
                                     <div><strong>Full Name:</strong> {cust.name}</div>
@@ -884,10 +884,10 @@ export const CustomersPage = () => {
                                 </div>
 
                                 {/* Sub-Panel 2: Banking & NEFT Account Details */}
-                                <div style={{ background: '#f0fdf4', padding: '12px 14px', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
+                                <div style={{ background: '#eff6ff', padding: '12px 14px', borderRadius: '6px', border: '1px solid #dbeafe' }}>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                    <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                      <CreditCard size={14} color="#16a34a" /> Bank Payout Account
+                                    <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      <CreditCard size={14} color="#1a73e8" /> Bank Payout Account
                                     </div>
                                     <button
                                       type="button"
@@ -897,7 +897,7 @@ export const CustomersPage = () => {
                                       }}
                                       style={{
                                         fontSize: '0.7rem',
-                                        background: '#16a34a',
+                                        background: '#1a73e8',
                                         color: '#ffffff',
                                         border: 'none',
                                         padding: '3px 8px',
@@ -915,7 +915,7 @@ export const CustomersPage = () => {
                                   </div>
 
                                   {bank.accountNumber || bank.bankName ? (
-                                    <div style={{ fontSize: '0.8rem', color: '#14532d', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <div style={{ fontSize: '0.8rem', color: '#001a41', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                       <div><strong>Bank:</strong> {bank.bankName || 'Not specified'}</div>
                                       <div><strong>Branch:</strong> {bank.branch || 'Main Branch'}</div>
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -927,7 +927,7 @@ export const CustomersPage = () => {
                                             style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '1px' }}
                                             title="Copy Account Number"
                                           >
-                                            {copiedText === bank.accountNumber ? <Check size={11} color="#16a34a" /> : <Copy size={11} color="#6b7280" />}
+                                            {copiedText === bank.accountNumber ? <Check size={11} color="#1a73e8" /> : <Copy size={11} color="#6b7280" />}
                                           </button>
                                         )}
                                       </div>
@@ -940,7 +940,7 @@ export const CustomersPage = () => {
                                             style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '1px' }}
                                             title="Copy IFSC"
                                           >
-                                            {copiedText === bank.ifscCode ? <Check size={11} color="#16a34a" /> : <Copy size={11} color="#6b7280" />}
+                                            {copiedText === bank.ifscCode ? <Check size={11} color="#1a73e8" /> : <Copy size={11} color="#6b7280" />}
                                           </button>
                                         )}
                                       </div>
@@ -948,8 +948,8 @@ export const CustomersPage = () => {
                                       {bank.upiId && <div><strong>UPI ID:</strong> {bank.upiId}</div>}
                                     </div>
                                   ) : (
-                                    <div style={{ fontSize: '0.78rem', color: '#991b1b', fontStyle: 'italic', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                      <span>⚠️ No bank account registered for rental payouts.</span>
+                                    <div style={{ fontSize: '0.78rem', color: '#0f172a', fontStyle: 'italic', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                      <span>No bank account registered for rental payouts.</span>
                                       <button
                                         type="button"
                                         onClick={() => {
@@ -959,8 +959,8 @@ export const CustomersPage = () => {
                                         style={{
                                           padding: '5px 10px',
                                           background: '#ffffff',
-                                          border: '1px solid #16a34a',
-                                          color: '#16a34a',
+                                          border: '1px solid #1a73e8',
+                                          color: '#1a73e8',
                                           borderRadius: '4px',
                                           fontWeight: '700',
                                           cursor: 'pointer',
@@ -976,7 +976,7 @@ export const CustomersPage = () => {
                                 {/* Sub-Panel 3: KYC & Nominee Profile */}
                                 <div>
                                   <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <ShieldCheck size={13} color="#059669" /> KYC & Nominee Details
+                                    <ShieldCheck size={13} color="#1e40af" /> KYC & Nominee Details
                                   </div>
                                   <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '5px' }}>
                                     <div><strong>PAN:</strong> {pan ? <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#111827' }}>{pan}</span> : 'On File'}</div>
@@ -1005,11 +1005,11 @@ export const CustomersPage = () => {
                                         return (
                                           <div key={flat._id || idx} style={{ fontSize: '0.78rem', background: '#f8f9fa', padding: '5px 8px', borderRadius: '4px', border: '1px solid #edeef0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                              <Home size={12} color="#16a34a" />
+                                              <Home size={12} color="#1a73e8" />
                                               <span style={{ fontWeight: '700', color: '#111827' }}>Flat {fNum}</span>
                                               {flr && <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>({flr})</span>}
                                             </div>
-                                            <span style={{ fontSize: '0.72rem', color: '#7c3aed', fontWeight: '700' }}>
+                                            <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700' }}>
                                               {rent ? `${formatINR(rent)}/mo` : 'Rent-Back'}
                                             </span>
                                           </div>
@@ -1057,7 +1057,7 @@ export const CustomersPage = () => {
               Showing <span style={{ color: '#111827', fontWeight: '700' }}>{displayedCustomers.length}</span> of {totalCount} Property Owners
             </div>
             <div style={{ display: 'flex', gap: '14px' }}>
-              <span>Registered Owners: <strong style={{ color: '#059669' }}>{ownerCount}</strong></span>
+              <span>Registered Owners: <strong style={{ color: '#1e40af' }}>{ownerCount}</strong></span>
             </div>
           </div>
         </div>
@@ -1084,11 +1084,11 @@ export const CustomersPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL OWNED UNITS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
                   <Key size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>
                 {customers.reduce((acc, c) => acc + (c.ownerDetails?.propertyIds?.length || 1), 0)}
               </div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Registered buyer units</span>
@@ -1097,24 +1097,24 @@ export const CustomersPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK BENEFICIARIES</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#dcfce7', color: '#16a34a' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
                   <Repeat size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
                 {customers.length}
               </div>
-              <span style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: '700' }}>Receiving 3-yr assured returns</span>
+              <span style={{ fontSize: '0.74rem', color: '#1a73e8', fontWeight: '700' }}>Receiving 3-yr assured returns</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY DISBURSEMENTS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
                   <DollarSign size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
                 {formatINR(customers.length * 31000)}
               </div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Company payout outflow</span>
@@ -1186,9 +1186,9 @@ export const CustomersPage = () => {
                                 padding: '2px 7px',
                                 borderRadius: '4px',
                                 fontWeight: '700',
-                                background: '#ecfdf5',
-                                color: '#059669',
-                                border: '1px solid #a7f3d0'
+                                background: '#eff6ff',
+                                color: '#1e40af',
+                                border: '1px solid #bfdbfe'
                               }}>
                                 Property Owner
                               </span>
@@ -1204,7 +1204,7 @@ export const CustomersPage = () => {
                                   const flr = u?.floor !== undefined && u?.floor !== null ? u.floor : 1;
                                   return (
                                     <div key={idx} style={{ fontSize: '0.78rem', fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                      <Building2 size={12} color="#16a34a" />
+                                      <Building2 size={12} color="#1a73e8" />
                                       <span>Flat {flatNo} (Floor {flr})</span>
                                       <span style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>• {projName}</span>
                                     </div>
@@ -1220,7 +1220,7 @@ export const CustomersPage = () => {
 
                           <td>
                             <div>
-                              <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#137333' }}>
+                              <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1a73e8' }}>
                                 100% Freehold Title
                               </div>
                               <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>
@@ -1231,10 +1231,10 @@ export const CustomersPage = () => {
 
                           <td>
                             <div>
-                              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#7c3aed' }}>
+                              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1e40af' }}>
                                 {formatINR(31000)} / mo
                               </div>
-                              <div style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '600' }}>
+                              <div style={{ fontSize: '0.7rem', color: '#1a73e8', fontWeight: '600' }}>
                                 36-Mo Assured Return
                               </div>
                             </div>
@@ -1257,12 +1257,12 @@ export const CustomersPage = () => {
                               fontSize: '0.72rem',
                               padding: '2px 8px',
                               borderRadius: '4px',
-                              background: '#ecfdf5',
-                              color: '#059669',
+                              background: '#eff6ff',
+                              color: '#1e40af',
                               fontWeight: '700',
-                              border: '1px solid #a7f3d0'
+                              border: '1px solid #bfdbfe'
                             }}>
-                              ✓ Verified Titleholder
+                              Verified Titleholder
                             </span>
                           </td>
 
@@ -1319,22 +1319,22 @@ export const CustomersPage = () => {
       {/* SUPER ADMIN WIPE ALL CUSTOMERS MODAL */}
       {isWipeModalOpen && isSuperAdmin && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #dc2626', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #0f172a', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <AlertTriangle size={22} style={{ color: '#dc2626' }} />
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <AlertTriangle size={22} style={{ color: '#0f172a' }} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#991b1b' }}>Danger Zone: Wipe All Customers</h3>
-                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#b91c1c' }}>Super Admin Authorization Required</p>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>Danger Zone: Wipe All Customers</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#0f172a' }}>Super Admin Authorization Required</p>
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#fef2f2', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', border: '1px solid #fecaca' }}>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#7f1d1d', lineHeight: '1.6' }}>
+            <div style={{ backgroundColor: '#f1f5f9', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', border: '1px solid #e2e8f0' }}>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#0f172a', lineHeight: '1.6' }}>
                 This operation will permanently delete:
               </p>
-              <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontSize: '0.85rem', color: '#991b1b', lineHeight: '1.8' }}>
+              <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontSize: '0.85rem', color: '#0f172a', lineHeight: '1.8' }}>
                 <li>All customer profiles (Owners and Tenants)</li>
                 <li>All sales lead history and buyer associations</li>
                 <li>All flat ownership & Chain of Title records</li>
@@ -1342,7 +1342,7 @@ export const CustomersPage = () => {
             </div>
 
             <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '8px' }}>
-              Type <span style={{ color: '#dc2626', fontFamily: 'monospace', fontSize: '0.9rem' }}>DELETE ALL CUSTOMERS</span> to confirm:
+              Type <span style={{ color: '#0f172a', fontFamily: 'monospace', fontSize: '0.9rem' }}>DELETE ALL CUSTOMERS</span> to confirm:
             </label>
             <input
               type="text"
@@ -1353,11 +1353,11 @@ export const CustomersPage = () => {
                 width: '100%',
                 padding: '10px 14px',
                 borderRadius: '8px',
-                border: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '2px solid #dc2626' : '1px solid #cbd5e1',
+                border: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '2px solid #0f172a' : '1px solid #cbd5e1',
                 fontSize: '0.9rem',
                 fontFamily: 'monospace',
                 marginBottom: '20px',
-                backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#fef2f2' : '#ffffff'
+                backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#f1f5f9' : '#ffffff'
               }}
             />
 
@@ -1389,7 +1389,7 @@ export const CustomersPage = () => {
                 style={{
                   padding: '9px 22px',
                   borderRadius: '8px',
-                  backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#dc2626' : '#e5e7eb',
+                  backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#0f172a' : '#e5e7eb',
                   color: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#ffffff' : '#9ca3af',
                   border: 'none',
                   fontWeight: '800',

@@ -412,7 +412,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                   Smart Month Calculation Formula:
                 </span>
                 <span style={{ fontSize: '0.82rem', color: '#3b82f6', marginLeft: '6px' }}>
-                  Paid Months = ⌊ Total Paid ÷ Monthly Net Rent ⌋ • Remaining months up to Tenure will be scheduled as Upcoming.
+                  Paid Months = Total Paid ÷ Monthly Net Rent • Remaining months up to Tenure will be scheduled as Upcoming.
                 </span>
               </div>
             </div>
@@ -507,7 +507,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                   }}
                   style={{
                     fontSize: '0.8rem',
-                    color: '#dc2626',
+                    color: '#0f172a',
                     background: 'transparent',
                     border: 'none',
                     fontWeight: '700',
@@ -535,10 +535,10 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                       <th style={{ padding: '10px 12px', fontWeight: '700', color: '#475569' }}>Net Rent / Mo</th>
                       <th style={{ padding: '10px 12px', fontWeight: '700', color: '#475569' }}>TDS</th>
                       <th style={{ padding: '10px 12px', fontWeight: '700', color: '#475569' }}>Total Paid</th>
-                      <th style={{ padding: '10px 12px', fontWeight: '700', color: '#15803d' }}>
-                        🧮 Paid Months
+                      <th style={{ padding: '10px 12px', fontWeight: '700', color: '#1e40af' }}>
+                        Paid Months
                       </th>
-                      <th style={{ padding: '10px 12px', fontWeight: '700', color: '#b45309' }}>
+                      <th style={{ padding: '10px 12px', fontWeight: '700', color: '#334155' }}>
                         Upcoming Months
                       </th>
                       <th style={{ padding: '10px 12px', fontWeight: '700', color: '#475569' }}>Outstanding</th>
@@ -554,7 +554,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                         }}
                       >
                         <td style={{ padding: '10px 12px', fontWeight: '800', color: '#1e293b' }}>
-                          {row.flatNumber || '⚠️ Missing'}
+                          {row.flatNumber || 'Missing'}
                         </td>
                         <td style={{ padding: '10px 12px', color: '#334155' }}>
                           {row.ownerName || '—'}
@@ -572,8 +572,8 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                               borderRadius: '4px',
                               fontSize: '0.72rem',
                               fontWeight: '700',
-                              background: '#fef3c7',
-                              color: '#92400e'
+                              background: '#f1f5f9',
+                              color: '#334155'
                             }}>
                               {row.tdsMode === 'amount'
                                 ? `₹${row.tdsAmount?.toLocaleString('en-IN')}`
@@ -583,7 +583,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                             <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>None</span>
                           )}
                         </td>
-                        <td style={{ padding: '10px 12px', fontWeight: '700', color: '#16a34a' }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '700', color: '#1a73e8' }}>
                           {formatINR(row.totalPaid)}
                         </td>
                         <td style={{ padding: '10px 12px' }}>
@@ -594,15 +594,15 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                               gap: '4px',
                               padding: '2px 8px',
                               borderRadius: '6px',
-                              background: '#dcfce7',
-                              color: '#15803d',
+                              background: '#eff6ff',
+                              color: '#1e40af',
                               fontWeight: '800'
                             }}
                           >
                             <CheckCircle2 size={12} /> {row.paidMonths} Months Paid
                           </span>
                           {row.remainderPaid > 0 && (
-                            <span style={{ display: 'block', fontSize: '0.7rem', color: '#65a30d', marginTop: '2px' }}>
+                            <span style={{ display: 'block', fontSize: '0.7rem', color: '#334155', marginTop: '2px' }}>
                               + {formatINR(row.remainderPaid)} partial
                             </span>
                           )}
@@ -612,15 +612,15 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                             style={{
                               padding: '2px 8px',
                               borderRadius: '6px',
-                              background: '#fef3c7',
-                              color: '#b45309',
+                              background: '#f1f5f9',
+                              color: '#334155',
                               fontWeight: '700'
                             }}
                           >
                             {row.remainingMonths} Months Upcoming
                           </span>
                         </td>
-                        <td style={{ padding: '10px 12px', fontWeight: '700', color: '#dc2626' }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '700', color: '#0f172a' }}>
                           {formatINR(row.outstanding)}
                         </td>
                       </tr>
@@ -635,25 +635,25 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
           {uploadSummary && (
             <div
               style={{
-                backgroundColor: '#f0fdf4',
-                border: '1px solid #bbf7d0',
+                backgroundColor: '#eff6ff',
+                border: '1px solid #dbeafe',
                 borderRadius: '12px',
                 padding: '20px'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <CheckCircle2 size={24} color="#16a34a" />
-                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#14532d' }}>
+                <CheckCircle2 size={24} color="#1a73e8" />
+                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#001a41' }}>
                   Passbook Generation Completed!
                 </h4>
               </div>
-              <p style={{ margin: '0 0 14px', fontSize: '0.85rem', color: '#166534' }}>
+              <p style={{ margin: '0 0 14px', fontSize: '0.85rem', color: '#1e40af' }}>
                 Successfully updated <strong>{uploadSummary.updatedCount}</strong> rental customer passbooks with all calculated paid and upcoming tenure entries.
               </p>
 
               {uploadSummary.notFoundFlats?.length > 0 && (
-                <div style={{ marginTop: '10px', padding: '10px', background: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#991b1b' }}>
+                <div style={{ marginTop: '10px', padding: '10px', background: '#f1f5f9', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
                     Flats Not Found in Inventory: {uploadSummary.notFoundFlats.join(', ')}
                   </span>
                 </div>

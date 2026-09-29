@@ -24,26 +24,26 @@ async function cleanAllData() {
 
     // 1. Delete all Sales Leads
     const salesRes = await SalesLead.deleteMany({});
-    console.log(`✓ Deleted ${salesRes.deletedCount} Sales Allotment / Lead records.`);
+    console.log(`Deleted ${salesRes.deletedCount} Sales Allotment / Lead records.`);
 
     // 2. Delete all Rental Contracts
     const rentalRes = await RentalManagement.deleteMany({});
-    console.log(`✓ Deleted ${rentalRes.deletedCount} Rental Management records.`);
+    console.log(`Deleted ${rentalRes.deletedCount} Rental Management records.`);
 
     // 3. Delete all Flats
     const flatRes = await Flat.deleteMany({});
-    console.log(`✓ Deleted ${flatRes.deletedCount} Flat records.`);
+    console.log(`Deleted ${flatRes.deletedCount} Flat records.`);
 
     // 4. Clean Customer records
     const custRes = await Customer.deleteMany({ customerType: { $in: ['owner', 'tenant', 'buyer'] } });
-    console.log(`✓ Cleaned ${custRes.deletedCount} Customer records.`);
+    console.log(`Cleaned ${custRes.deletedCount} Customer records.`);
 
     // 5. Clear building flats in Projects
     await Project.updateMany({}, { $set: { "buildings.$[].flats": [] } });
-    console.log(`✓ Cleared project building flat references.`);
+    console.log(`Cleared project building flat references.`);
 
     console.log('======================================================');
-    console.log('✅ ALL FLATS, SALES ALLOTMENTS, RENTALS & CUSTOMERS REMOVED!');
+    console.log('ALL FLATS, SALES ALLOTMENTS, RENTALS & CUSTOMERS REMOVED!');
     console.log('======================================================');
     process.exit(0);
   } catch (err) {

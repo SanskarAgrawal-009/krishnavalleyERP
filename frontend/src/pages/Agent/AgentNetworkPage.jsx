@@ -73,26 +73,26 @@ export const AgentNetworkPage = () => {
   const tierColor = (tier) => {
     switch (tier) {
       case 'Platinum': return { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
-      case 'Gold': return { bg: '#fffbeb', color: '#b45309', border: '#fde68a' };
+      case 'Gold': return { bg: '#f8fafc', color: '#334155', border: '#cbd5e1' };
       case 'Silver': return { bg: '#f1f5f9', color: '#475569', border: '#cbd5e1' };
       default: return { bg: '#f9fafb', color: '#6b7280', border: '#e5e7eb' };
     }
   };
 
   const statusBadge = (status) => {
-    if (status === 'active') return { bg: '#dcfce7', color: '#15803d', label: 'Active' };
-    if (status === 'inactive') return { bg: '#fee2e2', color: '#b91c1c', label: 'Inactive' };
-    if (status === 'suspended') return { bg: '#fef3c7', color: '#92400e', label: 'Suspended' };
+    if (status === 'active') return { bg: '#eff6ff', color: '#1e40af', label: 'Active' };
+    if (status === 'inactive') return { bg: '#f1f5f9', color: '#0f172a', label: 'Inactive' };
+    if (status === 'suspended') return { bg: '#f1f5f9', color: '#334155', label: 'Suspended' };
     return { bg: '#f1f5f9', color: '#64748b', label: status };
   };
 
   const kpiCards = [
     { label: 'Total Channel Partners', value: networkKPIs.totalAgents || 0, icon: Users, color: '#1a73e8', bg: '#eff6ff' },
-    { label: 'Active Partners', value: networkKPIs.activeAgents || 0, icon: UserCheck, color: '#15803d', bg: '#f0fdf4' },
-    { label: 'Total Network Earnings', value: `₹${((networkKPIs.totalEarnings || 0) / 100000).toFixed(1)}L`, icon: TrendingUp, color: '#7c3aed', bg: '#faf5ff' },
-    { label: 'Outstanding Wallet', value: `₹${((networkKPIs.totalWallet || 0) / 100000).toFixed(1)}L`, icon: Wallet, color: '#0d9488', bg: '#f0fdfa' },
-    { label: 'Total Matured Visits', value: networkKPIs.totalMatured || 0, icon: CheckCircle2, color: '#ea580c', bg: '#fff7ed' },
-    { label: 'Avg Commission Rate', value: `${(networkKPIs.avgCommRate || 2).toFixed(1)}%`, icon: BarChart3, color: '#be185d', bg: '#fdf2f8' },
+    { label: 'Active Partners', value: networkKPIs.activeAgents || 0, icon: UserCheck, color: '#1e40af', bg: '#eff6ff' },
+    { label: 'Total Network Earnings', value: `₹${((networkKPIs.totalEarnings || 0) / 100000).toFixed(1)}L`, icon: TrendingUp, color: '#1e40af', bg: '#faf5ff' },
+    { label: 'Outstanding Wallet', value: `₹${((networkKPIs.totalWallet || 0) / 100000).toFixed(1)}L`, icon: Wallet, color: '#0284c7', bg: '#f8fafc' },
+    { label: 'Total Matured Visits', value: networkKPIs.totalMatured || 0, icon: CheckCircle2, color: '#334155', bg: '#f8fafc' },
+    { label: 'Avg Commission Rate', value: `${(networkKPIs.avgCommRate || 2).toFixed(1)}%`, icon: BarChart3, color: '#0f172a', bg: '#f8fafc' },
   ];
 
   return (
@@ -101,7 +101,7 @@ export const AgentNetworkPage = () => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>
-            🤝 Channel Partner Network
+            Channel Partner Network
           </h1>
           <p style={{ margin: '4px 0 0', fontSize: '0.88rem', color: '#64748b', fontWeight: '500' }}>
             {pagination.total} registered agents across {new Set(agents.map(a => a.agentProfile?.city).filter(Boolean)).size}+ cities • Manage commissions, tiers & verifications
@@ -112,7 +112,7 @@ export const AgentNetworkPage = () => {
             onClick={() => setShowAddAgent(true)}
             style={{
               padding: '10px 20px', borderRadius: '10px', border: 'none',
-              background: 'linear-gradient(135deg, #16a34a, #15803d)',
+              background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
               color: '#fff', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: '6px',
               boxShadow: '0 4px 12px rgba(22,163,74,0.3)',
@@ -196,10 +196,10 @@ export const AgentNetworkPage = () => {
           style={{ padding: '9px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '0.82rem', color: '#334155', cursor: 'pointer', fontWeight: '600' }}
         >
           <option value="all">All Tiers</option>
-          <option value="Platinum">💎 Platinum</option>
-          <option value="Gold">🥇 Gold</option>
-          <option value="Silver">🥈 Silver</option>
-          <option value="Standard">📋 Standard</option>
+          <option value="Platinum">Platinum</option>
+          <option value="Gold">Gold</option>
+          <option value="Silver">Silver</option>
+          <option value="Standard">Standard</option>
         </select>
 
         <select
@@ -333,13 +333,13 @@ export const AgentNetworkPage = () => {
                       </td>
 
                       <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontWeight: '800', color: '#7c3aed', fontSize: '0.88rem' }}>
+                        <span style={{ fontWeight: '800', color: '#1e40af', fontSize: '0.88rem' }}>
                           {ap.commissionRate || 2}%
                         </span>
                       </td>
 
                       <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontWeight: '800', color: '#0d9488', fontSize: '0.88rem' }}>
+                        <span style={{ fontWeight: '800', color: '#0284c7', fontSize: '0.88rem' }}>
                           ₹{(ap.walletBalance || 0).toLocaleString('en-IN')}
                         </span>
                       </td>
@@ -354,7 +354,7 @@ export const AgentNetworkPage = () => {
                         <div style={{ display: 'flex', gap: '4px', flexDirection: 'column' }}>
                           <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#334155' }}>{agent.leadStats?.total || 0}</span>
                           {(agent.leadStats?.pending || 0) > 0 && (
-                            <span style={{ fontSize: '0.68rem', color: '#b45309', fontWeight: '700' }}>
+                            <span style={{ fontSize: '0.68rem', color: '#334155', fontWeight: '700' }}>
                               {agent.leadStats.pending} pending
                             </span>
                           )}
@@ -365,7 +365,7 @@ export const AgentNetworkPage = () => {
                         <div style={{ display: 'flex', gap: '4px', flexDirection: 'column' }}>
                           <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#334155' }}>{agent.visitStats?.total || 0}</span>
                           {(agent.visitStats?.approved || 0) > 0 && (
-                            <span style={{ fontSize: '0.68rem', color: '#15803d', fontWeight: '700' }}>
+                            <span style={{ fontSize: '0.68rem', color: '#1e40af', fontWeight: '700' }}>
                               {agent.visitStats.approved} approved
                             </span>
                           )}
@@ -529,7 +529,7 @@ export const AgentNetworkPage = () => {
                         padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800',
                         backgroundColor: tc.bg, color: tc.color, border: `1px solid ${tc.border}`,
                       }}>
-                        ⭐ {selectedAgent.agentProfile.tier}
+                         {selectedAgent.agentProfile.tier}
                       </span>
                     );
                   })()}
@@ -557,17 +557,17 @@ export const AgentNetworkPage = () => {
                   fontWeight: '600', cursor: 'pointer',
                 }}
               >
-                ✕ Close
+                Close
               </button>
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
             {[
-              { label: 'Commission Rate', value: `${selectedAgent.agentProfile?.commissionRate || 2}%`, icon: DollarSign, color: '#7c3aed' },
-              { label: 'Wallet Balance', value: `₹${(selectedAgent.agentProfile?.walletBalance || 0).toLocaleString('en-IN')}`, icon: Wallet, color: '#0d9488' },
-              { label: 'Total Earned', value: `₹${(selectedAgent.agentProfile?.totalEarned || 0).toLocaleString('en-IN')}`, icon: TrendingUp, color: '#15803d' },
-              { label: 'Matured Visits', value: selectedAgent.agentProfile?.maturedLeadsCount || 0, icon: CheckCircle2, color: '#ea580c' },
+              { label: 'Commission Rate', value: `${selectedAgent.agentProfile?.commissionRate || 2}%`, icon: DollarSign, color: '#1e40af' },
+              { label: 'Wallet Balance', value: `₹${(selectedAgent.agentProfile?.walletBalance || 0).toLocaleString('en-IN')}`, icon: Wallet, color: '#0284c7' },
+              { label: 'Total Earned', value: `₹${(selectedAgent.agentProfile?.totalEarned || 0).toLocaleString('en-IN')}`, icon: TrendingUp, color: '#1e40af' },
+              { label: 'Matured Visits', value: selectedAgent.agentProfile?.maturedLeadsCount || 0, icon: CheckCircle2, color: '#334155' },
             ].map((metric, i) => (
               <div key={i} style={{
                 padding: '16px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
@@ -583,7 +583,7 @@ export const AgentNetworkPage = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px' }}>
             <div style={{ padding: '14px 16px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <h5 style={{ margin: '0 0 8px', fontSize: '0.82rem', fontWeight: '700', color: '#334155' }}>📋 Contact Details</h5>
+              <h5 style={{ margin: '0 0 8px', fontSize: '0.82rem', fontWeight: '700', color: '#334155' }}>Contact Details</h5>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '0.82rem', color: '#475569' }}>
                 <span><Phone size={12} style={{ marginRight: '4px' }} />{selectedAgent.mobileNo || '—'}</span>
                 <span><Mail size={12} style={{ marginRight: '4px' }} />{selectedAgent.email || '—'}</span>
@@ -592,7 +592,7 @@ export const AgentNetworkPage = () => {
               </div>
             </div>
             <div style={{ padding: '14px 16px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <h5 style={{ margin: '0 0 8px', fontSize: '0.82rem', fontWeight: '700', color: '#334155' }}>🏦 Bank Details</h5>
+              <h5 style={{ margin: '0 0 8px', fontSize: '0.82rem', fontWeight: '700', color: '#334155' }}>Bank Details</h5>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '0.82rem', color: '#475569' }}>
                 <span><Briefcase size={12} style={{ marginRight: '4px' }} />{selectedAgent.agentProfile?.bankDetails?.bankName || '—'}</span>
                 <span>A/C: {selectedAgent.agentProfile?.bankDetails?.accountNumber || '—'}</span>
@@ -606,10 +606,10 @@ export const AgentNetworkPage = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginTop: '16px' }}>
             {[
               { label: 'Total Leads', value: selectedAgent.leadStats?.total || 0, bg: '#eff6ff', color: '#1a73e8' },
-              { label: 'Pending Approval', value: selectedAgent.leadStats?.pending || 0, bg: '#fef3c7', color: '#b45309' },
-              { label: 'Total Visits', value: selectedAgent.visitStats?.total || 0, bg: '#f0fdf4', color: '#15803d' },
-              { label: 'Approved Visits', value: selectedAgent.visitStats?.approved || 0, bg: '#dcfce7', color: '#166534' },
-              { label: 'Pending Visits', value: selectedAgent.visitStats?.pending || 0, bg: '#fef3c7', color: '#92400e' },
+              { label: 'Pending Approval', value: selectedAgent.leadStats?.pending || 0, bg: '#f1f5f9', color: '#334155' },
+              { label: 'Total Visits', value: selectedAgent.visitStats?.total || 0, bg: '#eff6ff', color: '#1e40af' },
+              { label: 'Approved Visits', value: selectedAgent.visitStats?.approved || 0, bg: '#eff6ff', color: '#1e40af' },
+              { label: 'Pending Visits', value: selectedAgent.visitStats?.pending || 0, bg: '#f1f5f9', color: '#334155' },
             ].map((s, i) => (
               <div key={i} style={{
                 padding: '12px', borderRadius: '10px', backgroundColor: s.bg, textAlign: 'center',

@@ -134,11 +134,11 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
                 <User size={15} color="var(--primary-500)" /> {lead.name}
               </div>
               <div style={{ fontSize: '0.8rem', color: '#374151', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Phone size={13} color="#10b981" /> {lead.mobileNo} {lead.email ? `• ${lead.email}` : ''}
+                <Phone size={13} color="#1a73e8" /> {lead.mobileNo} {lead.email ? `• ${lead.email}` : ''}
               </div>
             </div>
 
-            <span style={{ fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '4px 8px', borderRadius: '4px', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.15)', color: '#1a73e8', padding: '4px 8px', borderRadius: '4px', fontWeight: '700' }}>
               Ready for Booking
             </span>
           </div>
@@ -257,7 +257,7 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
           {selectedBuildingId && (
             <div>
               <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontWeight: '700' }}>
-                <Home size={13} color="#8b5cf6" /> Select Flat / Unit *
+                <Home size={13} color="#2563eb" /> Select Flat / Unit *
               </label>
               <select
                 required
@@ -283,23 +283,23 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
                   <div style={{
                     marginTop: '8px',
                     padding: '10px 14px',
-                    background: '#f0fdf4',
-                    border: '1px solid #bbf7d0',
+                    background: '#eff6ff',
+                    border: '1px solid #dbeafe',
                     borderRadius: '6px',
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
                     gap: '12px',
                     fontSize: '0.78rem',
-                    color: '#166534'
+                    color: '#1e40af'
                   }}>
-                    <div>🏢 <strong>Floor:</strong> Floor {matchedFlat.floor || 1}</div>
+                    <div><strong>Floor:</strong> Floor {matchedFlat.floor || 1}</div>
                     <div>•</div>
-                    <div>🏠 <strong>Config:</strong> {matchedFlat.bhkType || '2BHK'} ({matchedFlat.carpetArea || 950} sq.ft)</div>
+                    <div><strong>Config:</strong> {matchedFlat.bhkType || '2BHK'} ({matchedFlat.carpetArea || 950} sq.ft)</div>
                     <div>•</div>
-                    <div>🧭 <strong>Facing:</strong> {matchedFlat.facing || 'East'}</div>
+                    <div><strong>Facing:</strong> {matchedFlat.facing || 'East'}</div>
                     <div>•</div>
-                    <div>💰 <strong>Valuation:</strong> ₹{(matchedFlat.basePrice || 4500000).toLocaleString('en-IN')}</div>
+                    <div><strong>Valuation:</strong> ₹{(matchedFlat.basePrice || 4500000).toLocaleString('en-IN')}</div>
                   </div>
                 );
               })()}
@@ -318,7 +318,7 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
           gap: '10px'
         }}>
           <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '1rem' }}>💳</span> Deal Terms & Booking Advance
+            <span style={{ fontSize: '1rem' }}></span> Deal Terms & Booking Advance
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
@@ -390,7 +390,7 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
             type="submit"
             style={{
               padding: '8px 20px',
-              background: 'linear-gradient(135deg, #10b981, var(--primary-700))',
+              background: 'linear-gradient(135deg, #1a73e8, var(--primary-700))',
               color: '#111827',
               fontWeight: '700',
               borderRadius: 'var(--radius-sm)',

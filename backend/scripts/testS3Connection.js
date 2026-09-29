@@ -15,7 +15,7 @@ async function testS3() {
   console.log(`Secret Key:  ${secretAccessKey ? '*** Configured ***' : 'MISSING (Empty in .env)'}`);
 
   if (!accessKeyId || !secretAccessKey) {
-    console.error('\n❌ ERROR: AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing in backend/.env');
+    console.error('\nERROR: AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing in backend/.env');
     console.log('Please add your AWS credentials into backend/.env to connect S3.\n');
     process.exit(1);
   }
@@ -36,7 +36,7 @@ async function testS3() {
       Body: Buffer.from(testContent),
       ContentType: 'text/plain'
     }));
-    console.log(`✓ PutObject succeeded! Test file written to s3://${bucketName}/${testKey}`);
+    console.log(`PutObject succeeded! Test file written to s3://${bucketName}/${testKey}`);
 
     console.log('\n2. Testing List Bucket (ListObjectsV2)...');
     const listRes = await s3Client.send(new ListObjectsV2Command({
@@ -44,19 +44,19 @@ async function testS3() {
       Prefix: 'test_connection/',
       MaxKeys: 5
     }));
-    console.log(`✓ ListObjects succeeded! Found ${listRes.KeyCount || 0} test objects.`);
+    console.log(`ListObjects succeeded! Found ${listRes.KeyCount || 0} test objects.`);
 
     console.log('\n3. Cleaning up test file (DeleteObject)...');
     await s3Client.send(new DeleteObjectCommand({
       Bucket: bucketName,
       Key: testKey
     }));
-    console.log('✓ DeleteObject succeeded! Test file removed.');
+    console.log('DeleteObject succeeded! Test file removed.');
 
-    console.log('\n🎉 SUCCESS: AWS S3 is fully connected and read/write operational for Krishna Valley ERP!\n');
+    console.log('\nSUCCESS: AWS S3 is fully connected and read/write operational for Krishna Valley ERP!\n');
     process.exit(0);
   } catch (err) {
-    console.error('\n❌ S3 Connection Failed:', err.message);
+    console.error('\nS3 Connection Failed:', err.message);
     if (err.Code) console.error(`Error Code: ${err.Code}`);
     process.exit(1);
   }

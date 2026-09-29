@@ -29,8 +29,8 @@ const DEFAULT_NOTIFICATIONS = [
     time: '25m ago',
     route: '/sales?tab=lifecycle',
     icon: DollarSign,
-    color: '#ef4444',
-    bgColor: '#fef2f2'
+    color: '#0f172a',
+    bgColor: '#f1f5f9'
   },
   {
     id: 'notif-2',
@@ -53,8 +53,8 @@ const DEFAULT_NOTIFICATIONS = [
     time: '1h ago',
     route: '/materials?tab=stocks',
     icon: Package,
-    color: '#f59e0b',
-    bgColor: '#fffbeb'
+    color: '#334155',
+    bgColor: '#f8fafc'
   },
   {
     id: 'notif-4',
@@ -65,8 +65,8 @@ const DEFAULT_NOTIFICATIONS = [
     time: '3h ago',
     route: '/hr?tab=payroll',
     icon: FileText,
-    color: '#10b981',
-    bgColor: '#ecfdf5'
+    color: '#1d4ed8',
+    bgColor: '#eff6ff'
   },
   {
     id: 'notif-5',
@@ -77,8 +77,8 @@ const DEFAULT_NOTIFICATIONS = [
     time: 'Yesterday',
     route: '/rentals?tab=contracts',
     icon: Repeat,
-    color: '#f97316',
-    bgColor: '#fff7ed'
+    color: '#1e40af',
+    bgColor: '#eff6ff'
   },
   {
     id: 'notif-6',
@@ -89,8 +89,8 @@ const DEFAULT_NOTIFICATIONS = [
     time: 'Yesterday',
     route: '/hr?tab=leaves',
     icon: Users,
-    color: '#8b5cf6',
-    bgColor: '#f5f3ff'
+    color: '#0f172a',
+    bgColor: '#f1f5f9'
   }
 ];
 
@@ -122,13 +122,13 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
       id: `rem-${r.id}`,
       category: 'reminders',
       severity: r.isOverdue ? 'urgent' : (isDueSoon ? 'warning' : 'info'),
-      title: r.type === 'site_visit' ? `🚗 Site Visit: ${r.leadName}` : `📞 Follow-Up: ${r.leadName}`,
+      title: r.type === 'site_visit' ? `Site Visit: ${r.leadName}` : `Follow-Up: ${r.leadName}`,
       message: `${r.unit ? `${r.unit} • ` : ''}${isDueSoon ? `Due in ${r.minutesRemaining} mins` : (r.isOverdue ? `Overdue by ${Math.abs(r.minutesRemaining)} mins` : 'Scheduled today')}${r.notes ? ` • "${r.notes}"` : ''}`,
       time: isDueSoon ? `In ${r.minutesRemaining}m` : (r.isOverdue ? `${Math.abs(r.minutesRemaining)}m ago` : 'Today'),
       route: `/crm?search=${encodeURIComponent(r.leadPhone || r.leadName)}`,
       icon: r.type === 'site_visit' ? Car : Phone,
-      color: r.isOverdue ? '#ef4444' : (r.type === 'site_visit' ? '#16a34a' : '#2563eb'),
-      bgColor: r.isOverdue ? '#fef2f2' : (r.type === 'site_visit' ? '#f0fdf4' : '#eff6ff')
+      color: r.isOverdue ? '#0f172a' : (r.type === 'site_visit' ? '#1d4ed8' : '#2563eb'),
+      bgColor: r.isOverdue ? '#f1f5f9' : '#eff6ff'
     };
   });
 
@@ -223,8 +223,8 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
               width: '28px',
               height: '28px',
               borderRadius: '6px',
-              backgroundColor: '#e0f2fe',
-              color: '#0284c7',
+              backgroundColor: '#eff6ff',
+              color: '#1d4ed8',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -240,7 +240,7 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
               <span
                 style={{
                   marginLeft: '8px',
-                  backgroundColor: '#ef4444',
+                  backgroundColor: '#0f172a',
                   color: '#ffffff',
                   fontSize: '0.68rem',
                   fontWeight: '700',
@@ -309,12 +309,12 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
           { id: 'all', label: 'All', count: activeNotifications.length },
           {
             id: 'alerts',
-            label: '⚠️ Alerts',
+            label: 'Alerts',
             count: activeNotifications.filter((n) => n.category === 'alerts').length
           },
           {
             id: 'reminders',
-            label: '⏰ Reminders',
+            label: 'Reminders',
             count: activeNotifications.filter((n) => n.category === 'reminders').length
           }
         ].map((tab) => {
@@ -384,11 +384,11 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
                 width: '46px',
                 height: '46px',
                 borderRadius: '50%',
-                backgroundColor: '#f1f5f9',
+                backgroundColor: '#eff6ff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#10b981'
+                color: '#1d4ed8'
               }}
             >
               <CheckCircle2 size={24} />
@@ -528,7 +528,7 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
                     flexShrink: 0
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#ef4444';
+                    e.currentTarget.style.color = '#0f172a';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = '#cbd5e1';
@@ -563,7 +563,7 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
             style={{
               background: 'none',
               border: 'none',
-              color: '#ef4444',
+              color: '#0f172a',
               fontSize: '0.72rem',
               fontWeight: '700',
               cursor: 'pointer',

@@ -134,11 +134,11 @@ export const ExternalSiteVisitModal = ({
 
   const getRatingLabel = (stars) => {
     switch (stars) {
-      case 5: return '⭐⭐⭐⭐⭐ Ready to Book / Highly Enthusiastic';
-      case 4: return '⭐⭐⭐⭐ Very Interested (Reviewing Layout & Payment)';
-      case 3: return '⭐⭐⭐ Moderately Interested (Exploring Budget Options)';
-      case 2: return '⭐⭐ Neutral (Comparing with other sites)';
-      case 1: return '⭐ Not Interested / Budget or Location Mismatch';
+      case 5: return '5/5 Ready to Book / Highly Enthusiastic';
+      case 4: return '4/5 Very Interested (Reviewing Layout & Payment)';
+      case 3: return '3/5 Moderately Interested (Exploring Budget Options)';
+      case 2: return '2/5 Neutral (Comparing with other sites)';
+      case 1: return ' Not Interested / Budget or Location Mismatch';
       default: return '';
     }
   };
@@ -202,16 +202,16 @@ export const ExternalSiteVisitModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isScheduledOnly ? "📅 Schedule Client Site Visit" : (lead ? "🚗 Record Completed Site Visit" : "🚗 Log Walk-in & Site Visit")}
+      title={isScheduledOnly ? "Schedule Client Site Visit" : (lead ? "Record Completed Site Visit" : "Log Walk-in & Site Visit")}
       maxWidth="720px"
     >
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
 
         {errorMsg && (
           <div style={{
-            background: '#fee2e2',
-            border: '1px solid #fca5a5',
-            color: '#b91c1c',
+            background: '#f1f5f9',
+            border: '1px solid #cbd5e1',
+            color: '#0f172a',
             padding: '10px 14px',
             borderRadius: '8px',
             fontSize: '0.84rem',
@@ -227,8 +227,8 @@ export const ExternalSiteVisitModal = ({
         {/* Lead Context Banner */}
         {lead ? (
           <div style={{
-            background: 'linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%)',
-            border: '1px solid #bbf7d0',
+            background: 'linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)',
+            border: '1px solid #dbeafe',
             borderRadius: '10px',
             padding: '12px 16px',
             display: 'flex',
@@ -238,18 +238,18 @@ export const ExternalSiteVisitModal = ({
             gap: '10px'
           }}>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '800', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '800', textTransform: 'uppercase' }}>
                 Existing CRM Prospect
               </div>
               <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {lead.name}
-                <span style={{ fontSize: '0.72rem', background: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '12px', fontWeight: '700' }}>
+                <span style={{ fontSize: '0.72rem', background: '#eff6ff', color: '#1e40af', padding: '2px 8px', borderRadius: '12px', fontWeight: '700' }}>
                   {lead.status?.replace(/_/g, ' ')}
                 </span>
               </div>
               <div style={{ fontSize: '0.8rem', color: '#475569', display: 'flex', gap: '12px', marginTop: '3px' }}>
-                <span>📞 {lead.mobileNo}</span>
-                {lead.city && <span>📍 {lead.city}, {lead.state}</span>}
+                <span>{lead.mobileNo}</span>
+                {lead.city && <span>{lead.city}, {lead.state}</span>}
               </div>
             </div>
             <div style={{ fontSize: '0.75rem', background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', color: '#334155', fontWeight: '700' }}>
@@ -353,13 +353,13 @@ export const ExternalSiteVisitModal = ({
                   borderRadius: '6px',
                   fontSize: '0.8rem',
                   fontWeight: '800',
-                  border: !isScheduledOnly ? '2px solid #16a34a' : '1px solid #cbd5e1',
-                  background: !isScheduledOnly ? '#dcfce7' : '#ffffff',
-                  color: !isScheduledOnly ? '#15803d' : '#475569',
+                  border: !isScheduledOnly ? '2px solid #1a73e8' : '1px solid #cbd5e1',
+                  background: !isScheduledOnly ? '#eff6ff' : '#ffffff',
+                  color: !isScheduledOnly ? '#1e40af' : '#475569',
                   cursor: 'pointer'
                 }}
               >
-                ✅ Completed Visit
+                Completed Visit
               </button>
               <button
                 type="button"
@@ -376,7 +376,7 @@ export const ExternalSiteVisitModal = ({
                   cursor: 'pointer'
                 }}
               >
-                📅 Upcoming Scheduled
+                Upcoming Scheduled
               </button>
             </div>
           </div>
@@ -534,10 +534,10 @@ export const ExternalSiteVisitModal = ({
 
         {/* Client Interest Rating (Only shown for completed tour) */}
         {!isScheduledOnly ? (
-          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', padding: '14px 16px' }}>
+          <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '14px 16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#92400e', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Star size={15} color="#f59e0b" fill="#f59e0b" /> Client Interest Rating
+              <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <Star size={15} color="#475569" fill="#475569" /> Client Interest Rating
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -557,14 +557,14 @@ export const ExternalSiteVisitModal = ({
                   >
                     <Star
                       size={24}
-                      color="#f59e0b"
-                      fill={interestRating >= star ? '#f59e0b' : 'none'}
+                      color="#475569"
+                      fill={interestRating >= star ? '#475569' : 'none'}
                     />
                   </button>
                 ))}
               </div>
             </div>
-            <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#b45309', marginTop: '6px' }}>
+            <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginTop: '6px' }}>
               {getRatingLabel(interestRating)}
             </div>
           </div>
@@ -594,7 +594,7 @@ export const ExternalSiteVisitModal = ({
         {/* Recommended Next Step */}
         <div>
           <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-            🎯 Next Follow-Up Action / Next Step
+            Next Follow-Up Action / Next Step
           </label>
           <input
             type="text"
@@ -625,7 +625,7 @@ export const ExternalSiteVisitModal = ({
               border: 'none',
               background: isScheduledOnly
                 ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
-                : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                : 'linear-gradient(135deg, #1a73e8 0%, #1e40af 100%)',
               color: '#ffffff',
               fontWeight: '800',
               fontSize: '0.88rem',
@@ -637,7 +637,7 @@ export const ExternalSiteVisitModal = ({
               transition: 'all 0.15s ease'
             }}
           >
-            {submitting ? 'Saving...' : (isScheduledOnly ? '📅 Confirm & Schedule Site Visit' : '✅ Save & Record Site Visit')}
+            {submitting ? 'Saving...' : (isScheduledOnly ? 'Confirm & Schedule Site Visit' : 'Save & Record Site Visit')}
           </button>
         </div>
 

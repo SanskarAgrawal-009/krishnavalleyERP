@@ -41,7 +41,7 @@ const patch = async () => {
     );
   }
 
-  console.log(`✅ Successfully updated ${issues.length} existing material issues in database!`);
+  console.log(`Successfully updated ${issues.length} existing material issues in database!`);
   const updated = await mongoose.connection.db.collection('materialissues').find({}).toArray();
   updated.forEach((iss, idx) => {
     console.log(`[${idx + 1}] ${iss.issueNumber} | Contractor: ${iss.contractorName} | Issued By: ${iss.issuedBy} | Contact: ${iss.contractorContact}`);

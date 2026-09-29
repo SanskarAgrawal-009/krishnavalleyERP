@@ -121,7 +121,7 @@ const DEFAULT_TEMPLATES = [
       templateName: 'kv_lead_followup_v1',
       language: 'en_US',
       headerText: 'Krishna Valley • Meeting Scheduled',
-      bodyText: 'Namaste {{client_name}}! 🙏\n\nYour consultation regarding *{{project_name}}* is scheduled for *{{date}}* at *{{scheduled_time}}*.\n\nYour dedicated Relationship Manager is *{{rm_name}}* (📞 {{contact_number}}).\n\nWe look forward to showcasing our luxury residences.',
+      bodyText: 'Namaste {{client_name}}!\n\nYour consultation regarding *{{project_name}}* is scheduled for *{{date}}* at *{{scheduled_time}}*.\n\nYour dedicated Relationship Manager is *{{rm_name}}* ({{contact_number}}).\n\nWe look forward to showcasing our luxury residences.',
       footerText: 'Krishna Valley Sales Gallery',
       buttonText: 'View Property Brochure',
       buttonUrl: 'https://krishnavalley.com/brochures/{{project_name}}'
@@ -163,7 +163,7 @@ const DEFAULT_TEMPLATES = [
       templateName: 'kv_site_visit_v1',
       language: 'en_US',
       headerText: 'Krishna Valley Site Visit',
-      bodyText: 'Dear {{client_name}},\n\nYour site visit to *{{project_name}}* is scheduled for *{{date}}* at *{{time}}*.\n\n📍 *Site Location Map:* {{location_link}}\n🚗 *Chauffeur Pick-up:* {{driver_name}} (📞 {{driver_phone}})\n\nPlease reach out if you need to reschedule.',
+      bodyText: 'Dear {{client_name}},\n\nYour site visit to *{{project_name}}* is scheduled for *{{date}}* at *{{time}}*.\n\n*Site Location Map:* {{location_link}}\n*Chauffeur Pick-up:* {{driver_name}} ({{driver_phone}})\n\nPlease reach out if you need to reschedule.',
       footerText: 'Krishna Valley Concierge',
       buttonText: 'Open in Google Maps',
       buttonUrl: '{{location_link}}'
@@ -238,8 +238,8 @@ const DEFAULT_TEMPLATES = [
     whatsappContent: {
       templateName: 'kv_allotment_v1',
       language: 'en_US',
-      headerText: '🎉 Congratulations on Your New Home!',
-      bodyText: 'Dear {{client_name}},\n\nCongratulations! Your official Allotment Letter for Flat *{{unit_number}}* at *{{project_name}}* has been issued on *{{allotment_date}}*.\n\nDownload your digitally verified Allotment Letter:\n{{download_link}}\n\nWelcome to the Krishna Valley family! 🏡',
+      headerText: 'Congratulations on Your New Home!',
+      bodyText: 'Dear {{client_name}},\n\nCongratulations! Your official Allotment Letter for Flat *{{unit_number}}* at *{{project_name}}* has been issued on *{{allotment_date}}*.\n\nDownload your digitally verified Allotment Letter:\n{{download_link}}\n\nWelcome to the Krishna Valley family!',
       footerText: 'Krishna Valley Real Estate',
       buttonText: 'Download Allotment Letter',
       buttonUrl: '{{download_link}}'
@@ -252,7 +252,7 @@ const DEFAULT_TEMPLATES = [
       subject: 'Congratulations! Allotment Letter for Unit {{unit_number}} - {{project_name}}',
       preheader: 'Your official allotment letter is ready for download',
       bodyHtml: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #fff; border: 1px solid #10b981; border-radius: 8px;">
-  <h2 style="color: #047857; margin-top: 0;">Welcome to Krishna Valley! 🏡</h2>
+  <h2 style="color: #047857; margin-top: 0;">Welcome to Krishna Valley!</h2>
   <p>Dear <strong>{{client_name}}</strong>,</p>
   <p>We are delighted to confirm that Flat <strong>{{unit_number}}</strong> at <strong>{{project_name}}</strong> has been allotted to you on <strong>{{allotment_date}}</strong>.</p>
   <p style="text-align: center; margin: 24px 0;">
@@ -261,7 +261,7 @@ const DEFAULT_TEMPLATES = [
 </div>`
     },
     pushContent: {
-      title: 'Allotment Letter Issued! 🎉',
+      title: 'Allotment Letter Issued!',
       bodyText: 'Unit {{unit_number}} at {{project_name}} is officially allotted.',
       actionUrl: '/sales',
       icon: '/favicon.ico'

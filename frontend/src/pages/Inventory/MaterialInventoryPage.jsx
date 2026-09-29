@@ -293,11 +293,11 @@ export const MaterialInventoryPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL STOCK VALUATION</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
             {formatINR(summary.totalValuation)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Across all site stores</span>
@@ -306,11 +306,11 @@ export const MaterialInventoryPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>LOW STOCK REORDERS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#ffdad6', color: '#ba1a1a' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f1f5f9', color: '#0f172a' }}>
               <AlertTriangle size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: summary.lowStockCount > 0 ? '#ba1a1a' : '#137333', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: summary.lowStockCount > 0 ? '#0f172a' : '#1a73e8', marginTop: '4px' }}>
             {summary.lowStockCount}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Items below reorder level</span>
@@ -332,11 +332,11 @@ export const MaterialInventoryPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>VENDORS & STORES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
               <Truck size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>
             {summary.vendorsCount} <span style={{ fontSize: '0.9rem', color: '#4b5563' }}>/ {summary.storesCount} Stores</span>
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active supply network</span>
@@ -585,26 +585,26 @@ export const MaterialInventoryPage = () => {
 
               <div className="stat-card" style={{ padding: '14px 18px' }}>
                 <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>TOTAL INWARD (GRN)</span>
-                <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#137333', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#1a73e8', marginTop: '2px' }}>
                   +{totalInwardUnits.toLocaleString('en-IN')} <span style={{ fontSize: '0.78rem', color: '#4b5563' }}>units</span>
                 </div>
-                <span style={{ fontSize: '0.72rem', color: '#137333', fontWeight: '600' }}>{grns.length} received shipments</span>
+                <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '600' }}>{grns.length} received shipments</span>
               </div>
 
               <div className="stat-card" style={{ padding: '14px 18px' }}>
                 <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>SITE CONSUMPTION (ISSUED)</span>
-                <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#ba1a1a', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
                   -{totalIssuedUnits.toLocaleString('en-IN')} <span style={{ fontSize: '0.78rem', color: '#4b5563' }}>units</span>
                 </div>
-                <span style={{ fontSize: '0.72rem', color: '#ba1a1a', fontWeight: '600' }}>{issues.length} contractor issues</span>
+                <span style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '600' }}>{issues.length} contractor issues</span>
               </div>
 
               <div className="stat-card" style={{ padding: '14px 18px' }}>
                 <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>INTER-STORE TRANSFERS</span>
-                <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#8b5cf6', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#2563eb', marginTop: '2px' }}>
                   ⇄ {totalTransferredUnits.toLocaleString('en-IN')} <span style={{ fontSize: '0.78rem', color: '#4b5563' }}>units</span>
                 </div>
-                <span style={{ fontSize: '0.72rem', color: '#8b5cf6', fontWeight: '600' }}>{transfers.length} inter-warehouse transfers</span>
+                <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '600' }}>{transfers.length} inter-warehouse transfers</span>
               </div>
             </div>
 
@@ -676,7 +676,7 @@ export const MaterialInventoryPage = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  <ArrowUpRight size={14} color="#ba1a1a" /> Issue Material
+                  <ArrowUpRight size={14} color="#0f172a" /> Issue Material
                 </button>
 
                 <button
@@ -696,7 +696,7 @@ export const MaterialInventoryPage = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  <Repeat size={14} color="#8b5cf6" /> Store Transfer
+                  <Repeat size={14} color="#2563eb" /> Store Transfer
                 </button>
 
                 <button
@@ -811,15 +811,15 @@ export const MaterialInventoryPage = () => {
 
                               <td>
                                 {isInward ? (
-                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#e6f4ea', color: '#137333', fontSize: '0.74rem', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#eff6ff', color: '#1a73e8', fontSize: '0.74rem', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                     <ArrowDownLeft size={13} /> + INWARD
                                   </span>
                                 ) : isOutward ? (
-                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#ffdad6', color: '#ba1a1a', fontSize: '0.74rem', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#0f172a', fontSize: '0.74rem', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                     <ArrowUpRight size={13} /> - ISSUE
                                   </span>
                                 ) : (
-                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#f3e8ff', color: '#8b5cf6', fontSize: '0.74rem', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#eff6ff', color: '#2563eb', fontSize: '0.74rem', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                     <Repeat size={13} /> ⇄ TRANSFER
                                   </span>
                                 )}
@@ -835,7 +835,7 @@ export const MaterialInventoryPage = () => {
                                 </div>
                               </td>
 
-                              <td style={{ fontWeight: '800', fontSize: '0.95rem', color: isInward ? '#137333' : (isOutward ? '#ba1a1a' : '#8b5cf6') }}>
+                              <td style={{ fontWeight: '800', fontSize: '0.95rem', color: isInward ? '#1a73e8' : (isOutward ? '#0f172a' : '#2563eb') }}>
                                 {isInward ? `+${act.quantity}` : (isOutward ? `-${act.quantity}` : `⇄ ${act.quantity}`)} <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>{act.unit}</span>
                               </td>
 
@@ -957,11 +957,11 @@ export const MaterialInventoryPage = () => {
                                 )}
                               </td>
                               <td>
-                                <div style={{ fontWeight: '800', color: isOutOfStock ? '#ba1a1a' : (isReorderDue ? '#b06000' : '#137333'), fontSize: '0.95rem' }}>
+                                <div style={{ fontWeight: '800', color: isOutOfStock ? '#0f172a' : (isReorderDue ? '#475569' : '#1a73e8'), fontSize: '0.95rem' }}>
                                   {availQty} <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#4b5563' }}>{matUnit}</span>
                                 </div>
                                 {item.reservedQuantity > 0 && (
-                                  <div style={{ fontSize: '0.72rem', color: '#b06000' }}>
+                                  <div style={{ fontSize: '0.72rem', color: '#475569' }}>
                                     Total: {totalQty} ({item.reservedQuantity} reserved)
                                   </div>
                                 )}
@@ -977,19 +977,19 @@ export const MaterialInventoryPage = () => {
                               </td>
                               <td>
                                 {isOutOfStock ? (
-                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#ffdad6', color: '#ba1a1a', fontSize: '0.74rem', fontWeight: '700', border: '1px solid #ffdad6' }}>
+                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#0f172a', fontSize: '0.74rem', fontWeight: '700', border: '1px solid #f1f5f9' }}>
                                     ZERO STOCK
                                   </span>
                                 ) : isCriticalLow ? (
-                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#ffdad6', color: '#ba1a1a', fontSize: '0.74rem', fontWeight: '700', border: '1px solid #ffdad6' }}>
+                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#0f172a', fontSize: '0.74rem', fontWeight: '700', border: '1px solid #f1f5f9' }}>
                                     CRITICAL LOW
                                   </span>
                                 ) : isReorderDue ? (
-                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#fef7e0', color: '#b06000', fontSize: '0.74rem', fontWeight: '700', border: '1px solid #feefc3' }}>
+                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#f8fafc', color: '#475569', fontSize: '0.74rem', fontWeight: '700', border: '1px solid #e2e8f0' }}>
                                     REORDER DUE
                                   </span>
                                 ) : (
-                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#e6f4ea', color: '#137333', fontSize: '0.74rem', fontWeight: '700', border: '1px solid #ceead6' }}>
+                                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#eff6ff', color: '#1a73e8', fontSize: '0.74rem', fontWeight: '700', border: '1px solid #bfdbfe' }}>
                                     OPTIMAL
                                   </span>
                                 )}
@@ -1162,7 +1162,7 @@ export const MaterialInventoryPage = () => {
                             {minStock} {matUnit}
                           </td>
                           <td>
-                            <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#ffdad6', color: '#ba1a1a', fontWeight: '800', fontSize: '0.76rem' }}>
+                            <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#0f172a', fontWeight: '800', fontSize: '0.76rem' }}>
                               {reorderLvl} {matUnit}
                             </span>
                           </td>
@@ -1173,8 +1173,8 @@ export const MaterialInventoryPage = () => {
                             <span style={{
                               padding: '3px 8px',
                               borderRadius: '4px',
-                              background: m.isActive === false ? '#ffdad6' : '#e6f4ea',
-                              color: m.isActive === false ? '#ba1a1a' : '#137333',
+                              background: m.isActive === false ? '#f1f5f9' : '#eff6ff',
+                              color: m.isActive === false ? '#0f172a' : '#1a73e8',
                               fontSize: '0.74rem',
                               fontWeight: '700',
                               textTransform: 'capitalize'
@@ -1232,13 +1232,13 @@ export const MaterialInventoryPage = () => {
                       {s.storeCode}
                     </span>
                   </div>
-                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: s.status === 'active' ? '#e6f4ea' : '#ffdad6', color: s.status === 'active' ? '#137333' : '#ba1a1a', fontSize: '0.74rem', fontWeight: '700' }}>
+                  <span style={{ padding: '3px 8px', borderRadius: '4px', background: s.status === 'active' ? '#eff6ff' : '#f1f5f9', color: s.status === 'active' ? '#1a73e8' : '#0f172a', fontSize: '0.74rem', fontWeight: '700' }}>
                     {s.status}
                   </span>
                 </div>
                 <div style={{ fontSize: '0.78rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <div>Project: <strong style={{ color: '#111827' }}>{s.projectId?.projectName || 'General Site'}</strong></div>
-                  <div>Storekeeper: <strong style={{ color: s.storeKeeper ? '#15803d' : '#b45309' }}>{s.storeKeeper || 'Unassigned'}</strong></div>
+                  <div>Storekeeper: <strong style={{ color: s.storeKeeper ? '#1e40af' : '#334155' }}>{s.storeKeeper || 'Unassigned'}</strong></div>
                   <div>Location: <strong style={{ color: '#111827' }}>{s.location || 'On-site'}</strong></div>
                 </div>
 
@@ -1277,8 +1277,8 @@ export const MaterialInventoryPage = () => {
                     onClick={() => handleDeleteStore(s)}
                     style={{
                       background: '#fff1f2',
-                      border: '1px solid #fecdd3',
-                      color: '#e11d48',
+                      border: '1px solid #e2e8f0',
+                      color: '#0f172a',
                       padding: '5px 8px',
                       borderRadius: '6px',
                       fontSize: '0.75rem',
@@ -1465,8 +1465,8 @@ export const MaterialInventoryPage = () => {
                             <span style={{
                               padding: '3px 8px',
                               borderRadius: '4px',
-                              background: (v.status === 'inactive' || v.status === 'blacklisted') ? '#ffdad6' : '#e6f4ea',
-                              color: (v.status === 'inactive' || v.status === 'blacklisted') ? '#ba1a1a' : '#137333',
+                              background: (v.status === 'inactive' || v.status === 'blacklisted') ? '#f1f5f9' : '#eff6ff',
+                              color: (v.status === 'inactive' || v.status === 'blacklisted') ? '#0f172a' : '#1a73e8',
                               fontSize: '0.74rem',
                               fontWeight: '700',
                               textTransform: 'capitalize'
@@ -1557,7 +1557,7 @@ export const MaterialInventoryPage = () => {
               type="button"
               onClick={() => setIsGrnModalOpen(true)}
               style={{
-                background: '#137333',
+                background: '#1a73e8',
                 color: '#ffffff',
                 padding: '7px 14px',
                 borderRadius: '6px',
@@ -1590,7 +1590,7 @@ export const MaterialInventoryPage = () => {
                 <tbody>
                   {grns.map((g) => (
                     <tr key={g._id || g.id}>
-                      <td><strong style={{ color: '#137333' }}>{g.grnNumber}</strong></td>
+                      <td><strong style={{ color: '#1a73e8' }}>{g.grnNumber}</strong></td>
                       <td style={{ color: '#111827', fontWeight: '600' }}>{g.challanNumber || g.invoiceNumber || 'Direct DC'}</td>
                       <td style={{ color: '#374151', fontWeight: '600' }}>{g.storeId?.storeName || 'Main Store'}</td>
                       <td style={{ color: '#111827', fontWeight: '700' }}>{g.items?.length || 1} material items</td>
@@ -1658,7 +1658,7 @@ export const MaterialInventoryPage = () => {
                             <span>{contractor}</span>
                             {iss.contractorContact && (
                               <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '500' }}>
-                                📞 {iss.contractorContact}
+                                {iss.contractorContact}
                               </span>
                             )}
                           </div>
@@ -1693,7 +1693,7 @@ export const MaterialInventoryPage = () => {
               type="button"
               onClick={() => setIsTransferModalOpen(true)}
               style={{
-                background: '#8b5cf6',
+                background: '#2563eb',
                 color: '#ffffff',
                 padding: '7px 14px',
                 borderRadius: '6px',
@@ -1727,17 +1727,17 @@ export const MaterialInventoryPage = () => {
                 <tbody>
                   {transfers.map((tr) => (
                     <tr key={tr._id || tr.id}>
-                      <td><strong style={{ color: '#8b5cf6' }}>{tr.transferNumber}</strong></td>
+                      <td><strong style={{ color: '#2563eb' }}>{tr.transferNumber}</strong></td>
                       <td style={{ fontWeight: '700', color: '#111827' }}>{tr.fromStoreId?.storeName || 'Source Store'}</td>
-                      <td style={{ fontWeight: '700', color: '#137333' }}>{tr.toStoreId?.storeName || 'Destination Store'}</td>
+                      <td style={{ fontWeight: '700', color: '#1a73e8' }}>{tr.toStoreId?.storeName || 'Destination Store'}</td>
                       <td style={{ color: '#111827', fontWeight: '700' }}>{tr.items?.length || 1} material items</td>
                       <td>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                           <span style={{ fontWeight: '700', color: '#1e293b', fontSize: '0.8rem' }}>
-                            🎫 {tr.gatepassNumber || 'GP-VERIFIED'}
+                            {tr.gatepassNumber || 'GP-VERIFIED'}
                           </span>
                           <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                            {tr.vehicleNumber ? `🚛 ${tr.vehicleNumber}` : 'Gate Clearance Logged'}
+                            {tr.vehicleNumber ? `${tr.vehicleNumber}` : 'Gate Clearance Logged'}
                             {tr.driverName ? ` • ${tr.driverName}` : ''}
                           </span>
                         </div>
@@ -1746,8 +1746,8 @@ export const MaterialInventoryPage = () => {
                         <span style={{
                           padding: '3px 9px',
                           borderRadius: '6px',
-                          background: tr.status === 'received' ? '#dcfce7' : (tr.status === 'in_transit' ? '#fef3c7' : '#e8f0fe'),
-                          color: tr.status === 'received' ? '#15803d' : (tr.status === 'in_transit' ? '#b45309' : '#1a73e8'),
+                          background: tr.status === 'received' ? '#eff6ff' : (tr.status === 'in_transit' ? '#f1f5f9' : '#e8f0fe'),
+                          color: tr.status === 'received' ? '#1e40af' : (tr.status === 'in_transit' ? '#334155' : '#1a73e8'),
                           fontSize: '0.74rem',
                           fontWeight: '700',
                           textTransform: 'capitalize',
@@ -1759,7 +1759,7 @@ export const MaterialInventoryPage = () => {
                             width: '6px',
                             height: '6px',
                             borderRadius: '50%',
-                            background: tr.status === 'received' ? '#15803d' : (tr.status === 'in_transit' ? '#b45309' : '#1a73e8')
+                            background: tr.status === 'received' ? '#1e40af' : (tr.status === 'in_transit' ? '#334155' : '#1a73e8')
                           }}></span>
                           {tr.status ? tr.status.replace(/_/g, ' ') : 'Received'}
                         </span>
@@ -1769,7 +1769,7 @@ export const MaterialInventoryPage = () => {
                           <button
                             onClick={() => handleUpdateTransferStatus(tr._id || tr.id, 'received')}
                             style={{
-                              background: '#15803d',
+                              background: '#1e40af',
                               color: '#ffffff',
                               border: 'none',
                               padding: '5px 12px',
@@ -1789,15 +1789,15 @@ export const MaterialInventoryPage = () => {
                         ) : (
                           <span style={{
                             fontSize: '0.74rem',
-                            color: '#15803d',
+                            color: '#1e40af',
                             fontWeight: '700',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '4px',
-                            background: '#f0fdf4',
+                            background: '#eff6ff',
                             padding: '3px 8px',
                             borderRadius: '4px',
-                            border: '1px solid #bbf7d0'
+                            border: '1px solid #dbeafe'
                           }}>
                             <CheckCircle size={12} /> Delivered
                           </span>

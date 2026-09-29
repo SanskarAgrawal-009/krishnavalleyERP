@@ -265,7 +265,7 @@ async function seed100Agents() {
     }
 
     console.log(`Sample Site Visits Seeded: ${visitCount}`);
-    console.log('🎉 100+ Agents and Network Seed Completed Successfully!');
+    console.log('100+ Agents and Network Seed Completed Successfully!');
     process.exit(0);
   } catch (error) {
     console.error('Seeding error:', error);

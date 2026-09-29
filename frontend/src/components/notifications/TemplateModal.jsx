@@ -156,7 +156,7 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
           subject: 'Update regarding {{project_name}} - Unit {{unit_number}}',
           preheader: 'Important communication from Krishna Valley',
           bodyHtml: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-  <h2 style="color: #0f766e;">Krishna Valley Real Estate</h2>
+  <h2 style="color: #005bbf;">Krishna Valley Real Estate</h2>
   <p>Dear <strong>{{client_name}}</strong>,</p>
   <p>Please find your notification details for <strong>{{project_name}} (Unit {{unit_number}})</strong>.</p>
 </div>`
@@ -399,9 +399,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                     ...formData,
                     channels: { ...formData.channels, whatsapp: e.target.checked }
                   })}
-                  style={{ accentColor: '#25d366' }}
+                  style={{ accentColor: '#0f172a' }}
                 />
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#25d366', fontWeight: '600' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#0f172a', fontWeight: '600' }}>
                   <MessageSquare size={14} /> WhatsApp
                 </span>
               </label>
@@ -429,9 +429,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                     ...formData,
                     channels: { ...formData.channels, email: e.target.checked }
                   })}
-                  style={{ accentColor: '#f59e0b' }}
+                  style={{ accentColor: '#475569' }}
                 />
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#fbbf24', fontWeight: '600' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#cbd5e1', fontWeight: '600' }}>
                   <Mail size={14} /> Email
                 </span>
               </label>
@@ -444,9 +444,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                     ...formData,
                     channels: { ...formData.channels, push: e.target.checked }
                   })}
-                  style={{ accentColor: '#ec4899' }}
+                  style={{ accentColor: '#1e40af' }}
                 />
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#f472b6', fontWeight: '600' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#60a5fa', fontWeight: '600' }}>
                   <Bell size={14} /> Push
                 </span>
               </label>
@@ -518,9 +518,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                   gap: '6px',
                   padding: '8px 16px',
                   border: 'none',
-                  borderBottom: activeChannelTab === 'whatsapp' ? '2px solid #25d366' : '2px solid transparent',
+                  borderBottom: activeChannelTab === 'whatsapp' ? '2px solid #0f172a' : '2px solid transparent',
                   background: activeChannelTab === 'whatsapp' ? 'rgba(37, 211, 102, 0.1)' : 'transparent',
-                  color: activeChannelTab === 'whatsapp' ? '#25d366' : 'var(--text-secondary)',
+                  color: activeChannelTab === 'whatsapp' ? '#0f172a' : 'var(--text-secondary)',
                   fontWeight: '600',
                   fontSize: '0.82rem',
                   cursor: 'pointer'
@@ -558,9 +558,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                   gap: '6px',
                   padding: '8px 16px',
                   border: 'none',
-                  borderBottom: activeChannelTab === 'email' ? '2px solid #f59e0b' : '2px solid transparent',
+                  borderBottom: activeChannelTab === 'email' ? '2px solid #475569' : '2px solid transparent',
                   background: activeChannelTab === 'email' ? 'rgba(245, 158, 11, 0.1)' : 'transparent',
-                  color: activeChannelTab === 'email' ? '#fbbf24' : 'var(--text-secondary)',
+                  color: activeChannelTab === 'email' ? '#cbd5e1' : 'var(--text-secondary)',
                   fontWeight: '600',
                   fontSize: '0.82rem',
                   cursor: 'pointer'
@@ -578,9 +578,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                   gap: '6px',
                   padding: '8px 16px',
                   border: 'none',
-                  borderBottom: activeChannelTab === 'push' ? '2px solid #ec4899' : '2px solid transparent',
+                  borderBottom: activeChannelTab === 'push' ? '2px solid #1e40af' : '2px solid transparent',
                   background: activeChannelTab === 'push' ? 'rgba(236, 72, 153, 0.1)' : 'transparent',
-                  color: activeChannelTab === 'push' ? '#f472b6' : 'var(--text-secondary)',
+                  color: activeChannelTab === 'push' ? '#60a5fa' : 'var(--text-secondary)',
                   fontWeight: '600',
                   fontSize: '0.82rem',
                   cursor: 'pointer'
@@ -726,7 +726,7 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                     <label style={{ fontSize: '0.76rem', color: '#374151' }}>
                       SMS Text Message Body *
                     </label>
-                    <span style={{ fontSize: '0.72rem', color: smsLength > 160 ? '#f59e0b' : 'var(--text-muted)' }}>
+                    <span style={{ fontSize: '0.72rem', color: smsLength > 160 ? '#475569' : 'var(--text-muted)' }}>
                       {smsLength} characters ({smsSegments} SMS {smsSegments > 1 ? 'segments' : 'segment'})
                     </span>
                   </div>

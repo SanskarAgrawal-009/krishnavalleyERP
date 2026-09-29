@@ -335,7 +335,7 @@ export const HRPage = () => {
     formData.append('remarks', selectedSlipItem.remarks || 'Updated payment receipt slip');
     try {
       const res = await hrService.paySalary(selectedSlipItem.employeeId, selectedSlipItem.id || selectedSlipItem._id, formData);
-      alert('✅ Payment slip proof successfully uploaded & permanently stored!');
+      alert('Payment slip proof successfully uploaded & permanently stored!');
       const updatedEmp = res.data;
       const updatedPay = updatedEmp?.payroll?.find((p) => (p._id || p.id) === (selectedSlipItem.id || selectedSlipItem._id));
       if (updatedPay?.paymentProof?.fileUrl) {
@@ -735,14 +735,14 @@ export const HRPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>ON LEAVE TODAY</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: (summary.staffOnLeaveToday || 0) > 0 ? '#fef3c7' : '#e6f4ea', color: (summary.staffOnLeaveToday || 0) > 0 ? '#b45309' : '#137333' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: (summary.staffOnLeaveToday || 0) > 0 ? '#f1f5f9' : '#eff6ff', color: (summary.staffOnLeaveToday || 0) > 0 ? '#334155' : '#1a73e8' }}>
               <Calendar size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: (summary.staffOnLeaveToday || 0) > 0 ? '#b45309' : '#137333', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: (summary.staffOnLeaveToday || 0) > 0 ? '#334155' : '#1a73e8', marginTop: '4px' }}>
             {summary.staffOnLeaveToday || 0}
           </div>
-          <span style={{ fontSize: '0.72rem', color: (summary.staffOnLeaveToday || 0) > 0 ? '#b45309' : '#137333', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.72rem', color: (summary.staffOnLeaveToday || 0) > 0 ? '#334155' : '#1a73e8', fontWeight: '600' }}>
             {(summary.staffOnLeaveToday || 0) > 0 ? 'Staff absent on leave' : 'Full team available'}
           </span>
         </div>
@@ -764,11 +764,11 @@ export const HRPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>PENDING LEAVES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
               <Clock size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
             {summary.pendingLeavesCount}
           </div>
           <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '600' }}>HR approval required</span>
@@ -777,11 +777,11 @@ export const HRPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY PAYROLL</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#f3e8ff', color: '#8b5cf6' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#8b5cf6', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>
             {formatINR(summary.monthlyPayrollOutflow)}
           </div>
           <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '600' }}>Salary & benefits total</span>
@@ -843,9 +843,9 @@ export const HRPage = () => {
                   type="button"
                   onClick={handleSeedSampleStaff}
                   style={{
-                    background: '#e6f4ea',
-                    color: '#137333',
-                    border: '1px solid #ceead6',
+                    background: '#eff6ff',
+                    color: '#1a73e8',
+                    border: '1px solid #bfdbfe',
                     padding: '8px 14px',
                     borderRadius: '6px',
                     fontSize: '0.82rem',
@@ -899,7 +899,7 @@ export const HRPage = () => {
 
             <div style={{ flex: '1 1 180px' }}>
               <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                🏢 Department ({masterData.departments?.length || 0})
+                Department ({masterData.departments?.length || 0})
               </label>
               <select
                 value={departmentFilter}
@@ -920,12 +920,12 @@ export const HRPage = () => {
 
             <div style={{ flex: '1 1 180px' }}>
               <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                💼 Role / Designation ({activeDeptRoles.length} in Dept)
+                Role / Designation ({activeDeptRoles.length} in Dept)
               </label>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', borderColor: roleFilter ? '#137333' : '#dadce0', fontWeight: roleFilter ? '700' : 'normal' }}
+                style={{ width: '100%', fontSize: '0.82rem', borderColor: roleFilter ? '#1a73e8' : '#dadce0', fontWeight: roleFilter ? '700' : 'normal' }}
               >
                 <option value="">{departmentFilter ? `All Roles in Dept` : `All Roles`}</option>
                 {activeDeptRoles.map((r) => (
@@ -946,10 +946,10 @@ export const HRPage = () => {
                 }}
                 style={{
                   padding: '7px 12px',
-                  background: '#fef2f2',
-                  color: '#ba1a1a',
+                  background: '#f1f5f9',
+                  color: '#0f172a',
                   borderRadius: '6px',
-                  border: '1px solid #fecaca',
+                  border: '1px solid #e2e8f0',
                   fontSize: '0.76rem',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -1016,7 +1016,7 @@ export const HRPage = () => {
                               type="button"
                               onClick={handleSeedSampleStaff}
                               style={{
-                                background: '#0d904f',
+                                background: '#1a73e8',
                                 color: '#ffffff',
                                 padding: '8px 18px',
                                 borderRadius: '6px',
@@ -1050,7 +1050,7 @@ export const HRPage = () => {
                         </td>
                         <td style={{ color: '#111827', fontWeight: '700' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Briefcase size={14} color="#137333" />
+                            <Briefcase size={14} color="#1a73e8" />
                             <span>{emp.designation || emp.roleName || emp.roleId?.roleName || emp.roleId?.name || emp.role || 'Senior Site Engineer'}</span>
                           </div>
                         </td>
@@ -1075,9 +1075,9 @@ export const HRPage = () => {
                               }}
                               style={{
                                 padding: '5px 9px',
-                                background: '#fef3c7',
-                                border: '1px solid #fde68a',
-                                color: '#92400e',
+                                background: '#f1f5f9',
+                                border: '1px solid #cbd5e1',
+                                color: '#334155',
                                 borderRadius: '5px',
                                 fontSize: '0.75rem',
                                 fontWeight: '700',
@@ -1138,9 +1138,9 @@ export const HRPage = () => {
                               onClick={() => handleDeleteEmployee(emp)}
                               style={{
                                 padding: '5px 7px',
-                                background: '#fef2f2',
-                                border: '1px solid #fecaca',
-                                color: '#dc2626',
+                                background: '#f1f5f9',
+                                border: '1px solid #e2e8f0',
+                                color: '#0f172a',
                                 borderRadius: '5px',
                                 fontSize: '0.75rem',
                                 fontWeight: '700',
@@ -1173,7 +1173,7 @@ export const HRPage = () => {
                 <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', margin: 0 }}>
                   Official Staff Identity Cards & Badge Hub
                 </h3>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: '#fef3c7', color: '#92400e', fontWeight: '800' }}>
+                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#334155', fontWeight: '800' }}>
                   CENTRAL HR CREDENTIALING
                 </span>
               </div>
@@ -1211,12 +1211,12 @@ export const HRPage = () => {
               <strong style={{ fontSize: '1.25rem', color: '#0f172a' }}>{employees.length}</strong>
               <span style={{ fontSize: '0.68rem', color: '#64748b', display: 'block' }}>Personnel on records</span>
             </div>
-            <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '8px', padding: '10px 14px' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#047857', display: 'block' }}>PHYSICAL CARDS ISSUED</span>
-              <strong style={{ fontSize: '1.25rem', color: '#065f46' }}>
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '10px 14px' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#1e40af', display: 'block' }}>PHYSICAL CARDS ISSUED</span>
+              <strong style={{ fontSize: '1.25rem', color: '#1e3a8a' }}>
                 {employees.filter(e => e.idCardDetails?.idCardIssued).length}
               </strong>
-              <span style={{ fontSize: '0.68rem', color: '#047857', display: 'block' }}>Badges delivered to staff</span>
+              <span style={{ fontSize: '0.68rem', color: '#1e40af', display: 'block' }}>Badges delivered to staff</span>
             </div>
             <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '10px 14px' }}>
               <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#1d4ed8', display: 'block' }}>AADHAAR & PAN KYC LINKED</span>
@@ -1225,12 +1225,12 @@ export const HRPage = () => {
               </strong>
               <span style={{ fontSize: '0.68rem', color: '#1d4ed8', display: 'block' }}>Govt verified IDs on file</span>
             </div>
-            <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '8px', padding: '10px 14px' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#be123c', display: 'block' }}>BLOOD GROUP RECORDED</span>
-              <strong style={{ fontSize: '1.25rem', color: '#9f1239' }}>
+            <div style={{ background: '#fff1f2', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 14px' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#0f172a', display: 'block' }}>BLOOD GROUP RECORDED</span>
+              <strong style={{ fontSize: '1.25rem', color: '#0f172a' }}>
                 {employees.filter(e => e.bloodGroup).length}
               </strong>
-              <span style={{ fontSize: '0.68rem', color: '#be123c', display: 'block' }}>Emergency medical badge tag</span>
+              <span style={{ fontSize: '0.68rem', color: '#0f172a', display: 'block' }}>Emergency medical badge tag</span>
             </div>
           </div>
 
@@ -1271,10 +1271,10 @@ export const HRPage = () => {
                 }}
                 style={{
                   padding: '7px 12px',
-                  background: '#fef2f2',
-                  color: '#ba1a1a',
+                  background: '#f1f5f9',
+                  color: '#0f172a',
                   borderRadius: '6px',
-                  border: '1px solid #fecaca',
+                  border: '1px solid #e2e8f0',
                   fontSize: '0.76rem',
                   fontWeight: '700',
                   cursor: 'pointer'
@@ -1337,7 +1337,7 @@ export const HRPage = () => {
                       alignItems: 'center'
                     }}>
                       <div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: '900', letterSpacing: '1px', color: '#f59e0b' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: '900', letterSpacing: '1px', color: '#475569' }}>
                           KRISHNA VALLEY
                         </div>
                         <div style={{ fontSize: '0.62rem', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.5px' }}>
@@ -1350,7 +1350,7 @@ export const HRPage = () => {
                         borderRadius: '12px',
                         fontSize: '0.65rem',
                         fontWeight: '800',
-                        background: isIssued ? '#10b981' : '#f59e0b',
+                        background: isIssued ? '#1a73e8' : '#475569',
                         color: '#ffffff'
                       }}>
                         {isIssued ? 'ISSUED' : 'READY TO PRINT'}
@@ -1405,8 +1405,8 @@ export const HRPage = () => {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', background: '#f8fafc', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                         <div>
                           <span style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '700', display: 'block' }}>BLOOD GROUP</span>
-                          <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#dc2626', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                            <Heart size={11} fill="#dc2626" /> {bloodGroup}
+                          <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#0f172a', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            <Heart size={11} fill="#0f172a" /> {bloodGroup}
                           </span>
                         </div>
                         <div>
@@ -1417,14 +1417,14 @@ export const HRPage = () => {
                         </div>
                         <div>
                           <span style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '700', display: 'block' }}>AADHAAR KYC</span>
-                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: emp.idCardDetails?.aadhaarNumber ? '#15803d' : '#b45309' }}>
-                            {emp.idCardDetails?.aadhaarNumber ? `✓ •••• ${emp.idCardDetails.aadhaarNumber.slice(-4)}` : '⚠ Missing'}
+                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: emp.idCardDetails?.aadhaarNumber ? '#1e40af' : '#334155' }}>
+                            {emp.idCardDetails?.aadhaarNumber ? `•••• ${emp.idCardDetails.aadhaarNumber.slice(-4)}` : 'Missing'}
                           </span>
                         </div>
                         <div>
                           <span style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '700', display: 'block' }}>PAN CARD</span>
-                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: emp.idCardDetails?.panNumber ? '#15803d' : '#b45309' }}>
-                            {emp.idCardDetails?.panNumber ? `✓ ${emp.idCardDetails.panNumber}` : '⚠ Missing'}
+                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: emp.idCardDetails?.panNumber ? '#1e40af' : '#334155' }}>
+                            {emp.idCardDetails?.panNumber ? `${emp.idCardDetails.panNumber}` : 'Missing'}
                           </span>
                         </div>
                       </div>
@@ -1560,7 +1560,7 @@ export const HRPage = () => {
                       </h4>
                     </div>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.72rem', padding: '4px 8px', borderRadius: '12px', background: '#e6f4ea', color: '#137333', fontWeight: '700' }}>
+                      <span style={{ fontSize: '0.72rem', padding: '4px 8px', borderRadius: '12px', background: '#eff6ff', color: '#1a73e8', fontWeight: '700' }}>
                         {deptStaffCount} Staff
                       </span>
                       <button
@@ -1585,9 +1585,9 @@ export const HRPage = () => {
                           onClick={() => handleDeleteDepartment(dept)}
                           style={{
                             padding: '4px 6px',
-                            background: '#fef2f2',
-                            border: '1px solid #fecaca',
-                            color: '#dc2626',
+                            background: '#f1f5f9',
+                            border: '1px solid #e2e8f0',
+                            color: '#0f172a',
                             borderRadius: '4px',
                             cursor: 'pointer'
                           }}
@@ -1682,9 +1682,9 @@ export const HRPage = () => {
                                   onClick={() => handleDeleteRole(role)}
                                   style={{
                                     padding: '3px 5px',
-                                    background: '#fef2f2',
-                                    border: '1px solid #fecaca',
-                                    color: '#dc2626',
+                                    background: '#f1f5f9',
+                                    border: '1px solid #e2e8f0',
+                                    color: '#0f172a',
                                     borderRadius: '4px',
                                     cursor: 'pointer'
                                   }}
@@ -1737,7 +1737,7 @@ export const HRPage = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  📅 Daily Roster Mode
+                  Daily Roster Mode
                 </button>
                 <button
                   type="button"
@@ -1753,7 +1753,7 @@ export const HRPage = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  📜 Attendance History Logs ({allAttendanceLogs.length})
+                  Attendance History Logs ({allAttendanceLogs.length})
                 </button>
               </div>
 
@@ -1761,7 +1761,7 @@ export const HRPage = () => {
                 type="button"
                 onClick={() => setIsAttModalOpen(true)}
                 style={{
-                  background: '#137333',
+                  background: '#1a73e8',
                   color: '#ffffff',
                   padding: '7px 14px',
                   borderRadius: '6px',
@@ -1827,9 +1827,9 @@ export const HRPage = () => {
                     onClick={handleMarkAllPresent}
                     style={{
                       padding: '8px 16px',
-                      background: '#e6f4ea',
-                      color: '#137333',
-                      border: '1px solid #ceead6',
+                      background: '#eff6ff',
+                      color: '#1a73e8',
+                      border: '1px solid #bfdbfe',
                       borderRadius: '6px',
                       fontSize: '0.8rem',
                       fontWeight: '700',
@@ -1839,7 +1839,7 @@ export const HRPage = () => {
                       gap: '6px'
                     }}
                   >
-                    <CheckCircle2 size={15} /> ⚡ Mark All Active Present
+                    <CheckCircle2 size={15} /> Mark All Active Present
                   </button>
 
                   <button
@@ -1914,7 +1914,7 @@ export const HRPage = () => {
                                       padding: '4px 10px',
                                       borderRadius: '4px',
                                       border: 'none',
-                                      background: status === 'present' ? '#137333' : 'transparent',
+                                      background: status === 'present' ? '#1a73e8' : 'transparent',
                                       color: status === 'present' ? '#ffffff' : '#334155',
                                       fontSize: '0.72rem',
                                       fontWeight: '700',
@@ -1930,7 +1930,7 @@ export const HRPage = () => {
                                       padding: '4px 10px',
                                       borderRadius: '4px',
                                       border: 'none',
-                                      background: status === 'late' ? '#b06000' : 'transparent',
+                                      background: status === 'late' ? '#475569' : 'transparent',
                                       color: status === 'late' ? '#ffffff' : '#334155',
                                       fontSize: '0.72rem',
                                       fontWeight: '700',
@@ -1946,7 +1946,7 @@ export const HRPage = () => {
                                       padding: '4px 10px',
                                       borderRadius: '4px',
                                       border: 'none',
-                                      background: status === 'half_day' ? '#8b5cf6' : 'transparent',
+                                      background: status === 'half_day' ? '#2563eb' : 'transparent',
                                       color: status === 'half_day' ? '#ffffff' : '#334155',
                                       fontSize: '0.72rem',
                                       fontWeight: '700',
@@ -1962,7 +1962,7 @@ export const HRPage = () => {
                                       padding: '4px 10px',
                                       borderRadius: '4px',
                                       border: 'none',
-                                      background: status === 'absent' ? '#c5221f' : 'transparent',
+                                      background: status === 'absent' ? '#0f172a' : 'transparent',
                                       color: status === 'absent' ? '#ffffff' : '#334155',
                                       fontSize: '0.72rem',
                                       fontWeight: '700',
@@ -2031,7 +2031,7 @@ export const HRPage = () => {
             <div>
               {allAttendanceLogs.length === 0 ? (
                 <div className="g-card" style={{ padding: '32px 20px', textAlign: 'center' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e6f4ea', color: '#137333', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                     <Clock size={24} />
                   </div>
                   <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
@@ -2044,7 +2044,7 @@ export const HRPage = () => {
                     type="button"
                     onClick={() => setAttendanceViewMode('roster')}
                     style={{
-                      background: '#137333',
+                      background: '#1a73e8',
                       color: '#ffffff',
                       padding: '8px 18px',
                       borderRadius: '6px',
@@ -2119,7 +2119,7 @@ export const HRPage = () => {
                 <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', margin: 0 }}>
                   Centralized Staff Leave Administration & Quotas
                 </h3>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: '#fef3c7', color: '#92400e', fontWeight: '800' }}>
+                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#334155', fontWeight: '800' }}>
                   HR CENTRALIZED ONLY
                 </span>
               </div>
@@ -2132,7 +2132,7 @@ export const HRPage = () => {
               type="button"
               onClick={() => setIsLeaveModalOpen(true)}
               style={{
-                background: '#b06000',
+                background: '#475569',
                 color: '#ffffff',
                 padding: '8px 18px',
                 borderRadius: '6px',
@@ -2152,8 +2152,8 @@ export const HRPage = () => {
 
           {/* STAFF ON LEAVE TODAY BANNER */}
           <div style={{
-            background: staffOnLeaveTodayList.length > 0 ? '#fffbeb' : '#f0fdf4',
-            border: `1px solid ${staffOnLeaveTodayList.length > 0 ? '#fde68a' : '#bbf7d0'}`,
+            background: staffOnLeaveTodayList.length > 0 ? '#f8fafc' : '#eff6ff',
+            border: `1px solid ${staffOnLeaveTodayList.length > 0 ? '#cbd5e1' : '#dbeafe'}`,
             borderRadius: '10px',
             padding: '12px 16px',
             display: 'flex',
@@ -2167,8 +2167,8 @@ export const HRPage = () => {
                 width: '38px',
                 height: '38px',
                 borderRadius: '50%',
-                background: staffOnLeaveTodayList.length > 0 ? '#fef3c7' : '#dcfce7',
-                color: staffOnLeaveTodayList.length > 0 ? '#b45309' : '#15803d',
+                background: staffOnLeaveTodayList.length > 0 ? '#f1f5f9' : '#eff6ff',
+                color: staffOnLeaveTodayList.length > 0 ? '#334155' : '#1e40af',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -2177,12 +2177,12 @@ export const HRPage = () => {
                 <Calendar size={18} />
               </div>
               <div>
-                <strong style={{ fontSize: '0.9rem', color: staffOnLeaveTodayList.length > 0 ? '#92400e' : '#166534', display: 'block' }}>
+                <strong style={{ fontSize: '0.9rem', color: staffOnLeaveTodayList.length > 0 ? '#334155' : '#1e40af', display: 'block' }}>
                   {staffOnLeaveTodayList.length > 0
                     ? `Staff Currently On Approved Leave Today (${staffOnLeaveTodayList.length} Absent)`
                     : 'Full Workforce Available: 0 Staff On Leave Today'}
                 </strong>
-                <span style={{ fontSize: '0.74rem', color: staffOnLeaveTodayList.length > 0 ? '#b45309' : '#15803d' }}>
+                <span style={{ fontSize: '0.74rem', color: staffOnLeaveTodayList.length > 0 ? '#334155' : '#1e40af' }}>
                   {staffOnLeaveTodayList.length > 0
                     ? 'The following staff members have approved leave covering today\'s site/office shift:'
                     : 'All on-roll employees are scheduled for duty with no approved absences.'}
@@ -2197,7 +2197,7 @@ export const HRPage = () => {
                     key={lv.id || lv._id}
                     style={{
                       background: '#ffffff',
-                      border: '1px solid #fde68a',
+                      border: '1px solid #cbd5e1',
                       borderRadius: '6px',
                       padding: '4px 10px',
                       fontSize: '0.75rem',
@@ -2235,7 +2235,7 @@ export const HRPage = () => {
                   boxShadow: leaveSubView === 'matrix' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
                 }}
               >
-                📊 Staff Leave Quota & Balances Matrix ({employees.length})
+                Staff Leave Quota & Balances Matrix ({employees.length})
               </button>
               <button
                 type="button"
@@ -2252,7 +2252,7 @@ export const HRPage = () => {
                   boxShadow: leaveSubView === 'applications' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
                 }}
               >
-                📋 Leave Applications & Approvals Ledger ({allLeaveRequests.length})
+                Leave Applications & Approvals Ledger ({allLeaveRequests.length})
               </button>
             </div>
 
@@ -2352,7 +2352,7 @@ export const HRPage = () => {
                               {/* Sick Leave */}
                               <td>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#b45309' }}>{slLeft}</span>
+                                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#334155' }}>{slLeft}</span>
                                   <span style={{ fontSize: '0.72rem', color: '#64748b' }}>/ {slTotal} left</span>
                                 </div>
                                 <span style={{ fontSize: '0.66rem', color: '#64748b' }}>{slUsed} days used</span>
@@ -2360,18 +2360,18 @@ export const HRPage = () => {
                               {/* Earned Leave */}
                               <td>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#047857' }}>{elLeft}</span>
+                                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e40af' }}>{elLeft}</span>
                                   <span style={{ fontSize: '0.72rem', color: '#64748b' }}>/ {elTotal} left</span>
                                 </div>
                                 <span style={{ fontSize: '0.66rem', color: '#64748b' }}>{elUsed} days used</span>
                               </td>
                               {/* LWP */}
                               <td>
-                                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: lwpUsed > 0 ? '#dc2626' : '#64748b' }}>
+                                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: lwpUsed > 0 ? '#0f172a' : '#64748b' }}>
                                   {lwpUsed} <span style={{ fontSize: '0.72rem', fontWeight: '500' }}>days</span>
                                 </div>
                                 {lwpUsed > 0 && (
-                                  <span style={{ fontSize: '0.64rem', color: '#dc2626', fontWeight: '700' }}>Salary Deducted</span>
+                                  <span style={{ fontSize: '0.64rem', color: '#0f172a', fontWeight: '700' }}>Salary Deducted</span>
                                 )}
                               </td>
                               <td>
@@ -2386,9 +2386,9 @@ export const HRPage = () => {
                                     }}
                                     style={{
                                       padding: '4px 9px',
-                                      background: '#fef3c7',
-                                      border: '1px solid #fde68a',
-                                      color: '#92400e',
+                                      background: '#f1f5f9',
+                                      border: '1px solid #cbd5e1',
+                                      color: '#334155',
                                       borderRadius: '4px',
                                       fontSize: '0.72rem',
                                       fontWeight: '700',
@@ -2450,7 +2450,7 @@ export const HRPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {filteredLeaveRequests.length === 0 ? (
                 <div className="g-card" style={{ padding: '36px 20px', textAlign: 'center' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fef7e0', color: '#b06000', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f8fafc', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                     <Calendar size={24} />
                   </div>
                   <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
@@ -2463,7 +2463,7 @@ export const HRPage = () => {
                     type="button"
                     onClick={() => setIsLeaveModalOpen(true)}
                     style={{
-                      background: '#b06000',
+                      background: '#475569',
                       color: '#ffffff',
                       padding: '8px 18px',
                       borderRadius: '6px',
@@ -2513,7 +2513,7 @@ export const HRPage = () => {
                               <div style={{ fontWeight: '600', color: '#111827' }}>
                                 {new Date(lv.fromDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })} → {new Date(lv.toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                               </div>
-                              <div style={{ fontSize: '0.75rem', color: '#b06000', fontWeight: '700' }}>
+                              <div style={{ fontSize: '0.75rem', color: '#475569', fontWeight: '700' }}>
                                 {lv.numberOfDays} Day{lv.numberOfDays > 1 ? 's' : ''}
                               </div>
                             </td>
@@ -2534,9 +2534,9 @@ export const HRPage = () => {
                                       onClick={() => handleUpdateLeaveStatus(lv.employeeId, lv.id || lv._id, 'approved')}
                                       style={{
                                         padding: '4px 10px',
-                                        background: '#e6f4ea',
-                                        border: '1px solid #ceead6',
-                                        color: '#137333',
+                                        background: '#eff6ff',
+                                        border: '1px solid #bfdbfe',
+                                        color: '#1a73e8',
                                         borderRadius: '4px',
                                         fontSize: '0.75rem',
                                         fontWeight: '700',
@@ -2550,9 +2550,9 @@ export const HRPage = () => {
                                       onClick={() => handleUpdateLeaveStatus(lv.employeeId, lv.id || lv._id, 'rejected')}
                                       style={{
                                         padding: '4px 10px',
-                                        background: '#fce8e6',
-                                        border: '1px solid #fad2cf',
-                                        color: '#c5221f',
+                                        background: '#f1f5f9',
+                                        border: '1px solid #cbd5e1',
+                                        color: '#0f172a',
                                         borderRadius: '4px',
                                         fontSize: '0.75rem',
                                         fontWeight: '700',
@@ -2563,8 +2563,8 @@ export const HRPage = () => {
                                     </button>
                                   </>
                                 ) : (
-                                  <span style={{ color: lv.status === 'approved' ? '#137333' : '#c5221f', fontWeight: '700', fontSize: '0.75rem' }}>
-                                    {lv.status === 'approved' ? '✓ Approved' : '✕ Rejected'}
+                                  <span style={{ color: lv.status === 'approved' ? '#1a73e8' : '#0f172a', fontWeight: '700', fontSize: '0.75rem' }}>
+                                    {lv.status === 'approved' ? 'Approved' : 'Rejected'}
                                   </span>
                                 )}
                                 <button
@@ -2573,9 +2573,9 @@ export const HRPage = () => {
                                   onClick={() => handleDeleteLeave(lv.employeeId, lv.id || lv._id)}
                                   style={{
                                     padding: '4px 6px',
-                                    background: '#fef2f2',
-                                    border: '1px solid #fecaca',
-                                    color: '#dc2626',
+                                    background: '#f1f5f9',
+                                    border: '1px solid #e2e8f0',
+                                    color: '#0f172a',
                                     borderRadius: '4px',
                                     fontSize: '0.75rem',
                                     fontWeight: '700',
@@ -2678,7 +2678,7 @@ export const HRPage = () => {
               <select
                 value={payrollStatusFilter}
                 onChange={(e) => setPayrollStatusFilter(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', borderColor: payrollStatusFilter ? '#137333' : '#dadce0', fontWeight: payrollStatusFilter ? '700' : 'normal' }}
+                style={{ width: '100%', fontSize: '0.82rem', borderColor: payrollStatusFilter ? '#1a73e8' : '#dadce0', fontWeight: payrollStatusFilter ? '700' : 'normal' }}
               >
                 <option value="">All Statuses</option>
                 <option value="processed">Processed (Unpaid)</option>
@@ -2696,10 +2696,10 @@ export const HRPage = () => {
                 }}
                 style={{
                   padding: '7px 12px',
-                  background: '#fef2f2',
-                  color: '#ba1a1a',
+                  background: '#f1f5f9',
+                  color: '#0f172a',
                   borderRadius: '6px',
-                  border: '1px solid #fecaca',
+                  border: '1px solid #e2e8f0',
                   fontSize: '0.76rem',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -2714,7 +2714,7 @@ export const HRPage = () => {
 
           {filteredPayrollRecords.length === 0 ? (
             <div className="g-card" style={{ padding: '32px 20px', textAlign: 'center' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f3e8ff', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <DollarSign size={24} />
               </div>
               <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
@@ -2781,10 +2781,10 @@ export const HRPage = () => {
                         <td style={{ fontWeight: '700', color: '#111827' }}>
                           {formatINR(pay.basicSalary)}
                         </td>
-                        <td style={{ color: '#137333', fontWeight: '700', fontSize: '0.78rem' }}>
+                        <td style={{ color: '#1a73e8', fontWeight: '700', fontSize: '0.78rem' }}>
                           +{formatINR(pay.allowances)}
                         </td>
-                        <td style={{ color: '#c5221f', fontWeight: '700', fontSize: '0.78rem' }}>
+                        <td style={{ color: '#0f172a', fontWeight: '700', fontSize: '0.78rem' }}>
                           -{formatINR((pay.deductions || 0) + (pay.unpaidLeaveDeduction || 0))}
                         </td>
                         <td>
@@ -2842,7 +2842,7 @@ export const HRPage = () => {
                                   }}
                                   style={{
                                     padding: '5px 12px',
-                                    background: '#137333',
+                                    background: '#1a73e8',
                                     color: '#ffffff',
                                     border: 'none',
                                     borderRadius: '5px',
@@ -2859,8 +2859,8 @@ export const HRPage = () => {
                                   <DollarSign size={13} /> Disburse
                                 </button>
                               ) : (
-                                <span style={{ color: '#137333', fontWeight: '700', fontSize: '0.74rem' }}>
-                                  ✓ Disbursed
+                                <span style={{ color: '#1a73e8', fontWeight: '700', fontSize: '0.74rem' }}>
+                                  Disbursed
                                 </span>
                               )}
                             </div>
@@ -3113,7 +3113,7 @@ export const HRPage = () => {
             </button>
             <button
               type="submit"
-              style={{ padding: '8px 18px', background: '#137333', color: '#ffffff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '700' }}
+              style={{ padding: '8px 18px', background: '#1a73e8', color: '#ffffff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '700' }}
             >
               {editingRole ? 'Update Role' : 'Create Role'}
             </button>
@@ -3223,7 +3223,7 @@ export const HRPage = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  ✕ Close
+                  Close
                 </button>
               </div>
             </div>
@@ -3258,7 +3258,7 @@ export const HRPage = () => {
                       maxWidth: '480px'
                     }}
                   >
-                    <CheckCircle size={40} color="#16a34a" />
+                    <CheckCircle size={40} color="#1a73e8" />
                     <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '1rem' }}>
                       Payment Slip Recorded in System
                     </div>

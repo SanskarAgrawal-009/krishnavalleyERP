@@ -37,7 +37,7 @@ async function syncAllLedgers() {
       }
     }
 
-    console.log('✅ All rental ledgers synced in MongoDB Atlas!');
+    console.log('All rental ledgers synced in MongoDB Atlas!');
     process.exit(0);
   } catch (err) {
     console.error('Error syncing:', err);

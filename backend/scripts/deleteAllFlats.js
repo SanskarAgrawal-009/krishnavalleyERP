@@ -28,7 +28,7 @@ async function deleteAllFlatsData() {
     
     // 1. Delete all Flats
     const flatDeleteRes = await Flat.deleteMany({});
-    console.log(`✓ Deleted all Flats: ${flatDeleteRes.deletedCount} units removed`);
+    console.log(`Deleted all Flats: ${flatDeleteRes.deletedCount} units removed`);
 
     // 2. Clear flats array in all Projects and Buildings
     const projects = await Project.find({});
@@ -48,15 +48,15 @@ async function deleteAllFlatsData() {
         updatedProjectsCount++;
       }
     }
-    console.log(`✓ Cleared flats references across ${updatedProjectsCount} projects/buildings`);
+    console.log(`Cleared flats references across ${updatedProjectsCount} projects/buildings`);
 
     // 3. Clear Rental Management contracts
     const rentalDeleteRes = await RentalManagement.deleteMany({});
-    console.log(`✓ Deleted all Rental Contracts: ${rentalDeleteRes.deletedCount} contracts removed`);
+    console.log(`Deleted all Rental Contracts: ${rentalDeleteRes.deletedCount} contracts removed`);
 
     // 4. Clear Sales Leads / Allotments
     const salesDeleteRes = await SalesLead.deleteMany({});
-    console.log(`✓ Deleted all Sales Allotments: ${salesDeleteRes.deletedCount} records removed`);
+    console.log(`Deleted all Sales Allotments: ${salesDeleteRes.deletedCount} records removed`);
 
     // 5. Clean Customer property references
     const custRes = await Customer.updateMany(
@@ -71,7 +71,7 @@ async function deleteAllFlatsData() {
         }
       }
     );
-    console.log(`✓ Cleaned property links from ${custRes.modifiedCount} customer records`);
+    console.log(`Cleaned property links from ${custRes.modifiedCount} customer records`);
 
     // 6. Delete legacy import CRM leads
     const leadRes = await Lead.deleteMany({
@@ -80,7 +80,7 @@ async function deleteAllFlatsData() {
         { leadSource: 'Legacy Inventory Import' }
       ]
     });
-    console.log(`✓ Deleted ${leadRes.deletedCount} legacy import leads`);
+    console.log(`Deleted ${leadRes.deletedCount} legacy import leads`);
 
     console.log('\n--- VERIFYING CLEAN STATE ---');
     const remainingFlats = await Flat.countDocuments();
@@ -91,7 +91,7 @@ async function deleteAllFlatsData() {
     console.log(`Remaining Rental Contracts: ${remainingRentals}`);
     console.log(`Remaining Sales Records: ${remainingSales}`);
 
-    console.log('\n✅ All flats data has been completely wiped and inventory is ready for fresh Excel import!\n');
+    console.log('\nAll flats data has been completely wiped and inventory is ready for fresh Excel import!\n');
     process.exit(0);
   } catch (err) {
     console.error('Error removing flats data:', err);

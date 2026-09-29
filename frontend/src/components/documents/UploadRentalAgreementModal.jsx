@@ -109,10 +109,10 @@ export const UploadRentalAgreementModal = ({ isOpen, onClose, onUpload, onSubmit
             alignItems: 'center',
             gap: '8px',
             padding: '10px 14px',
-            background: '#fee2e2',
-            border: '1px solid #f87171',
+            background: '#f1f5f9',
+            border: '1px solid #cbd5e1',
             borderRadius: '6px',
-            color: '#b91c1c',
+            color: '#0f172a',
             fontSize: '0.82rem'
           }}>
             <AlertCircle size={16} />
@@ -211,12 +211,12 @@ export const UploadRentalAgreementModal = ({ isOpen, onClose, onUpload, onSubmit
               justifyContent: 'center',
               gap: '8px',
               padding: '24px 16px',
-              background: file ? '#f0fdf4' : '#f9fafb',
-              border: `2px dashed ${file ? '#22c55e' : '#d1d5db'}`,
+              background: file ? '#eff6ff' : '#f9fafb',
+              border: `2px dashed ${file ? '#2563eb' : '#d1d5db'}`,
               borderRadius: '8px',
               fontSize: '0.84rem',
               cursor: uploading ? 'not-allowed' : 'pointer',
-              color: file ? '#15803d' : '#4b5563',
+              color: file ? '#1e40af' : '#4b5563',
               fontWeight: '500',
               transition: 'all 0.2s ease',
               textAlign: 'center'
@@ -224,8 +224,8 @@ export const UploadRentalAgreementModal = ({ isOpen, onClose, onUpload, onSubmit
           >
             {file ? (
               <>
-                <CheckCircle2 size={26} color="#16a34a" />
-                <div style={{ fontWeight: '700', color: '#16a34a', wordBreak: 'break-all' }}>
+                <CheckCircle2 size={26} color="#1a73e8" />
+                <div style={{ fontWeight: '700', color: '#1a73e8', wordBreak: 'break-all' }}>
                   {file.name}
                 </div>
                 <div style={{ fontSize: '0.74rem', color: '#4b5563' }}>
@@ -284,7 +284,7 @@ export const UploadRentalAgreementModal = ({ isOpen, onClose, onUpload, onSubmit
             disabled={uploading || !file || !selectedFlatId}
             style={{
               padding: '9px 22px',
-              background: uploading || !file || !selectedFlatId ? '#9ca3af' : 'linear-gradient(135deg, #10b981, #059669)',
+              background: uploading || !file || !selectedFlatId ? '#9ca3af' : 'linear-gradient(135deg, #1a73e8, #1e40af)',
               color: '#ffffff',
               fontWeight: '700',
               borderRadius: '6px',

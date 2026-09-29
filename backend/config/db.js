@@ -26,7 +26,7 @@ export const connectDB = async () => {
   let mongoUri = process.env.MONGO_URI;
 
   if (!mongoUri) {
-    console.error('❌ [Database Error] MONGO_URI is missing from .env');
+    console.error('[Database Error] MONGO_URI is missing from .env');
     return;
   }
 
@@ -41,14 +41,14 @@ export const connectDB = async () => {
     }
 
     const maskedUri = mongoUri.replace(/:([^@]+)@/, ':*****@');
-    console.log(`📡 [Database] Connecting to MongoDB: ${maskedUri}`);
+    console.log(`[Database] Connecting to MongoDB: ${maskedUri}`);
 
     await mongoose.connect(mongoUri);
-    console.log(`✅ [Database] Connected to MongoDB Atlas! Database: "${mongoose.connection.name}" on host: ${mongoose.connection.host}`);
+    console.log(`[Database] Connected to MongoDB Atlas! Database: "${mongoose.connection.name}" on host: ${mongoose.connection.host}`);
   } catch (error) {
-    console.error(`❌ [Database Connection Failed] ${error.message}`);
+    console.error(`[Database Connection Failed] ${error.message}`);
     if (error.message.includes('bad auth')) {
-      console.error('\n⚠️ [Authentication Failed Diagnosis]');
+      console.error('\n[Authentication Failed Diagnosis]');
       console.error('1. In MongoDB Atlas, go to "Security" -> "Database Access".');
       console.error('2. Ensure user "krishnavalleytech_db_user" exists with "Read and write to any database" role.');
       console.error('3. Reset the password in Atlas and put the same password into backend/.env.\n');
@@ -57,13 +57,13 @@ export const connectDB = async () => {
 };
 
 mongoose.connection.on('connected', () => {
-  console.log('✅ [Database Event] Mongoose connected.');
+  console.log('[Database Event] Mongoose connected.');
 });
 
 mongoose.connection.on('error', (err) => {
-  console.error('❌ [Database Event] Mongoose error:', err.message);
+  console.error('[Database Event] Mongoose error:', err.message);
 });
 
 mongoose.connection.on('disconnected', () => {
-  console.warn('⚠️ [Database Event] Mongoose disconnected.');
+  console.warn('[Database Event] Mongoose disconnected.');
 });

@@ -374,7 +374,7 @@ export const createGoodsReceipt = async (req, res) => {
 
     const savedGrn = await grn.save();
 
-    // ⚡ ATOMIC STOCK INCREMENT FOR STORE
+    // ATOMIC STOCK INCREMENT FOR STORE
     for (const item of (items || [])) {
       const recQty = Number(item.receivedQuantity) || 0;
       const rate = Number(item.unitRate) || 0;
@@ -492,7 +492,7 @@ export const createMaterialIssue = async (req, res) => {
         totalValue: itemVal
       });
 
-      // ⚡ ATOMIC STOCK DECREMENT
+      // ATOMIC STOCK DECREMENT
       stockDoc.quantity = Math.max(0, stockDoc.quantity - qty);
       stockDoc.availableQuantity = Math.max(0, stockDoc.quantity - stockDoc.reservedQuantity);
       stockDoc.lastUpdated = new Date();

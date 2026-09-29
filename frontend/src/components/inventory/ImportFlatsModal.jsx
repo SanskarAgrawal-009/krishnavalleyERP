@@ -206,8 +206,8 @@ export const ImportFlatsModal = ({
         
         {/* Template Download Ribbon */}
         <div style={{
-          background: '#f0fdf4',
-          border: '1px solid #bbf7d0',
+          background: '#eff6ff',
+          border: '1px solid #dbeafe',
           borderRadius: '8px',
           padding: '14px 18px',
           display: 'flex',
@@ -217,10 +217,10 @@ export const ImportFlatsModal = ({
           gap: '12px'
         }}>
           <div>
-            <div style={{ fontWeight: '700', fontSize: '0.88rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ fontWeight: '700', fontSize: '0.88rem', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FileSpreadsheet size={16} /> Flats Inventory Form-Only Template
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#15803d', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#1e40af', marginTop: '2px' }}>
               Columns strictly match the Flat form data: Flat Number, Floor, BHK Type, Carpet Area, Base Price, Facing, Status.
             </div>
           </div>
@@ -230,7 +230,7 @@ export const ImportFlatsModal = ({
             style={{
               padding: '7px 14px',
               borderRadius: '6px',
-              background: '#16a34a',
+              background: '#1a73e8',
               color: '#ffffff',
               border: 'none',
               fontWeight: '700',
@@ -289,7 +289,7 @@ export const ImportFlatsModal = ({
                 justifyContent: 'space-between'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <FileSpreadsheet size={24} color="#16a34a" />
+                  <FileSpreadsheet size={24} color="#1a73e8" />
                   <div>
                     <div style={{ fontWeight: '700', fontSize: '0.86rem', color: '#0f172a' }}>{fileName}</div>
                     <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
@@ -303,9 +303,9 @@ export const ImportFlatsModal = ({
                   style={{
                     padding: '6px 10px',
                     borderRadius: '6px',
-                    background: '#fee2e2',
-                    border: '1px solid #fca5a5',
-                    color: '#991b1b',
+                    background: '#f1f5f9',
+                    border: '1px solid #cbd5e1',
+                    color: '#0f172a',
                     fontSize: '0.78rem',
                     fontWeight: '600',
                     cursor: 'pointer',
@@ -324,11 +324,11 @@ export const ImportFlatsModal = ({
         {/* Error Alert */}
         {errorMsg && (
           <div style={{
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
+            background: '#f1f5f9',
+            border: '1px solid #e2e8f0',
             borderRadius: '8px',
             padding: '12px 14px',
-            color: '#991b1b',
+            color: '#0f172a',
             fontSize: '0.82rem',
             display: 'flex',
             alignItems: 'center',
@@ -341,17 +341,17 @@ export const ImportFlatsModal = ({
         {/* Success Alert */}
         {successResult && (
           <div style={{
-            background: '#f0fdf4',
-            border: '1px solid #bbf7d0',
+            background: '#eff6ff',
+            border: '1px solid #dbeafe',
             borderRadius: '8px',
             padding: '16px 20px',
             textAlign: 'center'
           }}>
-            <CheckCircle2 size={36} color="#16a34a" style={{ margin: '0 auto 8px', display: 'block' }} />
-            <div style={{ fontWeight: '800', fontSize: '1.05rem', color: '#166534' }}>
+            <CheckCircle2 size={36} color="#1a73e8" style={{ margin: '0 auto 8px', display: 'block' }} />
+            <div style={{ fontWeight: '800', fontSize: '1.05rem', color: '#1e40af' }}>
               Flats Imported Successfully!
             </div>
-            <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '6px' }}>
+            <div style={{ fontSize: '0.82rem', color: '#1e40af', marginTop: '6px' }}>
               Created: <strong>{successResult.createdCount}</strong> new flat(s) • Updated: <strong>{successResult.updatedCount}</strong> flat(s)
             </div>
             <div style={{ marginTop: '14px' }}>
@@ -397,7 +397,7 @@ export const ImportFlatsModal = ({
                   {parsedRows.map((r, idx) => (
                     <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', background: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
                       <td style={{ padding: '8px 12px', color: '#94a3b8' }}>{r.rowIdx}</td>
-                      <td style={{ padding: '8px 12px', fontWeight: '700', color: r.isValid ? '#0f172a' : '#ef4444' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: '700', color: r.isValid ? '#0f172a' : '#0f172a' }}>
                         {r.flatNumber || 'Missing!'}
                       </td>
                       <td style={{ padding: '8px 12px', color: '#475569' }}>
@@ -405,7 +405,7 @@ export const ImportFlatsModal = ({
                       </td>
                       <td style={{ padding: '8px 12px', color: '#475569' }}>{r.bhkType}</td>
                       <td style={{ padding: '8px 12px', color: '#475569' }}>{r.carpetArea}</td>
-                      <td style={{ padding: '8px 12px', fontWeight: '600', color: '#15803d' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: '600', color: '#1e40af' }}>
                         ₹{Number(r.basePrice || 0).toLocaleString('en-IN')}
                       </td>
                       <td style={{ padding: '8px 12px', color: '#475569' }}>{r.facing}</td>
@@ -415,8 +415,8 @@ export const ImportFlatsModal = ({
                           borderRadius: '4px',
                           fontSize: '0.7rem',
                           fontWeight: '700',
-                          background: r.status === 'available' ? '#e6f4ea' : '#fef3c7',
-                          color: r.status === 'available' ? '#137333' : '#b45309',
+                          background: r.status === 'available' ? '#eff6ff' : '#f1f5f9',
+                          color: r.status === 'available' ? '#1a73e8' : '#334155',
                           textTransform: 'uppercase'
                         }}>
                           {r.status}
@@ -456,7 +456,7 @@ export const ImportFlatsModal = ({
               loadingText="Importing Flats..."
               disabled={parsedRows.length === 0}
               variant="primary"
-              style={{ background: '#16a34a' }}
+              style={{ background: '#1a73e8' }}
             >
               Import {parsedRows.length} Flats into {buildingName}
             </LoadingButton>

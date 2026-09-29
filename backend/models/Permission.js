@@ -33,6 +33,7 @@ const PermissionSchema = new mongoose.Schema(
         'Reports',
         'AccessControl',
         'Settings',
+        'Taskforce',
       ],
       index: true,
     },

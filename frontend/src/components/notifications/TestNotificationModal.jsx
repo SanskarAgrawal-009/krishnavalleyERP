@@ -148,9 +148,9 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
                 style={{
                   padding: '8px 4px',
                   borderRadius: 'var(--radius-sm)',
-                  border: channel === 'whatsapp' ? '1px solid #25d366' : '1px solid var(--border-subtle)',
+                  border: channel === 'whatsapp' ? '1px solid #0f172a' : '1px solid var(--border-subtle)',
                   background: channel === 'whatsapp' ? 'rgba(37, 211, 102, 0.15)' : 'var(--bg-card)',
-                  color: channel === 'whatsapp' ? '#25d366' : 'var(--text-secondary)',
+                  color: channel === 'whatsapp' ? '#0f172a' : 'var(--text-secondary)',
                   fontSize: '0.75rem',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -190,9 +190,9 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
                 style={{
                   padding: '8px 4px',
                   borderRadius: 'var(--radius-sm)',
-                  border: channel === 'email' ? '1px solid #f59e0b' : '1px solid var(--border-subtle)',
+                  border: channel === 'email' ? '1px solid #475569' : '1px solid var(--border-subtle)',
                   background: channel === 'email' ? 'rgba(245, 158, 11, 0.15)' : 'var(--bg-card)',
-                  color: channel === 'email' ? '#fbbf24' : 'var(--text-secondary)',
+                  color: channel === 'email' ? '#cbd5e1' : 'var(--text-secondary)',
                   fontSize: '0.75rem',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -211,9 +211,9 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
                 style={{
                   padding: '8px 4px',
                   borderRadius: 'var(--radius-sm)',
-                  border: channel === 'push' ? '1px solid #ec4899' : '1px solid var(--border-subtle)',
+                  border: channel === 'push' ? '1px solid #1e40af' : '1px solid var(--border-subtle)',
                   background: channel === 'push' ? 'rgba(236, 72, 153, 0.15)' : 'var(--bg-card)',
-                  color: channel === 'push' ? '#f472b6' : 'var(--text-secondary)',
+                  color: channel === 'push' ? '#60a5fa' : 'var(--text-secondary)',
                   fontSize: '0.75rem',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -305,14 +305,14 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
           {result && (
             <div style={{
               background: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid #10b981',
+              border: '1px solid #1a73e8',
               borderRadius: 'var(--radius-md)',
               padding: '12px 14px',
               display: 'flex',
               flexDirection: 'column',
               gap: '6px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontWeight: '700', fontSize: '0.82rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a73e8', fontWeight: '700', fontSize: '0.82rem' }}>
                 <CheckCircle size={16} />
                 {result.message}
               </div>
@@ -324,14 +324,14 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
 
           {error && (
             <div style={{
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid #ef4444',
+              background: '#f1f5f9',
+              border: '1px solid #cbd5e1',
               borderRadius: 'var(--radius-md)',
               padding: '12px 14px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              color: '#f87171',
+              color: '#0f172a',
               fontSize: '0.82rem'
             }}>
               <AlertCircle size={16} />

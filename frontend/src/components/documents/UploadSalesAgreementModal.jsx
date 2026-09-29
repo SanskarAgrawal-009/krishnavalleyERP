@@ -134,7 +134,7 @@ export const UploadSalesAgreementModal = ({ isOpen, onClose, onUpload, onSubmit 
               borderRadius: '6px',
               fontSize: '0.82rem',
               cursor: 'pointer',
-              color: file ? '#10b981' : '#4b5563',
+              color: file ? '#1a73e8' : '#4b5563',
               fontWeight: '500'
             }}
           >

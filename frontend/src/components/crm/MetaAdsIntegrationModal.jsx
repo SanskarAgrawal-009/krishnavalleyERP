@@ -127,7 +127,7 @@ export const MetaAdsIntegrationModal = ({
         : 'Sales Team';
 
       setSuccessMessage(
-        `🎉 Test Meta Lead "${testLead.name}" ingested successfully! Auto-assigned to @${assignedRep} via 1-by-1 Round-Robin.`
+        `Test Meta Lead "${testLead.name}" ingested successfully! Auto-assigned to @${assignedRep} via 1-by-1 Round-Robin.`
       );
 
       if (onLeadIngested) onLeadIngested();
@@ -168,7 +168,7 @@ export const MetaAdsIntegrationModal = ({
             }}
           >
             <Play size={13} />
-            ⚡ Test Meta Lead Ingestion
+            Test Meta Lead Ingestion
           </button>
 
           <button
@@ -188,8 +188,7 @@ export const MetaAdsIntegrationModal = ({
               gap: '6px',
             }}
           >
-            <Settings size={13} />
-            ⚙️ Webhook & API Credentials
+            <Settings size={13} />Webhook & API Credentials
           </button>
         </div>
 
@@ -197,10 +196,10 @@ export const MetaAdsIntegrationModal = ({
         {successMessage && (
           <div style={{
             padding: '10px 14px',
-            background: '#dcfce7',
-            border: '1px solid #86efac',
+            background: '#eff6ff',
+            border: '1px solid #bfdbfe',
             borderRadius: '8px',
-            color: '#15803d',
+            color: '#1e40af',
             fontSize: '0.82rem',
             fontWeight: '600',
             display: 'flex',
@@ -215,10 +214,10 @@ export const MetaAdsIntegrationModal = ({
         {errorMessage && (
           <div style={{
             padding: '10px 14px',
-            background: '#fee2e2',
-            border: '1px solid #fca5a5',
+            background: '#f1f5f9',
+            border: '1px solid #cbd5e1',
             borderRadius: '8px',
-            color: '#b91c1c',
+            color: '#0f172a',
             fontSize: '0.82rem',
             fontWeight: '600',
             display: 'flex',
@@ -241,7 +240,7 @@ export const MetaAdsIntegrationModal = ({
               fontSize: '0.8rem',
               color: '#1e40af',
             }}>
-              <strong>⚡ Live Meta Ad Simulator:</strong> Simulate an instant form lead coming from your active Facebook or Instagram advertisement. The lead will be captured with all client location data and custom form questions, and automatically assigned to the sales team one-by-one via Round-Robin!
+              <strong>Live Meta Ad Simulator:</strong> Simulate an instant form lead coming from your active Facebook or Instagram advertisement. The lead will be captured with all client location data and custom form questions, and automatically assigned to the sales team one-by-one via Round-Robin!
             </div>
 
             {/* Section 1: Standard Client Fields */}
@@ -382,7 +381,7 @@ export const MetaAdsIntegrationModal = ({
                 style={{ padding: '8px 20px', display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 <Send size={14} />
-                {ingestingTest ? 'Ingesting Lead...' : '🚀 Ingest Meta Ad Lead Now'}
+                {ingestingTest ? 'Ingesting Lead...' : 'Ingest Meta Ad Lead Now'}
               </button>
             </div>
           </form>
@@ -416,7 +415,7 @@ export const MetaAdsIntegrationModal = ({
                     onClick={() => handleCopy(webhookUrl, 'url')}
                     style={{ padding: '7px 12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', fontWeight: '700' }}
                   >
-                    {copiedKey === 'url' ? <Check size={13} color="#16a34a" /> : <Copy size={13} />}
+                    {copiedKey === 'url' ? <Check size={13} color="#1a73e8" /> : <Copy size={13} />}
                     {copiedKey === 'url' ? 'Copied' : 'Copy'}
                   </button>
                 </div>
@@ -438,7 +437,7 @@ export const MetaAdsIntegrationModal = ({
                     onClick={() => handleCopy(config.verifyToken, 'token')}
                     style={{ padding: '7px 12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', fontWeight: '700' }}
                   >
-                    {copiedKey === 'token' ? <Check size={13} color="#16a34a" /> : <Copy size={13} />}
+                    {copiedKey === 'token' ? <Check size={13} color="#1a73e8" /> : <Copy size={13} />}
                     {copiedKey === 'token' ? 'Copied' : 'Copy'}
                   </button>
                 </div>

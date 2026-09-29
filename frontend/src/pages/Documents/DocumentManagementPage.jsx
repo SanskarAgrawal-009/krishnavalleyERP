@@ -206,7 +206,7 @@ export const DocumentManagementPage = () => {
               type="button"
               onClick={() => setIsRentalModalOpen(true)}
               className="btn-primary"
-              style={{ padding: '10px 18px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#10b981' }}
+              style={{ padding: '10px 18px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#1a73e8' }}
             >
               <Plus size={16} /> Upload Rental Lease
             </button>
@@ -217,7 +217,7 @@ export const DocumentManagementPage = () => {
               type="button"
               onClick={() => setIsBlueprintModalOpen(true)}
               className="btn-primary"
-              style={{ padding: '10px 18px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#059669' }}
+              style={{ padding: '10px 18px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#1e40af' }}
             >
               <Plus size={16} /> Upload Floor Blueprint
             </button>
@@ -239,7 +239,7 @@ export const DocumentManagementPage = () => {
               type="button"
               onClick={() => openSignModal(null)}
               className="btn-primary"
-              style={{ padding: '10px 18px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#8b5cf6' }}
+              style={{ padding: '10px 18px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#2563eb' }}
             >
               <Award size={16} /> New E-Signature Certificate
             </button>
@@ -276,11 +276,11 @@ export const DocumentManagementPage = () => {
         <div className="stat-card" onClick={() => handleTabChange('rental')} style={{ cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENTAL & LEASES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
               <Repeat size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
             {counts.rentalAgreements || (vaultData.rentalAgreements || []).length}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Tenant & Rent-Back Deeds</span>
@@ -289,11 +289,11 @@ export const DocumentManagementPage = () => {
         <div className="stat-card" onClick={() => handleTabChange('blueprints')} style={{ cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>FLOOR BLUEPRINTS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
               <Layers size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
             {counts.blueprints || (vaultData.blueprints || []).length}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Architectural drawings</span>
@@ -302,11 +302,11 @@ export const DocumentManagementPage = () => {
         <div className="stat-card" onClick={() => handleTabChange('legal')} style={{ cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>LEGAL & TITLE DEEDS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#fee2e2', color: '#991b1b' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f1f5f9', color: '#0f172a' }}>
               <ShieldCheck size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#991b1b', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
             {counts.legalDocuments || (vaultData.legalDocuments || []).length}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>RERA, NOCs & Title Deeds</span>
@@ -414,7 +414,7 @@ export const DocumentManagementPage = () => {
                       <td><code style={{ background: '#f3f4f5', padding: '2px 6px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>{doc.agreementNumber}</code></td>
                       <td style={{ color: '#4b5563', fontSize: '0.78rem' }}>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString('en-IN') : 'N/A'}</td>
                       <td>
-                        <span style={{ padding: '3px 8px', borderRadius: '4px', background: doc.signed ? '#e6f4ea' : '#fef7e0', color: doc.signed ? '#137333' : '#b06000', fontWeight: '700', fontSize: '0.74rem' }}>
+                        <span style={{ padding: '3px 8px', borderRadius: '4px', background: doc.signed ? '#eff6ff' : '#f8fafc', color: doc.signed ? '#1a73e8' : '#475569', fontWeight: '700', fontSize: '0.74rem' }}>
                           {doc.signed ? 'DIGITALLY SIGNED' : 'PENDING SIGN'}
                         </span>
                       </td>
@@ -458,7 +458,7 @@ export const DocumentManagementPage = () => {
               type="button"
               onClick={() => setIsRentalModalOpen(true)}
               className="btn-primary"
-              style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#10b981' }}
+              style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#1a73e8' }}
             >
               <Plus size={14} /> Upload Rental Lease
             </button>
@@ -487,7 +487,7 @@ export const DocumentManagementPage = () => {
                         type="button"
                         onClick={() => setIsRentalModalOpen(true)}
                         className="btn-primary"
-                        style={{ marginTop: '12px', padding: '7px 16px', fontSize: '0.8rem', background: '#10b981' }}
+                        style={{ marginTop: '12px', padding: '7px 16px', fontSize: '0.8rem', background: '#1a73e8' }}
                       >
                         + Upload First Rental Agreement
                       </button>
@@ -498,13 +498,13 @@ export const DocumentManagementPage = () => {
                     <tr key={doc.id || Math.random()}>
                       <td style={{ fontWeight: '700', color: '#111827' }}>{doc.tenantName || doc.partyName}</td>
                       <td>
-                        <span style={{ padding: '3px 8px', borderRadius: '4px', background: doc.type?.includes('Rent-Back') ? '#fef3c7' : '#dbeafe', color: doc.type?.includes('Rent-Back') ? '#92400e' : '#1e40af', fontWeight: '700', fontSize: '0.72rem' }}>
+                        <span style={{ padding: '3px 8px', borderRadius: '4px', background: doc.type?.includes('Rent-Back') ? '#f1f5f9' : '#dbeafe', color: doc.type?.includes('Rent-Back') ? '#334155' : '#1e40af', fontWeight: '700', fontSize: '0.72rem' }}>
                           {doc.type || 'Lease Agreement'}
                         </span>
                       </td>
                       <td style={{ color: '#111827', fontWeight: '600' }}>Flat {doc.flatNumber} • {doc.projectName || doc.project}</td>
                       <td><code style={{ background: '#f3f4f5', padding: '2px 6px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>{doc.contractCode}</code></td>
-                      <td style={{ color: '#137333', fontWeight: '800' }}>₹{Number(doc.monthlyRent || doc.monthlyAmount || 0).toLocaleString('en-IN')}/mo</td>
+                      <td style={{ color: '#1a73e8', fontWeight: '800' }}>₹{Number(doc.monthlyRent || doc.monthlyAmount || 0).toLocaleString('en-IN')}/mo</td>
                       <td>
                         {doc.fileUrl ? (
                           <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', fontWeight: '700', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -534,7 +534,7 @@ export const DocumentManagementPage = () => {
               type="button"
               onClick={() => setIsBlueprintModalOpen(true)}
               className="btn-primary"
-              style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#059669' }}
+              style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#1e40af' }}
             >
               <Plus size={14} /> Upload Blueprint
             </button>
@@ -561,7 +561,7 @@ export const DocumentManagementPage = () => {
                         type="button"
                         onClick={() => setIsBlueprintModalOpen(true)}
                         className="btn-primary"
-                        style={{ marginTop: '12px', padding: '7px 16px', fontSize: '0.8rem', background: '#059669' }}
+                        style={{ marginTop: '12px', padding: '7px 16px', fontSize: '0.8rem', background: '#1e40af' }}
                       >
                         + Upload First Blueprint
                       </button>
@@ -666,7 +666,7 @@ export const DocumentManagementPage = () => {
               type="button"
               onClick={() => openSignModal(null)}
               className="btn-primary"
-              style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#8b5cf6' }}
+              style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', background: '#2563eb' }}
             >
               <Award size={14} /> New E-Signature Certificate
             </button>

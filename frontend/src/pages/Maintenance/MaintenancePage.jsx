@@ -361,11 +361,11 @@ export const MaintenancePage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MAINTENANCE COLLECTED</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e6f4ea', color: '#137333' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#137333', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
             {formatINR(totalMaintCollected)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Verified & paid fees</span>
@@ -374,11 +374,11 @@ export const MaintenancePage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>OUTSTANDING DUES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#ffdad6', color: '#ba1a1a' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f1f5f9', color: '#0f172a' }}>
               <Clock size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#ba1a1a', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
             {formatINR(totalMaintOutstanding)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Unpaid maintenance bills</span>
@@ -400,11 +400,11 @@ export const MaintenancePage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>PENDING PENALTIES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#fef7e0', color: '#b06000' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
               <AlertTriangle size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#b06000', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
             {formatINR(activePenaltiesSum)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Infraction fines due</span>
@@ -549,14 +549,14 @@ export const MaintenancePage = () => {
                               Flat {b.flatId?.flatNumber || 'Unit'}
                             </div>
                             <div style={{ fontSize: '0.72rem', color: '#374151' }}>
-                              {b.payerType === 'owner' ? '👤 [Owner] ' : '🏢 [Tenant] '}
+                              {b.payerType === 'owner' ? '[Owner] ' : '[Tenant] '}
                               {b.payerId?.name || 'Resident'}
                             </div>
                           </td>
 
                           <td style={{ color: '#111827', fontWeight: '800' }}>{formatINR(b.totalAmount)}</td>
-                          <td style={{ color: '#137333', fontWeight: '700' }}>{formatINR(b.paidAmount)}</td>
-                          <td style={{ color: b.balanceAmount > 0 ? '#ba1a1a' : '#137333', fontWeight: '800' }}>
+                          <td style={{ color: '#1a73e8', fontWeight: '700' }}>{formatINR(b.paidAmount)}</td>
+                          <td style={{ color: b.balanceAmount > 0 ? '#0f172a' : '#1a73e8', fontWeight: '800' }}>
                             {formatINR(b.balanceAmount)}
                           </td>
 
@@ -588,17 +588,17 @@ export const MaintenancePage = () => {
                           {/* VERIFICATION BADGE */}
                           <td>
                             {isPendingReview && (
-                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#fef3c7', color: '#b45309', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#334155', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <Clock size={11} /> Pending Review
                               </span>
                             )}
                             {isApproved && (
-                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#dcfce7', color: '#15803d', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#eff6ff', color: '#1e40af', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <CheckCircle2 size={11} /> Verified & Paid
                               </span>
                             )}
                             {isRejected && (
-                              <span title={b.rejectionReason} style={{ padding: '3px 8px', borderRadius: '12px', background: '#fee2e2', color: '#b91c1c', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'help' }}>
+                              <span title={b.rejectionReason} style={{ padding: '3px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#0f172a', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'help' }}>
                                 <AlertCircle size={11} /> Proof Rejected
                               </span>
                             )}
@@ -636,7 +636,7 @@ export const MaintenancePage = () => {
                                   onClick={() => handleOpenPay(b)}
                                   style={{
                                     padding: '5px 10px',
-                                    background: '#137333',
+                                    background: '#1a73e8',
                                     color: '#ffffff',
                                     borderRadius: '5px',
                                     fontSize: '0.74rem',
@@ -651,7 +651,7 @@ export const MaintenancePage = () => {
                                   <Upload size={12} /> Pay / Submit Proof
                                 </button>
                               ) : (
-                                <span style={{ fontSize: '0.72rem', color: '#137333', fontWeight: '700' }}>✓ Settled</span>
+                                <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>Settled</span>
                               )}
                             </div>
                           </td>
@@ -720,7 +720,7 @@ export const MaintenancePage = () => {
                       </td>
                       <td style={{ color: '#374151', fontWeight: '600' }}>{sr.assignedTo || 'Unassigned'}</td>
                       <td>
-                        <span style={{ padding: '2px 6px', borderRadius: '4px', background: sr.priority === 'urgent' ? '#ffdad6' : '#e8f0fe', color: sr.priority === 'urgent' ? '#ba1a1a' : '#1a73e8', fontWeight: '800', fontSize: '0.72rem' }}>
+                        <span style={{ padding: '2px 6px', borderRadius: '4px', background: sr.priority === 'urgent' ? '#f1f5f9' : '#e8f0fe', color: sr.priority === 'urgent' ? '#0f172a' : '#1a73e8', fontWeight: '800', fontSize: '0.72rem' }}>
                           {sr.priority?.toUpperCase()}
                         </span>
                       </td>
@@ -766,7 +766,7 @@ export const MaintenancePage = () => {
               type="button"
               onClick={() => setIsNewPenaltyModalOpen(true)}
               style={{
-                background: '#ba1a1a',
+                background: '#0f172a',
                 color: '#ffffff',
                 padding: '8px 16px',
                 borderRadius: '6px',
@@ -800,7 +800,7 @@ export const MaintenancePage = () => {
                   {penalties.map((p) => (
                     <tr key={p._id || p.id}>
                       <td>
-                        <strong style={{ color: '#ba1a1a', letterSpacing: '0.5px' }}>
+                        <strong style={{ color: '#0f172a', letterSpacing: '0.5px' }}>
                           {p.penaltyNumber || p.penaltyCode || (p._id ? `PEN-${p._id.slice(-6).toUpperCase()}` : 'PEN-NOTICE')}
                         </strong>
                       </td>
@@ -819,8 +819,8 @@ export const MaintenancePage = () => {
                             fontSize: '0.68rem',
                             fontWeight: '700',
                             textTransform: 'capitalize',
-                            color: '#b45309',
-                            backgroundColor: '#fef3c7',
+                            color: '#334155',
+                            backgroundColor: '#f1f5f9',
                             padding: '1px 6px',
                             borderRadius: '4px'
                           }}>
@@ -828,7 +828,7 @@ export const MaintenancePage = () => {
                           </span>
                         )}
                       </td>
-                      <td style={{ color: '#ba1a1a', fontWeight: '800' }}>{formatINR(p.penaltyAmount)}</td>
+                      <td style={{ color: '#0f172a', fontWeight: '800' }}>{formatINR(p.penaltyAmount)}</td>
                       <td>
                         <StatusBadge status={p.paymentStatus} />
                       </td>
@@ -839,7 +839,7 @@ export const MaintenancePage = () => {
                             onClick={() => handleSettlePenalty(p._id, 'paid')}
                             style={{
                               padding: '4px 10px',
-                              background: '#137333',
+                              background: '#1a73e8',
                               color: '#ffffff',
                               borderRadius: '4px',
                               fontSize: '0.75rem',
@@ -891,7 +891,7 @@ export const MaintenancePage = () => {
               Invoice: {selectedBillForPay?.billNumber} • Flat {selectedBillForPay?.flatId?.flatNumber || ''}
             </div>
             <div style={{ color: '#64748b', fontSize: '0.75rem' }}>
-              Total Billed: {formatINR(selectedBillForPay?.totalAmount)} • Balance Due: <strong style={{ color: '#ba1a1a' }}>{formatINR(selectedBillForPay?.balanceAmount || selectedBillForPay?.totalAmount)}</strong>
+              Total Billed: {formatINR(selectedBillForPay?.totalAmount)} • Balance Due: <strong style={{ color: '#0f172a' }}>{formatINR(selectedBillForPay?.balanceAmount || selectedBillForPay?.totalAmount)}</strong>
             </div>
           </div>
 
@@ -981,7 +981,7 @@ export const MaintenancePage = () => {
               disabled={submittingPay}
               style={{
                 padding: '8px 18px',
-                background: '#137333',
+                background: '#1a73e8',
                 color: '#ffffff',
                 borderRadius: '6px',
                 fontWeight: '700',
@@ -1015,7 +1015,7 @@ export const MaintenancePage = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Paid Amount:</span>
-              <strong style={{ fontSize: '0.92rem', color: '#15803d' }}>{formatINR(selectedBillForVerify?.paidAmount || selectedBillForVerify?.totalAmount)}</strong>
+              <strong style={{ fontSize: '0.92rem', color: '#1e40af' }}>{formatINR(selectedBillForVerify?.paidAmount || selectedBillForVerify?.totalAmount)}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Bank UTR / Txn Reference:</span>
@@ -1051,7 +1051,7 @@ export const MaintenancePage = () => {
                 </a>
               </div>
             ) : (
-              <div style={{ padding: '10px', color: '#ba1a1a', background: '#fee2e2', borderRadius: '6px', fontSize: '0.76rem' }}>
+              <div style={{ padding: '10px', color: '#0f172a', background: '#f1f5f9', borderRadius: '6px', fontSize: '0.76rem' }}>
                 No file proof attached to this payment record.
               </div>
             )}
@@ -1084,15 +1084,15 @@ export const MaintenancePage = () => {
               onClick={() => handleExecuteVerification('reject')}
               style={{
                 padding: '8px 16px',
-                background: '#fee2e2',
-                color: '#ba1a1a',
-                border: '1px solid #fecaca',
+                background: '#f1f5f9',
+                color: '#0f172a',
+                border: '1px solid #e2e8f0',
                 borderRadius: '6px',
                 fontWeight: '700',
                 cursor: verifying ? 'not-allowed' : 'pointer'
               }}
             >
-              ✕ Reject Proof
+              Reject Proof
             </button>
             <button
               type="button"
@@ -1100,7 +1100,7 @@ export const MaintenancePage = () => {
               onClick={() => handleExecuteVerification('approve')}
               style={{
                 padding: '8px 18px',
-                background: '#15803d',
+                background: '#1e40af',
                 color: '#ffffff',
                 borderRadius: '6px',
                 fontWeight: '800',
@@ -1108,7 +1108,7 @@ export const MaintenancePage = () => {
                 cursor: verifying ? 'not-allowed' : 'pointer'
               }}
             >
-              {verifying ? 'Approving...' : '✓ Approve & Confirm Payment'}
+              {verifying ? 'Approving...' : 'Approve & Confirm Payment'}
             </button>
           </div>
         </div>

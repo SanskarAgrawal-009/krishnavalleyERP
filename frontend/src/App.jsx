@@ -29,6 +29,7 @@ import { NotificationManagementPage } from './pages/Notifications/NotificationMa
 import { ReportsPage } from './pages/Reports/ReportsPage.jsx';
 import { SettingsPage } from './pages/Settings/SettingsPage.jsx';
 import { AuditLogsPage } from './pages/Audit/AuditLogsPage.jsx';
+import { TaskforcePage } from './pages/Taskforce/TaskforcePage.jsx';
 
 import './styles/global.css';
 import './styles/layout.css';
@@ -204,6 +205,16 @@ export const App = () => {
               element={
                 <ProtectedRoute permission="hr:view">
                   <HRPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Taskforce & Management */}
+            <Route
+              path="taskforce"
+              element={
+                <ProtectedRoute>
+                  <TaskforcePage />
                 </ProtectedRoute>
               }
             />

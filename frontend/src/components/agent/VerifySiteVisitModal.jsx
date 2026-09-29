@@ -67,7 +67,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
               CODE: {siteVisit.agentCode}
             </div>
             <div style={{ fontSize: '0.74rem', color: '#475569', marginTop: '4px' }}>
-              🏢 {siteVisit.agencyName || 'Independent Agent'} • 📞 {siteVisit.agentPhone || 'N/A'}
+              {siteVisit.agencyName || 'Independent Agent'} • {siteVisit.agentPhone || 'N/A'}
             </div>
           </div>
 
@@ -80,11 +80,11 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
               {siteVisit.partyName}
             </div>
             <div style={{ fontSize: '0.76rem', color: '#1a73e8', fontWeight: '700', marginTop: '2px' }}>
-              📞 {siteVisit.partyMobile}
+              {siteVisit.partyMobile}
             </div>
             {siteVisit.partyEmail && (
               <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                ✉ {siteVisit.partyEmail}
+                {siteVisit.partyEmail}
               </div>
             )}
           </div>
@@ -97,7 +97,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
               <strong style={{ color: '#1e293b' }}>Project:</strong> {siteVisit.projectId?.projectName || 'Krishna Valley'}
             </div>
             <div style={{ color: '#64748b', fontSize: '0.74rem' }}>
-              📅 Visit Date: {new Date(siteVisit.visitDate).toLocaleString('en-IN')}
+              Visit Date: {new Date(siteVisit.visitDate).toLocaleString('en-IN')}
             </div>
           </div>
 
@@ -144,8 +144,8 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
                 style={{ width: '130px', height: '110px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }}
               />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#166534', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <CheckCircle2 size={14} color="#16a34a" /> Photo Proof Attached
+                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <CheckCircle2 size={14} color="#1a73e8" /> Photo Proof Attached
                 </div>
                 <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '4px 0 8px' }}>
                   Click below to open the high-resolution original image in a separate tab for full inspection.
@@ -172,7 +172,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
               </div>
             </div>
           ) : (
-            <div style={{ padding: '12px', background: '#fffbeb', color: '#b45309', borderRadius: '6px', border: '1px solid #fef3c7', fontSize: '0.76rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ padding: '12px', background: '#f8fafc', color: '#334155', borderRadius: '6px', border: '1px solid #f1f5f9', fontSize: '0.76rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <AlertCircle size={15} /> No physical photo proof was uploaded with this site visit entry.
             </div>
           )}
@@ -194,7 +194,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
 
         {/* REJECTION REASON INPUT */}
         <div>
-          <label style={{ fontSize: '0.74rem', color: '#dc2626', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
             Rejection Reason (Required only if rejecting):
           </label>
           <input
@@ -207,8 +207,8 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
         </div>
 
         {/* AUTOMATION NOTICE BANNER */}
-        <div style={{ background: '#f0fdf4', padding: '10px 12px', borderRadius: '6px', border: '1px solid #bbf7d0', fontSize: '0.74rem', color: '#166534', lineHeight: '1.4' }}>
-          💡 <strong>Automated Commission Rule:</strong> Approving this site visit links the visiting party to Agent <strong>{siteVisit.agentCode}</strong>. Once this customer confirms a flat booking in Sales, the agent's commission will be <strong>automatically calculated and credited</strong> to their wallet!
+        <div style={{ background: '#eff6ff', padding: '10px 12px', borderRadius: '6px', border: '1px solid #dbeafe', fontSize: '0.74rem', color: '#1e40af', lineHeight: '1.4' }}>
+          <strong>Automated Commission Rule:</strong> Approving this site visit links the visiting party to Agent <strong>{siteVisit.agentCode}</strong>. Once this customer confirms a flat booking in Sales, the agent's commission will be <strong>automatically calculated and credited</strong> to their wallet!
         </div>
 
         {/* ACTION BUTTONS */}
@@ -236,11 +236,11 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
             onClick={() => handleAction('reject')}
             style={{
               padding: '8px 16px',
-              background: '#fee2e2',
-              border: '1px solid #fecaca',
+              background: '#f1f5f9',
+              border: '1px solid #e2e8f0',
               borderRadius: '6px',
               fontWeight: '700',
-              color: '#b91c1c',
+              color: '#0f172a',
               fontSize: '0.82rem',
               cursor: processing ? 'not-allowed' : 'pointer',
               display: 'flex',
@@ -257,7 +257,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
             onClick={() => handleAction('approve')}
             style={{
               padding: '8px 18px',
-              background: '#15803d',
+              background: '#1e40af',
               border: 'none',
               borderRadius: '6px',
               fontWeight: '800',

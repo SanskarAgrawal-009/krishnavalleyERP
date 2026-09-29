@@ -112,7 +112,7 @@ export const EmployeeDetailModal = ({
 
             <div style={{ display: 'flex', gap: '14px', fontSize: '0.78rem', color: '#374151', marginTop: '6px', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Building2 size={13} color="#1a73e8" /> <strong>Dept:</strong> {employee.departmentName || employee.departmentId?.departmentName || employee.departmentId?.name || 'Civil & Structural Engineering'}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Briefcase size={13} color="#137333" /> <strong>Role:</strong> {employee.designation || employee.roleName || employee.roleId?.roleName || 'Senior Site Engineer'}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Briefcase size={13} color="#1a73e8" /> <strong>Role:</strong> {employee.designation || employee.roleName || employee.roleId?.roleName || 'Senior Site Engineer'}</span>
               <span>• <strong>Phone:</strong> {employee.phone || employee.mobileNo || 'N/A'}</span>
               <span>• <strong>Joined:</strong> {employee.joiningDate ? new Date(employee.joiningDate).toLocaleDateString('en-IN') : 'N/A'}</span>
             </div>
@@ -213,7 +213,7 @@ export const EmployeeDetailModal = ({
                   alignItems: 'center',
                   gap: '6px',
                   padding: '7px 14px',
-                  backgroundColor: '#10b981',
+                  backgroundColor: '#1a73e8',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '6px',
@@ -241,7 +241,7 @@ export const EmployeeDetailModal = ({
                   gap: '12px'
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #f59e0b', paddingBottom: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #475569', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Building2 size={16} color="#1e40af" />
                     <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#1e3a8a', letterSpacing: '0.5px' }}>
@@ -292,7 +292,7 @@ export const EmployeeDetailModal = ({
                   </div>
                   <div>
                     <span style={{ color: '#64748b', fontSize: '0.62rem', fontWeight: '700', display: 'block' }}>BLOOD GROUP</span>
-                    <strong style={{ color: '#b91c1c' }}>{employee.bloodGroup || 'B+'}</strong>
+                    <strong style={{ color: '#0f172a' }}>{employee.bloodGroup || 'B+'}</strong>
                   </div>
                   <div>
                     <span style={{ color: '#64748b', fontSize: '0.62rem', fontWeight: '700', display: 'block' }}>EMERGENCY CONTACT</span>
@@ -300,7 +300,7 @@ export const EmployeeDetailModal = ({
                   </div>
                   <div>
                     <span style={{ color: '#64748b', fontSize: '0.62rem', fontWeight: '700', display: 'block' }}>ASSIGNED LOCATION</span>
-                    <strong style={{ color: '#047857' }}>{employee.workLocation || 'Site Office'}</strong>
+                    <strong style={{ color: '#1e40af' }}>{employee.workLocation || 'Site Office'}</strong>
                   </div>
                 </div>
               </div>
@@ -329,7 +329,7 @@ export const EmployeeDetailModal = ({
                         {employee.idCardDetails?.aadhaarNumber ? `•••• •••• ${employee.idCardDetails.aadhaarNumber.slice(-4)}` : 'Not Provided'}
                       </strong>
                     </div>
-                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: employee.idCardDetails?.aadhaarNumber ? '#e6f4ea' : '#fef3c7', color: employee.idCardDetails?.aadhaarNumber ? '#137333' : '#b45309', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: employee.idCardDetails?.aadhaarNumber ? '#eff6ff' : '#f1f5f9', color: employee.idCardDetails?.aadhaarNumber ? '#1a73e8' : '#334155', fontWeight: '700' }}>
                       {employee.idCardDetails?.aadhaarNumber ? 'Recorded' : 'Pending'}
                     </span>
                   </div>
@@ -341,7 +341,7 @@ export const EmployeeDetailModal = ({
                         {employee.idCardDetails?.panNumber || 'Not Provided'}
                       </strong>
                     </div>
-                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: employee.idCardDetails?.panNumber ? '#e6f4ea' : '#fef3c7', color: employee.idCardDetails?.panNumber ? '#137333' : '#b45309', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: employee.idCardDetails?.panNumber ? '#eff6ff' : '#f1f5f9', color: employee.idCardDetails?.panNumber ? '#1a73e8' : '#334155', fontWeight: '700' }}>
                       {employee.idCardDetails?.panNumber ? 'Recorded' : 'Pending'}
                     </span>
                   </div>
@@ -404,7 +404,7 @@ export const EmployeeDetailModal = ({
                       fontWeight: '700',
                       textTransform: 'capitalize',
                       background: a.status === 'present' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                      color: a.status === 'present' ? '#10b981' : '#ef4444'
+                      color: a.status === 'present' ? '#1a73e8' : '#0f172a'
                     }}>
                       {a.status}
                     </span>
@@ -435,18 +435,18 @@ export const EmployeeDetailModal = ({
                 <span style={{ fontSize: '0.64rem', color: '#64748b' }}>Used: {employee.leaveBalance?.casualLeave?.used || 0} days</span>
               </div>
 
-              <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#fef3c7', border: '1px solid #fde68a' }}>
-                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#b45309', display: 'block' }}>SICK LEAVES (SL)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#92400e', marginTop: '2px' }}>
+              <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #cbd5e1' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#334155', display: 'block' }}>SICK LEAVES (SL)</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#334155', marginTop: '2px' }}>
                   {Math.max(0, (employee.leaveBalance?.sickLeave?.total || 10) - (employee.leaveBalance?.sickLeave?.used || 0))}
                   <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> / {employee.leaveBalance?.sickLeave?.total || 10} left</span>
                 </div>
                 <span style={{ fontSize: '0.64rem', color: '#64748b' }}>Used: {employee.leaveBalance?.sickLeave?.used || 0} days</span>
               </div>
 
-              <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #a7f3d0' }}>
-                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#047857', display: 'block' }}>EARNED LEAVES (EL)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#065f46', marginTop: '2px' }}>
+              <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#1e40af', display: 'block' }}>EARNED LEAVES (EL)</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1e3a8a', marginTop: '2px' }}>
                   {Math.max(0, (employee.leaveBalance?.earnedLeave?.total || 15) - (employee.leaveBalance?.earnedLeave?.used || 0))}
                   <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> / {employee.leaveBalance?.earnedLeave?.total || 15} left</span>
                 </div>
@@ -459,7 +459,7 @@ export const EmployeeDetailModal = ({
                   {employee.leaveBalance?.unpaidLeave?.used || 0}
                   <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> Days Taken</span>
                 </div>
-                <span style={{ fontSize: '0.64rem', color: '#dc2626' }}>Salary deducted</span>
+                <span style={{ fontSize: '0.64rem', color: '#0f172a' }}>Salary deducted</span>
               </div>
             </div>
 
@@ -488,14 +488,14 @@ export const EmployeeDetailModal = ({
                         <button
                           type="button"
                           onClick={() => onUpdateLeaveStatus(employee._id, l._id, 'approved')}
-                          style={{ padding: '4px 10px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ padding: '4px 10px', background: 'rgba(16, 185, 129, 0.15)', color: '#1a73e8', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
                         >
                           Approve
                         </button>
                         <button
                           type="button"
                           onClick={() => onUpdateLeaveStatus(employee._id, l._id, 'rejected')}
-                          style={{ padding: '4px 10px', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ padding: '4px 10px', background: 'rgba(239, 68, 68, 0.15)', color: '#0f172a', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
                         >
                           Reject
                         </button>
@@ -512,7 +512,7 @@ export const EmployeeDetailModal = ({
         {activeTab === 'payroll' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#10b981', margin: 0 }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1a73e8', margin: 0 }}>
                 Salary Slips & Disbursal History
               </h4>
             </div>
@@ -553,8 +553,8 @@ export const EmployeeDetailModal = ({
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#10b981' }}>{formatINR(p.netSalary)}</div>
-                        <span style={{ fontSize: '0.68rem', color: p.status === 'paid' ? '#10b981' : '#fbbf24', textTransform: 'uppercase', fontWeight: '700' }}>
+                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#1a73e8' }}>{formatINR(p.netSalary)}</div>
+                        <span style={{ fontSize: '0.68rem', color: p.status === 'paid' ? '#1a73e8' : '#cbd5e1', textTransform: 'uppercase', fontWeight: '700' }}>
                           {p.status}
                         </span>
                       </div>
@@ -577,14 +577,14 @@ export const EmployeeDetailModal = ({
                             });
                             setIsDisburseOpen(true);
                           }}
-                          style={{ padding: '5px 12px', background: '#10b981', color: '#ffffff', border: 'none', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ padding: '5px 12px', background: '#1a73e8', color: '#ffffff', border: 'none', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
                         >
                           Disburse Salary
                         </button>
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                          <span style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: '700' }}>
-                            ✓ Disbursed ({p.paymentMethod === 'upi' ? 'UPI' : (p.paymentMethod ? p.paymentMethod.replace(/_/g, ' ') : 'Bank Transfer')})
+                          <span style={{ fontSize: '0.7rem', color: '#1a73e8', fontWeight: '700' }}>
+                            Disbursed ({p.paymentMethod === 'upi' ? 'UPI' : (p.paymentMethod ? p.paymentMethod.replace(/_/g, ' ') : 'Bank Transfer')})
                           </span>
                           {(p.paymentProof?.fileUrl || p.payslipUrl) && (
                             <a
@@ -647,7 +647,7 @@ export const EmployeeDetailModal = ({
                 />
                 <label
                   htmlFor="empDocInput"
-                  style={{ padding: '5px 10px', background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '4px', fontSize: '0.72rem', cursor: 'pointer', color: docFile ? '#10b981' : 'var(--text-secondary)' }}
+                  style={{ padding: '5px 10px', background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '4px', fontSize: '0.72rem', cursor: 'pointer', color: docFile ? '#1a73e8' : 'var(--text-secondary)' }}
                 >
                   <Upload size={12} /> {docFile ? docFile.name : 'Choose File'}
                 </label>

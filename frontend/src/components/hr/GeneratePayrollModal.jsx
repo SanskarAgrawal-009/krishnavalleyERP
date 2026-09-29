@@ -97,7 +97,7 @@ export const GeneratePayrollModal = ({ isOpen, onClose, onGenerate, onSubmit }) 
             disabled={isProcessing}
             style={{
               padding: '8px 18px',
-              background: isProcessing ? '#9ca3af' : '#137333',
+              background: isProcessing ? '#9ca3af' : '#1a73e8',
               color: '#ffffff',
               fontWeight: '700',
               borderRadius: '4px',

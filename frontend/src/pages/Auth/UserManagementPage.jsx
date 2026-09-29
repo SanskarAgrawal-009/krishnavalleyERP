@@ -385,7 +385,7 @@ export const UserManagementPage = () => {
             zIndex: 9999,
             padding: '14px 20px',
             borderRadius: '10px',
-            backgroundColor: feedback.type === 'error' ? '#ba1a1a' : '#0d904f',
+            backgroundColor: feedback.type === 'error' ? '#0f172a' : '#1a73e8',
             color: '#ffffff',
             fontWeight: '500',
             boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
@@ -499,7 +499,7 @@ export const UserManagementPage = () => {
         </div>
 
         <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#e6f4ea', color: '#0d904f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Shield size={22} />
           </div>
           <div>
@@ -509,7 +509,7 @@ export const UserManagementPage = () => {
         </div>
 
         <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#fef7e0', color: '#e37400', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#f8fafc', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Building2 size={22} />
           </div>
           <div>
@@ -711,10 +711,10 @@ export const UserManagementPage = () => {
                       const isMe = currentUser?._id === u._id;
 
                       const statusColors = {
-                        active: { bg: '#e6f4ea', text: '#0d904f' },
+                        active: { bg: '#eff6ff', text: '#1a73e8' },
                         inactive: { bg: '#f3f4f6', text: '#4b5563' },
-                        suspended: { bg: '#fef3c7', text: '#d97706' },
-                        locked: { bg: '#fee2e2', text: '#dc2626' },
+                        suspended: { bg: '#f1f5f9', text: '#334155' },
+                        locked: { bg: '#f1f5f9', text: '#0f172a' },
                       }[u.status] || { bg: '#f3f4f6', text: '#4b5563' };
 
                       return (
@@ -765,14 +765,14 @@ export const UserManagementPage = () => {
                                   gap: '4px',
                                   padding: '3px 8px',
                                   borderRadius: '6px',
-                                  backgroundColor: u.roleId?.roleCode === 'agent' ? '#f0fdf4' : '#f0f9ff',
-                                  color: u.roleId?.roleCode === 'agent' ? '#166534' : '#0284c7',
+                                  backgroundColor: u.roleId?.roleCode === 'agent' ? '#eff6ff' : '#f0f9ff',
+                                  color: u.roleId?.roleCode === 'agent' ? '#1e40af' : '#0284c7',
                                   fontWeight: '600',
                                   fontSize: '0.78rem',
-                                  border: u.roleId?.roleCode === 'agent' ? '1px solid #bbf7d0' : '1px solid #bae6fd',
+                                  border: u.roleId?.roleCode === 'agent' ? '1px solid #dbeafe' : '1px solid #bae6fd',
                                 }}
                               >
-                                {u.roleId?.roleCode === 'agent' ? <Award size={12} style={{ color: '#16a34a' }} /> : <Shield size={12} />}
+                                {u.roleId?.roleCode === 'agent' ? <Award size={12} style={{ color: '#1a73e8' }} /> : <Shield size={12} />}
                                 {u.roleId?.roleName || 'Unassigned'}
                               </span>
 
@@ -780,9 +780,9 @@ export const UserManagementPage = () => {
                                 <span
                                   style={{
                                     fontSize: '0.72rem',
-                                    color: '#0d904f',
+                                    color: '#1a73e8',
                                     fontWeight: '700',
-                                    backgroundColor: '#e6f4ea',
+                                    backgroundColor: '#eff6ff',
                                     padding: '2px 6px',
                                     borderRadius: '4px',
                                   }}
@@ -878,9 +878,9 @@ export const UserManagementPage = () => {
                                   style={{
                                     padding: '5px 8px',
                                     borderRadius: '6px',
-                                    border: '1px solid #fed7aa',
-                                    backgroundColor: '#fff7ed',
-                                    color: '#c2410c',
+                                    border: '1px solid #e2e8f0',
+                                    backgroundColor: '#f8fafc',
+                                    color: '#334155',
                                     cursor: 'pointer',
                                   }}
                                 >
@@ -895,9 +895,9 @@ export const UserManagementPage = () => {
                                   style={{
                                     padding: '5px 8px',
                                     borderRadius: '6px',
-                                    border: '1px solid #fee2e2',
-                                    backgroundColor: '#fff5f5',
-                                    color: '#dc2626',
+                                    border: '1px solid #f1f5f9',
+                                    backgroundColor: '#f1f5f9',
+                                    color: '#0f172a',
                                     cursor: 'pointer',
                                   }}
                                 >
@@ -996,7 +996,7 @@ export const UserManagementPage = () => {
                 </div>
 
                 {selectedRoleForMatrix.roleCode === 'super_admin' && (
-                  <span style={{ fontSize: '0.8rem', backgroundColor: '#e6f4ea', color: '#0d904f', padding: '4px 10px', borderRadius: '6px', fontWeight: '600' }}>
+                  <span style={{ fontSize: '0.8rem', backgroundColor: '#eff6ff', color: '#1a73e8', padding: '4px 10px', borderRadius: '6px', fontWeight: '600' }}>
                     Full Unrestricted Master Access
                   </span>
                 )}
@@ -1101,7 +1101,7 @@ export const UserManagementPage = () => {
                     <Building2 size={20} />
                   </div>
                   {b.isHeadOffice && (
-                    <span style={{ fontSize: '0.72rem', backgroundColor: '#e6f4ea', color: '#0d904f', padding: '3px 8px', borderRadius: '6px', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.72rem', backgroundColor: '#eff6ff', color: '#1a73e8', padding: '3px 8px', borderRadius: '6px', fontWeight: '700' }}>
                       Headquarters
                     </span>
                   )}
@@ -1135,7 +1135,7 @@ export const UserManagementPage = () => {
               </div>
 
               <div style={{ paddingTop: '12px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#6b7280' }}>
-                <span>Status: <strong style={{ color: '#0d904f' }}>Active Site</strong></span>
+                <span>Status: <strong style={{ color: '#1a73e8' }}>Active Site</strong></span>
                 <span>Assigned Staff: <strong>{users.filter((u) => u.branchAccess?.some((ba) => (ba.branchId?._id || ba.branchId) === b._id)).length}</strong></span>
               </div>
             </div>
@@ -1318,8 +1318,8 @@ export const UserManagementPage = () => {
               {roles.find((r) => r._id === userFormData.roleId)?.roleCode === 'agent' && (
                 <div
                   style={{
-                    backgroundColor: '#f0fdf4',
-                    border: '1.5px solid #86efac',
+                    backgroundColor: '#eff6ff',
+                    border: '1.5px solid #bfdbfe',
                     borderRadius: '12px',
                     padding: '16px',
                     display: 'flex',
@@ -1328,15 +1328,15 @@ export const UserManagementPage = () => {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <DollarSign size={18} style={{ color: '#0d904f' }} />
-                    <span style={{ fontWeight: '700', fontSize: '0.88rem', color: '#166534' }}>
+                    <DollarSign size={18} style={{ color: '#1a73e8' }} />
+                    <span style={{ fontWeight: '700', fontSize: '0.88rem', color: '#1e40af' }}>
                       Agent Commission Setup (Credited upon Matured Site Visits)
                     </span>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#166534', marginBottom: '4px' }}>
+                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#1e40af', marginBottom: '4px' }}>
                         Agency / Channel Partner Name
                       </label>
                       <input
@@ -1349,12 +1349,12 @@ export const UserManagementPage = () => {
                             agentProfile: { ...userFormData.agentProfile, agencyName: e.target.value },
                           })
                         }
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #86efac', fontSize: '0.85rem', boxSizing: 'border-box', backgroundColor: '#ffffff' }}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #bfdbfe', fontSize: '0.85rem', boxSizing: 'border-box', backgroundColor: '#ffffff' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#166534', marginBottom: '4px' }}>
+                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#1e40af', marginBottom: '4px' }}>
                         RERA Registration Number
                       </label>
                       <input
@@ -1367,14 +1367,14 @@ export const UserManagementPage = () => {
                             agentProfile: { ...userFormData.agentProfile, reraNumber: e.target.value },
                           })
                         }
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #86efac', fontSize: '0.85rem', boxSizing: 'border-box', backgroundColor: '#ffffff' }}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #bfdbfe', fontSize: '0.85rem', boxSizing: 'border-box', backgroundColor: '#ffffff' }}
                       />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#166534', marginBottom: '4px' }}>
+                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#1e40af', marginBottom: '4px' }}>
                         Commission Calculation Model *
                       </label>
                       <select
@@ -1389,7 +1389,7 @@ export const UserManagementPage = () => {
                             },
                           })
                         }
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #86efac', fontSize: '0.85rem', boxSizing: 'border-box', backgroundColor: '#ffffff' }}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #bfdbfe', fontSize: '0.85rem', boxSizing: 'border-box', backgroundColor: '#ffffff' }}
                       >
                         <option value="percentage">Percentage (%) of Lead Budget / Unit Price</option>
                         <option value="flat">Flat Fixed Amount (₹) per Matured Visit</option>
@@ -1397,7 +1397,7 @@ export const UserManagementPage = () => {
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#166534', marginBottom: '4px' }}>
+                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#1e40af', marginBottom: '4px' }}>
                         Commission Rate * {userFormData.agentProfile?.commissionType === 'percentage' ? '(in %)' : '(in ₹)'}
                       </label>
                       <input
@@ -1412,7 +1412,7 @@ export const UserManagementPage = () => {
                             agentProfile: { ...userFormData.agentProfile, commissionRate: Number(e.target.value) },
                           })
                         }
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #86efac', fontSize: '0.85rem', boxSizing: 'border-box', backgroundColor: '#ffffff' }}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #bfdbfe', fontSize: '0.85rem', boxSizing: 'border-box', backgroundColor: '#ffffff' }}
                       />
                     </div>
                   </div>

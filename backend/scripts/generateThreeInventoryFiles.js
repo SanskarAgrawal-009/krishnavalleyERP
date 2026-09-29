@@ -63,7 +63,7 @@ function generateFiles() {
   const soldOut2 = path.resolve('C:/Users/sansk/OneDrive/Desktop/KRISHNA VALLEY/ERP system/Tower_A_Inventory_1_Sold.xlsx');
   XLSX.writeFile(wbSold, soldOut1);
   XLSX.writeFile(wbSold, soldOut2);
-  console.log(`✅ File 1: Sold Inventory written (${soldRows.length} units) -> ${soldOut1}`);
+  console.log(`File 1: Sold Inventory written (${soldRows.length} units) -> ${soldOut1}`);
 
   // =========================================================================
   // FILE 2: RESELL INVENTORY & CHAIN OF TITLE (29 Flats + 29 History Records)
@@ -87,7 +87,7 @@ function generateFiles() {
   const resellOut2 = path.resolve('C:/Users/sansk/OneDrive/Desktop/KRISHNA VALLEY/ERP system/Tower_A_Inventory_2_Resell.xlsx');
   XLSX.writeFile(wbResell, resellOut1);
   XLSX.writeFile(wbResell, resellOut2);
-  console.log(`✅ File 2: Resell Inventory written (${resellInvRows.length} units + ${resellHistRows.length} history records) -> ${resellOut1}`);
+  console.log(`File 2: Resell Inventory written (${resellInvRows.length} units + ${resellHistRows.length} history records) -> ${resellOut1}`);
 
   // =========================================================================
   // FILE 3: POSSESSION RENEWAL INVENTORY & CONTRACTS (13 Flats + 13 History Records)
@@ -111,9 +111,9 @@ function generateFiles() {
   const renewalOut2 = path.resolve('C:/Users/sansk/OneDrive/Desktop/KRISHNA VALLEY/ERP system/Tower_A_Inventory_3_Possession_Renewal.xlsx');
   XLSX.writeFile(wbRenewal, renewalOut1);
   XLSX.writeFile(wbRenewal, renewalOut2);
-  console.log(`✅ File 3: Possession Renewal written (${renewalInvRows.length} units + ${renewalHistRows.length} prior contract records) -> ${renewalOut1}`);
+  console.log(`File 3: Possession Renewal written (${renewalInvRows.length} units + ${renewalHistRows.length} prior contract records) -> ${renewalOut1}`);
 
-  console.log('\n🎉 ALL THREE SPREADSHEETS SUCCESSFULLY CREATED!');
+  console.log('\nALL THREE SPREADSHEETS SUCCESSFULLY CREATED!');
 }
 
 generateFiles();

@@ -48,7 +48,7 @@ const sync = async () => {
     }
   }
 
-  console.log(`✅ Successfully synced ${leadCount} leads and ${visitCount} site visits directly into agent MongoDB schemas!`);
+  console.log(`Successfully synced ${leadCount} leads and ${visitCount} site visits directly into agent MongoDB schemas!`);
   process.exit(0);
 };
 

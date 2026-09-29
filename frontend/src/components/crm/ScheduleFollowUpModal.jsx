@@ -74,9 +74,9 @@ export const ScheduleFollowUpModal = ({
 
   const modeOptions = [
     { value: 'call', label: 'Phone Call', icon: Phone, color: '#1a73e8' },
-    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#16a34a' },
-    { value: 'meeting', label: 'In-Person Meeting', icon: Users, color: '#9333ea' },
-    { value: 'site_visit', label: 'Site Visit Tour', icon: MapPin, color: '#ea580c' },
+    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#1a73e8' },
+    { value: 'meeting', label: 'In-Person Meeting', icon: Users, color: '#1d4ed8' },
+    { value: 'site_visit', label: 'Site Visit Tour', icon: MapPin, color: '#334155' },
     { value: 'email', label: 'Email Follow-up', icon: Mail, color: '#475569' },
   ];
 

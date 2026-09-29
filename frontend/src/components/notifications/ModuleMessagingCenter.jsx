@@ -290,7 +290,7 @@ export const ModuleMessagingCenter = ({
             height: '48px',
             borderRadius: '12px',
             background: module === 'sales'
-              ? 'linear-gradient(135deg, #10b981, #059669)'
+              ? 'linear-gradient(135deg, #1a73e8, #1e40af)'
               : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
             display: 'flex',
             alignItems: 'center',
@@ -442,7 +442,7 @@ export const ModuleMessagingCenter = ({
                   background: 'transparent',
                   border: 'none',
                   borderBottom: '1px solid var(--border-subtle)',
-                  color: '#25d366',
+                  color: '#0f172a',
                   fontSize: '0.82rem',
                   fontWeight: '600',
                   padding: '2px 0'
@@ -461,7 +461,7 @@ export const ModuleMessagingCenter = ({
                   background: 'transparent',
                   border: 'none',
                   borderBottom: '1px solid var(--border-subtle)',
-                  color: '#fbbf24',
+                  color: '#cbd5e1',
                   fontSize: '0.82rem',
                   padding: '2px 0'
                 }}
@@ -501,10 +501,10 @@ export const ModuleMessagingCenter = ({
                   </div>
 
                   <div style={{ display: 'flex', gap: '4px' }}>
-                    {tpl.channels?.whatsapp && <span title="WhatsApp"><MessageSquare size={12} color="#25d366" /></span>}
+                    {tpl.channels?.whatsapp && <span title="WhatsApp"><MessageSquare size={12} color="#0f172a" /></span>}
                     {tpl.channels?.sms && <span title="SMS"><Smartphone size={12} color="#60a5fa" /></span>}
-                    {tpl.channels?.email && <span title="Email"><Mail size={12} color="#fbbf24" /></span>}
-                    {tpl.channels?.push && <span title="Push"><Bell size={12} color="#f472b6" /></span>}
+                    {tpl.channels?.email && <span title="Email"><Mail size={12} color="#cbd5e1" /></span>}
+                    {tpl.channels?.push && <span title="Push"><Bell size={12} color="#60a5fa" /></span>}
                   </div>
                 </div>
               ))}
@@ -557,7 +557,7 @@ export const ModuleMessagingCenter = ({
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
               <label style={{
                 background: channels.whatsapp ? 'rgba(37, 211, 102, 0.15)' : 'var(--bg-card)',
-                border: channels.whatsapp ? '1px solid #25d366' : '1px solid var(--border-subtle)',
+                border: channels.whatsapp ? '1px solid #0f172a' : '1px solid var(--border-subtle)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '8px',
                 display: 'flex',
@@ -566,13 +566,13 @@ export const ModuleMessagingCenter = ({
                 cursor: 'pointer',
                 fontSize: '0.78rem',
                 fontWeight: '700',
-                color: channels.whatsapp ? '#25d366' : 'var(--text-secondary)'
+                color: channels.whatsapp ? '#0f172a' : 'var(--text-secondary)'
               }}>
                 <input
                   type="checkbox"
                   checked={channels.whatsapp}
                   onChange={(e) => setChannels({ ...channels, whatsapp: e.target.checked })}
-                  style={{ accentColor: '#25d366' }}
+                  style={{ accentColor: '#0f172a' }}
                 />
                 <MessageSquare size={14} /> WhatsApp
               </label>
@@ -601,7 +601,7 @@ export const ModuleMessagingCenter = ({
 
               <label style={{
                 background: channels.email ? 'rgba(245, 158, 11, 0.15)' : 'var(--bg-card)',
-                border: channels.email ? '1px solid #f59e0b' : '1px solid var(--border-subtle)',
+                border: channels.email ? '1px solid #475569' : '1px solid var(--border-subtle)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '8px',
                 display: 'flex',
@@ -610,20 +610,20 @@ export const ModuleMessagingCenter = ({
                 cursor: 'pointer',
                 fontSize: '0.78rem',
                 fontWeight: '700',
-                color: channels.email ? '#fbbf24' : 'var(--text-secondary)'
+                color: channels.email ? '#cbd5e1' : 'var(--text-secondary)'
               }}>
                 <input
                   type="checkbox"
                   checked={channels.email}
                   onChange={(e) => setChannels({ ...channels, email: e.target.checked })}
-                  style={{ accentColor: '#f59e0b' }}
+                  style={{ accentColor: '#475569' }}
                 />
                 <Mail size={14} /> Email
               </label>
 
               <label style={{
                 background: channels.push ? 'rgba(236, 72, 153, 0.15)' : 'var(--bg-card)',
-                border: channels.push ? '1px solid #ec4899' : '1px solid var(--border-subtle)',
+                border: channels.push ? '1px solid #1e40af' : '1px solid var(--border-subtle)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '8px',
                 display: 'flex',
@@ -632,13 +632,13 @@ export const ModuleMessagingCenter = ({
                 cursor: 'pointer',
                 fontSize: '0.78rem',
                 fontWeight: '700',
-                color: channels.push ? '#f472b6' : 'var(--text-secondary)'
+                color: channels.push ? '#60a5fa' : 'var(--text-secondary)'
               }}>
                 <input
                   type="checkbox"
                   checked={channels.push}
                   onChange={(e) => setChannels({ ...channels, push: e.target.checked })}
-                  style={{ accentColor: '#ec4899' }}
+                  style={{ accentColor: '#1e40af' }}
                 />
                 <Bell size={14} /> Push
               </label>
@@ -649,10 +649,10 @@ export const ModuleMessagingCenter = ({
           {dispatchResult && (
             <div style={{
               background: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid #10b981',
+              border: '1px solid #1a73e8',
               borderRadius: 'var(--radius-sm)',
               padding: '10px 14px',
-              color: '#10b981',
+              color: '#1a73e8',
               fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
@@ -665,11 +665,11 @@ export const ModuleMessagingCenter = ({
 
           {dispatchError && (
             <div style={{
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid #ef4444',
+              background: '#f1f5f9',
+              border: '1px solid #cbd5e1',
               borderRadius: 'var(--radius-sm)',
               padding: '10px 14px',
-              color: '#f87171',
+              color: '#0f172a',
               fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
@@ -687,7 +687,7 @@ export const ModuleMessagingCenter = ({
             style={{
               padding: '12px 24px',
               background: module === 'sales'
-                ? 'linear-gradient(135deg, #10b981, #059669)'
+                ? 'linear-gradient(135deg, #1a73e8, #1e40af)'
                 : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
               border: 'none',
               borderRadius: 'var(--radius-sm)',
@@ -740,7 +740,7 @@ export const ModuleMessagingCenter = ({
                   padding: '4px 10px',
                   borderRadius: '4px',
                   border: 'none',
-                  background: activeChannelPreview === 'whatsapp' ? '#25d366' : 'var(--bg-card)',
+                  background: activeChannelPreview === 'whatsapp' ? '#0f172a' : 'var(--bg-card)',
                   color: activeChannelPreview === 'whatsapp' ? '#000' : 'var(--text-secondary)',
                   fontSize: '0.74rem',
                   fontWeight: '700',
@@ -774,7 +774,7 @@ export const ModuleMessagingCenter = ({
                   padding: '4px 10px',
                   borderRadius: '4px',
                   border: 'none',
-                  background: activeChannelPreview === 'email' ? '#f59e0b' : 'var(--bg-card)',
+                  background: activeChannelPreview === 'email' ? '#475569' : 'var(--bg-card)',
                   color: activeChannelPreview === 'email' ? '#000' : 'var(--text-secondary)',
                   fontSize: '0.74rem',
                   fontWeight: '700',
@@ -791,7 +791,7 @@ export const ModuleMessagingCenter = ({
                   padding: '4px 10px',
                   borderRadius: '4px',
                   border: 'none',
-                  background: activeChannelPreview === 'push' ? '#ec4899' : 'var(--bg-card)',
+                  background: activeChannelPreview === 'push' ? '#1e40af' : 'var(--bg-card)',
                   color: activeChannelPreview === 'push' ? '#fff' : 'var(--text-secondary)',
                   fontSize: '0.74rem',
                   fontWeight: '700',
@@ -827,12 +827,12 @@ export const ModuleMessagingCenter = ({
                 flexDirection: 'column',
                 gap: '8px'
               }}>
-                <div style={{ fontSize: '0.72rem', color: '#25d366', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  Krishna Valley Official <span style={{ fontSize: '8px', background: '#25d366', color: '#000', borderRadius: '50%', padding: '0 3px' }}>✓</span>
+                <div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Krishna Valley Official <span style={{ fontSize: '8px', background: '#0f172a', color: '#000', borderRadius: '50%', padding: '0 3px' }}></span>
                 </div>
 
                 <div style={{
-                  background: '#005c4b',
+                  background: '#001a41',
                   color: '#e9edef',
                   borderRadius: '10px',
                   padding: '10px',
@@ -841,7 +841,7 @@ export const ModuleMessagingCenter = ({
                   whiteSpace: 'pre-line'
                 }}>
                   {selectedTemplate?.whatsappContent?.headerText && (
-                    <div style={{ fontWeight: '700', color: '#25d366', marginBottom: '4px' }}>
+                    <div style={{ fontWeight: '700', color: '#0f172a', marginBottom: '4px' }}>
                       {replaceVars(selectedTemplate.whatsappContent.headerText)}
                     </div>
                   )}
@@ -1016,9 +1016,9 @@ export const ModuleMessagingCenter = ({
                           log.channel === 'sms' ? 'rgba(59, 130, 246, 0.12)' :
                           log.channel === 'email' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(236, 72, 153, 0.12)',
                         color:
-                          log.channel === 'whatsapp' ? '#25d366' :
+                          log.channel === 'whatsapp' ? '#0f172a' :
                           log.channel === 'sms' ? '#60a5fa' :
-                          log.channel === 'email' ? '#fbbf24' : '#f472b6'
+                          log.channel === 'email' ? '#cbd5e1' : '#60a5fa'
                       }}>
                         {log.channel.toUpperCase()}
                       </span>
@@ -1040,7 +1040,7 @@ export const ModuleMessagingCenter = ({
                         fontSize: '0.68rem',
                         fontWeight: '700',
                         background: log.status === 'delivered' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                        color: log.status === 'delivered' ? '#10b981' : '#ef4444'
+                        color: log.status === 'delivered' ? '#1a73e8' : '#0f172a'
                       }}>
                         {log.status.toUpperCase()}
                       </span>

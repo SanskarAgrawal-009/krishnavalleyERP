@@ -170,7 +170,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
               gap: '6px',
               padding: '7px 14px',
               borderRadius: 'var(--radius-sm)',
-              background: activePreview === 'whatsapp' ? '#25d366' : 'transparent',
+              background: activePreview === 'whatsapp' ? '#0f172a' : 'transparent',
               color: activePreview === 'whatsapp' ? '#000' : 'var(--text-secondary)',
               fontWeight: '700',
               fontSize: '0.78rem',
@@ -208,7 +208,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
               gap: '6px',
               padding: '7px 14px',
               borderRadius: 'var(--radius-sm)',
-              background: activePreview === 'email' ? '#f59e0b' : 'transparent',
+              background: activePreview === 'email' ? '#475569' : 'transparent',
               color: activePreview === 'email' ? '#000' : 'var(--text-secondary)',
               fontWeight: '700',
               fontSize: '0.78rem',
@@ -227,7 +227,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
               gap: '6px',
               padding: '7px 14px',
               borderRadius: 'var(--radius-sm)',
-              background: activePreview === 'push' ? '#ec4899' : 'transparent',
+              background: activePreview === 'push' ? '#1e40af' : 'transparent',
               color: activePreview === 'push' ? '#fff' : 'var(--text-secondary)',
               fontWeight: '700',
               fontSize: '0.78rem',
@@ -278,7 +278,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
                     width: '34px',
                     height: '34px',
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #128c7e, #25d366)',
+                    background: 'linear-gradient(135deg, #005bbf, #0f172a)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -291,7 +291,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
                   <div>
                     <div style={{ fontSize: '0.85rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       Krishna Valley Official
-                      <span style={{ background: '#25d366', color: '#000', borderRadius: '50%', width: '12px', height: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px' }}>✓</span>
+                      <span style={{ background: '#0f172a', color: '#000', borderRadius: '50%', width: '12px', height: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px' }}></span>
                     </div>
                     <div style={{ fontSize: '0.68rem', color: '#8696a0' }}>Official Business Account</div>
                   </div>
@@ -316,7 +316,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
               }}>
                 {/* Official Message Bubble */}
                 <div style={{
-                  background: '#005c4b',
+                  background: '#001a41',
                   color: '#e9edef',
                   borderRadius: '12px',
                   borderTopLeftRadius: '2px',
@@ -325,7 +325,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
                   boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
                 }}>
                   {wpHeader && (
-                    <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#25d366', marginBottom: '6px' }}>
+                    <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#0f172a', marginBottom: '6px' }}>
                       {wpHeader}
                     </div>
                   )}
@@ -373,7 +373,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
                 <div style={{ flex: 1, background: '#2a3942', borderRadius: '18px', padding: '6px 12px', fontSize: '0.76rem', color: '#8696a0' }}>
                   Message
                 </div>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#00a884', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Send size={13} color="#fff" />
                 </div>
               </div>

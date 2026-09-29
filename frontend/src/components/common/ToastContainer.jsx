@@ -9,26 +9,26 @@ export const ToastContainer = ({ toasts, onDismiss }) => {
       case 'success':
         return {
           icon: CheckCircle2,
-          bg: '#f0fdf4',
-          border: '#86efac',
-          color: '#166534',
-          iconColor: '#16a34a'
+          bg: '#eff6ff',
+          border: '#bfdbfe',
+          color: '#1e40af',
+          iconColor: '#2563eb'
         };
       case 'error':
         return {
           icon: XCircle,
-          bg: '#fef2f2',
-          border: '#fca5a5',
-          color: '#991b1b',
-          iconColor: '#dc2626'
+          bg: '#f8fafc',
+          border: '#cbd5e1',
+          color: '#0f172a',
+          iconColor: '#0f172a'
         };
       case 'warning':
         return {
           icon: AlertTriangle,
-          bg: '#fffbeb',
-          border: '#fde68a',
-          color: '#92400e',
-          iconColor: '#d97706'
+          bg: '#f1f5f9',
+          border: '#cbd5e1',
+          color: '#334155',
+          iconColor: '#475569'
         };
       default:
         return {

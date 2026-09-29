@@ -140,7 +140,7 @@ export const processAgentCommission = async (lead, verifiedByUserId = null) => {
       },
     });
 
-    console.log(`💰 [Commission Auto-Credit] Credited ₹${calculatedAmount} to agent ${agent.firstName} (@${agent.username}) | Handover Date: ${handoverDate.toISOString()}`);
+    console.log(`[Commission Auto-Credit] Credited ₹${calculatedAmount} to agent ${agent.firstName} (@${agent.username}) | Handover Date: ${handoverDate.toISOString()}`);
     return { calculatedAmount, ledgerEntry, handoverDate };
   } catch (error) {
     console.error('Error processing agent commission:', error);
@@ -216,7 +216,7 @@ export const processExpiredAgentLeadsDebit = async () => {
           },
         });
 
-        console.log(`🔻 [Commission Auto-Debit] Debited ₹${debitAmount} from agent @${agent.username} for expired lead ${lead.name}`);
+        console.log(`[Commission Auto-Debit] Debited ₹${debitAmount} from agent @${agent.username} for expired lead ${lead.name}`);
       }
     }
   } catch (error) {
@@ -1813,11 +1813,11 @@ export const metaWebhookVerifyAction = async (req, res) => {
 
     const verifiedChallenge = await verifyMetaWebhook(mode, token, challenge);
     if (verifiedChallenge) {
-      console.log('✅ Meta Webhook Hub Challenge verified successfully!');
+      console.log('Meta Webhook Hub Challenge verified successfully!');
       return res.status(200).send(verifiedChallenge);
     }
 
-    console.warn('⚠️ Meta Webhook verification failed. Token mismatch.');
+    console.warn('Meta Webhook verification failed. Token mismatch.');
     return res.status(403).send('Verification failed');
   } catch (error) {
     console.error('Error in metaWebhookVerifyAction:', error);
@@ -1841,7 +1841,7 @@ export const metaWebhookReceiveAction = async (req, res) => {
         for (const change of entry.changes || []) {
           if (change.field === 'leadgen') {
             const leadData = change.value;
-            console.log(`📥 Incoming Meta Ad Lead event: leadgen_id=${leadData.leadgen_id}, form_id=${leadData.form_id}`);
+            console.log(`Incoming Meta Ad Lead event: leadgen_id=${leadData.leadgen_id}, form_id=${leadData.form_id}`);
             
             // Process lead in background
             ingestMetaLead({

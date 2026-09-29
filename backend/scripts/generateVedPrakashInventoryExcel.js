@@ -54,7 +54,7 @@ function generateVedPrakashInventoryExcel() {
   XLSX.writeFile(workbook, outPath1);
   XLSX.writeFile(workbook, outPath2);
 
-  console.log('✅ Generated Ved Prakash Agarwal Site Inventory Excel at:');
+  console.log('Generated Ved Prakash Agarwal Site Inventory Excel at:');
   console.log('  1.', outPath1);
   console.log('  2.', outPath2);
 }

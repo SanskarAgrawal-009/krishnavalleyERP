@@ -13,7 +13,7 @@ async function verify() {
   await connectDB();
 
   console.log('\n' + '='.repeat(80));
-  console.log('  🔍 DEEP DATABASE VERIFICATION AUDIT');
+  console.log('  DEEP DATABASE VERIFICATION AUDIT');
   console.log('='.repeat(80) + '\n');
 
   // 1. Flats count
@@ -35,7 +35,7 @@ async function verify() {
   // 4. Check for duplicate flat numbers
   const flatNumbers = allFlats.map(f => f.flatNumber);
   const duplicates = flatNumbers.filter((item, index) => flatNumbers.indexOf(item) !== index);
-  console.log(`[5] Duplicate flat numbers: ${duplicates.length === 0 ? 'NONE (PASSED ✅)' : duplicates.join(', ')}`);
+  console.log(`[5] Duplicate flat numbers: ${duplicates.length === 0 ? 'NONE (PASSED)' : duplicates.join(', ')}`);
 
   // 5. Customer reverse linkage check
   const allCustomers = await Customer.find({ customerType: 'owner' }).lean();
@@ -72,7 +72,7 @@ async function verify() {
   for (const fn of sampleFlatNos) {
     const f = await Flat.findOne({ flatNumber: fn }).populate('currentOwner.customerId');
     if (!f) {
-      console.log(`     ❌ Flat ${fn} not found!`);
+      console.log(`     Flat ${fn} not found!`);
       continue;
     }
     const oName = f.currentOwner?.customerId?.name || f.currentOwner?.name || 'Vacant';
@@ -80,11 +80,11 @@ async function verify() {
     const paid = f.rentalDetails?.totalDisbursedToOwner || 0;
     const dueDay = f.rentalDetails?.dueDayOfMonth;
     const tenure = f.rentalDetails?.tenureMonths;
-    console.log(`     ✅ ${f.flatNumber}: Owner: ${oName} | Due: ${dueDay}th | ₹${rent.toLocaleString('en-IN')}/mo | Tenure: ${tenure}m | Disbursed: ₹${paid.toLocaleString('en-IN')} | Status: ${f.status}`);
+    console.log(`     ${f.flatNumber}: Owner: ${oName} | Due: ${dueDay}th | ₹${rent.toLocaleString('en-IN')}/mo | Tenure: ${tenure}m | Disbursed: ₹${paid.toLocaleString('en-IN')} | Status: ${f.status}`);
   }
 
   console.log('\n' + '='.repeat(80));
-  console.log('  🎯 ALL AUDIT CHECKS COMPLETED SUCCESSFULLY');
+  console.log('  ALL AUDIT CHECKS COMPLETED SUCCESSFULLY');
   console.log('='.repeat(80) + '\n');
 
   process.exit(0);

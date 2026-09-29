@@ -147,7 +147,7 @@ export const UploadLegalDocModal = ({ isOpen, onClose, onUpload, onSubmit }) => 
               borderRadius: '4px',
               fontSize: '0.8rem',
               cursor: 'pointer',
-              color: file ? '#10b981' : 'var(--text-secondary)'
+              color: file ? '#1a73e8' : 'var(--text-secondary)'
             }}
           >
             <Upload size={16} />

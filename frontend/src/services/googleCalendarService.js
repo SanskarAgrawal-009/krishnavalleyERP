@@ -45,24 +45,24 @@ export const googleCalendarService = {
     const end = new Date(start.getTime() + (durationMinutes || 30) * 60 * 1000);
 
     const modeLabels = {
-      site_visit: '🏡 Site Visit Tour',
-      call: '📞 Phone Call Follow-Up',
-      meeting: '🤝 In-Person Meeting',
-      whatsapp: '💬 WhatsApp Discussion',
-      email: '✉️ Email Consultation',
-      other: '📋 Follow-Up Task',
+      site_visit: 'Site Visit Tour',
+      call: 'Phone Call Follow-Up',
+      meeting: 'In-Person Meeting',
+      whatsapp: 'WhatsApp Discussion',
+      email: 'Email Consultation',
+      other: 'Follow-Up Task',
     };
 
     const title = `[${modeLabels[mode] || 'Follow-Up'}] ${leadName} ${leadMobile ? `(${leadMobile})` : ''}`.trim();
 
     const details = [
-      `🏢 KRISHNA VALLEY REAL ESTATE ERP`,
+      `KRISHNA VALLEY REAL ESTATE ERP`,
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-      `👤 Client: ${leadName}`,
-      leadMobile ? `📞 Phone: ${leadMobile}` : null,
-      leadEmail ? `✉️ Email: ${leadEmail}` : null,
-      `📌 Mode: ${modeLabels[mode] || mode}`,
-      `📝 Agenda / Notes:`,
+      `Client: ${leadName}`,
+      leadMobile ? `Phone: ${leadMobile}` : null,
+      leadEmail ? `Email: ${leadEmail}` : null,
+      `Mode: ${modeLabels[mode] || mode}`,
+      `Agenda / Notes:`,
       notes || 'Scheduled client follow-up from Krishna Valley ERP.',
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
       `Created via Krishna Valley ERP System`,

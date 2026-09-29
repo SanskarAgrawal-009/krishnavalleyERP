@@ -15,21 +15,21 @@ const API_BASE = 'http://localhost:5000/api';
 
 async function runSystemDiagnostics() {
   console.log('====================================================');
-  console.log('🚀 KRISHNA VALLEY ERP - FULL SYSTEM & MODULE AUDIT');
+  console.log('KRISHNA VALLEY ERP - FULL SYSTEM & MODULE AUDIT');
   console.log('====================================================\n');
 
   // 1. DATABASE CONNECTION
-  console.log('1️⃣ CHECKING DATABASE CONNECTION...');
+  console.log('1⃣ CHECKING DATABASE CONNECTION...');
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('   ✅ MongoDB Atlas connected successfully.');
+    console.log('   MongoDB Atlas connected successfully.');
   } catch (err) {
-    console.error('   ❌ MongoDB Atlas connection failed:', err.message);
+    console.error('   MongoDB Atlas connection failed:', err.message);
     process.exit(1);
   }
 
   // 2. ADMIN USER & AUTH TOKEN VIA LOGIN API
-  console.log('\n2️⃣ AUTHENTICATING ADMIN USER VIA API...');
+  console.log('\n2⃣ AUTHENTICATING ADMIN USER VIA API...');
   let token;
   try {
     const loginRes = await fetch(`${API_BASE}/auth/login`, {
@@ -42,10 +42,10 @@ async function runSystemDiagnostics() {
       throw new Error(loginData.message || 'Login failed');
     }
     token = loginData.token;
-    console.log(`   ✅ Admin authenticated: ${loginData.user.email} (Role: ${loginData.user.role?.roleName || loginData.user.role?.roleCode})`);
-    console.log(`   ✅ Permissions loaded: ${loginData.user.permissions?.length || 0} active permissions`);
+    console.log(`   Admin authenticated: ${loginData.user.email} (Role: ${loginData.user.role?.roleName || loginData.user.role?.roleCode})`);
+    console.log(`   Permissions loaded: ${loginData.user.permissions?.length || 0} active permissions`);
   } catch (err) {
-    console.error('   ❌ Failed to authenticate admin user:', err.message);
+    console.error('   Failed to authenticate admin user:', err.message);
     process.exit(1);
   }
 
@@ -55,7 +55,7 @@ async function runSystemDiagnostics() {
   };
 
   // 3. TESTING API ENDPOINTS FOR EACH MODULE IN THE USER'S LIST
-  console.log('\n3️⃣ TESTING API HEALTH ACROSS ALL MODULES:');
+  console.log('\n3⃣ TESTING API HEALTH ACROSS ALL MODULES:');
 
   const testEndpoints = [
     { module: 'Core Health', name: 'System Health Check', url: '/health' },
@@ -91,20 +91,20 @@ async function runSystemDiagnostics() {
       const res = await fetch(`${API_BASE}${ep.url}`, { headers });
       const status = res.status;
       if (res.ok || status === 200 || status === 201) {
-        console.log(`   ✅ [${ep.module}] ${ep.name} -> HTTP ${status} (OK)`);
+        console.log(`   [${ep.module}] ${ep.name} -> HTTP ${status} (OK)`);
         passedCount++;
       } else {
         const text = await res.text();
-        console.log(`   ⚠️ [${ep.module}] ${ep.name} -> HTTP ${status} (${text.slice(0, 80)})`);
+        console.log(`[${ep.module}] ${ep.name} -> HTTP ${status} (${text.slice(0, 80)})`);
         failedCount++;
       }
     } catch (err) {
-      console.log(`   ❌ [${ep.module}] ${ep.name} -> Fetch error: ${err.message}`);
+      console.log(`   [${ep.module}] ${ep.name} -> Fetch error: ${err.message}`);
       failedCount++;
     }
   }
 
-  console.log(`\n📊 API HEALTH TEST SUMMARY: ${passedCount} Passed, ${failedCount} Failed out of ${testEndpoints.length} endpoints tested.`);
+  console.log(`\nAPI HEALTH TEST SUMMARY: ${passedCount} Passed, ${failedCount} Failed out of ${testEndpoints.length} endpoints tested.`);
 
   await mongoose.disconnect();
   process.exit(failedCount > 0 ? 1 : 0);

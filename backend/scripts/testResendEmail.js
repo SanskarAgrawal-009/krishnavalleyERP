@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 async function runTest() {
-  console.log('🧪 Connecting to MongoDB...');
+  console.log('Connecting to MongoDB...');
   await mongoose.connect(process.env.MONGO_URI);
   console.log('Connected to MongoDB successfully.');
 
@@ -30,7 +30,7 @@ async function runTest() {
       customConfig: { provider: 'resend', apiKey: '' }
     });
 
-    console.log('✅ Send test email result via Resend (Sandbox simulation):', sendResult);
+    console.log('Send test email result via Resend (Sandbox simulation):', sendResult);
   } finally {
     await mongoose.disconnect();
     console.log('Disconnected from MongoDB.');

@@ -168,7 +168,7 @@ export const RentalLedgerModal = ({
               <span style={{ fontSize: '1.1rem', fontWeight: '800' }}>
                 Flat {rentalContract.flatId?.flatNumber || '001'} — {rentalContract.ownerId?.name || 'Owner'}
               </span>
-              <span style={{ background: '#10b981', color: '#ffffff', fontSize: '0.7rem', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>
+              <span style={{ background: '#1a73e8', color: '#ffffff', fontSize: '0.7rem', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>
                 3-Year Assured Yield
               </span>
             </div>
@@ -185,7 +185,7 @@ export const RentalLedgerModal = ({
             onClick={handleExportExcel}
             style={{
               padding: '8px 14px',
-              background: '#059669',
+              background: '#1e40af',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',
@@ -210,23 +210,23 @@ export const RentalLedgerModal = ({
             <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{formatINR(monthlyRent)} / month × 36</span>
           </div>
 
-          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '12px' }}>
-            <div style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700' }}>TOTAL PAID TO OWNER</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#15803d', marginTop: '2px' }}>{formatINR(totalPaidToOwner)}</div>
-            <span style={{ fontSize: '0.72rem', color: '#166534' }}>{paidCount} of {tenureMonths} Months Disbursed</span>
+          <div style={{ background: '#eff6ff', border: '1px solid #dbeafe', borderRadius: '8px', padding: '12px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700' }}>TOTAL PAID TO OWNER</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1e40af', marginTop: '2px' }}>{formatINR(totalPaidToOwner)}</div>
+            <span style={{ fontSize: '0.72rem', color: '#1e40af' }}>{paidCount} of {tenureMonths} Months Disbursed</span>
           </div>
 
-          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px' }}>
-            <div style={{ fontSize: '0.72rem', color: '#92400e', fontWeight: '700' }}>REMAINING TENURE BALANCE</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#b45309', marginTop: '2px' }}>{formatINR(remainingPayableToOwner)}</div>
-            <span style={{ fontSize: '0.72rem', color: '#92400e' }}>{tenureMonths - paidCount} Months Left to Pay</span>
+          <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '12px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#334155', fontWeight: '700' }}>REMAINING TENURE BALANCE</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#334155', marginTop: '2px' }}>{formatINR(remainingPayableToOwner)}</div>
+            <span style={{ fontSize: '0.72rem', color: '#334155' }}>{tenureMonths - paidCount} Months Left to Pay</span>
           </div>
 
-          <div style={{ background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '8px', padding: '12px' }}>
-            <div style={{ fontSize: '0.72rem', color: '#6b21a8', fontWeight: '700' }}>DISBURSEMENT PROGRESS</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#7c3aed', marginTop: '2px' }}>{progressPct}%</div>
-            <div style={{ width: '100%', height: '6px', background: '#e9d5ff', borderRadius: '3px', marginTop: '6px', overflow: 'hidden' }}>
-              <div style={{ width: `${progressPct}%`, height: '100%', background: '#7c3aed' }} />
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '12px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#00285c', fontWeight: '700' }}>DISBURSEMENT PROGRESS</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1e40af', marginTop: '2px' }}>{progressPct}%</div>
+            <div style={{ width: '100%', height: '6px', background: '#dbeafe', borderRadius: '3px', marginTop: '6px', overflow: 'hidden' }}>
+              <div style={{ width: `${progressPct}%`, height: '100%', background: '#1e40af' }} />
             </div>
           </div>
         </div>
@@ -257,7 +257,7 @@ export const RentalLedgerModal = ({
                       key={entry.monthIndex}
                       style={{
                         borderBottom: '1px solid #f1f5f9',
-                        background: isPaid ? '#f0fdf4' : (entry.status === 'due' ? '#fffbeb' : '#ffffff')
+                        background: isPaid ? '#eff6ff' : (entry.status === 'due' ? '#f8fafc' : '#ffffff')
                       }}
                     >
                       <td style={{ padding: '8px 10px', fontWeight: '700', color: '#1e293b' }}>
@@ -266,7 +266,7 @@ export const RentalLedgerModal = ({
                       <td style={{ padding: '8px 10px', color: '#64748b' }}>
                         {formatDate(entry.dueDate)}
                       </td>
-                      <td style={{ padding: '8px 10px', fontWeight: isPaid ? '700' : '400', color: isPaid ? '#15803d' : '#94a3b8' }}>
+                      <td style={{ padding: '8px 10px', fontWeight: isPaid ? '700' : '400', color: isPaid ? '#1e40af' : '#94a3b8' }}>
                         {formatDate(entry.paymentDate)}
                       </td>
                       <td style={{ padding: '8px 10px', color: '#334155' }}>
@@ -282,16 +282,16 @@ export const RentalLedgerModal = ({
                       <td style={{ padding: '8px 10px', color: '#64748b' }}>
                         {formatINR(entry.tdsDeducted || 0)}
                       </td>
-                      <td style={{ padding: '8px 10px', fontWeight: '800', color: isPaid ? '#16a34a' : '#94a3b8' }}>
+                      <td style={{ padding: '8px 10px', fontWeight: '800', color: isPaid ? '#1a73e8' : '#94a3b8' }}>
                         {formatINR(entry.netAmountPaid || (isPaid ? (entry.grossAmount || monthlyRent) : 0))}
                       </td>
-                      <td style={{ padding: '8px 10px', fontWeight: '700', color: '#b45309' }}>
+                      <td style={{ padding: '8px 10px', fontWeight: '700', color: '#334155' }}>
                         {formatINR(entry.remainingTenureBalance)}
                       </td>
                       <td style={{ padding: '8px 10px' }}>
                         {isPaid ? (
-                          <span style={{ background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: '4px', fontWeight: '700', fontSize: '0.7rem' }}>
-                            ✓ PAID
+                          <span style={{ background: '#eff6ff', color: '#1e40af', padding: '2px 8px', borderRadius: '4px', fontWeight: '700', fontSize: '0.7rem' }}>
+                            PAID
                           </span>
                         ) : (
                           <span style={{ background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '4px', fontWeight: '600', fontSize: '0.7rem' }}>
@@ -305,7 +305,7 @@ export const RentalLedgerModal = ({
                           onClick={() => handleOpenPayout(entry)}
                           style={{
                             padding: '4px 10px',
-                            background: isPaid ? '#e0f2fe' : '#16a34a',
+                            background: isPaid ? '#e0f2fe' : '#1a73e8',
                             color: isPaid ? '#0284c7' : '#ffffff',
                             border: 'none',
                             borderRadius: '4px',
@@ -454,7 +454,7 @@ export const RentalLedgerModal = ({
                 disabled={submitting}
                 style={{
                   padding: '6px 18px',
-                  background: '#16a34a',
+                  background: '#1a73e8',
                   color: '#ffffff',
                   fontWeight: '700',
                   borderRadius: '4px',
