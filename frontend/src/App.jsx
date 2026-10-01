@@ -30,6 +30,7 @@ import { ReportsPage } from './pages/Reports/ReportsPage.jsx';
 import { SettingsPage } from './pages/Settings/SettingsPage.jsx';
 import { AuditLogsPage } from './pages/Audit/AuditLogsPage.jsx';
 import { TaskforcePage } from './pages/Taskforce/TaskforcePage.jsx';
+import { TaskforceManagerPage } from './pages/Taskforce/TaskforceManagerPage.jsx';
 
 import './styles/global.css';
 import './styles/layout.css';
@@ -215,6 +216,24 @@ export const App = () => {
               element={
                 <ProtectedRoute>
                   <TaskforcePage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Taskforce Manager — Team, Gantt, Performance, Delegation */}
+            <Route
+              path="taskforce-manager"
+              element={
+                <ProtectedRoute>
+                  <TaskforceManagerPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="taskforce-manager/:tab"
+              element={
+                <ProtectedRoute>
+                  <TaskforceManagerPage />
                 </ProtectedRoute>
               }
             />

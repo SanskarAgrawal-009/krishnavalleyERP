@@ -53,7 +53,8 @@ import {
   Clock,
   BookOpen,
   History,
-  Target
+  Target,
+  Shield
 } from 'lucide-react';
 
 export const NAV_CATEGORIES = [
@@ -77,6 +78,20 @@ export const NAV_CATEGORIES = [
           { path: '/taskforce?view=kanban', label: 'Taskforce Board', icon: Layers },
           { path: '/taskforce?view=radar', label: 'Follow-up Radar', icon: Clock },
           { path: '/taskforce?view=list', label: 'Directives Register', icon: FileText }
+        ]
+      },
+      {
+        path: '/taskforce-manager',
+        label: 'Taskforce Manager',
+        icon: Shield,
+        badge: 'New',
+        highlight: true,
+        subItems: [
+          { path: '/taskforce-manager?tab=workforce', label: 'Team & Workload', icon: Users },
+          { path: '/taskforce-manager?tab=timeline', label: 'Gantt Timeline', icon: BarChart3 },
+          { path: '/taskforce-manager?tab=performance', label: 'Performance KPIs', icon: Award },
+          { path: '/taskforce-manager?tab=departments', label: 'Department Analytics', icon: Building2 },
+          { path: '/taskforce-manager?tab=delegation', label: 'Delegation Hub', icon: Target }
         ]
       },
       {

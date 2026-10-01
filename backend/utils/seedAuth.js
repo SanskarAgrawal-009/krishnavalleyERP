@@ -331,6 +331,29 @@ export const seedAuthDefaults = async () => {
           permMap['reports:export'],
         ].filter(Boolean),
       },
+      {
+        roleName: 'Taskforce Manager',
+        roleCode: 'taskforce_manager',
+        description: 'Operations & Taskforce Head. Full administrative control over task allocation, directives execution, roadblocks, team workload balancing, Gantt milestones, and cross-department workforce operations.',
+        isSystemRole: true,
+        permissions: [
+          permMap['dashboard:view'],
+          permMap['tasks:view'],
+          permMap['tasks:create'],
+          permMap['tasks:edit'],
+          permMap['tasks:manage'],
+          permMap['reports:view'],
+          permMap['reports:export'],
+          permMap['documents:view'],
+          permMap['hr:view'],
+          permMap['notifications:view'],
+          permMap['notifications:send'],
+          permMap['users:view'],
+          permMap['inventory:view'],
+          permMap['maintenance:view'],
+          permMap['crm:view'],
+        ].filter(Boolean),
+      },
     ];
 
     const roleDocs = {};
@@ -419,6 +442,15 @@ export const seedAuthDefaults = async () => {
         mobileNo: '+91 98765 00005',
         passwordPlain: 'Accounts@12345',
         roleCode: 'accounts_manager',
+      },
+      {
+        firstName: 'Karan',
+        lastName: 'Malhotra',
+        username: 'taskforce_mgr',
+        email: 'taskforce.manager@krishnavalley.com',
+        mobileNo: '+91 98765 00007',
+        passwordPlain: 'Taskforce@12345',
+        roleCode: 'taskforce_manager',
       },
     ];
 

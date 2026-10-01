@@ -21,6 +21,7 @@ const defaultDepartmentsList = [
 const defaultRolesList = [
   // ENG - Civil & Structural Engineering
   { roleCode: 'PROJ_MGR', roleName: 'Project General Manager', departmentCode: 'ENG', departmentName: 'Civil & Structural Engineering', description: 'Overall site milestone execution, budget, and construction head.', permissions: ['all'] },
+  { roleCode: 'TASKFORCE_MGR', roleName: 'Taskforce & Operations Manager', departmentCode: 'ENG', departmentName: 'Civil & Structural Engineering', description: 'Directs cross-department taskforce initiatives, MD directives, Gantt schedules, and workforce delegation.', permissions: ['tasks:manage', 'tasks:create', 'tasks:view'] },
   { roleCode: 'SITE_ENG', roleName: 'Senior Site Engineer (RCC)', departmentCode: 'ENG', departmentName: 'Civil & Structural Engineering', description: 'Oversees RCC casting, reinforcement bar bending, and structural quality.', permissions: ['view_inventory', 'issue_materials'] },
   { roleCode: 'JR_SITE_ENG', roleName: 'Junior Site Engineer', departmentCode: 'ENG', departmentName: 'Civil & Structural Engineering', description: 'Daily site checks, brickwork, plastering, and labour management.', permissions: ['view_inventory'] },
   { roleCode: 'QA_QC_ENG', roleName: 'Quality Control & Safety Engineer', departmentCode: 'ENG', departmentName: 'Civil & Structural Engineering', description: 'Concrete cube testing, safety audits, and material specifications.', permissions: ['view_inventory', 'qa_approval'] },

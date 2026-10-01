@@ -30,6 +30,7 @@ import reportRoutes from './routes/reportRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import auditLogRoutes from './routes/auditLogRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
+import taskforceManagerRoutes from './routes/taskforceManagerRoutes.js';
 import { autoAuditMiddleware } from './middleware/auditMiddleware.js';
 
 import { initReminderScheduler } from './services/reminderSchedulerService.js';
@@ -135,6 +136,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/taskforce-manager', taskforceManagerRoutes);
 
 // Serve static frontend build if present (unified production / Docker)
 const frontendDist = path.resolve(__dirname, '../frontend/dist');

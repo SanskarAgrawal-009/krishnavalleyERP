@@ -18,7 +18,8 @@ import {
   Briefcase,
   DollarSign,
   Wrench,
-  Loader2
+  Loader2,
+  Target
 } from 'lucide-react';
 
 export const LoginPage = () => {
@@ -49,7 +50,13 @@ export const LoginPage = () => {
     try {
       const userRes = await login(identifier.trim(), password);
       const roleCode = userRes?.role?.roleCode || userRes?.user?.role?.roleCode;
-      const targetPath = roleCode === 'agent' ? '/agent-portal' : (roleCode === 'hr_manager' && from === '/dashboard' ? '/hr' : from);
+      const targetPath = roleCode === 'agent'
+        ? '/agent-portal'
+        : (roleCode === 'hr_manager' && from === '/dashboard'
+            ? '/hr'
+            : (roleCode === 'taskforce_manager' && from === '/dashboard'
+                ? '/taskforce-manager'
+                : from));
       navigate(targetPath, { replace: true });
     } catch (err) {
       setErrorMessage(err.message || 'Authentication failed. Please verify credentials.');
@@ -68,7 +75,13 @@ export const LoginPage = () => {
     try {
       const userRes = await login(username, pass);
       const roleCode = userRes?.role?.roleCode || userRes?.user?.role?.roleCode;
-      const targetPath = roleCode === 'agent' ? '/agent-portal' : (roleCode === 'hr_manager' && from === '/dashboard' ? '/hr' : from);
+      const targetPath = roleCode === 'agent'
+        ? '/agent-portal'
+        : (roleCode === 'hr_manager' && from === '/dashboard'
+            ? '/hr'
+            : (roleCode === 'taskforce_manager' && from === '/dashboard'
+                ? '/taskforce-manager'
+                : from));
       navigate(targetPath, { replace: true });
     } catch (err) {
       setErrorMessage(err.message || 'Demo login failed. Ensure the server is running.');
@@ -80,11 +93,12 @@ export const LoginPage = () => {
 
   const demoAccounts = [
     { label: 'Super Admin', username: 'admin', pass: 'Admin@12345', icon: ShieldCheck, color: '#1a73e8', bg: '#e8f0fe', desc: 'Full System Control' },
+    { label: 'Taskforce Manager', username: 'taskforce_mgr', pass: 'Taskforce@12345', icon: Target, color: '#1a73e8', bg: '#eff6ff', desc: 'Workforce & Directives' },
     { label: 'Sales Head', username: 'sales_head', pass: 'Sales@12345', icon: Users, color: '#1a73e8', bg: '#eff6ff', desc: 'CRM & Bookings' },
     { label: 'Agent Partner', username: 'agent_rahul', pass: 'Agent@12345', icon: Sparkles, color: '#334155', bg: '#f8fafc', desc: 'Leads & Commission Wallet' },
     { label: 'Site Engineer', username: 'site_eng', pass: 'Site@12345', icon: Wrench, color: '#0284c7', bg: '#e0f2fe', desc: 'Inventory & Materials' },
-    { label: 'HR Manager', username: 'hr_manager', pass: 'Hr@12345', icon: Briefcase, color: '#9334e6', bg: '#f3e8fd', desc: 'Staff & Attendance' },
-    { label: 'Accounts Head', username: 'accounts_head', pass: 'Accounts@12345', icon: DollarSign, color: '#1292b3', bg: '#e4f7fb', desc: 'Finance & Passbooks' },
+    { label: 'HR Manager', username: 'hr_manager', pass: 'Hr@12345', icon: Briefcase, color: '#1e40af', bg: '#eff6ff', desc: 'Staff & Attendance' },
+    { label: 'Accounts Head', username: 'accounts_head', pass: 'Accounts@12345', icon: DollarSign, color: '#0f172a', bg: '#f1f5f9', desc: 'Finance & Passbooks' },
   ];
 
   return (
