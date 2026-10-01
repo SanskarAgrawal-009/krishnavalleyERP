@@ -176,7 +176,7 @@ export const App = () => {
             <Route
               path="rentals"
               element={
-                <ProtectedRoute permission="inventory:view">
+                <ProtectedRoute permission="rentals:view">
                   <RentalManagementPage />
                 </ProtectedRoute>
               }
@@ -184,7 +184,7 @@ export const App = () => {
             <Route
               path="rentals/ledgers"
               element={
-                <ProtectedRoute permission="inventory:view">
+                <ProtectedRoute permission="rentals:manage">
                   <RentalLedgersPage />
                 </ProtectedRoute>
               }

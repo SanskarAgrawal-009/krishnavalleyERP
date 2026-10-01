@@ -201,7 +201,7 @@ export const NAV_CATEGORIES = [
         label: 'Rental Management',
         icon: Repeat,
         badge: 'Assured',
-        permission: 'inventory:view',
+        permission: 'rentals:view',
         subItems: [
           { path: '/rentals?tab=active', label: 'Active Rental Register', icon: Building2 },
           { path: '/rentals?tab=history', label: 'Previous Owners Trail', icon: History },
@@ -406,6 +406,17 @@ export const AppLayout = () => {
   // Filter items based on user permissions, role, and search
   const userRole = (user?.role?.roleCode || user?.roleCode || user?.role || '').toLowerCase();
   const isAgentUser = userRole === 'agent';
+  const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
+
+  const FINANCIAL_PATHS = [
+    '/reports/finance',
+    '/reports/collection',
+    '/maintenance?tab=bills',
+    '/rentals/ledgers',
+    '/hr?tab=payroll',
+    '/customers?tab=passbook'
+  ];
+
   const isOfflineDev = typeof window !== 'undefined' && (
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1'
@@ -422,8 +433,22 @@ export const AppLayout = () => {
       return !isAgentUser;
     }
 
+    // 3. Hide financial routes from taskforce manager
+    if (isFinancialRestricted && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals')) {
+      return false;
+    }
+
     if (!item.permission) return true;
     return hasPermission(item.permission);
+  }).map((item) => {
+    if (!item.subItems) return item;
+    if (isFinancialRestricted) {
+      return {
+        ...item,
+        subItems: item.subItems.filter((sub) => !FINANCIAL_PATHS.includes(sub.path))
+      };
+    }
+    return item;
   });
 
   // Helper to check if a navigation module or one of its child sub-items matches current location
@@ -525,8 +550,20 @@ export const AppLayout = () => {
     const visibleCategoryItems = category.items.filter((item) => {
       if (item.path === '/agent-portal') return isAgentUser;
       if (item.path === '/agent-network') return !isAgentUser;
+      if (isFinancialRestricted && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals')) {
+        return false;
+      }
       if (!item.permission) return true;
       return hasPermission(item.permission);
+    }).map((item) => {
+      if (!item.subItems) return item;
+      if (isFinancialRestricted) {
+        return {
+          ...item,
+          subItems: item.subItems.filter((sub) => !FINANCIAL_PATHS.includes(sub.path))
+        };
+      }
+      return item;
     });
 
     if (!navSearch.trim()) {

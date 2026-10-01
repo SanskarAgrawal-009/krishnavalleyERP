@@ -56,7 +56,25 @@ export const ReportsPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const initialTab = reportType || searchParams.get('tab') || 'sales';
+  const userRole = (user?.role?.roleCode || user?.roleCode || user?.role || '').toLowerCase();
+  const isSuperAdmin = userRole === 'super_admin' || userRole === 'admin';
+  const hasFinancePermission = (user?.permissionCodes || []).includes('reports:financial') || (user?.permissions || []).some((p) => (typeof p === 'string' ? p : p.permissionCode) === 'reports:financial');
+  const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasFinancePermission && userRole !== 'accounts_manager');
+
+  const visibleReportTabs = useMemo(() => {
+    if (isFinancialRestricted) {
+      return REPORT_TABS.filter((t) => !['finance', 'collection'].includes(t.id));
+    }
+    return REPORT_TABS;
+  }, [isFinancialRestricted]);
+
+  const defaultInitialTab = isFinancialRestricted ? 'inventory' : 'sales';
+  const initialTab = (reportType && visibleReportTabs.some((t) => t.id === reportType))
+    ? reportType
+    : (searchParams.get('tab') && visibleReportTabs.some((t) => t.id === searchParams.get('tab')))
+      ? searchParams.get('tab')
+      : defaultInitialTab;
+
   const [activeReportTab, setActiveReportTab] = useState(initialTab);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -64,15 +82,20 @@ export const ReportsPage = () => {
 
   // Sync state if URL param or searchParam changes
   useEffect(() => {
-    if (reportType && REPORT_TABS.some((t) => t.id === reportType)) {
+    if (isFinancialRestricted && ['finance', 'collection'].includes(activeReportTab)) {
+      setActiveReportTab('inventory');
+      navigate('/reports/inventory', { replace: true });
+      return;
+    }
+    if (reportType && visibleReportTabs.some((t) => t.id === reportType)) {
       setActiveReportTab(reportType);
     } else {
       const tab = searchParams.get('tab');
-      if (tab && REPORT_TABS.some((t) => t.id === tab)) {
+      if (tab && visibleReportTabs.some((t) => t.id === tab)) {
         setActiveReportTab(tab);
       }
     }
-  }, [reportType, searchParams]);
+  }, [reportType, searchParams, isFinancialRestricted, visibleReportTabs]);
 
   const handleTabChange = (tabId) => {
     setActiveReportTab(tabId);
@@ -452,14 +475,14 @@ export const ReportsPage = () => {
         </div>
       </div>
 
-      {/* 8 Report Tabs Ribbon (Matching User Diagram) */}
+      {/* Report Tabs Ribbon */}
       <div className="g-card no-print" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
         gap: '6px',
         padding: '6px'
       }}>
-        {REPORT_TABS.map((tab) => {
+        {visibleReportTabs.map((tab) => {
           const IconComp = tab.icon;
           const isActive = activeReportTab === tab.id;
           return (
