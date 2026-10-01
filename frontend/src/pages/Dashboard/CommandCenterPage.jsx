@@ -57,8 +57,13 @@ import {
 
 export const CommandCenterPage = () => {
   const navigate = useNavigate();
-  const { user, isSuperAdmin, hasPermission } = useAuth();
-  const userRole = (user?.role?.name || user?.role || '').toLowerCase();
+  const { user, userRole: authRole, isSuperAdmin, hasPermission } = useAuth();
+  const userRole = (
+    authRole ||
+    (typeof user?.role === 'string'
+      ? user.role
+      : user?.role?.roleCode || user?.roleCode || '')
+  ).toLowerCase();
   const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
 
   const [loading, setLoading] = useState(false);

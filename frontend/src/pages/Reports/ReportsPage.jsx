@@ -51,12 +51,17 @@ const REPORT_TABS = [
 ];
 
 export const ReportsPage = () => {
-  const { user } = useAuth();
+  const { user, userRole: authRole } = useAuth();
   const { reportType } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const userRole = (user?.role?.roleCode || user?.roleCode || user?.role || '').toLowerCase();
+  const userRole = (
+    authRole ||
+    (typeof user?.role === 'string'
+      ? user.role
+      : user?.role?.roleCode || user?.roleCode || '')
+  ).toLowerCase();
   const isSuperAdmin = userRole === 'super_admin' || userRole === 'admin';
   const hasFinancePermission = (user?.permissionCodes || []).includes('reports:financial') || (user?.permissions || []).some((p) => (typeof p === 'string' ? p : p.permissionCode) === 'reports:financial');
   const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasFinancePermission && userRole !== 'accounts_manager');

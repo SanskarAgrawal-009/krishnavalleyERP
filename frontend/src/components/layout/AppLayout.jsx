@@ -325,7 +325,7 @@ export const NAV_ITEMS = NAV_CATEGORIES.flatMap((category) => category.items);
 export const AppLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, hasPermission, isSuperAdmin, login } = useAuth();
+  const { user, userRole: authRole, logout, hasPermission, isSuperAdmin, login } = useAuth();
   
   // Profile dropdown state
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -404,7 +404,12 @@ export const AppLayout = () => {
   }, [isMobile, mobileMenuOpen]);
 
   // Filter items based on user permissions, role, and search
-  const userRole = (user?.role?.roleCode || user?.roleCode || user?.role || '').toLowerCase();
+  const userRole = (
+    authRole ||
+    (typeof user?.role === 'string'
+      ? user.role
+      : user?.role?.roleCode || user?.roleCode || '')
+  ).toLowerCase();
   const isAgentUser = userRole === 'agent';
   const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
 

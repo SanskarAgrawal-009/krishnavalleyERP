@@ -132,7 +132,7 @@ export const ProtectedRoute = ({
           </h2>
 
           <p style={{ margin: '0 0 20px', fontSize: '0.92rem', color: '#64748b', lineHeight: 1.5 }}>
-            Your role (<strong>{user?.role?.roleName || user?.role || 'Current Role'}</strong>) does not have authorization to view this ERP module.
+            Your role (<strong>{user?.role?.roleName || (typeof user?.role === 'string' ? user?.role : 'Current Role')}</strong>) does not have authorization to view this ERP module.
           </p>
 
           <div

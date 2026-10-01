@@ -74,8 +74,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Safe role code resolution
+  const userRole = (
+    typeof user?.role === 'string'
+      ? user.role
+      : user?.role?.roleCode || user?.roleCode || ''
+  ).toLowerCase();
+
   // Permission and role checking helpers
-  const isSuperAdmin = user?.role?.roleCode === 'super_admin' || user?.role?.roleCode === 'admin';
+  const isSuperAdmin = userRole === 'super_admin' || userRole === 'admin';
 
   const hasPermission = (permissionCode) => {
     if (!user) return false;
@@ -87,14 +94,13 @@ export const AuthProvider = ({ children }) => {
   const hasRole = (roleCode) => {
     if (!user) return false;
     if (isSuperAdmin) return true;
-    return (user?.role?.roleCode || '').toLowerCase() === roleCode.toLowerCase();
+    return userRole === (roleCode || '').toLowerCase();
   };
 
   const hasAnyRole = (roleCodes = []) => {
     if (!user) return false;
     if (isSuperAdmin) return true;
-    const currentRole = (user?.role?.roleCode || '').toLowerCase();
-    return roleCodes.map((r) => r.toLowerCase()).includes(currentRole);
+    return roleCodes.map((r) => (r || '').toLowerCase()).includes(userRole);
   };
 
   const primaryBranch = user?.primaryBranch || user?.branchAccess?.find((b) => b.isPrimary)?.branchId || user?.branchAccess?.[0]?.branchId;
@@ -103,6 +109,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        userRole,
         token,
         isAuthenticated: !!token && !!user,
         isLoading,
