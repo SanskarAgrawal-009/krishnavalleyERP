@@ -64,11 +64,12 @@ export const LeadDetailDrawer = ({
   const [updatingFu, setUpdatingFu] = useState(false);
   const [fuSuccessMsg, setFuSuccessMsg] = useState('');
 
-  // Local state for inline Add New Follow-Up
+  // Local state for inline Add New Follow-Up (Logs completed interaction only)
   const [isAddingNewFu, setIsAddingNewFu] = useState(false);
   const [newFuMode, setNewFuMode] = useState('call');
   const [newFuNotes, setNewFuNotes] = useState('');
-  const [newFuNextDate, setNewFuNextDate] = useState('');
+  const [newFuDate, setNewFuDate] = useState('');
+  const [completePendingScheduled, setCompletePendingScheduled] = useState(true);
   const [addingFuLoading, setAddingFuLoading] = useState(false);
 
   // Quick reassignment state
@@ -258,11 +259,11 @@ export const LeadDetailDrawer = ({
     }
   };
 
-  // Add New Subsequent Follow-Up
+  // Log Completed Follow-Up Interaction (Records completed interaction directly into history; resolves pending scheduled tasks)
   const handleAddNewFollowUp = async (e) => {
     e.preventDefault();
     if (!newFuNotes.trim()) {
-      alert('Please enter follow-up notes.');
+      alert('Please enter discussion summary / notes.');
       return;
     }
 
@@ -270,21 +271,37 @@ export const LeadDetailDrawer = ({
     try {
       const payload = {
         mode: newFuMode,
+        date: newFuDate ? new Date(newFuDate).toISOString() : new Date().toISOString(),
         notes: newFuNotes.trim(),
-        nextFollowUpDate: newFuNextDate ? new Date(newFuNextDate).toISOString() : undefined,
-        status: newFuNextDate ? 'pending' : 'completed',
+        status: 'completed', // Strictly completed interaction record
         assignedTo: lead.assignedTo?._id || lead.assignedTo || currentUser?._id,
+        completePendingScheduled: !!completePendingScheduled,
       };
 
       await leadService.addFollowUp(lead._id, payload);
+
+      // If resolving pending scheduled tasks, also ensure pending items are updated
+      if (completePendingScheduled && pendingFollowUps.length > 0) {
+        for (const pFu of pendingFollowUps) {
+          try {
+            await leadService.updateFollowUp(lead._id, pFu._id, {
+              status: 'completed',
+              feedback: `Completed via logged follow-up: ${newFuNotes.trim()}`
+            });
+          } catch (err) {
+            console.warn('Error marking pending follow-up as completed:', err);
+          }
+        }
+      }
+
       setNewFuNotes('');
-      setNewFuNextDate('');
+      setNewFuDate('');
       setIsAddingNewFu(false);
-      setFuSuccessMsg('New follow-up interaction logged!');
+      setFuSuccessMsg('Follow-up interaction logged to history successfully!');
       if (onLeadUpdated) onLeadUpdated();
     } catch (err) {
-      console.error('Error adding follow-up:', err);
-      alert('Failed to add follow-up: ' + err.message);
+      console.error('Error logging follow-up:', err);
+      alert('Failed to log follow-up: ' + err.message);
     } finally {
       setAddingFuLoading(false);
     }
@@ -502,31 +519,8 @@ export const LeadDetailDrawer = ({
             </div>
           </div>
 
-          {/* Top Actions: Edit, Delete, Close */}
+          {/* Top Actions: Delete, Close */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-            {onEditLead && (
-              <button
-                type="button"
-                onClick={() => onEditLead(lead)}
-                style={{
-                  background: '#f8fafc',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '6px',
-                  padding: '5px 10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '0.74rem',
-                  fontWeight: '700',
-                  color: '#334155',
-                  cursor: 'pointer'
-                }}
-                title="Edit Lead Details"
-              >
-                <Edit size={13} /> Edit
-              </button>
-            )}
-
             {onDeleteLead && (
               <button
                 type="button"
@@ -688,58 +682,6 @@ export const LeadDetailDrawer = ({
             <span>Change Stage</span>
           </button>
 
-          {/* 5. Send Reminder */}
-          <button
-            type="button"
-            onClick={() => onSendReminder && onSendReminder(lead)}
-            style={{
-              height: '34px',
-              padding: '0 12px',
-              borderRadius: '7px',
-              border: '1px solid #cbd5e1',
-              background: '#ffffff',
-              color: '#00285c',
-              fontSize: '0.78rem',
-              fontWeight: '700',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-              transition: 'all 0.15s ease'
-            }}
-            title="Send 30-Minute Reminder to Client or Sales Rep"
-          >
-            <Bell size={14} color="#6366f1" />
-            <span>Send Reminder</span>
-          </button>
-
-          {/* 6. Convert Deal */}
-          {lead.status !== 'converted' && (
-            <button
-              type="button"
-              onClick={() => onConvertLead && onConvertLead(lead)}
-              style={{
-                height: '34px',
-                padding: '0 14px',
-                borderRadius: '7px',
-                border: 'none',
-                background: '#1a73e8',
-                color: '#ffffff',
-                fontSize: '0.78rem',
-                fontWeight: '800',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                boxShadow: '0 1px 3px rgba(22,163,74,0.3)',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Award size={14} />
-              <span>Won Deal</span>
-            </button>
-          )}
         </div>
 
         {/* ========================================================================= */}
@@ -910,22 +852,24 @@ export const LeadDetailDrawer = ({
                   Active Scheduled Follow-Ups & Tasks ({pendingFollowUps.length})
                 </h3>
               </div>
-              <button
-                type="button"
-                onClick={() => onScheduleFollowUp && onScheduleFollowUp(lead)}
-                style={{
-                  fontSize: '0.74rem',
-                  fontWeight: '800',
-                  color: '#1d4ed8',
-                  background: '#eff6ff',
-                  border: '1px solid #bfdbfe',
-                  padding: '3px 8px',
-                  borderRadius: '5px',
-                  cursor: 'pointer'
-                }}
-              >
-                + Schedule New Task
-              </button>
+              {pendingFollowUps.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => onScheduleFollowUp && onScheduleFollowUp(lead)}
+                  style={{
+                    fontSize: '0.74rem',
+                    fontWeight: '800',
+                    color: '#1d4ed8',
+                    background: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    padding: '3px 8px',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  + Schedule New Task
+                </button>
+              )}
             </div>
 
             {pendingFollowUps.length === 0 ? (
@@ -1299,15 +1243,20 @@ export const LeadDetailDrawer = ({
           {isAddingNewFu && (
             <div style={{
               background: '#f8fafc',
-              border: '2px solid #3b82f6',
+              border: '2px solid #2563eb',
               borderRadius: '10px',
               padding: '16px 18px',
-              boxShadow: '0 2px 8px rgba(59,130,246,0.15)'
+              boxShadow: '0 4px 12px rgba(37,99,235,0.08)'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.86rem', fontWeight: '800', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Plus size={16} color="#2563eb" /> Log Subsequent Follow-Up Interaction
-                </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <div>
+                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Plus size={16} color="#2563eb" /> Log Completed Follow-Up Interaction
+                  </span>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                    Record calls, messages, or meetings. Saved directly to Completed Interaction History.
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick={() => setIsAddingNewFu(false)}
@@ -1317,7 +1266,7 @@ export const LeadDetailDrawer = ({
                 </button>
               </div>
 
-              <form onSubmit={handleAddNewFollowUp} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <form onSubmit={handleAddNewFollowUp} style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '6px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#475569', marginBottom: '3px' }}>
@@ -1328,22 +1277,23 @@ export const LeadDetailDrawer = ({
                       onChange={(e) => setNewFuMode(e.target.value)}
                       style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.8rem', fontWeight: '600' }}
                     >
-                      <option value="call">Phone Call</option>
-                      <option value="whatsapp">WhatsApp</option>
-                      <option value="site_visit">Site Visit</option>
-                      <option value="meeting">Meeting</option>
-                      <option value="email">Email</option>
+                      <option value="call">📞 Phone Call</option>
+                      <option value="whatsapp">💬 WhatsApp</option>
+                      <option value="meeting">🤝 In-Person Meeting</option>
+                      <option value="site_visit">🚗 Site Visit Discussion</option>
+                      <option value="email">✉️ Email</option>
+                      <option value="note">📝 Internal Note</option>
                     </select>
                   </div>
 
                   <div>
                     <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#475569', marginBottom: '3px' }}>
-                      Next Follow-Up Date (Optional)
+                      Interaction Date & Time (Optional)
                     </label>
                     <input
                       type="datetime-local"
-                      value={newFuNextDate}
-                      onChange={(e) => setNewFuNextDate(e.target.value)}
+                      value={newFuDate}
+                      onChange={(e) => setNewFuDate(e.target.value)}
                       style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.8rem' }}
                     />
                   </div>
@@ -1356,12 +1306,38 @@ export const LeadDetailDrawer = ({
                   <textarea
                     rows={2}
                     required
-                    placeholder="Enter what was discussed with the client..."
+                    placeholder="Enter what was discussed with the client and outcome..."
                     value={newFuNotes}
                     onChange={(e) => setNewFuNotes(e.target.value)}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                   />
                 </div>
+
+                {/* Auto-complete active scheduled follow-up indicator */}
+                {pendingFollowUps.length > 0 && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    background: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    borderRadius: '6px',
+                    fontSize: '0.76rem',
+                    color: '#1e40af'
+                  }}>
+                    <input
+                      type="checkbox"
+                      id="completePendingCb"
+                      checked={completePendingScheduled}
+                      onChange={(e) => setCompletePendingScheduled(e.target.checked)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <label htmlFor="completePendingCb" style={{ cursor: 'pointer', fontWeight: '700' }}>
+                      Mark active scheduled follow-up ({pendingFollowUps.length}) as completed with this log
+                    </label>
+                  </div>
+                )}
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px', marginTop: '4px' }}>
                   <button
@@ -1385,7 +1361,7 @@ export const LeadDetailDrawer = ({
                       cursor: addingFuLoading ? 'not-allowed' : 'pointer'
                     }}
                   >
-                    {addingFuLoading ? 'Logging...' : 'Save Follow-Up'}
+                    {addingFuLoading ? 'Logging...' : 'Log Follow-Up'}
                   </button>
                 </div>
               </form>

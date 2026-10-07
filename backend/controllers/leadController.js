@@ -849,10 +849,22 @@ export const addFollowUp = async (req, res) => {
       mode: mode || 'call',
       notes: notes || '',
       nextFollowUpDate: nextFollowUpDate || null,
-      status: status || 'pending',
+      status: status || 'completed',
     };
 
     lead.followUps.push(newFollowUp);
+
+    // If follow-up is completed or completePendingScheduled is true, mark any existing pending scheduled follow-ups as completed
+    if (newFollowUp.status === 'completed' || completePendingScheduled) {
+      lead.followUps.forEach((fu, idx) => {
+        if (idx < lead.followUps.length - 1 && fu.status === 'pending') {
+          fu.status = 'completed';
+          if (!fu.feedback) {
+            fu.feedback = notes || 'Completed via logged follow-up';
+          }
+        }
+      });
+    }
 
     // If follow-up is a completed site visit
     if (mode === 'site_visit') {
@@ -876,7 +888,7 @@ export const addFollowUp = async (req, res) => {
 
     await lead.save();
 
-    // Asynchronously sync to Google Calendar if pending/scheduled
+    // Asynchronously sync to Google Calendar only if pending/scheduled
     if (newFollowUp.status === 'pending' || newFollowUp.nextFollowUpDate) {
       const addedFu = lead.followUps[lead.followUps.length - 1];
       googleCalendarService.createOrUpdateFollowUpEvent({
