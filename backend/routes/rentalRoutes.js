@@ -20,6 +20,7 @@ import {
   deleteOwnershipHistoryEntry
 } from '../controllers/rentalController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
+import { authorizePermission } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
 
@@ -33,54 +34,54 @@ const upload = multer({
 router.use(authenticateToken);
 
 // Table 1: Current Active Rentals Register
-router.get('/active', getActiveRentals);
+router.get('/active', authorizePermission('rentals:view', 'rentals:manage'), getActiveRentals);
 
 // Table 2: Previous Owners Ownership & Rental Trail
-router.get('/history', getPreviousOwnersHistory);
+router.get('/history', authorizePermission('rentals:view', 'rentals:manage'), getPreviousOwnersHistory);
 
 // Passbook Ledgers for All Customers
-router.get('/ledgers', getCustomerRentalLedgers);
+router.get('/ledgers', authorizePermission('rentals:view', 'rentals:manage'), getCustomerRentalLedgers);
 
 // Auto-generate Passbook from Active Register
-router.post('/ledgers/auto-generate', autoGeneratePassbookFromRegister);
+router.post('/ledgers/auto-generate', authorizePermission('rentals:create', 'rentals:manage'), autoGeneratePassbookFromRegister);
 
 // Upload Passbook Excel & Calculate Paid Months
-router.post('/ledgers/upload-excel', upload.single('excelFile'), uploadLedgerExcelAndGenerate);
+router.post('/ledgers/upload-excel', authorizePermission('rentals:create', 'rentals:manage'), upload.single('excelFile'), uploadLedgerExcelAndGenerate);
 
 // Update/Disburse individual month entry
-router.put('/ledgers/:flatId/entry', updatePassbookEntry);
+router.put('/ledgers/:flatId/entry', authorizePermission('rentals:edit', 'rentals:manage'), updatePassbookEntry);
 
 // Manual Rental Enrollment (Matching Required Columns)
-router.post('/manual', createManualRentalEntry);
+router.post('/manual', authorizePermission('rentals:create', 'rentals:manage'), createManualRentalEntry);
 
 // Batch Import Rentals from Excel
-router.post('/import-excel', upload.single('excelFile'), importRentalsFromExcel);
+router.post('/import-excel', authorizePermission('rentals:create', 'rentals:manage'), upload.single('excelFile'), importRentalsFromExcel);
 
 // Update rental terms (tenure, rent, dates, TDS)
-router.put('/:flatId/terms', updateRentalTerms);
+router.put('/:flatId/terms', authorizePermission('rentals:edit', 'rentals:manage'), updateRentalTerms);
 
 // Upload rental agreement document
-router.post('/:flatId/agreement', upload.single('agreementFile'), uploadAgreementDocument);
+router.post('/:flatId/agreement', authorizePermission('rentals:edit', 'rentals:manage'), upload.single('agreementFile'), uploadAgreementDocument);
 
 // Delete rental agreement document
-router.delete('/:flatId/agreement', deleteAgreementDocument);
+router.delete('/:flatId/agreement', authorizePermission('rentals:edit', 'rentals:manage', 'rentals:delete'), deleteAgreementDocument);
 
 // Upload owner registry document (Sale Deed / Registry Copy)
-router.post('/:flatId/registry-doc', upload.single('registryFile'), uploadRegistryDocument);
+router.post('/:flatId/registry-doc', authorizePermission('rentals:edit', 'rentals:manage'), upload.single('registryFile'), uploadRegistryDocument);
 
 // Delete owner registry document
-router.delete('/:flatId/registry-doc', deleteRegistryDocument);
+router.delete('/:flatId/registry-doc', authorizePermission('rentals:edit', 'rentals:manage', 'rentals:delete'), deleteRegistryDocument);
 
 // Record rental disbursement payout
-router.post('/:flatId/payout', recordRentalPayout);
+router.post('/:flatId/payout', authorizePermission('rentals:edit', 'rentals:manage'), recordRentalPayout);
 
 // Resale / Ownership transfer (archives current to Table 2, sets up new in Table 1)
-router.post('/:flatId/transfer', transferOwnership);
+router.post('/:flatId/transfer', authorizePermission('rentals:manage'), transferOwnership);
 
 // Delete / Unenroll active rental entry
-router.delete('/:flatId', deleteRentalEntry);
+router.delete('/:flatId', authorizePermission('rentals:delete', 'rentals:manage'), deleteRentalEntry);
 
 // Delete historical previous owner entry
-router.delete('/:flatId/history/:historyId', deleteOwnershipHistoryEntry);
+router.delete('/:flatId/history/:historyId', authorizePermission('rentals:delete', 'rentals:manage'), deleteOwnershipHistoryEntry);
 
 export default router;

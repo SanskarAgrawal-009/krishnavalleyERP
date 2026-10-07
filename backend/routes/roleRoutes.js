@@ -17,14 +17,14 @@ const router = express.Router();
 router.use(authenticateToken);
 
 // Metadata routes
-router.get('/permissions', getAllPermissions);
-router.get('/branches', getBranches);
+router.get('/permissions', authorizePermission('roles:view', 'roles:manage', 'users:view', 'users:manage'), getAllPermissions);
+router.get('/branches', authorizePermission('roles:view', 'roles:manage', 'users:view', 'users:manage', 'settings:view'), getBranches);
 
 // Roles CRUD
-router.get('/', authorizePermission('roles:view', 'users:view', 'users:manage'), getRoles);
+router.get('/', authorizePermission('roles:view', 'users:view', 'users:manage', 'agent:create', 'agent:manage', 'crm:manage'), getRoles);
 router.get('/:id', authorizePermission('roles:view', 'users:manage'), getRoleById);
 router.post('/', authorizePermission('roles:manage', 'users:manage'), createRole);
 router.put('/:id', authorizePermission('roles:manage', 'users:manage'), updateRole);
-router.delete('/:id', authorizeRoles('super_admin', 'admin'), deleteRole);
+router.delete('/:id', authorizePermission('roles:manage'), deleteRole);
 
 export default router;

@@ -17,10 +17,10 @@ const router = express.Router();
 // Apply auth to all user routes
 router.use(authenticateToken);
 
-router.get('/branches', getBranches);
+router.get('/branches', authorizePermission('users:view', 'users:manage', 'roles:view'), getBranches);
 router.get('/', authorizePermission('users:view', 'users:manage'), getUsers);
 router.get('/:id', authorizePermission('users:view', 'users:manage'), getUserById);
-router.post('/', authorizePermission('users:manage'), createUser);
+router.post('/', authorizePermission('users:manage', 'agent:create', 'agent:manage', 'crm:manage'), createUser);
 router.put('/:id', authorizePermission('users:manage'), updateUser);
 router.patch('/:id/status', authorizePermission('users:manage'), updateUserStatus);
 router.post('/:id/reset-password', authorizePermission('users:manage'), resetUserPassword);

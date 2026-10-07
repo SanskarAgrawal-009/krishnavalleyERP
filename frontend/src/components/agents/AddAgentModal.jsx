@@ -5,6 +5,7 @@ import {
   Briefcase, CreditCard, Sparkles, UserPlus
 } from 'lucide-react';
 import { authService } from '../../services/authService.js';
+import { agentService } from '../../services/agentService.js';
 
 const STEPS = [
   { id: 1, title: 'Basic Info', subtitle: 'Name & Login', icon: User, color: '#2563eb' },
@@ -178,18 +179,19 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
         },
       };
 
-      if (!agentRoleId) {
-        setError('Agent role not found in the system. Please create an "Agent" role first in Settings > Roles.');
-        setSaving(false);
-        return;
+      let res;
+      try {
+        res = await agentService.createAgent(userData);
+      } catch (agentErr) {
+        // Fallback to authService.createUser
+        res = await authService.createUser(userData);
       }
 
-      const res = await authService.createUser(userData);
-      if (res.success) {
+      if (res && res.success) {
         if (onAgentAdded) onAgentAdded(res.data);
         onClose();
       } else {
-        setError(res.message || 'Failed to create agent');
+        setError(res?.message || 'Failed to create agent');
       }
     } catch (err) {
       setError(err.message || 'Server error creating agent');

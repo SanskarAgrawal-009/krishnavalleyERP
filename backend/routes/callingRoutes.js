@@ -22,16 +22,16 @@ router.all('/webhook/twiml', handleTwiMLResponse);
 router.use(authenticateToken);
 
 // Initiate Outbound Click-to-Call
-router.post('/initiate', initiateOutboundCall);
+router.post('/initiate', authorizePermission('notifications:send', 'crm:edit', 'crm:create'), initiateOutboundCall);
 
 // Log Call Disposition & Notes
-router.post('/log', logCall);
+router.post('/log', authorizePermission('notifications:send', 'crm:edit', 'crm:view'), logCall);
 
 // Call Logs / Telephony Audit History
-router.get('/logs', getCallHistory);
+router.get('/logs', authorizePermission('notifications:view', 'crm:view'), getCallHistory);
 
 // Telephony Gateway Configuration
 router.get('/config', authorizePermission('notifications:view', 'settings:view'), getTelephonyConfig);
-router.put('/config', authorizePermission('notifications:manage', 'settings:edit'), updateTelephonyConfig);
+router.put('/config', authorizePermission('notifications:manage', 'settings:manage', 'settings:edit'), updateTelephonyConfig);
 
 export default router;

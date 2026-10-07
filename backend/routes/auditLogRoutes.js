@@ -14,9 +14,9 @@ const router = express.Router();
 router.use(authenticateToken);
 
 // Read Audit Logs & KPIs
-router.get('/stats', authorizeRoles('super_admin', 'admin', 'auditor'), getAuditStats);
-router.get('/export', authorizeRoles('super_admin', 'admin', 'auditor'), exportAuditLogs);
-router.get('/:id', authorizeRoles('super_admin', 'admin', 'auditor'), getAuditLogById);
-router.get('/', authorizeRoles('super_admin', 'admin', 'auditor'), getAuditLogs);
+router.get('/stats', authorizePermission('audit:view'), getAuditStats);
+router.get('/export', authorizePermission('audit:export', 'audit:view'), exportAuditLogs);
+router.get('/:id', authorizePermission('audit:view'), getAuditLogById);
+router.get('/', authorizePermission('audit:view'), getAuditLogs);
 
 export default router;

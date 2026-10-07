@@ -8,6 +8,7 @@ import {
   bulkTaskAction,
 } from '../controllers/taskforceManagerController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
+import { authorizePermission } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
 
@@ -15,19 +16,19 @@ const router = express.Router();
 router.use(authenticateToken);
 
 // Workforce & Team Management
-router.get('/workforce', getWorkforceOverview);
+router.get('/workforce', authorizePermission('tasks:view', 'tasks:manage'), getWorkforceOverview);
 
 // Performance Analytics
-router.get('/performance', getPerformanceMetrics);
+router.get('/performance', authorizePermission('tasks:view', 'tasks:manage'), getPerformanceMetrics);
 
 // Gantt / Timeline View
-router.get('/timeline', getTimelineData);
+router.get('/timeline', authorizePermission('tasks:view', 'tasks:manage'), getTimelineData);
 
 // Department Stats
-router.get('/department-stats', getDepartmentStats);
+router.get('/department-stats', authorizePermission('tasks:view', 'tasks:manage'), getDepartmentStats);
 
 // Bulk Operations (Delegation / Approval Workflow)
-router.post('/bulk-reassign', bulkReassignTasks);
-router.post('/bulk-action', bulkTaskAction);
+router.post('/bulk-reassign', authorizePermission('tasks:manage'), bulkReassignTasks);
+router.post('/bulk-action', authorizePermission('tasks:manage'), bulkTaskAction);
 
 export default router;

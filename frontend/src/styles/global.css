@@ -256,7 +256,7 @@ label, .form-label {
   margin-bottom: 5px;
 }
 
-input, select, textarea {
+input:not([type="checkbox"]):not([type="radio"]), select, textarea {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -269,6 +269,20 @@ input, select, textarea {
   font-size: 0.875rem;
   outline: none;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+input[type="checkbox"], input[type="radio"] {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+  accent-color: var(--primary-container, #1a73e8);
+  vertical-align: middle;
 }
 
 input:focus, select:focus, textarea:focus {

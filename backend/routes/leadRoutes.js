@@ -34,6 +34,7 @@ import {
   bulkDeleteLeadsAction,
 } from '../controllers/leadController.js';
 import { optionalAuth, authenticateToken } from '../middleware/authMiddleware.js';
+import { authorizePermission } from '../middleware/roleMiddleware.js';
 import multer from 'multer';
 
 const upload = multer({
@@ -48,55 +49,55 @@ router.use(optionalAuth);
 
 // Bulk Lead Excel Upload & Template Endpoints (Placed before /:id)
 router.get('/excel-template', downloadLeadTemplateAction);
-router.post('/bulk-upload', authenticateToken, upload.single('file'), bulkUploadLeadsAction);
+router.post('/bulk-upload', authenticateToken, authorizePermission('crm:create', 'crm:manage'), upload.single('file'), bulkUploadLeadsAction);
 
 // Automated & Manual Reminder Engine Endpoints (Placed before /:id)
-router.get('/reminders/due', authenticateToken, getDueRemindersAction);
-router.post('/reminders/send-manual', authenticateToken, sendManualReminderAction);
-router.post('/reminders/snooze', authenticateToken, snoozeReminderAction);
+router.get('/reminders/due', authenticateToken, authorizePermission('crm:view', 'crm:edit'), getDueRemindersAction);
+router.post('/reminders/send-manual', authenticateToken, authorizePermission('crm:edit', 'notifications:send'), sendManualReminderAction);
+router.post('/reminders/snooze', authenticateToken, authorizePermission('crm:view', 'crm:edit'), snoozeReminderAction);
 
 // Meta Ads (Facebook & Instagram) Webhook & API Endpoints
 router.get('/meta-webhook', metaWebhookVerifyAction);
 router.post('/meta-webhook', metaWebhookReceiveAction);
-router.get('/meta-config', authenticateToken, getMetaConfigAction);
-router.put('/meta-config', authenticateToken, updateMetaConfigAction);
-router.post('/meta-test-lead', authenticateToken, testMetaLeadAction);
+router.get('/meta-config', authenticateToken, authorizePermission('crm:manage', 'settings:view'), getMetaConfigAction);
+router.put('/meta-config', authenticateToken, authorizePermission('crm:manage', 'settings:manage'), updateMetaConfigAction);
+router.post('/meta-test-lead', authenticateToken, authorizePermission('crm:manage', 'crm:create'), testMetaLeadAction);
 
 // Sales Team Management Endpoints (Placed before /:id)
-router.get('/team', getSalesTeamAction);
-router.post('/team', authenticateToken, addSalesTeamMemberAction);
-router.put('/team/:id', authenticateToken, updateSalesTeamMemberAction);
-router.delete('/team/:id', authenticateToken, deleteSalesTeamMemberAction);
+router.get('/team', authenticateToken, authorizePermission('crm:view', 'crm:manage'), getSalesTeamAction);
+router.post('/team', authenticateToken, authorizePermission('crm:manage'), addSalesTeamMemberAction);
+router.put('/team/:id', authenticateToken, authorizePermission('crm:manage'), updateSalesTeamMemberAction);
+router.delete('/team/:id', authenticateToken, authorizePermission('crm:manage'), deleteSalesTeamMemberAction);
 
 // Lead Assignment & Round-Robin Distribution
-router.post('/assign', authenticateToken, assignLeadsAction);
-router.post('/distribute-round-robin', authenticateToken, distributeRoundRobinAction);
+router.post('/assign', authenticateToken, authorizePermission('crm:manage', 'crm:edit'), assignLeadsAction);
+router.post('/distribute-round-robin', authenticateToken, authorizePermission('crm:manage'), distributeRoundRobinAction);
 
 // Bulk Deletion Endpoints (MUST be registered before /:id)
-router.post('/bulk-delete-by-stage', authenticateToken, bulkDeleteByStageAction);
-router.post('/bulk-delete', authenticateToken, bulkDeleteLeadsAction);
+router.post('/bulk-delete-by-stage', authenticateToken, authorizePermission('crm:delete', 'crm:manage'), bulkDeleteByStageAction);
+router.post('/bulk-delete', authenticateToken, authorizePermission('crm:delete', 'crm:manage'), bulkDeleteLeadsAction);
 
 // Lead Core Endpoints
 router.get('/', getLeads);
 router.get('/:id', getLeadById);
 router.post('/', createLead);
 router.put('/:id', updateLead);
-router.delete('/:id', deleteLead);
+router.delete('/:id', authenticateToken, authorizePermission('crm:delete', 'crm:manage'), deleteLead);
 
 // Quick Status Update & Follow-Up Scheduling
-router.patch('/:id/status', authenticateToken, updateLeadStatusAction);
-router.post('/:id/schedule-follow-up', authenticateToken, scheduleFollowUpAction);
+router.patch('/:id/status', authenticateToken, authorizePermission('crm:edit', 'crm:manage'), updateLeadStatusAction);
+router.post('/:id/schedule-follow-up', authenticateToken, authorizePermission('crm:edit', 'crm:create'), scheduleFollowUpAction);
 
 // Site visit maturity & inhouse approval workflow
 router.post('/external-site-visit', logExternalSiteVisitAction);
 router.post('/:id/external-site-visit', logExternalSiteVisitAction);
-router.post('/:id/mature-site-visit', matureSiteVisitAction);
-router.post('/:id/approve-site-visit', authenticateToken, approveSiteVisitAction);
-router.post('/:id/reject-site-visit', authenticateToken, rejectSiteVisitAction);
+router.post('/:id/mature-site-visit', authenticateToken, authorizePermission('crm:manage', 'crm:edit'), matureSiteVisitAction);
+router.post('/:id/approve-site-visit', authenticateToken, authorizePermission('crm:manage'), approveSiteVisitAction);
+router.post('/:id/reject-site-visit', authenticateToken, authorizePermission('crm:manage'), rejectSiteVisitAction);
 
 // Follow-Up Subdocument Endpoints
 router.post('/:id/follow-ups', addFollowUp);
 router.put('/:id/follow-ups/:followUpId', updateFollowUp);
-router.delete('/:id/follow-ups/:followUpId', deleteFollowUp);
+router.delete('/:id/follow-ups/:followUpId', authenticateToken, authorizePermission('crm:edit', 'crm:manage'), deleteFollowUp);
 
 export default router;

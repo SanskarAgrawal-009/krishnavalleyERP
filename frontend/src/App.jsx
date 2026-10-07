@@ -72,7 +72,7 @@ export const App = () => {
             <Route
               path="site-visits"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute permissions={['agent:verify', 'agent:leads', 'agent:upload', 'crm:view', 'crm:manage']}>
                   <SiteVisitVerificationPage />
                 </ProtectedRoute>
               }
@@ -82,7 +82,7 @@ export const App = () => {
             <Route
               path="agent-network"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute permissions={['agent:view', 'agent:manage', 'crm:view', 'sales:view', 'crm:manage']}>
                   <AgentNetworkPage />
                 </ProtectedRoute>
               }
@@ -92,7 +92,7 @@ export const App = () => {
             <Route
               path="agent-profile/:agentId"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute permissions={['agent:view', 'agent:manage', 'crm:view', 'sales:view', 'crm:manage']}>
                   <AgentProfilePage />
                 </ProtectedRoute>
               }
@@ -100,7 +100,7 @@ export const App = () => {
             <Route
               path="agent-profile"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute permissions={['agent:view', 'agent:manage', 'crm:view', 'sales:view', 'crm:manage']}>
                   <AgentProfilePage />
                 </ProtectedRoute>
               }
@@ -214,7 +214,7 @@ export const App = () => {
             <Route
               path="taskforce"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute permissions={['tasks:view', 'tasks:manage']}>
                   <TaskforcePage />
                 </ProtectedRoute>
               }
@@ -224,7 +224,7 @@ export const App = () => {
             <Route
               path="taskforce-manager"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute permissions={['tasks:manage', 'tasks:view']}>
                   <TaskforceManagerPage />
                 </ProtectedRoute>
               }
@@ -232,7 +232,7 @@ export const App = () => {
             <Route
               path="taskforce-manager/:tab"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute permissions={['tasks:manage', 'tasks:view']}>
                   <TaskforceManagerPage />
                 </ProtectedRoute>
               }
@@ -280,7 +280,7 @@ export const App = () => {
             <Route
               path="access-control"
               element={
-                <ProtectedRoute permission="users:view">
+                <ProtectedRoute permissions={['users:view', 'roles:view', 'users:manage', 'roles:manage']}>
                   <UserManagementPage />
                 </ProtectedRoute>
               }
@@ -292,7 +292,7 @@ export const App = () => {
             <Route
               path="settings"
               element={
-                <ProtectedRoute permission="settings:view">
+                <ProtectedRoute permissions={['settings:view', 'settings:manage']}>
                   <SettingsPage />
                 </ProtectedRoute>
               }
@@ -300,7 +300,7 @@ export const App = () => {
             <Route
               path="settings/:tab"
               element={
-                <ProtectedRoute permission="settings:view">
+                <ProtectedRoute permissions={['settings:view', 'settings:manage']}>
                   <SettingsPage />
                 </ProtectedRoute>
               }
@@ -310,7 +310,7 @@ export const App = () => {
             <Route
               path="audit-logs"
               element={
-                <ProtectedRoute permission="users:view">
+                <ProtectedRoute permissions={['audit:view', 'users:view']}>
                   <AuditLogsPage />
                 </ProtectedRoute>
               }
@@ -318,7 +318,7 @@ export const App = () => {
             <Route
               path="audit-logs/:tab"
               element={
-                <ProtectedRoute permission="users:view">
+                <ProtectedRoute permissions={['audit:view', 'users:view']}>
                   <AuditLogsPage />
                 </ProtectedRoute>
               }

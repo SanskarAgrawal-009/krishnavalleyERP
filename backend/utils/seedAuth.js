@@ -30,10 +30,14 @@ const PERMISSION_DEFINITIONS = [
   { permissionName: 'Update Lead Pipeline', permissionCode: 'crm:edit', module: 'CRM', action: 'edit', description: 'Log follow-up conversations and update stage' },
   { permissionName: 'Export CRM Data', permissionCode: 'crm:export', module: 'CRM', action: 'export', description: 'Export leads and client contact lists' },
 
-  // Agent Specific Privileges
-  { permissionName: 'View My Agent Leads', permissionCode: 'agent:leads', module: 'CRM', action: 'view', description: 'View own submitted leads and status' },
-  { permissionName: 'Upload & Submit Leads', permissionCode: 'agent:upload', module: 'CRM', action: 'create', description: 'Submit new buyer leads into portal' },
-  { permissionName: 'View Commission Wallet', permissionCode: 'agent:wallet', module: 'CRM', action: 'view', description: 'Access commission statement and wallet balance' },
+  // Channel Partner & Agent Network Governance
+  { permissionName: 'View Agent Network Directory', permissionCode: 'agent:view', module: 'Agents', action: 'view', description: 'View Channel Partner directory, broker profiles, and tiers' },
+  { permissionName: 'Onboard & Create Agents', permissionCode: 'agent:create', module: 'Agents', action: 'create', description: 'Onboard new Channel Partner agents, assign broker codes, and set commission rates' },
+  { permissionName: 'Manage Agent Network', permissionCode: 'agent:manage', module: 'Agents', action: 'manage', description: 'Full administrative control over Channel Partner profiles, commission structures, and status' },
+  { permissionName: 'Verify Agent Site Visits', permissionCode: 'agent:verify', module: 'Agents', action: 'approve', description: 'Verify party selfies, check-in proofs, and approve site visit commission maturity' },
+  { permissionName: 'View My Agent Leads', permissionCode: 'agent:leads', module: 'Agents', action: 'view', description: 'View own submitted leads and live pipeline status (Agent Portal)' },
+  { permissionName: 'Upload & Submit Leads', permissionCode: 'agent:upload', module: 'Agents', action: 'create', description: 'Submit new prospective buyer inquiries into portal (Agent Portal)' },
+  { permissionName: 'View Commission Wallet', permissionCode: 'agent:wallet', module: 'Agents', action: 'view', description: 'Access commission statement, ledger entries, and wallet balance' },
 
   // Sales Engine
   { permissionName: 'View Sales Deals', permissionCode: 'sales:view', module: 'Sales', action: 'view', description: 'View sales deals, allotments, and payment milestones' },
@@ -84,6 +88,26 @@ const PERMISSION_DEFINITIONS = [
   { permissionName: 'Assign & Create Tasks', permissionCode: 'tasks:create', module: 'Taskforce', action: 'create', description: 'Create and assign works to departments and multiple staff members' },
   { permissionName: 'Update Progress & Follow-ups', permissionCode: 'tasks:edit', module: 'Taskforce', action: 'edit', description: 'Log follow-up remarks, report roadblocks, update task completion' },
   { permissionName: 'Manage Taskforce Operations', permissionCode: 'tasks:manage', module: 'Taskforce', action: 'manage', description: 'Full taskforce administration, reassignment, and archiving' },
+
+  // System Settings
+  { permissionName: 'View System Settings', permissionCode: 'settings:view', module: 'Settings', action: 'view', description: 'View system configuration, email/SMS/WhatsApp gateway settings' },
+  { permissionName: 'Manage System Settings', permissionCode: 'settings:manage', module: 'Settings', action: 'manage', description: 'Update system configurations, backup settings, and gateway integrations' },
+
+  // Audit Logs & Governance
+  { permissionName: 'View Audit Logs', permissionCode: 'audit:view', module: 'AuditLogs', action: 'view', description: 'View activity logs, login history, deleted records vault, and error logs' },
+  { permissionName: 'Export Audit Logs', permissionCode: 'audit:export', module: 'AuditLogs', action: 'export', description: 'Export audit trail reports for compliance and governance review' },
+
+  // Access Control — Roles Management
+  { permissionName: 'View Roles & Permissions', permissionCode: 'roles:view', module: 'AccessControl', action: 'view', description: 'View role definitions and permission matrices' },
+  { permissionName: 'Manage Roles & Permissions', permissionCode: 'roles:manage', module: 'AccessControl', action: 'manage', description: 'Create, update, and delete roles and permission assignments' },
+
+  // CRM — Additional granular permissions
+  { permissionName: 'Full CRM Management', permissionCode: 'crm:manage', module: 'CRM', action: 'manage', description: 'Full CRM administration including lead assignment and bulk operations' },
+  { permissionName: 'Delete Leads', permissionCode: 'crm:delete', module: 'CRM', action: 'delete', description: 'Permanently delete lead records from the CRM system' },
+
+  // Rentals — Additional granular permissions
+  { permissionName: 'Edit Rental Terms', permissionCode: 'rentals:edit', module: 'Rentals', action: 'edit', description: 'Update rental terms, tenure dates, rent amounts, and TDS configuration' },
+  { permissionName: 'Delete Rental Entries', permissionCode: 'rentals:delete', module: 'Rentals', action: 'delete', description: 'Remove rental records and ownership history entries' },
 ];
 
 export const seedAuthDefaults = async () => {
@@ -96,6 +120,12 @@ export const seedAuthDefaults = async () => {
       let perm = await Permission.findOne({ permissionCode: def.permissionCode });
       if (!perm) {
         perm = await Permission.create(def);
+      } else {
+        perm.module = def.module;
+        perm.permissionName = def.permissionName;
+        perm.description = def.description;
+        perm.action = def.action;
+        await perm.save();
       }
       permissionDocs.push(perm);
     }
@@ -162,6 +192,7 @@ export const seedAuthDefaults = async () => {
           permMap['inventory:create'],
           permMap['inventory:edit'],
           permMap['inventory:manage'],
+          permMap['settings:view'],
           permMap['materials:view'],
           permMap['materials:create'],
           permMap['materials:issue'],
@@ -185,6 +216,13 @@ export const seedAuthDefaults = async () => {
           permMap['crm:create'],
           permMap['crm:edit'],
           permMap['crm:export'],
+          permMap['crm:manage'],
+          permMap['crm:delete'],
+          permMap['agent:view'],
+          permMap['agent:create'],
+          permMap['agent:manage'],
+          permMap['agent:verify'],
+          permMap['roles:view'],
           permMap['sales:view'],
           permMap['sales:create'],
           permMap['sales:edit'],
@@ -195,6 +233,7 @@ export const seedAuthDefaults = async () => {
           permMap['notifications:view'],
           permMap['notifications:send'],
           permMap['reports:view'],
+          permMap['settings:view'],
           permMap['reports:export'],
         ].filter(Boolean),
       },
@@ -210,6 +249,9 @@ export const seedAuthDefaults = async () => {
           permMap['crm:edit'],
           permMap['sales:view'],
           permMap['inventory:view'],
+          permMap['customers:view'],
+          permMap['tasks:view'],
+          permMap['tasks:edit'],
         ].filter(Boolean),
       },
       {
@@ -257,6 +299,7 @@ export const seedAuthDefaults = async () => {
           permMap['customers:manage'],
           permMap['rentals:view'],
           permMap['rentals:manage'],
+          permMap['rentals:edit'],
           permMap['maintenance:view'],
           permMap['maintenance:create'],
           permMap['hr:view'],
@@ -264,6 +307,10 @@ export const seedAuthDefaults = async () => {
           permMap['reports:view'],
           permMap['reports:financial'],
           permMap['reports:export'],
+          permMap['settings:view'],
+          permMap['audit:view'],
+          permMap['agent:view'],
+          permMap['agent:manage'],
         ].filter(Boolean),
       },
       {
@@ -279,6 +326,8 @@ export const seedAuthDefaults = async () => {
           permMap['hr:manage'],
           permMap['documents:view'],
           permMap['documents:upload'],
+          permMap['tasks:view'],
+          permMap['tasks:edit'],
           permMap['reports:view'],
         ].filter(Boolean),
       },
@@ -292,6 +341,7 @@ export const seedAuthDefaults = async () => {
           permMap['rentals:view'],
           permMap['rentals:create'],
           permMap['rentals:manage'],
+          permMap['rentals:edit'],
           permMap['maintenance:view'],
           permMap['notifications:view'],
           permMap['notifications:send'],
@@ -308,6 +358,8 @@ export const seedAuthDefaults = async () => {
           permMap['rentals:view'],
           permMap['rentals:create'],
           permMap['rentals:manage'],
+          permMap['rentals:edit'],
+          permMap['rentals:delete'],
           permMap['sales:view'],
           permMap['sales:create'],
           permMap['sales:edit'],
@@ -329,6 +381,9 @@ export const seedAuthDefaults = async () => {
           permMap['reports:view'],
           permMap['reports:financial'],
           permMap['reports:export'],
+          permMap['settings:view'],
+          permMap['agent:view'],
+          permMap['agent:manage'],
         ].filter(Boolean),
       },
       {
@@ -355,6 +410,8 @@ export const seedAuthDefaults = async () => {
           permMap['materials:view'],
           permMap['maintenance:view'],
           permMap['maintenance:manage'],
+          permMap['settings:view'],
+          permMap['audit:view'],
           permMap['crm:view'],
         ].filter(Boolean),
       },

@@ -139,7 +139,16 @@ export const createUser = async (req, res) => {
       status = 'active',
     } = req.body;
 
-    if (!firstName || !username || !email || !password || !roleId) {
+    // Auto-resolve agent role if roleId is omitted
+    let targetRoleId = roleId;
+    if (!targetRoleId) {
+      const agentRoleDoc = await Role.findOne({
+        $or: [{ roleCode: 'agent' }, { roleCode: 'channel_partner' }, { roleName: /agent/i }],
+      });
+      if (agentRoleDoc) targetRoleId = agentRoleDoc._id;
+    }
+
+    if (!firstName || !username || !email || !password || !targetRoleId) {
       return res.status(400).json({
         success: false,
         message: 'First name, username, email, password, and role are required',
@@ -163,11 +172,24 @@ export const createUser = async (req, res) => {
     }
 
     // Verify role exists
-    const role = await Role.findById(roleId);
+    const role = await Role.findById(targetRoleId);
     if (!role) {
       return res.status(400).json({
         success: false,
         message: 'Specified role not found',
+      });
+    }
+
+    // Security check: If creator lacks master user management privileges, they can only create Agent accounts
+    const creatorRole = (req.user?.role || '').toLowerCase();
+    const creatorPerms = req.user?.permissions || [];
+    const isMasterUserManager =
+      creatorRole === 'super_admin' || creatorRole === 'admin' || creatorPerms.includes('users:manage');
+
+    if (!isMasterUserManager && role.roleCode !== 'agent' && role.roleCode !== 'channel_partner') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You are only authorized to onboard Channel Partner Agents.',
       });
     }
 
@@ -190,7 +212,7 @@ export const createUser = async (req, res) => {
       email: cleanEmail,
       mobileNo: mobileNo ? mobileNo.trim() : '',
       passwordHash,
-      roleId,
+      roleId: targetRoleId,
       branchAccess: formattedBranchAccess,
       employeeId: employeeId || null,
       agentProfile: agentProfile || undefined,

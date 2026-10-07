@@ -74,6 +74,7 @@ export const NAV_CATEGORIES = [
         label: 'Taskforce & Allocation',
         icon: Target,
         badge: 'Directives',
+        permission: 'tasks:view',
         subItems: [
           { path: '/taskforce?view=kanban', label: 'Taskforce Board', icon: Layers },
           { path: '/taskforce?view=radar', label: 'Follow-up Radar', icon: Clock },
@@ -86,6 +87,7 @@ export const NAV_CATEGORIES = [
         icon: Shield,
         badge: 'New',
         highlight: true,
+        permission: ['tasks:manage', 'tasks:view'],
         subItems: [
           { path: '/taskforce-manager?tab=workforce', label: 'Team & Workload', icon: Users },
           { path: '/taskforce-manager?tab=timeline', label: 'Gantt Timeline', icon: BarChart3 },
@@ -230,6 +232,7 @@ export const NAV_CATEGORIES = [
         path: '/agent-network',
         label: 'Agent Network',
         icon: Users,
+        permission: ['agent:view', 'agent:manage', 'crm:view', 'sales:view', 'crm:manage'],
         subItems: [
           { path: '/agent-network', label: 'Channel Partner Directory', icon: Users },
           { path: '/site-visits', label: 'Site Visit Approvals', icon: ShieldCheck },
@@ -295,7 +298,7 @@ export const NAV_CATEGORIES = [
         label: 'Access Control & Users',
         icon: ShieldCheck,
         badge: 'Admin',
-        permission: 'users:view',
+        permission: ['users:view', 'roles:view', 'users:manage', 'roles:manage'],
         subItems: [
           { path: '/access-control?tab=users', label: 'User Directory', icon: Users },
           { path: '/access-control?tab=roles', label: 'Role Permissions Matrix', icon: ShieldCheck },
@@ -307,7 +310,7 @@ export const NAV_CATEGORIES = [
         label: 'Audit Logs & Vault',
         icon: ShieldCheck,
         badge: 'Sec',
-        permission: 'users:view',
+        permission: ['audit:view', 'users:view'],
         subItems: [
           { path: '/audit-logs?tab=activity', label: 'Activity Logs (CRUD)', icon: FileText },
           { path: '/audit-logs?tab=deleted', label: 'Deleted Records Vault', icon: FileText },
@@ -444,6 +447,9 @@ export const AppLayout = () => {
     }
 
     if (!item.permission) return true;
+    if (Array.isArray(item.permission)) {
+      return item.permission.some((p) => hasPermission(p));
+    }
     return hasPermission(item.permission);
   }).map((item) => {
     if (!item.subItems) return item;
@@ -559,6 +565,9 @@ export const AppLayout = () => {
         return false;
       }
       if (!item.permission) return true;
+      if (Array.isArray(item.permission)) {
+        return item.permission.some((p) => hasPermission(p));
+      }
       return hasPermission(item.permission);
     }).map((item) => {
       if (!item.subItems) return item;

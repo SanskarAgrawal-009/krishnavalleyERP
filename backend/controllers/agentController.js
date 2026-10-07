@@ -1,6 +1,8 @@
+import bcrypt from 'bcryptjs';
 import Lead from '../models/Lead.js';
 import User from '../models/User.js';
 import { Role } from '../models/Role.js';
+import { Branch } from '../models/Branch.js';
 import CommissionLedger from '../models/CommissionLedger.js';
 import SiteVisit from '../models/SiteVisit.js';
 import AuditLog from '../models/AuditLog.js';
@@ -1126,6 +1128,158 @@ export const getAgentAuditLogs = async (req, res) => {
   } catch (error) {
     console.error('getAgentAuditLogs error:', error);
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * @desc   Onboard a new Channel Partner Agent
+ * @route  POST /api/agent
+ * @access Private (Sales Head / CRM Manager / Admin)
+ */
+export const createAgent = async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      username,
+      email,
+      mobileNo,
+      password,
+      roleId,
+      agentProfile = {},
+      status = 'active',
+    } = req.body;
+
+    if (!firstName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'First name, email, and password are required',
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    let cleanUsername = username
+      ? username.trim().toLowerCase()
+      : `${firstName}${lastName ? '.' + lastName : ''}`.toLowerCase().replace(/\s+/g, '').slice(0, 25);
+
+    // Ensure username is not duplicate
+    let existingUser = await User.findOne({ username: cleanUsername });
+    if (existingUser) {
+      cleanUsername = `${cleanUsername}_${Math.floor(100 + Math.random() * 900)}`;
+    }
+
+    const existingEmail = await User.findOne({ email: cleanEmail });
+    if (existingEmail) {
+      return res.status(400).json({
+        success: false,
+        message: 'An account with this email address already exists',
+      });
+    }
+
+    // Resolve Agent Role
+    let agentRoleDoc = null;
+    if (roleId) {
+      agentRoleDoc = await Role.findById(roleId);
+    }
+    if (!agentRoleDoc) {
+      agentRoleDoc = await Role.findOne({
+        $or: [
+          { roleCode: 'agent' },
+          { roleCode: 'channel_partner' },
+          { roleName: /agent|channel partner/i },
+        ],
+      });
+    }
+
+    if (!agentRoleDoc) {
+      return res.status(500).json({
+        success: false,
+        message: 'System Agent role not found. Please contact an administrator.',
+      });
+    }
+
+    // Auto-generate agent code if not provided
+    let finalAgentCode = agentProfile.agentCode?.trim()?.toUpperCase();
+    if (!finalAgentCode) {
+      const count = await User.countDocuments({
+        $or: [
+          { roleId: agentRoleDoc._id },
+          { 'agentProfile.agentCode': { $exists: true } },
+        ],
+      });
+      finalAgentCode = `AGT-${101 + count}`;
+    }
+
+    // Default branch
+    const primaryBranch =
+      (await Branch.findOne({ isHeadOffice: true })) || (await Branch.findOne());
+    const branchAccess = primaryBranch
+      ? [{ branchId: primaryBranch._id, accessLevel: 'view', isPrimary: true }]
+      : [];
+
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const newAgent = await User.create({
+      firstName: firstName.trim(),
+      lastName: lastName ? lastName.trim() : '',
+      username: cleanUsername,
+      email: cleanEmail,
+      mobileNo: mobileNo ? mobileNo.trim() : '',
+      passwordHash,
+      roleId: agentRoleDoc._id,
+      branchAccess,
+      status,
+      agentProfile: {
+        agentCode: finalAgentCode,
+        agencyName: agentProfile.agencyName?.trim() || '',
+        tier: agentProfile.tier || 'Standard',
+        city: agentProfile.city?.trim() || '',
+        reraNumber: agentProfile.reraNumber?.trim() || '',
+        commissionType: agentProfile.commissionType || 'percentage',
+        commissionRate: Number(agentProfile.commissionRate) || 2,
+        walletBalance: 0,
+        totalEarned: 0,
+        maturedLeadsCount: 0,
+        bankDetails: agentProfile.bankDetails || {},
+      },
+      createdBy: req.user?.id,
+    });
+
+    if (!agentRoleDoc.users.includes(newAgent._id)) {
+      agentRoleDoc.users.push(newAgent._id);
+      await agentRoleDoc.save();
+    }
+
+    const populatedAgent = await User.findById(newAgent._id)
+      .populate({ path: 'roleId', model: 'Role', select: 'roleName roleCode' })
+      .select('-passwordHash');
+
+    await recordAuditEvent({
+      eventType: 'CRUD',
+      action: 'CREATE',
+      module: 'agent',
+      resourceType: 'User',
+      resourceId: newAgent._id,
+      resourceName: `${newAgent.firstName} ${newAgent.lastName || ''} (${finalAgentCode})`,
+      req,
+      summary: `Onboarded Channel Partner Agent "${newAgent.firstName} ${newAgent.lastName || ''}" with Code ${finalAgentCode}`,
+      changes: {
+        agentProfile: newAgent.agentProfile,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Channel Partner Agent onboarded successfully',
+      data: populatedAgent,
+    });
+  } catch (error) {
+    console.error('createAgent error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to onboard agent',
+    });
   }
 };
 

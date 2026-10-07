@@ -19,14 +19,14 @@ router.use(authenticateToken);
 router.get('/', authorizePermission('settings:view', 'settings:manage', 'users:view'), getSettings);
 
 // Update section settings
-router.put('/:section', authorizeRoles('super_admin', 'admin'), updateSettingsSection);
+router.put('/:section', authorizePermission('settings:manage'), updateSettingsSection);
 
 // Live test triggers
-router.post('/email/test', authorizeRoles('super_admin', 'admin'), testEmailConfig);
-router.post('/whatsapp/test', authorizeRoles('super_admin', 'admin'), testWhatsAppConfig);
+router.post('/email/test', authorizePermission('settings:manage'), testEmailConfig);
+router.post('/whatsapp/test', authorizePermission('settings:manage'), testWhatsAppConfig);
 
 // Backup triggers & export
-router.post('/backup/trigger', authorizeRoles('super_admin', 'admin'), triggerManualBackup);
-router.get('/backup/export', authorizeRoles('super_admin', 'admin'), exportBackupData);
+router.post('/backup/trigger', authorizePermission('settings:manage'), triggerManualBackup);
+router.get('/backup/export', authorizePermission('settings:manage'), exportBackupData);
 
 export default router;

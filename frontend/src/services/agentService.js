@@ -74,6 +74,13 @@ export const agentService = {
     const query = new URLSearchParams(params).toString();
     return request(`/agent/audit-logs${query ? `?${query}` : ''}`);
   },
+
+  // Onboard new Channel Partner Agent
+  createAgent: (data) =>
+    request('/agent', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
 
 export default agentService;
