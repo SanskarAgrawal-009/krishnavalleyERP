@@ -46,4 +46,32 @@ export const taskforceManagerService = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  // Taskforce Team Hierarchy (Helper -> Supervisor -> Head)
+  getTeam: () => request('/taskforce-manager/team'),
+
+  addTeamMember: (data) =>
+    request('/taskforce-manager/team', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateTeamMember: (id, data) =>
+    request(`/taskforce-manager/team/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  deleteTeamMember: (id) =>
+    request(`/taskforce-manager/team/${id}`, {
+      method: 'DELETE',
+    }),
+
+  // Member Dashboard (Scoped by Helper / Supervisor / Head / Manager)
+  getMemberDashboard: (memberId) =>
+    request(`/taskforce-manager/team/${memberId || 'me'}/dashboard`),
+
+  getMyDashboard: () =>
+    request('/taskforce-manager/my-dashboard'),
 };
+

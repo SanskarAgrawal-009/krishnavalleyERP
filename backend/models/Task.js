@@ -106,6 +106,57 @@ const TaskCheckpointSchema = new mongoose.Schema(
   { _id: true }
 );
 
+const TaskUploadSchema = new mongoose.Schema(
+  {
+    fileName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    fileUrl: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    fileSize: {
+      type: Number,
+      default: 0,
+    },
+    fileType: {
+      type: String,
+      default: 'document',
+    },
+    uploadedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    uploaderName: {
+      type: String,
+      trim: true,
+    },
+    uploaderRole: {
+      type: String,
+      enum: ['helper', 'supervisor', 'head', 'taskforce_manager', 'admin'],
+      default: 'helper',
+    },
+    remarks: {
+      type: String,
+      trim: true,
+    },
+    stage: {
+      type: String,
+      enum: ['before', 'in_progress', 'completed', 'inspection', 'proof'],
+      default: 'proof',
+    },
+    uploadedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: true }
+);
+
 const TaskSchema = new mongoose.Schema(
   {
     taskCode: {
@@ -127,23 +178,35 @@ const TaskSchema = new mongoose.Schema(
       default: '',
     },
 
-    // Department Allocation
+    // Department Allocation (KV- Departments & Administration)
     department: {
       type: String,
       enum: [
-        'sales',
-        'crm',
-        'construction',
-        'maintenance',
-        'accounts',
+        // KV- DEPARTMENTS
         'hr',
+        'it',
+        'procurement',
+        'hotel',
+        'security',
+        'accounts',
+        'crm',
+        'admin_operations',
+        'maintenance',
+        'civil',
+        'licensing',
+        // ADMINISTRATION
+        'hotel_restaurant',
+        'viramah',
+        // Legacy compatibility
+        'sales',
+        'construction',
         'legal',
         'operations',
         'management',
         'rentals',
         'general',
       ],
-      default: 'general',
+      default: 'civil',
       index: true,
     },
 
@@ -246,6 +309,15 @@ const TaskSchema = new mongoose.Schema(
       },
     ],
 
+    // Specific Taskforce Team Member Allocations
+    assignedMembers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'TaskforceMember',
+        index: true,
+      },
+    ],
+
     startDate: {
       type: Date,
       default: Date.now,
@@ -285,6 +357,8 @@ const TaskSchema = new mongoose.Schema(
     comments: [TaskCommentSchema],
 
     checkpoints: [TaskCheckpointSchema],
+
+    uploads: [TaskUploadSchema],
 
     auditTrail: [TaskAuditTrailSchema],
 

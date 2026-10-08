@@ -5,6 +5,8 @@ import { useToast } from '../../context/ToastContext.jsx';
 import { taskService } from '../../services/taskService.js';
 import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
 import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx';
+import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.jsx';
+import { TaskforceMemberDashboard } from '../../components/taskforce/TaskforceMemberDashboard.jsx';
 
 import {
   Sparkles,
@@ -849,6 +851,54 @@ export const TaskforcePage = () => {
           >
             <List size={14} /> List View
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setViewMode('member-dashboard');
+              setSearchParams({ view: 'member-dashboard' });
+            }}
+            style={{
+              padding: '7px 14px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: viewMode === 'member-dashboard' ? '#ffffff' : 'transparent',
+              color: viewMode === 'member-dashboard' ? '#7c3aed' : '#64748b',
+              boxShadow: viewMode === 'member-dashboard' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              cursor: 'pointer',
+              border: 'none',
+            }}
+          >
+            <Shield size={14} /> Member Dashboard
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setViewMode('team');
+              setSearchParams({ view: 'team' });
+            }}
+            style={{
+              padding: '7px 14px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: viewMode === 'team' ? '#ffffff' : 'transparent',
+              color: viewMode === 'team' ? '#059669' : '#64748b',
+              boxShadow: viewMode === 'team' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              cursor: 'pointer',
+              border: 'none',
+            }}
+          >
+            <Users size={14} /> Team Hierarchy
+          </button>
         </div>
 
         {/* Right: Inline Search & Filter Controls (Fixed widths to prevent expanding) */}
@@ -915,16 +965,23 @@ export const TaskforcePage = () => {
               }}
             >
               <option value="all">All Departments</option>
-              <option value="sales">Sales & Allotments</option>
-              <option value="crm">CRM & Clients</option>
-              <option value="construction">Civil & Construction</option>
-              <option value="maintenance">Maintenance</option>
-              <option value="accounts">Accounts & Finance</option>
-              <option value="hr">HR & Admin</option>
-              <option value="legal">Legal & Compliance</option>
-              <option value="rentals">Rentals</option>
-              <option value="operations">Site Operations</option>
-              <option value="management">Management</option>
+              <optgroup label="KV- DEPARTMENTS">
+                <option value="hr">👥 Human Resource</option>
+                <option value="it">💻 I.T.</option>
+                <option value="procurement">📦 Procurement</option>
+                <option value="hotel">🏨 Hotel</option>
+                <option value="security">🛡️ Security</option>
+                <option value="accounts">💰 Accounts</option>
+                <option value="crm">🤝 C.R.M.</option>
+                <option value="admin_operations">🏢 Admin / Operations</option>
+                <option value="maintenance">🔧 Maintenance</option>
+                <option value="civil">🏗️ Civil</option>
+                <option value="licensing">📜 Licensing</option>
+              </optgroup>
+              <optgroup label="ADMINISTRATION">
+                <option value="hotel_restaurant">🏨 HOTEL & RESTAURANT</option>
+                <option value="viramah">🏢 VIRAMAH</option>
+              </optgroup>
             </select>
           </div>
 

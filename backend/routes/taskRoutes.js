@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import {
   getTasks,
   getTaskStats,
@@ -12,10 +13,20 @@ import {
   getTaskAssigneesMeta,
   toggleCheckpoint,
 } from '../controllers/taskController.js';
+import {
+  uploadTaskProof,
+  deleteTaskUpload,
+} from '../controllers/taskforceTeamController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
+
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 30 * 1024 * 1024 } // 30MB max
+});
 
 // All task routes require authentication
 router.use(authenticateToken);
@@ -35,6 +46,12 @@ router.patch('/:id/progress', authorizePermission('tasks:edit', 'tasks:manage'),
 router.patch('/:id/checkpoints/:checkpointId', authorizePermission('tasks:edit', 'tasks:manage'), toggleCheckpoint);
 router.post('/:id/follow-up', authorizePermission('tasks:edit', 'tasks:manage'), logFollowUp);
 router.post('/:id/comments', authorizePermission('tasks:view', 'tasks:edit', 'tasks:manage'), addComment);
+
+// Proof & Work Evidence Uploads
+router.post('/:id/upload-proof', authorizePermission('tasks:edit', 'tasks:manage', 'tasks:view'), upload.single('file'), uploadTaskProof);
+router.delete('/:id/uploads/:uploadId', authorizePermission('tasks:edit', 'tasks:manage'), deleteTaskUpload);
+
 router.delete('/:id', authorizePermission('tasks:manage'), deleteTask);
 
 export default router;
+

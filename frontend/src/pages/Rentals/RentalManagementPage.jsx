@@ -37,7 +37,8 @@ import {
   X,
   Download,
   SlidersHorizontal,
-  Info
+  Info,
+  Upload
 } from 'lucide-react';
 import { rentalService } from '../../services/rentalService.js';
 import { getFileUrl } from '../../services/api.js';
@@ -47,6 +48,7 @@ import { TransferOwnershipModal } from '../../components/rentals/TransferOwnersh
 import { ManualRentalEntryModal } from '../../components/rentals/ManualRentalEntryModal.jsx';
 import { ImportRentalModal } from '../../components/rentals/ImportRentalModal.jsx';
 import { FlatDocumentsModal } from '../../components/rentals/FlatDocumentsModal.jsx';
+import { BulkRentalDocumentsModal } from '../../components/rentals/BulkRentalDocumentsModal.jsx';
 import { TableSkeleton } from '../../components/common/SkeletonLoader.jsx';
 import { EmptyState } from '../../components/common/EmptyState.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
@@ -85,6 +87,7 @@ export const RentalManagementPage = () => {
   const [selectedFlatForDocs, setSelectedFlatForDocs] = useState(null);
   const [isManualEntryModalOpen, setIsManualEntryModalOpen] = useState(false);
   const [isImportRentalModalOpen, setIsImportRentalModalOpen] = useState(false);
+  const [isBulkDocumentsModalOpen, setIsBulkDocumentsModalOpen] = useState(false);
 
   // Sync tab with URL
   const handleTabChange = (tab) => {
@@ -588,6 +591,32 @@ export const RentalManagementPage = () => {
           >
             <FileSpreadsheet size={15} color="#2563eb" />
             <span>Import by Excel</span>
+          </button>
+
+          {/* Bulk Document Upload (Registry & Agreements) */}
+          <button
+            onClick={() => setIsBulkDocumentsModalOpen(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              borderRadius: '9px',
+              background: '#eff6ff',
+              border: '1.5px solid #93c5fd',
+              color: '#1d4ed8',
+              fontSize: '0.82rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              boxShadow: '0 1px 3px rgba(37, 99, 235, 0.1)'
+            }}
+            title="Bulk Upload Registry Documents (Sale Deed) and Rent Agreements"
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#dbeafe'; e.currentTarget.style.borderColor = '#60a5fa'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#93c5fd'; }}
+          >
+            <Upload size={15} color="#2563eb" />
+            <span>Bulk Docs Upload</span>
           </button>
 
           {/* Passbook Ledgers Hub */}
@@ -1928,6 +1957,17 @@ export const RentalManagementPage = () => {
           fetchActiveRentals();
           fetchPreviousOwnersHistory();
           toast.showSuccess('Rental register updated from Excel!');
+        }}
+      />
+
+      {/* BULK DOCUMENTS (REGISTRY / AGREEMENT) UPLOAD MODAL */}
+      <BulkRentalDocumentsModal
+        isOpen={isBulkDocumentsModalOpen}
+        onClose={() => setIsBulkDocumentsModalOpen(false)}
+        flats={activeRentals}
+        onUpdated={() => {
+          fetchActiveRentals();
+          fetchPreviousOwnersHistory();
         }}
       />
 

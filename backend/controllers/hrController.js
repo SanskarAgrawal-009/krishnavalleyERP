@@ -8,14 +8,19 @@ import mongoose from 'mongoose';
 
 // Ensure default HR Master (Departments & Roles) exists with full department-to-role mappings
 const defaultDepartmentsList = [
-  { departmentCode: 'ENG', departmentName: 'Civil & Structural Engineering', description: 'Site construction, structural design, quality checks, and RCC works.' },
-  { departmentCode: 'ARC', departmentName: 'Architecture & Interior Planning', description: 'Floor plans, elevations, 3D renders, and finishes.' },
-  { departmentCode: 'SALES', departmentName: 'Sales & Real Estate Marketing', description: 'Lead nurturing, customer walk-ins, site tours, and flat bookings.' },
-  { departmentCode: 'FIN', departmentName: 'Finance, Accounts & Auditing', description: 'Invoicing, balance ledgers, contractor payments, and bank loans.' },
-  { departmentCode: 'PROC', departmentName: 'Procurement & Site Logistics', description: 'Vendor management, purchase orders, and warehouse inventory.' },
-  { departmentCode: 'FAC', departmentName: 'Facilities & Society Maintenance', description: 'Post-possession services, technician tickets, and repair work orders.' },
-  { departmentCode: 'HR', departmentName: 'Human Resources & Administration', description: 'Talent recruitment, employee relations, payroll, and compliance.' },
-  { departmentCode: 'LEGAL', departmentName: 'Legal, Liaison & RERA Compliance', description: 'RERA filings, title verification, registry, and liaisoning.' }
+  { departmentCode: 'HR', departmentName: 'Human Resource', description: 'Talent recruitment, employee relations, payroll, and compliance.' },
+  { departmentCode: 'IT', departmentName: 'I.T.', description: 'ERP systems, networking, hardware, and digital infrastructure.' },
+  { departmentCode: 'PROC', departmentName: 'Procurement', description: 'Vendor management, purchase orders, and warehouse inventory.' },
+  { departmentCode: 'HOTEL', departmentName: 'Hotel', description: 'Guest rooms, hospitality services, housekeeping, and front desk.' },
+  { departmentCode: 'SEC', departmentName: 'Security', description: 'Perimeter security, CCTV surveillance, gate passes, and safety.' },
+  { departmentCode: 'ACC', departmentName: 'Accounts', description: 'Invoicing, balance ledgers, contractor payments, and bank reconciliations.' },
+  { departmentCode: 'CRM', departmentName: 'C.R.M.', description: 'Customer relations, lead nurturing, passbook, and bookings.' },
+  { departmentCode: 'ADMIN_OPS', departmentName: 'Admin / Operations', description: 'Society operations, utility management, and administrative services.' },
+  { departmentCode: 'MAINT', departmentName: 'Maintenance', description: 'Post-possession services, technician tickets, and repair work orders.' },
+  { departmentCode: 'CIVIL', departmentName: 'Civil', description: 'Site construction, structural design, quality checks, and RCC works.' },
+  { departmentCode: 'LIC', departmentName: 'Licensing', description: 'RERA filings, title verification, registry, and liaisoning.' },
+  { departmentCode: 'HOTEL_REST', departmentName: 'HOTEL & RESTAURANT', description: 'Food and beverage, restaurant management, and banquet operations.' },
+  { departmentCode: 'VIRAMAH', departmentName: 'VIRAMAH', description: 'Viramah luxury properties, resort operations, and estate management.' },
 ];
 
 const defaultRolesList = [

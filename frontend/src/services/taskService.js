@@ -66,6 +66,20 @@ export const taskService = {
       method: 'PATCH',
     }),
 
+  // Upload proof / work evidence
+  uploadProof: (taskId, formData) =>
+    request(`/tasks/${taskId}/upload-proof`, {
+      method: 'POST',
+      body: formData,
+    }),
+
+  // Delete proof / upload
+  deleteProof: (taskId, uploadId) =>
+    request(`/tasks/${taskId}/uploads/${uploadId}`, {
+      method: 'DELETE',
+    }),
+
   // Metadata: active users, departments, projects, and flats
   getAssigneesMeta: () => request('/tasks/meta/assignees'),
 };
+

@@ -23,7 +23,13 @@ import {
   Check,
   ShieldAlert,
   ChevronRight,
-  Flag
+  Flag,
+  Camera,
+  UploadCloud,
+  FileImage,
+  ExternalLink,
+  ShieldCheck,
+  Award
 } from 'lucide-react';
 
 export const TaskDetailModal = ({
@@ -38,7 +44,13 @@ export const TaskDetailModal = ({
 
   const [loading, setLoading] = useState(false);
   const [task, setTask] = useState(null);
-  const [activeTab, setActiveTab] = useState('followups'); // 'followups', 'chat', 'details'
+  const [activeTab, setActiveTab] = useState('followups'); // 'followups', 'chat', 'details', 'uploads'
+
+  // Proof / Uploads State
+  const [selectedProofFile, setSelectedProofFile] = useState(null);
+  const [proofStage, setProofStage] = useState('in_progress');
+  const [proofCaption, setProofCaption] = useState('');
+  const [uploadingProof, setUploadingProof] = useState(false);
 
   // Progress Update State
   const [progressVal, setProgressVal] = useState(0);
@@ -221,6 +233,57 @@ export const TaskDetailModal = ({
       } catch (err) {
         showToast(err.message || 'Failed to delete task', 'error');
       }
+    }
+  };
+
+  const getFullProofUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
+  const handleProofSubmit = async (e) => {
+    e?.preventDefault();
+    if (!selectedProofFile) {
+      showToast('Please select a photo or document proof to upload', 'error');
+      return;
+    }
+    try {
+      setUploadingProof(true);
+      const formData = new FormData();
+      formData.append('file', selectedProofFile);
+      formData.append('stage', proofStage);
+      if (proofCaption) formData.append('caption', proofCaption.trim());
+
+      const res = await taskService.uploadProof(task._id, formData);
+      if (res && res.success) {
+        showToast('Proof of work uploaded successfully', 'success');
+        setSelectedProofFile(null);
+        setProofCaption('');
+        const fi = document.getElementById('task-proof-file-input');
+        if (fi) fi.value = '';
+        loadTaskDetails();
+        if (onTaskUpdated) onTaskUpdated();
+      }
+    } catch (err) {
+      showToast(err.message || 'Failed to upload proof', 'error');
+    } finally {
+      setUploadingProof(false);
+    }
+  };
+
+  const handleDeleteProof = async (uploadId) => {
+    if (!window.confirm('Are you sure you want to delete this proof upload?')) return;
+    try {
+      const res = await taskService.deleteProof(task._id, uploadId);
+      if (res && res.success) {
+        showToast('Proof removed', 'success');
+        loadTaskDetails();
+        if (onTaskUpdated) onTaskUpdated();
+      }
+    } catch (err) {
+      showToast(err.message || 'Failed to delete proof', 'error');
     }
   };
 
@@ -740,6 +803,27 @@ export const TaskDetailModal = ({
               <Building2 size={16} />
               Assignment Details & Team ({task.assignedTo?.length || 0})
             </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('uploads')}
+              style={{
+                padding: '8px 16px',
+                border: 'none',
+                background: 'none',
+                fontWeight: 600,
+                fontSize: '13px',
+                color: activeTab === 'uploads' ? '#005bbf' : '#64748b',
+                borderBottom: activeTab === 'uploads' ? '2px solid #005bbf' : '2px solid transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <Camera size={16} />
+              Proof & Uploads ({task.uploads?.length || 0})
+            </button>
           </div>
 
           {/* TAB 1: FOLLOW-UPS & ACTIVE TRACKING */}
@@ -1187,6 +1271,67 @@ export const TaskDetailModal = ({
                     );
                   })}
                 </div>
+
+                {/* Assigned Taskforce Hierarchy Members */}
+                {task.assignedMembers && task.assignedMembers.length > 0 && (
+                  <div style={{ marginTop: '14px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '8px' }}>
+                      Assigned Taskforce Hierarchy Members ({task.assignedMembers.length})
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '10px' }}>
+                      {task.assignedMembers.map((m) => {
+                        const tierBadge =
+                          m.hierarchyLevel === 'head'
+                            ? { label: '👑 HEAD', bg: '#fef3c7', color: '#92400e' }
+                            : m.hierarchyLevel === 'supervisor'
+                            ? { label: '🛡️ SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' }
+                            : { label: '👷 HELPER', bg: '#f1f5f9', color: '#334155' };
+                        return (
+                          <div
+                            key={m._id}
+                            style={{
+                              padding: '10px 12px',
+                              borderRadius: '8px',
+                              border: '1px solid #e2e8f0',
+                              backgroundColor: '#ffffff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                backgroundColor: tierBadge.bg,
+                                color: tierBadge.color,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                                fontSize: '12px',
+                              }}
+                            >
+                              {m.fullName?.charAt(0) || 'M'}
+                            </div>
+                            <div style={{ overflow: 'hidden', flex: 1 }}>
+                              <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span>{m.fullName}</span>
+                                <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '4px', backgroundColor: tierBadge.bg, color: tierBadge.color, fontWeight: 700 }}>
+                                  {tierBadge.label}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                {m.trade || m.role || 'Field Personnel'}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Apartment & Timeline Grid */}
@@ -1232,6 +1377,287 @@ export const TaskDetailModal = ({
                       </div>
                     ))}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: WORK EVIDENCE & PROOF OF PROGRESS */}
+          {activeTab === 'uploads' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {/* Upload Evidence Box */}
+              <div
+                style={{
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  padding: '16px',
+                }}
+              >
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Camera size={16} color="#005bbf" />
+                  Upload Field Work Evidence / Progress Proof
+                </div>
+                <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '14px' }}>
+                  Attach before/after photos or site inspection proofs for verification across supervisor and head dashboards.
+                </div>
+
+                <form onSubmit={handleProofSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
+                        Work Stage
+                      </label>
+                      <select
+                        value={proofStage}
+                        onChange={(e) => setProofStage(e.target.value)}
+                        className="form-control"
+                        style={{ fontSize: '12px', padding: '7px 10px' }}
+                      >
+                        <option value="before">Pre-Work / Initial State</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="after">Completed / Post-Work</option>
+                        <option value="milestone">Milestone / Quality Check</option>
+                        <option value="other">General / Reference</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
+                        File (Photo or Document)
+                      </label>
+                      <input
+                        id="task-proof-file-input"
+                        type="file"
+                        accept="image/*,.pdf,.doc,.docx"
+                        onChange={(e) => setSelectedProofFile(e.target.files[0] || null)}
+                        className="form-control"
+                        style={{ fontSize: '12px', padding: '5px 10px' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
+                      Caption / Notes (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={proofCaption}
+                      onChange={(e) => setProofCaption(e.target.value)}
+                      placeholder="e.g., Repaired plumbing joint in master washroom, verified no leaks"
+                      className="form-control"
+                      style={{ fontSize: '12px', padding: '7px 10px' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="submit"
+                      disabled={uploadingProof || !selectedProofFile}
+                      className="btn-primary"
+                      style={{
+                        padding: '7px 18px',
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <UploadCloud size={14} />
+                      {uploadingProof ? 'Uploading Proof...' : 'Upload Work Evidence'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Evidence Gallery */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>Uploaded Evidence Vault ({task.uploads?.length || 0})</span>
+                  <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 400 }}>
+                    Scoping filtered according to Taskforce Hierarchy
+                  </span>
+                </div>
+
+                {!task.uploads || task.uploads.length === 0 ? (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '36px 16px',
+                      border: '2px dashed #e2e8f0',
+                      borderRadius: '10px',
+                      backgroundColor: '#fafbfc',
+                      color: '#64748b',
+                    }}
+                  >
+                    <Camera size={36} color="#94a3b8" style={{ marginBottom: '8px' }} />
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>No work proofs uploaded yet</div>
+                    <div style={{ fontSize: '11px', marginTop: '2px' }}>
+                      Helpers, supervisors, and heads can upload site photos or inspection records above.
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '14px' }}>
+                    {task.uploads.map((up) => {
+                      const isImage = up.fileType?.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(up.fileName || up.fileUrl || '');
+                      const fullUrl = getFullProofUrl(up.fileUrl);
+                      const stageLabels = {
+                        before: { label: 'Pre-Work', bg: '#fef3c7', color: '#92400e' },
+                        in_progress: { label: 'In Progress', bg: '#eff6ff', color: '#1d4ed8' },
+                        after: { label: 'Completed', bg: '#dcfce7', color: '#15803d' },
+                        milestone: { label: 'Milestone', bg: '#f3e8ff', color: '#7e22ce' },
+                        other: { label: 'General', bg: '#f1f5f9', color: '#475569' },
+                      };
+                      const stageStyle = stageLabels[up.stage] || stageLabels.other;
+
+                      const roleLabels = {
+                        helper: { label: '👷 HELPER', bg: '#f1f5f9', color: '#334155' },
+                        supervisor: { label: '🛡️ SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' },
+                        head: { label: '👑 HEAD', bg: '#fef3c7', color: '#92400e' },
+                        manager: { label: '⚡ MANAGER', bg: '#fdf2f8', color: '#9d174d' },
+                        admin: { label: '⚡ ADMIN', bg: '#fdf2f8', color: '#9d174d' },
+                      };
+                      const roleStyle = roleLabels[up.uploaderRole] || { label: (up.uploaderRole || 'MEMBER').toUpperCase(), bg: '#f1f5f9', color: '#475569' };
+
+                      return (
+                        <div
+                          key={up._id}
+                          style={{
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '10px',
+                            backgroundColor: '#ffffff',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                          }}
+                        >
+                          {/* Visual Thumbnail */}
+                          <div
+                            style={{
+                              height: '140px',
+                              backgroundColor: '#0f172a',
+                              position: 'relative',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              overflow: 'hidden',
+                            }}
+                            onClick={() => window.open(fullUrl, '_blank')}
+                            title="Click to view full image in new tab"
+                          >
+                            {isImage ? (
+                              <img
+                                src={fullUrl}
+                                alt={up.caption || up.fileName || 'Proof image'}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  e.target.parentElement.innerHTML = '<div style="color:#94a3b8;font-size:12px;padding:10px;text-align:center;">Preview unavailable</div>';
+                                }}
+                              />
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#94a3b8', gap: '6px' }}>
+                                <FileImage size={36} />
+                                <span style={{ fontSize: '11px', color: '#cbd5e1' }}>Document / File</span>
+                              </div>
+                            )}
+
+                            {/* Stage Badge on Top Left */}
+                            <span
+                              style={{
+                                position: 'absolute',
+                                top: '8px',
+                                left: '8px',
+                                backgroundColor: stageStyle.bg,
+                                color: stageStyle.color,
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                              }}
+                            >
+                              {stageStyle.label}
+                            </span>
+
+                            {/* View external button */}
+                            <span
+                              style={{
+                                position: 'absolute',
+                                top: '8px',
+                                right: '8px',
+                                backgroundColor: 'rgba(0,0,0,0.6)',
+                                color: '#ffffff',
+                                borderRadius: '6px',
+                                padding: '4px',
+                                display: 'flex',
+                              }}
+                            >
+                              <ExternalLink size={12} />
+                            </span>
+                          </div>
+
+                          {/* Info Content */}
+                          <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                            {up.caption && (
+                              <div style={{ fontSize: '12px', color: '#0f172a', fontWeight: 600 }}>
+                                "{up.caption}"
+                              </div>
+                            )}
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginTop: 'auto', paddingTop: '4px', borderTop: '1px solid #f1f5f9' }}>
+                              <div style={{ overflow: 'hidden' }}>
+                                <div style={{ fontSize: '11px', fontWeight: 600, color: '#334155', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <span>{up.uploadedBy?.firstName ? `${up.uploadedBy.firstName} ${up.uploadedBy.lastName || ''}`.trim() : 'Team Member'}</span>
+                                  <span
+                                    style={{
+                                      fontSize: '9px',
+                                      fontWeight: 700,
+                                      padding: '1px 5px',
+                                      borderRadius: '4px',
+                                      backgroundColor: roleStyle.bg,
+                                      color: roleStyle.color,
+                                    }}
+                                  >
+                                    {roleStyle.label}
+                                  </span>
+                                </div>
+                                <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>
+                                  {new Date(up.uploadedAt).toLocaleString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteProof(up._id)}
+                                style={{
+                                  padding: '4px 6px',
+                                  border: '1px solid #fecaca',
+                                  background: '#fef2f2',
+                                  color: '#dc2626',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                }}
+                                title="Delete proof"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}

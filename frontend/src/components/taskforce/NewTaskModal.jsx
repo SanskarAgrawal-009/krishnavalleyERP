@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 
 const DEPARTMENT_PRESETS = {
-  construction: [
+  civil: [
     {
       title: 'Tower A - Final Snagging Inspection & Balcony Waterproofing',
       checkpoints: [
@@ -44,7 +44,7 @@ const DEPARTMENT_PRESETS = {
       ],
     },
   ],
-  sales: [
+  crm: [
     {
       title: 'Milestone Demand Notices Dispatch & High-Value Follow-ups',
       checkpoints: [
@@ -55,11 +55,21 @@ const DEPARTMENT_PRESETS = {
       ],
     },
     {
-      title: 'Allotment Agreement Signatures & Registry Preparation',
+      title: 'Allotment Agreement Signatures & Buyer KYC Verification',
       checkpoints: [
         'Draft tripartite allotment agreement copy',
         'Collect buyer KYC, PAN, and passport size photographs',
         'Schedule sub-registrar appointment with legal counsel',
+      ],
+    },
+  ],
+  accounts: [
+    {
+      title: 'Sub-Contractor Billing & Vendor Reconciliation',
+      checkpoints: [
+        'Cross-check store Goods Receipt Notes (GRN) with vendor tax invoice',
+        'Audit GST compliance & TDS deductions',
+        'Seek MD approval for net RTGS disbursement',
       ],
     },
   ],
@@ -81,23 +91,93 @@ const DEPARTMENT_PRESETS = {
       ],
     },
   ],
-  accounts: [
+  hr: [
     {
-      title: 'Sub-Contractor Billing & Vendor Reconciliation',
+      title: 'Monthly Biometric Attendance Audit & Payroll Processing',
       checkpoints: [
-        'Cross-check store Goods Receipt Notes (GRN) with vendor tax invoice',
-        'Audit GST compliance & TDS deductions',
-        'Seek MD approval for net RTGS disbursement',
+        'Reconcile site muster roll with biometric punch data',
+        'Calculate overtime, site allowances, and leaves',
+        'Prepare bank salary disbursement file for approval',
       ],
     },
   ],
-  legal: [
+  it: [
     {
-      title: 'UPRERA Quarterly Compliance & Title Documentation',
+      title: 'ERP Server Backup, Network Security & Biometric Machine Check',
       checkpoints: [
-        'Update project construction progress percentage on UPRERA portal',
-        'Upload certified chartered accountant financial escrow audit',
-        'Verify encumbrance certificate from Mathura registry office',
+        'Perform incremental database snapshot and offsite sync',
+        'Check site CCTV DVR live feed status across all towers',
+        'Test site biometric punch terminal internet connectivity',
+      ],
+    },
+  ],
+  procurement: [
+    {
+      title: 'Bulk Material Purchase Order & Steel/Cement Rate Quotations',
+      checkpoints: [
+        'Collect 3 competitive vendor quotations for Grade 53 cement',
+        'Prepare comparative cost analysis sheet',
+        'Generate purchase order (PO) with staggered site delivery dates',
+      ],
+    },
+  ],
+  security: [
+    {
+      title: 'Perimeter Security Inspection & Night Guard Patrolling Audit',
+      checkpoints: [
+        'Inspect main entry gate barrier and RFID vehicle scanner',
+        'Verify night guard checkpoint biometric logs',
+        'Audit visitor register & vendor gate passes',
+      ],
+    },
+  ],
+  hotel: [
+    {
+      title: 'Guest Rooms Quality Audit & Housekeeping Readiness',
+      checkpoints: [
+        'Inspect air conditioning temperature & HVAC duct cleanliness',
+        'Check linen replenishment, minibar, and bathroom amenities',
+        'Verify electronic door lock batteries & keycard encoding',
+      ],
+    },
+  ],
+  hotel_restaurant: [
+    {
+      title: 'Restaurant F&B Stock Inventory & Kitchen Hygiene Audit',
+      checkpoints: [
+        'Audit dry pantry items, dairy, and fresh produce stock expiry',
+        'Inspect kitchen cold room temperature logs',
+        'Conduct deep cleaning sanitation audit of cook stations',
+      ],
+    },
+  ],
+  admin_operations: [
+    {
+      title: 'Estate Operations & Common Utility Bill Clearing',
+      checkpoints: [
+        'Verify monthly electricity substation DISCOM bill calculation',
+        'Inspect water filtration plant backwash and TDS levels',
+        'Audit common area housekeeping staff attendance & consumables',
+      ],
+    },
+  ],
+  licensing: [
+    {
+      title: 'UPRERA Portal Compliance & Fire Safety NOC Renewal',
+      checkpoints: [
+        'Update quarterly construction progress on UPRERA website',
+        'Submit chartered engineer financial escrow audit certificate',
+        'Schedule Fire Department inspection for NOC renewal',
+      ],
+    },
+  ],
+  viramah: [
+    {
+      title: 'Viramah Luxury Villas Maintenance & Landscape Inspection',
+      checkpoints: [
+        'Inspect private pool filtration and chemical dosing',
+        'Audit landscaped garden sprinkler timing & horticulture pruning',
+        'Check villa exterior lighting & architectural facade illumination',
       ],
     },
   ],
@@ -111,13 +191,14 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
   const [loading, setLoading] = useState(false);
   const [loadingMeta, setLoadingMeta] = useState(false);
   const [metaAssignees, setMetaAssignees] = useState([]);
+  const [metaTaskforceMembers, setMetaTaskforceMembers] = useState([]);
   const [metaDepartments, setMetaDepartments] = useState([]);
   const [metaProjects, setMetaProjects] = useState([]);
 
   // Form State
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [department, setDepartment] = useState('construction');
+  const [department, setDepartment] = useState('civil');
   const [priority, setPriority] = useState('high');
   const [isMDDirective, setIsMDDirective] = useState(true);
   const [isApartmentRelated, setIsApartmentRelated] = useState(false);
@@ -125,6 +206,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
   const [tower, setTower] = useState('');
   const [flatNumber, setFlatNumber] = useState('');
   const [selectedAssignees, setSelectedAssignees] = useState([]);
+  const [selectedTaskforceMembers, setSelectedTaskforceMembers] = useState([]);
+  const [assigneeCategoryTab, setAssigneeCategoryTab] = useState('taskforce'); // 'taskforce' or 'erp'
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
   const [followUpFrequency, setFollowUpFrequency] = useState('daily');
@@ -149,7 +232,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
       if (initialData) {
         setTitle(initialData.title || '');
         setDescription(initialData.description || '');
-        setDepartment(initialData.department || 'general');
+        setDepartment(initialData.department || 'civil');
         setPriority(initialData.priority || 'high');
         setIsMDDirective(Boolean(initialData.isMDDirective));
         setIsApartmentRelated(Boolean(initialData.isApartmentRelated));
@@ -162,6 +245,9 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
         setFlatNumber(initialData.apartmentDetails?.flatNumber || '');
         setSelectedAssignees(
           (initialData.assignedTo || []).map((u) => (typeof u === 'object' ? u._id : u))
+        );
+        setSelectedTaskforceMembers(
+          (initialData.assignedMembers || []).map((m) => (typeof m === 'object' ? m._id : m))
         );
         setStartDate(
           initialData.startDate
@@ -189,7 +275,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
         // Fresh modal defaults
         setTitle('');
         setDescription('');
-        setDepartment('construction');
+        setDepartment('civil');
         setPriority('high');
         setIsMDDirective(true);
         setIsApartmentRelated(false);
@@ -197,6 +283,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
         setTower('');
         setFlatNumber('');
         setSelectedAssignees([]);
+        setSelectedTaskforceMembers([]);
         setStartDate(new Date().toISOString().split('T')[0]);
         // Set deadline to 3 days ahead as default
         const defDue = new Date();
@@ -218,6 +305,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
       const res = await taskService.getAssigneesMeta();
       if (res && res.success) {
         setMetaAssignees(res.assignees || []);
+        setMetaTaskforceMembers(res.taskforceMembers || []);
         setMetaDepartments(res.departments || []);
         setMetaProjects(res.projects || []);
         if (res.projects?.length > 0 && !selectedProjectId) {
@@ -246,24 +334,47 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
       if (!searchMatch) return false;
 
       if (assigneeDeptFilter === 'all') return true;
-      if (assigneeDeptFilter === 'sales') {
-        return roleName.includes('sales') || username.includes('sales') || roleName.includes('crm');
+      const k = assigneeDeptFilter.toLowerCase();
+      if (k === 'civil') {
+        return roleName.includes('civil') || roleName.includes('site') || roleName.includes('engineer') || roleName.includes('construct');
       }
-      if (assigneeDeptFilter === 'construction') {
-        return (
-          roleName.includes('site') ||
-          roleName.includes('engineer') ||
-          roleName.includes('project') ||
-          username.includes('site')
-        );
+      if (k === 'crm') {
+        return roleName.includes('crm') || roleName.includes('sales') || roleName.includes('client');
       }
-      if (assigneeDeptFilter === 'accounts') {
-        return roleName.includes('account') || username.includes('account');
+      if (k === 'accounts') {
+        return roleName.includes('account') || roleName.includes('finance') || roleName.includes('tax') || roleName.includes('billing');
       }
-      if (assigneeDeptFilter === 'hr') {
-        return roleName.includes('hr') || username.includes('hr');
+      if (k === 'hr') {
+        return roleName.includes('hr') || roleName.includes('human') || roleName.includes('payroll') || roleName.includes('recruit');
       }
-      return true;
+      if (k === 'it') {
+        return roleName.includes('it') || roleName.includes('tech') || roleName.includes('software') || roleName.includes('system');
+      }
+      if (k === 'procurement') {
+        return roleName.includes('procure') || roleName.includes('purchase') || roleName.includes('store') || roleName.includes('vendor');
+      }
+      if (k === 'security') {
+        return roleName.includes('security') || roleName.includes('guard') || roleName.includes('safety');
+      }
+      if (k === 'hotel') {
+        return roleName.includes('hotel') || roleName.includes('housekeep') || roleName.includes('guest');
+      }
+      if (k === 'hotel_restaurant') {
+        return roleName.includes('restaurant') || roleName.includes('food') || roleName.includes('kitchen') || roleName.includes('f&b');
+      }
+      if (k === 'admin_operations') {
+        return roleName.includes('admin') || roleName.includes('operat');
+      }
+      if (k === 'maintenance') {
+        return roleName.includes('maint') || roleName.includes('plumb') || roleName.includes('elect') || roleName.includes('technician');
+      }
+      if (k === 'licensing') {
+        return roleName.includes('licens') || roleName.includes('legal') || roleName.includes('rera');
+      }
+      if (k === 'viramah') {
+        return roleName.includes('viramah');
+      }
+      return roleName.includes(k) || username.includes(k);
     });
   }, [metaAssignees, assigneeSearch, assigneeDeptFilter]);
 
@@ -273,6 +384,22 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
     );
   };
 
+  const handleToggleTaskforceMember = (memberId) => {
+    setSelectedTaskforceMembers((prev) =>
+      prev.includes(memberId) ? prev.filter((id) => id !== memberId) : [...prev, memberId]
+    );
+  };
+
+  const filteredTaskforceMembers = useMemo(() => {
+    return metaTaskforceMembers.filter((m) => {
+      const name = (m.fullName || '').toLowerCase();
+      const trade = (m.trade || '').toLowerCase();
+      const role = (m.role || '').toLowerCase();
+      const s = assigneeSearch.toLowerCase();
+      return !s || name.includes(s) || trade.includes(s) || role.includes(s);
+    });
+  }, [metaTaskforceMembers, assigneeSearch]);
+
   const handleSelectAllFiltered = () => {
     const ids = filteredAssignees.map((a) => a._id);
     const combined = Array.from(new Set([...selectedAssignees, ...ids]));
@@ -281,6 +408,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
 
   const handleClearSelection = () => {
     setSelectedAssignees([]);
+    setSelectedTaskforceMembers([]);
   };
 
   // Quick preset title applicator
@@ -326,8 +454,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
       return;
     }
 
-    if (selectedAssignees.length === 0) {
-      showToast('Please allocate this task to at least one team member', 'error');
+    if (selectedAssignees.length === 0 && selectedTaskforceMembers.length === 0) {
+      showToast('Please allocate this task to at least one team member or taskforce staff', 'error');
       return;
     }
 
@@ -335,6 +463,15 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
       setLoading(true);
 
       const selectedProjectObj = metaProjects.find((p) => p._id === selectedProjectId);
+
+      // Auto-include any linked user IDs of selected taskforce members into assignedTo
+      const linkedUserIds = selectedTaskforceMembers
+        .map((mId) => {
+          const mem = metaTaskforceMembers.find((m) => m._id === mId);
+          return mem?.userId?._id || mem?.userId;
+        })
+        .filter(Boolean);
+      const combinedAssignees = Array.from(new Set([...selectedAssignees, ...linkedUserIds]));
 
       const payload = {
         title: title.trim(),
@@ -351,7 +488,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
               flatNumber: flatNumber.trim(),
             }
           : undefined,
-        assignedTo: selectedAssignees,
+        assignedTo: combinedAssignees,
+        assignedMembers: selectedTaskforceMembers,
         startDate,
         dueDate: dueDate || undefined,
         nextFollowUpDate: nextFollowUpDate || undefined,
@@ -616,7 +754,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
           </div>
 
           {/* Selected Personnel Chips Row */}
-          {selectedAssignees.length > 0 ? (
+          {(selectedTaskforceMembers.length > 0 || selectedAssignees.length > 0) ? (
             <div
               style={{
                 display: 'flex',
@@ -628,6 +766,55 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                 border: '1px solid #e2e8f0',
               }}
             >
+              {/* Taskforce Members Chips */}
+              {selectedTaskforceMembers.map((mId) => {
+                const member = metaTaskforceMembers.find((m) => m._id === mId);
+                if (!member) return null;
+                const tierColor =
+                  member.hierarchyLevel === 'head'
+                    ? { bg: '#fef3c7', text: '#92400e', border: '#fde68a', icon: '👑' }
+                    : member.hierarchyLevel === 'supervisor'
+                    ? { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe', icon: '🛡️' }
+                    : { bg: '#f1f5f9', text: '#334155', border: '#cbd5e1', icon: '👷' };
+                return (
+                  <div
+                    key={mId}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '4px 10px',
+                      borderRadius: '20px',
+                      backgroundColor: tierColor.bg,
+                      border: `1.5px solid ${tierColor.border}`,
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: tierColor.text,
+                    }}
+                  >
+                    <span>{tierColor.icon}</span>
+                    <span>{member.fullName}</span>
+                    <span style={{ fontSize: '10px', opacity: 0.8 }}>({member.trade || member.hierarchyLevel})</span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleTaskforceMember(mId)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: tierColor.text,
+                        cursor: 'pointer',
+                        padding: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                );
+              })}
+
+              {/* ERP User Chips */}
               {selectedAssignees.map((userId) => {
                 const user = metaAssignees.find((u) => u._id === userId);
                 if (!user) return null;
@@ -685,17 +872,70 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
             </div>
           ) : (
             <div style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic' }}>
-              No team members allocated yet. Select assignees from the list below.
+              No team members allocated yet. Select assignees from the Taskforce Team or ERP Staff below.
             </div>
           )}
 
-          {/* Search & Department Tabs Toolbar */}
+          {/* Category Switcher Tabs */}
+          <div style={{ display: 'flex', gap: '8px', borderBottom: '2px solid #e2e8f0', paddingBottom: '2px' }}>
+            <button
+              type="button"
+              onClick={() => setAssigneeCategoryTab('taskforce')}
+              style={{
+                padding: '6px 14px',
+                border: 'none',
+                background: 'none',
+                fontWeight: 700,
+                fontSize: '12px',
+                color: assigneeCategoryTab === 'taskforce' ? '#005bbf' : '#64748b',
+                borderBottom: assigneeCategoryTab === 'taskforce' ? '2px solid #005bbf' : '2px solid transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <span>👷 Taskforce Field Team ({metaTaskforceMembers.length})</span>
+              {selectedTaskforceMembers.length > 0 && (
+                <span style={{ backgroundColor: '#005bbf', color: '#fff', borderRadius: '10px', padding: '1px 6px', fontSize: '10px' }}>
+                  {selectedTaskforceMembers.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setAssigneeCategoryTab('erp')}
+              style={{
+                padding: '6px 14px',
+                border: 'none',
+                background: 'none',
+                fontWeight: 700,
+                fontSize: '12px',
+                color: assigneeCategoryTab === 'erp' ? '#005bbf' : '#64748b',
+                borderBottom: assigneeCategoryTab === 'erp' ? '2px solid #005bbf' : '2px solid transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <span>🏢 ERP Department Staff ({metaAssignees.length})</span>
+              {selectedAssignees.length > 0 && (
+                <span style={{ backgroundColor: '#005bbf', color: '#fff', borderRadius: '10px', padding: '1px 6px', fontSize: '10px' }}>
+                  {selectedAssignees.length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Search Toolbar */}
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
               <Search size={14} color="#64748b" style={{ position: 'absolute', left: '10px', top: '10px' }} />
               <input
                 type="text"
-                placeholder="Search staff by name or role..."
+                placeholder={assigneeCategoryTab === 'taskforce' ? 'Search taskforce by name, trade or role...' : 'Search staff by name or role...'}
                 value={assigneeSearch}
                 onChange={(e) => setAssigneeSearch(e.target.value)}
                 style={{
@@ -711,138 +951,275 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '2px' }}>
-              {[
-                { key: 'all', label: 'All Staff' },
-                { key: 'construction', label: 'Civil / Site' },
-                { key: 'sales', label: 'Sales & CRM' },
-                { key: 'accounts', label: 'Accounts' },
-                { key: 'hr', label: 'HR' },
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setAssigneeDeptFilter(tab.key)}
-                  style={{
-                    padding: '4px 10px',
-                    borderRadius: '6px',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    border: 'none',
-                    backgroundColor: assigneeDeptFilter === tab.key ? '#005bbf' : '#f1f5f9',
-                    color: assigneeDeptFilter === tab.key ? '#ffffff' : '#475569',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Personnel Selection Cards Grid */}
-          <div
-            style={{
-              maxHeight: '190px',
-              overflowY: 'auto',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              padding: '8px',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-              gap: '8px',
-              backgroundColor: '#fafbfc',
-            }}
-          >
-            {loadingMeta ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-                Loading staff members...
-              </div>
-            ) : filteredAssignees.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-                No personnel found matching your filter.
-              </div>
-            ) : (
-              filteredAssignees.map((user) => {
-                const isSelected = selectedAssignees.includes(user._id);
-                const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
-
-                return (
-                  <div
-                    key={user._id}
-                    onClick={() => handleToggleAssignee(user._id)}
+            {assigneeCategoryTab === 'erp' && (
+              <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '2px' }}>
+                {[
+                  { key: 'all', label: 'All Staff' },
+                  { key: 'civil', label: 'Civil' },
+                  { key: 'crm', label: 'C.R.M.' },
+                  { key: 'accounts', label: 'Accounts' },
+                  { key: 'hr', label: 'HR' },
+                  { key: 'it', label: 'I.T.' },
+                  { key: 'procurement', label: 'Procurement' },
+                  { key: 'security', label: 'Security' },
+                  { key: 'hotel', label: 'Hotel' },
+                  { key: 'hotel_restaurant', label: 'Hotel & Rest.' },
+                  { key: 'admin_operations', label: 'Admin / Ops' },
+                  { key: 'maintenance', label: 'Maintenance' },
+                  { key: 'licensing', label: 'Licensing' },
+                  { key: 'viramah', label: 'Viramah' },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setAssigneeDeptFilter(tab.key)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      border: isSelected ? '1.5px solid #005bbf' : '1px solid #e2e8f0',
-                      backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
-                      boxShadow: isSelected ? '0 2px 6px rgba(0, 91, 191, 0.1)' : '0 1px 2px rgba(0,0,0,0.03)',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      border: 'none',
+                      backgroundColor: assigneeDeptFilter === tab.key ? '#005bbf' : '#f1f5f9',
+                      color: assigneeDeptFilter === tab.key ? '#ffffff' : '#475569',
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => {}}
-                      style={{ cursor: 'pointer', accentColor: '#005bbf', width: '16px', height: '16px', flexShrink: 0 }}
-                    />
-
-                    {/* Colored Avatar */}
-                    <div
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        backgroundColor: isSelected ? '#005bbf' : '#64748b',
-                        color: '#ffffff',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {initials}
-                    </div>
-
-                    {/* Info */}
-                    <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                      <div
-                        style={{
-                          fontSize: '13px',
-                          fontWeight: 700,
-                          color: '#0f172a',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {user.firstName} {user.lastName}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '11px',
-                          color: isSelected ? '#005bbf' : '#64748b',
-                          fontWeight: 500,
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {user.roleId?.roleName || user.username}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
+
+          {/* TAB 1: TASKFORCE FIELD TEAM MEMBERS */}
+          {assigneeCategoryTab === 'taskforce' && (
+            <div
+              style={{
+                maxHeight: '220px',
+                overflowY: 'auto',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                padding: '8px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                gap: '8px',
+                backgroundColor: '#fafbfc',
+              }}
+            >
+              {loadingMeta ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
+                  Loading taskforce members...
+                </div>
+              ) : filteredTaskforceMembers.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px', gridColumn: '1 / -1' }}>
+                  No taskforce members found. Add team members in the "Team & Hierarchy" tab of the Task Force Manager.
+                </div>
+              ) : (
+                filteredTaskforceMembers.map((member) => {
+                  const isSelected = selectedTaskforceMembers.includes(member._id);
+                  const tierBadge =
+                    member.hierarchyLevel === 'head'
+                      ? { label: '👑 HEAD', bg: '#fef3c7', color: '#92400e' }
+                      : member.hierarchyLevel === 'supervisor'
+                      ? { label: '🛡️ SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' }
+                      : { label: '👷 HELPER', bg: '#f1f5f9', color: '#334155' };
+
+                  return (
+                    <div
+                      key={member._id}
+                      onClick={() => handleToggleTaskforceMember(member._id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: isSelected ? '1.5px solid #005bbf' : '1px solid #e2e8f0',
+                        backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
+                        boxShadow: isSelected ? '0 2px 6px rgba(0, 91, 191, 0.1)' : '0 1px 2px rgba(0,0,0,0.03)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{ cursor: 'pointer', accentColor: '#005bbf', width: '16px', height: '16px', flexShrink: 0 }}
+                      />
+
+                      <div
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '50%',
+                          backgroundColor: tierBadge.bg,
+                          color: tierBadge.color,
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {member.fullName?.charAt(0) || 'M'}
+                      </div>
+
+                      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span
+                            style={{
+                              fontSize: '13px',
+                              fontWeight: 700,
+                              color: '#0f172a',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {member.fullName}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '9px',
+                              fontWeight: 700,
+                              padding: '1px 5px',
+                              borderRadius: '4px',
+                              backgroundColor: tierBadge.bg,
+                              color: tierBadge.color,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {tierBadge.label}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '11px',
+                            color: '#64748b',
+                            fontWeight: 500,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {member.trade || member.role || 'Field Personnel'}
+                          {member.supervisorId?.fullName && ` • Reports to: ${member.supervisorId.fullName}`}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: GENERAL ERP STAFF */}
+          {assigneeCategoryTab === 'erp' && (
+            <div
+              style={{
+                maxHeight: '190px',
+                overflowY: 'auto',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                padding: '8px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                gap: '8px',
+                backgroundColor: '#fafbfc',
+              }}
+            >
+              {loadingMeta ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
+                  Loading staff members...
+                </div>
+              ) : filteredAssignees.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
+                  No personnel found matching your filter.
+                </div>
+              ) : (
+                filteredAssignees.map((user) => {
+                  const isSelected = selectedAssignees.includes(user._id);
+                  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
+
+                  return (
+                    <div
+                      key={user._id}
+                      onClick={() => handleToggleAssignee(user._id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: isSelected ? '1.5px solid #005bbf' : '1px solid #e2e8f0',
+                        backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
+                        boxShadow: isSelected ? '0 2px 6px rgba(0, 91, 191, 0.1)' : '0 1px 2px rgba(0,0,0,0.03)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{ cursor: 'pointer', accentColor: '#005bbf', width: '16px', height: '16px', flexShrink: 0 }}
+                      />
+
+                      {/* Colored Avatar */}
+                      <div
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '50%',
+                          backgroundColor: isSelected ? '#005bbf' : '#64748b',
+                          color: '#ffffff',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {initials}
+                      </div>
+
+                      {/* Info */}
+                      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                        <div
+                          style={{
+                            fontSize: '13px',
+                            fontWeight: 700,
+                            color: '#0f172a',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {user.firstName} {user.lastName}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '11px',
+                            color: isSelected ? '#005bbf' : '#64748b',
+                            fontWeight: 500,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {user.roleId?.roleName || user.username}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
         </div>
 
         {/* SECTION 4: Apartment / Flat / Property Context (Optional) */}

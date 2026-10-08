@@ -4,6 +4,9 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { taskService } from '../../services/taskService.js';
+import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.jsx';
+import { TaskforceMemberDashboard } from '../../components/taskforce/TaskforceMemberDashboard.jsx';
+import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
 
 import {
   Users,
@@ -80,7 +83,14 @@ export const TaskforceManagerPage = () => {
   // Workforce detail expansion
   const [expandedUser, setExpandedUser] = useState(null);
 
+  // Taskforce Team & Member Dashboard States
+  const [selectedMemberForDashboard, setSelectedMemberForDashboard] = useState(null);
+  const [showNewTaskModal, setShowNewTaskModal] = useState(false);
+  const [newTaskInitialData, setNewTaskInitialData] = useState(null);
+
   const tabs = [
+    { key: 'team', label: 'Field Hierarchy (Head/Sup/Helper)', icon: Shield, color: '#059669' },
+    { key: 'member-dashboard', label: 'Member Dashboard', icon: Target, color: '#7c3aed' },
     { key: 'workforce', label: 'Team & Workload', icon: Users, color: '#1a73e8' },
     { key: 'timeline', label: 'Gantt Timeline', icon: GanttChart, color: '#1e40af' },
     { key: 'performance', label: 'Performance KPIs', icon: Award, color: '#0f172a' },
@@ -96,6 +106,10 @@ export const TaskforceManagerPage = () => {
     try {
       setLoading(true);
       switch (tab) {
+        case 'team':
+        case 'member-dashboard':
+          setLoading(false);
+          break;
         case 'workforce':
           const wf = await taskforceManagerService.getWorkforce({
             department: selectedDept,
@@ -1427,26 +1441,73 @@ export const TaskforceManagerPage = () => {
             }}
           >
             <option value="all">All Departments</option>
-            <option value="sales">Sales & Allotments</option>
-            <option value="crm">CRM & Clients</option>
-            <option value="construction">Civil & Construction</option>
-            <option value="maintenance">Maintenance</option>
-            <option value="accounts">Accounts & Finance</option>
-            <option value="hr">HR & Admin</option>
-            <option value="legal">Legal & Compliance</option>
-            <option value="rentals">Rentals</option>
-            <option value="operations">Site Operations</option>
-            <option value="management">Management</option>
+            <optgroup label="KV- DEPARTMENTS">
+              <option value="hr">👥 Human Resource</option>
+              <option value="it">💻 I.T.</option>
+              <option value="procurement">📦 Procurement</option>
+              <option value="hotel">🏨 Hotel</option>
+              <option value="security">🛡️ Security</option>
+              <option value="accounts">💰 Accounts</option>
+              <option value="crm">🤝 C.R.M.</option>
+              <option value="admin_operations">🏢 Admin / Operations</option>
+              <option value="maintenance">🔧 Maintenance</option>
+              <option value="civil">🏗️ Civil</option>
+              <option value="licensing">📜 Licensing</option>
+            </optgroup>
+            <optgroup label="ADMINISTRATION">
+              <option value="hotel_restaurant">🏨 HOTEL & RESTAURANT</option>
+              <option value="viramah">🏢 VIRAMAH</option>
+            </optgroup>
           </select>
         </div>
       )}
 
       {/* Tab Content */}
+      {activeTab === 'team' && (
+        <TaskforceTeamTab
+          onViewMemberDashboard={(member) => {
+            setSelectedMemberForDashboard(member);
+            handleTabChange('member-dashboard');
+          }}
+          onAssignTask={(member) => {
+            setNewTaskInitialData({
+              assignedMembers: [member._id],
+            });
+            setShowNewTaskModal(true);
+          }}
+        />
+      )}
+      {activeTab === 'member-dashboard' && (
+        <TaskforceMemberDashboard
+          initialMemberId={selectedMemberForDashboard?._id}
+          onAssignTask={(member) => {
+            setNewTaskInitialData({
+              assignedMembers: [member._id],
+            });
+            setShowNewTaskModal(true);
+          }}
+        />
+      )}
       {activeTab === 'workforce' && renderWorkforceTab()}
       {activeTab === 'timeline' && renderTimelineTab()}
       {activeTab === 'performance' && renderPerformanceTab()}
       {activeTab === 'departments' && renderDepartmentTab()}
       {activeTab === 'delegation' && renderDelegationTab()}
+
+      {/* New Task Modal Triggered from Team / Dashboard */}
+      {showNewTaskModal && (
+        <NewTaskModal
+          isOpen={showNewTaskModal}
+          onClose={() => {
+            setShowNewTaskModal(false);
+            setNewTaskInitialData(null);
+          }}
+          onTaskCreated={() => {
+            loadTabData(activeTab);
+          }}
+          initialData={newTaskInitialData}
+        />
+      )}
     </div>
   );
 };

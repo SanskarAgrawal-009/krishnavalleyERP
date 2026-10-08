@@ -2,21 +2,28 @@ import { Task } from '../models/Task.js';
 import { User } from '../models/User.js';
 import { Project } from '../models/Project.js';
 import { Flat } from '../models/Flat.js';
+import { TaskforceMember } from '../models/TaskforceMember.js';
+import { getScopedTaskforceContext } from './taskforceTeamController.js';
 import { escapeRegex } from '../utils/regexUtil.js';
 
-// Department dictionary for consistent labelling and filtering
+// Department dictionary for consistent labelling and filtering (KV- Departments & Administration)
 export const DEPARTMENTS = [
-  { key: 'sales', label: 'Sales & Allotments' },
-  { key: 'crm', label: 'CRM & Client Relations' },
-  { key: 'construction', label: 'Civil & Construction' },
-  { key: 'maintenance', label: 'Maintenance & Facility' },
-  { key: 'accounts', label: 'Accounts & Finance' },
-  { key: 'hr', label: 'HR & Administration' },
-  { key: 'legal', label: 'Legal & Compliance' },
-  { key: 'rentals', label: 'Rentals & Leases' },
-  { key: 'operations', label: 'Site Operations' },
-  { key: 'management', label: 'Executive Management' },
-  { key: 'general', label: 'General / Miscellaneous' },
+  // KV- DEPARTMENTS
+  { key: 'hr', label: 'Human Resource', icon: '👥', group: 'KV Departments' },
+  { key: 'it', label: 'I.T.', icon: '💻', group: 'KV Departments' },
+  { key: 'procurement', label: 'Procurement', icon: '📦', group: 'KV Departments' },
+  { key: 'hotel', label: 'Hotel', icon: '🏨', group: 'KV Departments' },
+  { key: 'security', label: 'Security', icon: '🛡️', group: 'KV Departments' },
+  { key: 'accounts', label: 'Accounts', icon: '💰', group: 'KV Departments' },
+  { key: 'crm', label: 'C.R.M.', icon: '🤝', group: 'KV Departments' },
+  { key: 'admin_operations', label: 'Admin / Operations', icon: '🏢', group: 'KV Departments' },
+  { key: 'maintenance', label: 'Maintenance', icon: '🔧', group: 'KV Departments' },
+  { key: 'civil', label: 'Civil', icon: '🏗️', group: 'KV Departments' },
+  { key: 'licensing', label: 'Licensing', icon: '📜', group: 'KV Departments' },
+
+  // ADMINISTRATION
+  { key: 'hotel_restaurant', label: 'HOTEL & RESTAURANT', icon: '🏨', group: 'Administration' },
+  { key: 'viramah', label: 'VIRAMAH', icon: '🏢', group: 'Administration' },
 ];
 
 /**
@@ -106,21 +113,54 @@ export const getTasks = async (req, res) => {
       }
     }
 
+    // Taskforce hierarchy scoping:
+    // Helper sees only his tasks; Supervisor sees his + helpers; Head sees all 3; Manager sees all.
+    const scope = await getScopedTaskforceContext(req.user);
+    if (!scope.isManagerOrAdmin) {
+      const orClauses = [];
+      if (scope.allowedUserIds && scope.allowedUserIds.length) {
+        orClauses.push({ assignedTo: { $in: scope.allowedUserIds } });
+      }
+      if (scope.allowedMemberIds && scope.allowedMemberIds.length) {
+        orClauses.push({ assignedMembers: { $in: scope.allowedMemberIds } });
+      }
+      if (orClauses.length) {
+        query.$and = query.$and || [];
+        query.$and.push({ $or: orClauses });
+      }
+    }
+
     const skip = (Number(page) - 1) * Number(limit);
 
-    const [tasks, total] = await Promise.all([
+    const [rawTasks, total] = await Promise.all([
       Task.find(query)
         .populate('assignedBy', 'firstName lastName username email role')
         .populate('assignedTo', 'firstName lastName username email mobileNo')
+        .populate('assignedMembers', 'name trade hierarchyLevel')
         .populate('apartmentDetails.projectId', 'projectName projectCode')
         .populate('apartmentDetails.flatId', 'flatNumber floor tower status')
         .populate('followUpLogs.loggedBy', 'firstName lastName username')
         .populate('comments.sender', 'firstName lastName username')
         .sort({ isMDDirective: -1, 'followUpSchedule.nextFollowUpDate': 1, createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit)),
+        .limit(Number(limit))
+        .lean(),
       Task.countDocuments(query),
     ]);
+
+    // Scoped Uploads: filter uploads inside each task according to hierarchy
+    const tasks = rawTasks.map((t) => {
+      let filteredUploads = t.uploads || [];
+      if (!scope.isManagerOrAdmin && scope.allowedUserIds) {
+        filteredUploads = filteredUploads.filter((u) =>
+          scope.allowedUserIds.includes(u.uploadedBy?.toString())
+        );
+      }
+      return {
+        ...t,
+        uploads: filteredUploads,
+      };
+    });
 
     return res.json({
       success: true,
@@ -235,18 +275,28 @@ export const getTaskById = async (req, res) => {
     const task = await Task.findById(req.params.id)
       .populate('assignedBy', 'firstName lastName username email role')
       .populate('assignedTo', 'firstName lastName username email mobileNo')
+      .populate('assignedMembers', 'name trade hierarchyLevel status')
       .populate('apartmentDetails.projectId', 'projectName projectCode')
       .populate('apartmentDetails.flatId', 'flatNumber floor tower status')
       .populate('followUpLogs.loggedBy', 'firstName lastName username')
       .populate('comments.sender', 'firstName lastName username')
       .populate('roadblockAlert.reportedBy', 'firstName lastName username')
-      .populate('auditTrail.performedBy', 'firstName lastName username');
+      .populate('auditTrail.performedBy', 'firstName lastName username')
+      .lean();
 
     if (!task) {
       return res.status(404).json({
         success: false,
         message: 'Task not found',
       });
+    }
+
+    // Scoped Uploads: Helper sees only his uploads; Supervisor sees his + helpers; Head sees all 3; Manager sees all
+    const scope = await getScopedTaskforceContext(req.user);
+    if (!scope.isManagerOrAdmin && scope.allowedUserIds) {
+      task.uploads = (task.uploads || []).filter((u) =>
+        scope.allowedUserIds.includes(u.uploadedBy?.toString())
+      );
     }
 
     return res.json({
@@ -279,6 +329,7 @@ export const createTask = async (req, res) => {
       isMDDirective = false,
       priority = 'high',
       assignedTo = [],
+      assignedMembers = [],
       startDate = new Date(),
       dueDate,
       nextFollowUpDate,
@@ -293,6 +344,12 @@ export const createTask = async (req, res) => {
         message: 'Task title is required',
       });
     }
+
+    const memberAssignees = Array.isArray(assignedMembers)
+      ? assignedMembers.filter(Boolean)
+      : assignedMembers
+      ? [assignedMembers]
+      : [];
 
     // Normalize assignedTo to an array of valid IDs
     const assignees = Array.isArray(assignedTo)
@@ -338,6 +395,7 @@ export const createTask = async (req, res) => {
       progress: 0,
       assignedBy: req.user.id,
       assignedTo: assignees,
+      assignedMembers: memberAssignees,
       startDate: startDate ? new Date(startDate) : new Date(),
       dueDate: dueDate ? new Date(dueDate) : undefined,
       checkpoints: formattedCheckpoints,
@@ -431,6 +489,11 @@ export const updateTask = async (req, res) => {
     }
     if (assignedTo !== undefined) {
       task.assignedTo = Array.isArray(assignedTo) ? assignedTo.filter(Boolean) : [assignedTo];
+    }
+    if (req.body.assignedMembers !== undefined) {
+      task.assignedMembers = Array.isArray(req.body.assignedMembers)
+        ? req.body.assignedMembers.filter(Boolean)
+        : [req.body.assignedMembers];
     }
     if (dueDate !== undefined) task.dueDate = dueDate ? new Date(dueDate) : null;
     if (startDate !== undefined) task.startDate = startDate ? new Date(startDate) : task.startDate;
@@ -791,17 +854,23 @@ export const deleteTask = async (req, res) => {
  */
 export const getTaskAssigneesMeta = async (req, res) => {
   try {
-    const [users, projects] = await Promise.all([
+    const [users, projects, taskforceMembers] = await Promise.all([
       User.find({ status: 'active' })
         .populate('roleId', 'roleName roleCode')
         .select('firstName lastName username email mobileNo roleId')
         .sort({ firstName: 1 }),
       Project.find().select('projectName projectCode buildings').lean(),
+      TaskforceMember.find({ status: 'active' })
+        .populate('supervisorId', 'name trade hierarchyLevel')
+        .populate('headId', 'name trade hierarchyLevel')
+        .sort({ hierarchyLevel: -1, name: 1 })
+        .lean(),
     ]);
 
     return res.json({
       success: true,
       assignees: users,
+      taskforceMembers,
       departments: DEPARTMENTS,
       projects,
     });

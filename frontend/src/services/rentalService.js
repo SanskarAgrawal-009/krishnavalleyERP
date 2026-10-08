@@ -127,6 +127,13 @@ export const rentalService = {
       method: 'DELETE'
     }),
 
+  // Bulk upload registry and/or agreement documents
+  bulkUploadDocuments: (formData) =>
+    request('/rentals/bulk-upload-documents', {
+      method: 'POST',
+      body: formData
+    }),
+
   // Compatibility aliases
   getRentals: (params = {}) => rentalService.getActiveRentals(params),
   uploadTenantAgreementDoc: (flatId, fileOrFormData) => rentalService.uploadAgreement(flatId, fileOrFormData),

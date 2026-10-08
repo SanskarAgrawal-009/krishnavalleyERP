@@ -382,17 +382,34 @@ export const getDepartmentStats = async (req, res) => {
       { $sort: { activeTasks: -1 } },
     ]);
 
-    const departmentLabels = {};
-    DEPARTMENTS.forEach((d) => { departmentLabels[d.key] = d.label; });
+    const statsMap = {};
+    stats.forEach((d) => {
+      statsMap[d._id] = d;
+    });
 
-    const enriched = stats.map((d) => ({
-      ...d,
-      department: d._id,
-      label: departmentLabels[d._id] || d._id,
-      avgProgress: Math.round(d.avgProgress || 0),
-      completionRate: d.totalTasks > 0 ? Math.round((d.completedTasks / d.totalTasks) * 100) : 0,
-      memberCount: new Set((d.uniqueAssignees || []).flat().map((a) => a?.toString())).size,
-    }));
+    // Ensure all defined KV departments & administration appear in manager analytics
+    const enriched = DEPARTMENTS.map((dept) => {
+      const d = statsMap[dept.key] || {
+        _id: dept.key,
+        totalTasks: 0,
+        activeTasks: 0,
+        completedTasks: 0,
+        delayedTasks: 0,
+        roadblocks: 0,
+        avgProgress: 0,
+        uniqueAssignees: [],
+      };
+      return {
+        ...d,
+        department: dept.key,
+        label: dept.label,
+        icon: dept.icon,
+        group: dept.group,
+        avgProgress: Math.round(d.avgProgress || 0),
+        completionRate: d.totalTasks > 0 ? Math.round((d.completedTasks / d.totalTasks) * 100) : 0,
+        memberCount: new Set((d.uniqueAssignees || []).flat().map((a) => a?.toString())).size,
+      };
+    });
 
     return res.json({ success: true, departments: enriched });
   } catch (error) {

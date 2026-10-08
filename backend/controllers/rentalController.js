@@ -817,6 +817,190 @@ export const deleteRegistryDocument = async (req, res) => {
 };
 
 // ============================================================================
+// 3F. BULK UPLOAD REGISTRY / RENT AGREEMENT DOCUMENTS
+// ============================================================================
+export const bulkUploadDocuments = async (req, res) => {
+  try {
+    const files = req.files || [];
+    if (!files || files.length === 0) {
+      return res.status(400).json({ success: false, message: 'No files were uploaded' });
+    }
+
+    const fs = await import('fs');
+    const pathModule = await import('path');
+    const { fileURLToPath } = await import('url');
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = pathModule.default.dirname(__filename);
+
+    const registriesDir = pathModule.default.resolve(__dirname, '../uploads/registries');
+    const agreementsDir = pathModule.default.resolve(__dirname, '../uploads/agreements');
+
+    if (!fs.default.existsSync(registriesDir)) {
+      fs.default.mkdirSync(registriesDir, { recursive: true });
+    }
+    if (!fs.default.existsSync(agreementsDir)) {
+      fs.default.mkdirSync(agreementsDir, { recursive: true });
+    }
+
+    // Parse metadata sent from client (if any)
+    let clientMetadata = {};
+    if (req.body.metadata) {
+      try {
+        clientMetadata = typeof req.body.metadata === 'string' ? JSON.parse(req.body.metadata) : req.body.metadata;
+      } catch (err) {
+        console.warn('Could not parse bulk upload metadata:', err);
+      }
+    }
+
+    const defaultDocType = req.body.defaultDocType || 'auto'; // 'auto' | 'registry' | 'agreement'
+
+    // Load all flats for matching
+    const allFlats = await Flat.find({}).lean();
+
+    const results = [];
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const file of files) {
+      const origName = file.originalname;
+      const meta = clientMetadata[origName] || {};
+
+      // 1. Determine Target Flat
+      let targetFlat = null;
+      if (meta.flatId) {
+        targetFlat = allFlats.find((f) => f._id.toString() === meta.flatId.toString());
+      } else if (meta.flatNumber) {
+        targetFlat = allFlats.find(
+          (f) => String(f.flatNumber).trim().toLowerCase() === String(meta.flatNumber).trim().toLowerCase()
+        );
+      }
+
+      // If flat not identified by metadata, match via filename
+      if (!targetFlat) {
+        const cleanName = origName.replace(/\.[^/.]+$/, ''); // remove extension
+
+        // Exact match with flatNumber (with word boundary / separators)
+        targetFlat = allFlats.find((f) => {
+          const fn = String(f.flatNumber).trim();
+          const regex = new RegExp(`(^|[\\-_\\s\\[\\(])${fn}([\\-_\\s\\]\\)]|$)`, 'i');
+          return regex.test(cleanName);
+        });
+
+        // Numeric / tower pattern match fallback: e.g. A-001, Flat 001, 001
+        if (!targetFlat) {
+          const match = cleanName.match(/(?:flat\s*|tower\s*[a-z]?[\s\-_]*)?([a-z]?[\s\-_]*)?(\d{1,4})/i);
+          if (match) {
+            const digits = match[2];
+            targetFlat = allFlats.find((f) => {
+              const fDigits = String(f.flatNumber).replace(/\D/g, '');
+              return String(f.flatNumber) === digits || fDigits === digits || Number(fDigits) === Number(digits);
+            });
+          }
+        }
+      }
+
+      if (!targetFlat) {
+        errorCount++;
+        results.push({
+          fileName: origName,
+          flatNumber: null,
+          ownerName: null,
+          docType: null,
+          status: 'error',
+          message: 'Could not match flat number from filename'
+        });
+        continue;
+      }
+
+      // 2. Determine Document Type (registry vs agreement)
+      let resolvedType = meta.docType || defaultDocType;
+      if (resolvedType === 'auto') {
+        const lower = origName.toLowerCase();
+        if (/registry|reg|sale|deed|registri|stamp/i.test(lower)) {
+          resolvedType = 'registry';
+        } else if (/agreement|agree|contract|rent|mou|rentback/i.test(lower)) {
+          resolvedType = 'agreement';
+        } else {
+          resolvedType = 'registry';
+        }
+      }
+
+      // 3. Save File to Disk
+      const ext = pathModule.default.extname(origName) || '.pdf';
+      let safeFileName, filePath, fileUrl;
+
+      if (resolvedType === 'agreement') {
+        safeFileName = `agreement_flat_${targetFlat.flatNumber}_${Date.now()}_${Math.floor(Math.random() * 1000)}${ext}`;
+        filePath = pathModule.default.join(agreementsDir, safeFileName);
+        fileUrl = `/uploads/agreements/${safeFileName}`;
+      } else {
+        safeFileName = `registry_flat_${targetFlat.flatNumber}_${Date.now()}_${Math.floor(Math.random() * 1000)}${ext}`;
+        filePath = pathModule.default.join(registriesDir, safeFileName);
+        fileUrl = `/uploads/registries/${safeFileName}`;
+      }
+
+      try {
+        fs.default.writeFileSync(filePath, file.buffer);
+
+        const docObj = {
+          fileUrl,
+          fileName: origName,
+          fileSize: file.size,
+          uploadedAt: new Date(),
+          verificationStatus: 'verified'
+        };
+
+        const updateSet = {};
+        if (resolvedType === 'agreement') {
+          updateSet['rentalDetails.agreementDocument'] = docObj;
+        } else {
+          updateSet['rentalDetails.registryDocument'] = docObj;
+          updateSet['currentOwner.registryDocument'] = docObj;
+        }
+
+        await Flat.findByIdAndUpdate(targetFlat._id, { $set: updateSet });
+
+        successCount++;
+        results.push({
+          fileName: origName,
+          flatId: targetFlat._id,
+          flatNumber: targetFlat.flatNumber,
+          ownerName: targetFlat.currentOwner?.name || 'Unassigned',
+          docType: resolvedType,
+          status: 'success',
+          fileUrl,
+          message: `${resolvedType === 'registry' ? 'Registry Document' : 'Rent Agreement'} linked to Flat ${targetFlat.flatNumber}`
+        });
+      } catch (err) {
+        errorCount++;
+        results.push({
+          fileName: origName,
+          flatNumber: targetFlat.flatNumber,
+          status: 'error',
+          message: err.message
+        });
+      }
+    }
+
+    if (apiCache) {
+      apiCache.invalidatePrefix('flats');
+      apiCache.invalidatePrefix('reports');
+    }
+
+    return res.json({
+      success: successCount > 0,
+      totalFiles: files.length,
+      successCount,
+      errorCount,
+      results
+    });
+  } catch (error) {
+    console.error('Error in bulk document upload:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ============================================================================
 // 4. RECORD RENTAL PAYOUT
 // ============================================================================
 export const recordRentalPayout = async (req, res) => {

@@ -7,6 +7,13 @@ import {
   bulkReassignTasks,
   bulkTaskAction,
 } from '../controllers/taskforceManagerController.js';
+import {
+  getTeamMembers,
+  addTeamMember,
+  updateTeamMember,
+  deleteTeamMember,
+  getMemberDashboard,
+} from '../controllers/taskforceTeamController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
 
@@ -15,7 +22,19 @@ const router = express.Router();
 // All taskforce manager routes require authentication
 router.use(authenticateToken);
 
-// Workforce & Team Management
+// ==========================================
+// TASKFORCE TEAM HIERARCHY (Helper -> Supervisor -> Head)
+// ==========================================
+router.get('/team', authorizePermission('tasks:view', 'tasks:manage'), getTeamMembers);
+router.post('/team', authorizePermission('tasks:create', 'tasks:manage'), addTeamMember);
+router.put('/team/:id', authorizePermission('tasks:edit', 'tasks:manage'), updateTeamMember);
+router.delete('/team/:id', authorizePermission('tasks:manage'), deleteTeamMember);
+
+// Member Personal & Scoped Dashboard
+router.get('/team/:id/dashboard', authorizePermission('tasks:view', 'tasks:manage'), getMemberDashboard);
+router.get('/my-dashboard', authorizePermission('tasks:view', 'tasks:manage'), getMemberDashboard);
+
+// Workforce & Team Management Overview
 router.get('/workforce', authorizePermission('tasks:view', 'tasks:manage'), getWorkforceOverview);
 
 // Performance Analytics
@@ -32,3 +51,4 @@ router.post('/bulk-reassign', authorizePermission('tasks:manage'), bulkReassignT
 router.post('/bulk-action', authorizePermission('tasks:manage'), bulkTaskAction);
 
 export default router;
+
