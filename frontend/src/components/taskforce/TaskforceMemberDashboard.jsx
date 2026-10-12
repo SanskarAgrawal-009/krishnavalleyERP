@@ -69,6 +69,12 @@ export const TaskforceMemberDashboard = ({
   }, []);
 
   useEffect(() => {
+    if (initialMemberId) {
+      setSelectedMemberId(initialMemberId);
+    }
+  }, [initialMemberId]);
+
+  useEffect(() => {
     loadDashboard();
   }, [selectedMemberId]);
 
@@ -211,6 +217,29 @@ export const TaskforceMemberDashboard = ({
   };
 
   const badgeInfo = getHierarchyBadge(hierarchyLevel);
+
+  if (loading && !dashboardData) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '60px 20px',
+          gap: '12px',
+          background: '#ffffff',
+          borderRadius: '16px',
+          border: '1px solid #e2e8f0',
+        }}
+      >
+        <RefreshCw size={26} style={{ color: '#2563eb', animation: 'spin 1s linear infinite' }} />
+        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>
+          Loading member dashboard & directives...
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

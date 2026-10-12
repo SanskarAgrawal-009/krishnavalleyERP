@@ -79,7 +79,6 @@ export const NAV_CATEGORIES = [
           { path: '/taskforce?view=kanban', label: 'Taskforce Board', icon: Layers },
           { path: '/taskforce?view=radar', label: 'Follow-up Radar', icon: Clock },
           { path: '/taskforce?view=list', label: 'Directives Register', icon: FileText },
-          { path: '/taskforce?view=member-dashboard', label: 'Member Dashboard', icon: Shield },
           { path: '/taskforce?view=team', label: 'Team Hierarchy', icon: Users },
         ]
       },
@@ -92,7 +91,6 @@ export const NAV_CATEGORIES = [
         permission: ['tasks:manage', 'tasks:view'],
         subItems: [
           { path: '/taskforce-manager?tab=team', label: 'Field Hierarchy (Head/Sup/Helper)', icon: Shield },
-          { path: '/taskforce-manager?tab=member-dashboard', label: 'Member Dashboard', icon: Target },
           { path: '/taskforce-manager?tab=workforce', label: 'Team & Workload', icon: Users },
           { path: '/taskforce-manager?tab=timeline', label: 'Gantt Timeline', icon: BarChart3 },
           { path: '/taskforce-manager?tab=performance', label: 'Performance KPIs', icon: Award },

@@ -6,7 +6,7 @@ import { taskService } from '../../services/taskService.js';
 import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
 import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx';
 import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.jsx';
-import { TaskforceMemberDashboard } from '../../components/taskforce/TaskforceMemberDashboard.jsx';
+import { TaskforceMemberDrawer } from '../../components/taskforce/TaskforceMemberDrawer.jsx';
 
 import {
   Sparkles,
@@ -45,8 +45,11 @@ export const TaskforcePage = () => {
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // View Mode: 'kanban', 'radar', 'list'
-  const [viewMode, setViewMode] = useState(searchParams.get('view') || 'kanban');
+  // View Mode: 'kanban', 'radar', 'list', 'team'
+  const urlView = searchParams.get('view');
+  const [viewMode, setViewMode] = useState(
+    urlView === 'member-dashboard' ? 'kanban' : (urlView || 'kanban')
+  );
 
   // Tasks & Stats Data
   const [tasks, setTasks] = useState([]);
@@ -62,11 +65,13 @@ export const TaskforcePage = () => {
   const [filterMyTasks, setFilterMyTasks] = useState(false);
   const [filterRoadblocksOnly, setFilterRoadblocksOnly] = useState(false);
 
-  // Modals State
+  // Modals & Drawer State
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedMemberForDrawer, setSelectedMemberForDrawer] = useState(null);
+  const [isMemberDrawerOpen, setIsMemberDrawerOpen] = useState(false);
 
   const hasActiveFilters =
     search.trim() !== '' ||
@@ -852,29 +857,6 @@ export const TaskforcePage = () => {
             <List size={14} /> List View
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setViewMode('member-dashboard');
-              setSearchParams({ view: 'member-dashboard' });
-            }}
-            style={{
-              padding: '7px 14px',
-              borderRadius: '6px',
-              fontSize: '12px',
-              fontWeight: 600,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: viewMode === 'member-dashboard' ? '#ffffff' : 'transparent',
-              color: viewMode === 'member-dashboard' ? '#7c3aed' : '#64748b',
-              boxShadow: viewMode === 'member-dashboard' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-              cursor: 'pointer',
-              border: 'none',
-            }}
-          >
-            <Shield size={14} /> Member Dashboard
-          </button>
 
           <button
             type="button"
@@ -1503,6 +1485,47 @@ export const TaskforcePage = () => {
           </div>
         </div>
       )}
+
+      {/* 7. VIEW 4: TEAM HIERARCHY */}
+      {viewMode === 'team' && (
+        <TaskforceTeamTab
+          onViewMemberDashboard={(member) => {
+            setSelectedMemberForDrawer(member);
+            setIsMemberDrawerOpen(true);
+          }}
+          onAssignTaskToMember={(member) => {
+            setEditingTask({
+              assignedMembers: [member._id],
+            });
+            setIsNewTaskModalOpen(true);
+          }}
+          onAssignTask={(member) => {
+            setEditingTask({
+              assignedMembers: [member._id],
+            });
+            setIsNewTaskModalOpen(true);
+          }}
+        />
+      )}
+
+      {/* Member Dashboard Slide-over Drawer */}
+      <TaskforceMemberDrawer
+        isOpen={isMemberDrawerOpen}
+        onClose={() => {
+          setIsMemberDrawerOpen(false);
+          setSelectedMemberForDrawer(null);
+        }}
+        member={selectedMemberForDrawer}
+        onAssignTask={(member) => {
+          setEditingTask({
+            assignedMembers: [member?._id || member],
+          });
+          setIsNewTaskModalOpen(true);
+        }}
+        onOpenTaskDetail={(taskId) => {
+          handleOpenDetail(taskId);
+        }}
+      />
 
       {/* New / Edit Task Modal */}
       <NewTaskModal

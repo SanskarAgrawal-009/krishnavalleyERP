@@ -28,6 +28,7 @@ import { AddTeamMemberModal } from './AddTeamMemberModal.jsx';
 export const TaskforceTeamTab = ({
   onViewMemberDashboard,
   onAssignTaskToMember,
+  onAssignTask,
   systemUsers = [],
 }) => {
   const { showToast } = useToast();
@@ -464,7 +465,7 @@ export const TaskforceTeamTab = ({
                 >
                   <button
                     type="button"
-                    onClick={() => onViewMemberDashboard && onViewMemberDashboard(m._id)}
+                    onClick={() => onViewMemberDashboard && onViewMemberDashboard(m)}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -485,7 +486,10 @@ export const TaskforceTeamTab = ({
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button
                       type="button"
-                      onClick={() => onAssignTaskToMember && onAssignTaskToMember(m)}
+                      onClick={() => {
+                        if (onAssignTaskToMember) onAssignTaskToMember(m);
+                        else if (onAssignTask) onAssignTask(m);
+                      }}
                       style={{
                         padding: '6px 10px',
                         borderRadius: '7px',

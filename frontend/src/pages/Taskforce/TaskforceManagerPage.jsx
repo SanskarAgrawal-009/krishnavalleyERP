@@ -5,7 +5,8 @@ import { useToast } from '../../context/ToastContext.jsx';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { taskService } from '../../services/taskService.js';
 import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.jsx';
-import { TaskforceMemberDashboard } from '../../components/taskforce/TaskforceMemberDashboard.jsx';
+import { TaskforceMemberDrawer } from '../../components/taskforce/TaskforceMemberDrawer.jsx';
+import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx';
 import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
 
 import {
@@ -62,7 +63,10 @@ export const TaskforceManagerPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'workforce');
+  const urlTab = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(
+    urlTab === 'member-dashboard' ? 'team' : (urlTab || 'workforce')
+  );
 
   // Data States
   const [workforceData, setWorkforceData] = useState(null);
@@ -83,14 +87,16 @@ export const TaskforceManagerPage = () => {
   // Workforce detail expansion
   const [expandedUser, setExpandedUser] = useState(null);
 
-  // Taskforce Team & Member Dashboard States
-  const [selectedMemberForDashboard, setSelectedMemberForDashboard] = useState(null);
+  // Taskforce Team & Member Drawer / Modals States
+  const [selectedMemberForDrawer, setSelectedMemberForDrawer] = useState(null);
+  const [isMemberDrawerOpen, setIsMemberDrawerOpen] = useState(false);
+  const [selectedTaskIdForModal, setSelectedTaskIdForModal] = useState(null);
+  const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
   const [newTaskInitialData, setNewTaskInitialData] = useState(null);
 
   const tabs = [
     { key: 'team', label: 'Field Hierarchy (Head/Sup/Helper)', icon: Shield, color: '#059669' },
-    { key: 'member-dashboard', label: 'Member Dashboard', icon: Target, color: '#7c3aed' },
     { key: 'workforce', label: 'Team & Workload', icon: Users, color: '#1a73e8' },
     { key: 'timeline', label: 'Gantt Timeline', icon: GanttChart, color: '#1e40af' },
     { key: 'performance', label: 'Performance KPIs', icon: Award, color: '#0f172a' },
@@ -107,7 +113,6 @@ export const TaskforceManagerPage = () => {
       setLoading(true);
       switch (tab) {
         case 'team':
-        case 'member-dashboard':
           setLoading(false);
           break;
         case 'workforce':
@@ -1466,20 +1471,15 @@ export const TaskforceManagerPage = () => {
       {activeTab === 'team' && (
         <TaskforceTeamTab
           onViewMemberDashboard={(member) => {
-            setSelectedMemberForDashboard(member);
-            handleTabChange('member-dashboard');
+            setSelectedMemberForDrawer(member);
+            setIsMemberDrawerOpen(true);
           }}
-          onAssignTask={(member) => {
+          onAssignTaskToMember={(member) => {
             setNewTaskInitialData({
               assignedMembers: [member._id],
             });
             setShowNewTaskModal(true);
           }}
-        />
-      )}
-      {activeTab === 'member-dashboard' && (
-        <TaskforceMemberDashboard
-          initialMemberId={selectedMemberForDashboard?._id}
           onAssignTask={(member) => {
             setNewTaskInitialData({
               assignedMembers: [member._id],
@@ -1493,6 +1493,37 @@ export const TaskforceManagerPage = () => {
       {activeTab === 'performance' && renderPerformanceTab()}
       {activeTab === 'departments' && renderDepartmentTab()}
       {activeTab === 'delegation' && renderDelegationTab()}
+
+      {/* Member Dashboard Slide-over Drawer */}
+      <TaskforceMemberDrawer
+        isOpen={isMemberDrawerOpen}
+        onClose={() => {
+          setIsMemberDrawerOpen(false);
+          setSelectedMemberForDrawer(null);
+        }}
+        member={selectedMemberForDrawer}
+        onAssignTask={(member) => {
+          setNewTaskInitialData({
+            assignedMembers: [member?._id || member],
+          });
+          setShowNewTaskModal(true);
+        }}
+        onOpenTaskDetail={(taskId) => {
+          setSelectedTaskIdForModal(taskId);
+          setIsTaskDetailModalOpen(true);
+        }}
+      />
+
+      {/* Task Detail Modal (accessible from Drawer or views) */}
+      <TaskDetailModal
+        isOpen={isTaskDetailModalOpen}
+        onClose={() => {
+          setIsTaskDetailModalOpen(false);
+          setSelectedTaskIdForModal(null);
+        }}
+        taskId={selectedTaskIdForModal}
+        onTaskUpdated={() => loadTabData(activeTab)}
+      />
 
       {/* New Task Modal Triggered from Team / Dashboard */}
       {showNewTaskModal && (
