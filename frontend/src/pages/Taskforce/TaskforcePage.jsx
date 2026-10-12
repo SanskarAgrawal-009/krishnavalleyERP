@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 import { taskService } from '../../services/taskService.js';
+import { canUserAssignTasks } from '../../utils/taskPermissions.js';
 import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
 import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx';
 import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.jsx';
@@ -42,6 +43,7 @@ import {
 
 export const TaskforcePage = () => {
   const { user } = useAuth();
+  const canAssign = canUserAssignTasks(user, user?.role);
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -147,6 +149,10 @@ export const TaskforcePage = () => {
   };
 
   const handleNewTask = () => {
+    if (!canAssign) {
+      showToast('Only Admin, Taskforce Manager, and VP Department are authorized to assign directives', 'error');
+      return;
+    }
     setEditingTask(null);
     setIsNewTaskModalOpen(true);
   };
@@ -592,25 +598,27 @@ export const TaskforcePage = () => {
             Refresh
           </button>
 
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={handleNewTask}
-            style={{
-              padding: '9px 20px',
-              fontSize: '13px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: '#ca8a04',
-              color: '#ffffff',
-              borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(202, 138, 4, 0.3)',
-            }}
-          >
-            <Plus size={16} />
-            Assign New Work
-          </button>
+          {canAssign && (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleNewTask}
+              style={{
+                padding: '9px 20px',
+                fontSize: '13px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: '#ca8a04',
+                color: '#ffffff',
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(202, 138, 4, 0.3)',
+              }}
+            >
+              <Plus size={16} />
+              Assign New Work
+            </button>
+          )}
         </div>
       </div>
 

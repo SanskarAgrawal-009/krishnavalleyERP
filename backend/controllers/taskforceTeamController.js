@@ -11,29 +11,42 @@ import bcrypt from 'bcryptjs';
  */
 export const ensureUserForTaskforceMember = async (member, plainPassword = null, customUsername = null) => {
   try {
+    let existing = null;
     if (member.userId) {
-      const existing = await User.findById(member.userId);
-      if (existing) {
-        let changed = false;
-        if (existing.department !== member.department) {
-          existing.department = member.department;
-          changed = true;
-        }
-        if (!existing.isTaskforceMember) {
-          existing.isTaskforceMember = true;
-          changed = true;
-        }
-        if (existing.taskforceHierarchyLevel !== member.hierarchyLevel) {
-          existing.taskforceHierarchyLevel = member.hierarchyLevel;
-          changed = true;
-        }
-        if (!existing.initialPassword) {
-          existing.initialPassword = plainPassword || 'Taskforce@123';
-          changed = true;
-        }
-        if (changed) await existing.save();
-        return existing;
+      existing = await User.findById(member.userId);
+    }
+    if (!existing && member.email) {
+      existing = await User.findOne({ email: member.email.toLowerCase().trim() });
+    }
+    if (!existing && customUsername) {
+      existing = await User.findOne({ username: customUsername.toLowerCase().trim() });
+    }
+
+    if (existing) {
+      let changed = false;
+      if (member.department && existing.department !== member.department) {
+        existing.department = member.department;
+        changed = true;
       }
+      if (!existing.isTaskforceMember) {
+        existing.isTaskforceMember = true;
+        changed = true;
+      }
+      if (member.hierarchyLevel && existing.taskforceHierarchyLevel !== member.hierarchyLevel) {
+        existing.taskforceHierarchyLevel = member.hierarchyLevel;
+        changed = true;
+      }
+      if (!existing.initialPassword) {
+        existing.initialPassword = plainPassword || 'Taskforce@123';
+        changed = true;
+      }
+      if (changed) await existing.save();
+
+      if (!member.userId || member.userId.toString() !== existing._id.toString()) {
+        member.userId = existing._id;
+        await member.save();
+      }
+      return existing;
     }
 
     // Derive username
@@ -50,6 +63,12 @@ export const ensureUserForTaskforceMember = async (member, plainPassword = null,
     let counter = 1;
     while (await User.findOne({ username: finalUsername })) {
       finalUsername = `${cleanUsername}_${counter++}`;
+    }
+
+    // Check if email taken, fallback if needed
+    let finalEmail = (member.email || `${finalUsername}@krishnavalley.com`).toLowerCase().trim();
+    if (await User.findOne({ email: finalEmail })) {
+      finalEmail = `${finalUsername}_${Date.now()}@krishnavalley.com`;
     }
 
     const pwd = plainPassword || 'Taskforce@123';
@@ -81,7 +100,7 @@ export const ensureUserForTaskforceMember = async (member, plainPassword = null,
       firstName,
       lastName,
       username: finalUsername,
-      email: member.email || `${finalUsername}@krishnavalley.com`,
+      email: finalEmail,
       mobileNo: member.mobileNo || '',
       passwordHash,
       initialPassword: pwd,
