@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   UserPlus,
@@ -12,7 +12,10 @@ import {
   KeyRound,
   ChevronRight,
   HardHat,
-  Eye
+  Eye,
+  Plus,
+  Check,
+  Building2,
 } from 'lucide-react';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { useToast } from '../../context/ToastContext.jsx';
@@ -22,6 +25,7 @@ export const AddTeamMemberModal = ({
   onClose,
   existingMembers = [],
   systemUsers = [],
+  initialDepartment = null,
   onMemberAdded,
 }) => {
   const { showToast } = useToast();
@@ -34,16 +38,8 @@ export const AddTeamMemberModal = ({
   const [hierarchyLevel, setHierarchyLevel] = useState('helper'); // 'helper' | 'supervisor' | 'head'
   const [supervisorId, setSupervisorId] = useState('');
   const [headId, setHeadId] = useState('');
-  const [trade, setTrade] = useState('Civil & Snagging');
-  const [notes, setNotes] = useState('');
 
-  // User Account Options
-  const [accountType, setAccountType] = useState('link_user'); // 'link_user' | 'create_user' | 'standalone'
-  const [selectedUserId, setSelectedUserId] = useState('');
-  const [newUsername, setNewUsername] = useState('');
-  const [newPassword, setNewPassword] = useState('Taskforce@123');
-
-  const TRADES = [
+  const DEFAULT_DEPARTMENTS = [
     'Civil & Snagging',
     'Electrical & Power',
     'Plumbing & Sanitation',
@@ -52,8 +48,76 @@ export const AddTeamMemberModal = ({
     'Housekeeping & Deep Cleaning',
     'Security & Access Control',
     'HVAC & Air Conditioning',
-    'General Site Operations',
+    'General Operations',
   ];
+
+  const [managedDepartments, setManagedDepartments] = useState([]);
+  const [department, setDepartment] = useState('Civil & Snagging');
+  const [notes, setNotes] = useState('');
+
+  // User Account Options
+  const [accountType, setAccountType] = useState('create_user'); // 'create_user' | 'link_user'
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [newUsername, setNewUsername] = useState('');
+  const [usernameTouched, setUsernameTouched] = useState(false);
+  const [newPassword, setNewPassword] = useState('Taskforce@123');
+
+  const handleNameChange = (val) => {
+    setName(val);
+    if (!usernameTouched) {
+      const slug = val
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '');
+      setNewUsername(slug);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      loadDepartments();
+    }
+  }, [isOpen, initialDepartment]);
+
+  useEffect(() => {
+    const handleDeptUpdated = () => {
+      if (isOpen) loadDepartments();
+    };
+    window.addEventListener('departmentsUpdated', handleDeptUpdated);
+    return () => window.removeEventListener('departmentsUpdated', handleDeptUpdated);
+  }, [isOpen]);
+
+  const loadDepartments = async () => {
+    try {
+      const res = await taskforceManagerService.getDepartments();
+      let list = [];
+      if (res?.success && Array.isArray(res.departments) && res.departments.length > 0) {
+        list = res.departments.map((d) => d.name);
+      } else {
+        list = DEFAULT_DEPARTMENTS;
+      }
+      setManagedDepartments(list);
+
+      if (initialDepartment) {
+        setDepartment(initialDepartment);
+      } else if (!department || !list.includes(department)) {
+        setDepartment(list[0] || 'Civil & Snagging');
+      }
+    } catch (err) {
+      setManagedDepartments(DEFAULT_DEPARTMENTS);
+      if (initialDepartment) setDepartment(initialDepartment);
+    }
+  };
+
+  // Merge managed departments with existing member departments
+  const existingMemberDepts = (existingMembers || [])
+    .map((m) => m.department || m.trade)
+    .filter(Boolean);
+
+  const allDepartments = Array.from(
+    new Set([...managedDepartments, ...DEFAULT_DEPARTMENTS, ...existingMemberDepts])
+  );
 
   // Filter existing heads and supervisors for reporting chain dropdowns
   const availableHeads = existingMembers.filter((m) => m.hierarchyLevel === 'head');
@@ -74,22 +138,20 @@ export const AddTeamMemberModal = ({
         email: email.trim(),
         hierarchyLevel,
         supervisorId: hierarchyLevel === 'helper' ? supervisorId || null : null,
-        headId: hierarchyLevel === 'supervisor' || hierarchyLevel === 'helper' ? headId || null : null,
-        trade,
+        department: department.trim(),
+        trade: department.trim(),
         notes: notes.trim(),
       };
 
       if (accountType === 'link_user' && selectedUserId) {
         payload.userId = selectedUserId;
-      } else if (accountType === 'create_user') {
-        if (!newUsername.trim()) {
-          showToast('Username is required to create a login account', 'error');
-          setSubmitting(false);
-          return;
-        }
+      } else {
+        const finalUname =
+          newUsername.trim() ||
+          name.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
         payload.createLoginUser = true;
-        payload.username = newUsername.trim();
-        payload.password = newPassword;
+        payload.username = finalUname;
+        payload.password = newPassword.trim() || 'Taskforce@123';
       }
 
       const res = await taskforceManagerService.addTeamMember(payload);
@@ -115,11 +177,13 @@ export const AddTeamMemberModal = ({
     setHierarchyLevel('helper');
     setSupervisorId('');
     setHeadId('');
-    setTrade('Civil & Snagging');
+    setDepartment('Civil & Snagging');
+    
     setNotes('');
-    setAccountType('link_user');
+    setAccountType('create_user');
     setSelectedUserId('');
     setNewUsername('');
+    setUsernameTouched(false);
     setNewPassword('Taskforce@123');
     onClose();
   };
@@ -314,7 +378,7 @@ export const AddTeamMemberModal = ({
                     <option value="">-- No Specific Supervisor --</option>
                     {availableSupervisors.map((s) => (
                       <option key={s._id} value={s._id}>
-                        {s.name} ({s.trade || 'Supervisor'})
+                        {s.name} ({s.department || s.trade || 'Supervisor'})
                       </option>
                     ))}
                   </select>
@@ -331,7 +395,7 @@ export const AddTeamMemberModal = ({
                     <option value="">-- Select Head --</option>
                     {availableHeads.map((h) => (
                       <option key={h._id} value={h._id}>
-                        {h.name} ({h.trade || 'Head'})
+                        {h.name} ({h.department || h.trade || 'Head'})
                       </option>
                     ))}
                   </select>
@@ -352,7 +416,7 @@ export const AddTeamMemberModal = ({
                   <option value="">-- Select Reporting Head --</option>
                   {availableHeads.map((h) => (
                     <option key={h._id} value={h._id}>
-                      {h.name} ({h.trade || 'Head'})
+                      {h.name} ({h.department || h.trade || 'Head'})
                     </option>
                   ))}
                 </select>
@@ -370,24 +434,57 @@ export const AddTeamMemberModal = ({
                   required
                   placeholder="e.g. Ramesh Kumar"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => handleNameChange(e.target.value)}
                   style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                  Trade / Skill Area
-                </label>
-                <select
-                  value={trade}
-                  onChange={(e) => setTrade(e.target.value)}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
+                <div style={{ marginBottom: '6px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b' }}>
+                    Department <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: '#ffffff',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    padding: '3px 10px',
+                    gap: '8px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)',
+                    transition: 'all 0.15s ease',
+                  }}
                 >
-                  {TRADES.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
+                  <div style={{ color: '#2563eb', display: 'flex', alignItems: 'center' }}>
+                    <Briefcase size={15} />
+                  </div>
+
+                  <select
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    style={{
+                      width: '100%',
+                      border: 'none',
+                      outline: 'none',
+                      background: 'transparent',
+                      fontSize: '0.82rem',
+                      fontWeight: '600',
+                      color: '#0f172a',
+                      padding: '5px 0',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {allDepartments.map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -419,23 +516,32 @@ export const AddTeamMemberModal = ({
 
             {/* Account Mapping Options */}
             <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '14px' }}>
-              <span style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', marginBottom: '8px' }}>
-                ERP Login &amp; Dashboard Account
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <KeyRound size={16} color="#2563eb" />
+                  Access Control & Governance Credentials
+                </span>
+                <span style={{ fontSize: '0.7rem', color: '#059669', fontWeight: '700', backgroundColor: '#ecfdf5', padding: '2px 8px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
+                  Auto-Synchronized
+                </span>
+              </div>
+              <p style={{ margin: '0 0 10px', fontSize: '0.72rem', color: '#64748b', lineHeight: 1.3 }}>
+                This member's Login ID and Password will be registered in Access Control & Governance and visible in the User Directory.
+              </p>
+
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                 {[
-                  { id: 'link_user', label: 'Link Existing User' },
-                  { id: 'create_user', label: 'Create New Login' },
-                  { id: 'standalone', label: 'Field Member (No Login)' },
+                  { id: 'create_user', label: 'Create New Login Credentials' },
+                  { id: 'link_user', label: 'Link Existing User Account' },
                 ].map((t) => (
                   <button
                     key={t.id}
                     type="button"
                     onClick={() => setAccountType(t.id)}
                     style={{
-                      padding: '5px 10px',
+                      padding: '6px 12px',
                       borderRadius: '6px',
-                      fontSize: '0.74rem',
+                      fontSize: '0.75rem',
                       fontWeight: accountType === t.id ? '700' : '600',
                       border: accountType === t.id ? '1.5px solid #2563eb' : '1px solid #cbd5e1',
                       background: accountType === t.id ? '#eff6ff' : '#ffffff',
@@ -447,6 +553,43 @@ export const AddTeamMemberModal = ({
                   </button>
                 ))}
               </div>
+
+              {accountType === 'create_user' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
+                      Login User ID / Username *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. ramesh_kumar"
+                      value={newUsername}
+                      onChange={(e) => {
+                        setUsernameTouched(true);
+                        setNewUsername(e.target.value);
+                      }}
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem' }}
+                    />
+                    <span style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '2px', display: 'block' }}>
+                      Registered as @{newUsername || 'username'}
+                    </span>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
+                      Initial Password *
+                    </label>
+                    <input
+                      type="text"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', fontWeight: '600', color: '#2563eb' }}
+                    />
+                    <span style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '2px', display: 'block' }}>
+                      Default or custom password
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {accountType === 'link_user' && (
                 <div>
@@ -465,34 +608,6 @@ export const AddTeamMemberModal = ({
                       </option>
                     ))}
                   </select>
-                </div>
-              )}
-
-              {accountType === 'create_user' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                      Username *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. ramesh_helper"
-                      value={newUsername}
-                      onChange={(e) => setNewUsername(e.target.value)}
-                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                      Initial Password *
-                    </label>
-                    <input
-                      type="text"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem' }}
-                    />
-                  </div>
                 </div>
               )}
             </div>
@@ -564,6 +679,7 @@ export const AddTeamMemberModal = ({
           </div>
         </form>
       </div>
+
     </div>
   );
 };

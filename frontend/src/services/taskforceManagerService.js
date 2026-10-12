@@ -67,6 +67,27 @@ export const taskforceManagerService = {
       method: 'DELETE',
     }),
 
+  // Taskforce Departments Management
+  getDepartments: () => request('/taskforce-manager/departments'),
+
+  createDepartment: (data) =>
+    request('/taskforce-manager/departments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateDepartment: (id, data) =>
+    request(`/taskforce-manager/departments/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  deleteDepartment: (department, fallbackDepartment = 'General Operations') =>
+    request('/taskforce-manager/department/delete', {
+      method: 'POST',
+      body: JSON.stringify({ department, fallbackDepartment }),
+    }),
+
   // Member Dashboard (Scoped by Helper / Supervisor / Head / Manager)
   getMemberDashboard: (memberId) =>
     request(`/taskforce-manager/team/${memberId || 'me'}/dashboard`),

@@ -202,12 +202,14 @@ export const UserManagementPage = () => {
         (u.username && u.username.toLowerCase().includes(q)) ||
         (u.email && u.email.toLowerCase().includes(q)) ||
         (u.mobileNo && u.mobileNo.includes(q)) ||
-        (u.agentProfile?.agencyName && u.agentProfile.agencyName.toLowerCase().includes(q));
+        (u.agentProfile?.agencyName && u.agentProfile.agencyName.toLowerCase().includes(q)) ||
+        (u.department && u.department.toLowerCase().includes(q));
 
       const matchesRole =
         selectedRoleFilter === 'all' ||
-        u.roleId?._id === selectedRoleFilter ||
-        u.roleId?.roleCode === selectedRoleFilter;
+        (selectedRoleFilter === 'taskforce_only'
+          ? (u.isTaskforceMember || !!u.department)
+          : (u.roleId?._id === selectedRoleFilter || u.roleId?.roleCode === selectedRoleFilter));
 
       const matchesStatus =
         selectedStatusFilter === 'all' || u.status === selectedStatusFilter;
@@ -1287,6 +1289,7 @@ export const UserManagementPage = () => {
                   }}
                 >
                   <option value="all">All Roles ({roles.length})</option>
+                  <option value="taskforce_only">🛠️ Taskforce Team Only</option>
                   {roles.map((r) => (
                     <option key={r._id} value={r._id}>
                       {r.roleName}
@@ -1628,13 +1631,46 @@ export const UserManagementPage = () => {
                                   <span>@{u.username}</span>
                                   <span>•</span>
                                   <span>{u.email}</span>
-                                  {u.mobileNo && (
+                                                                    {u.mobileNo && (
                                     <>
                                       <span>•</span>
                                       <span>{u.mobileNo}</span>
                                     </>
                                   )}
                                 </div>
+                                {u.initialPassword && (
+                                  <div
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '6px',
+                                      marginTop: '5px',
+                                      padding: '2px 8px',
+                                      borderRadius: '6px',
+                                      backgroundColor: '#f1f5f9',
+                                      border: '1px solid #cbd5e1',
+                                      fontSize: '0.73rem',
+                                    }}
+                                  >
+                                    <span style={{ color: '#475569', fontWeight: '700' }}>ID:</span>
+                                    <code style={{ color: '#0f172a', fontWeight: '700' }}>{u.username}</code>
+                                    <span style={{ color: '#cbd5e1' }}>|</span>
+                                    <span style={{ color: '#475569', fontWeight: '700' }}>Pass:</span>
+                                    <code style={{ color: '#2563eb', fontWeight: '700' }}>{u.initialPassword}</code>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(`Username: ${u.username}\nPassword: ${u.initialPassword}`);
+                                        showFeedback(`Credentials for @${u.username} copied!`);
+                                      }}
+                                      title="Copy ID & Password"
+                                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '1px 3px', color: '#64748b' }}
+                                    >
+                                      <Copy size={11} />
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </td>
@@ -1673,6 +1709,26 @@ export const UserManagementPage = () => {
                                 )}
                                 {u.roleId?.roleName || 'Unassigned Role'}
                               </span>
+                              {(u.isTaskforceMember || u.department) && (
+                                <span
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    padding: '2px 8px',
+                                    borderRadius: '5px',
+                                    backgroundColor: '#f0fdf4',
+                                    color: '#166534',
+                                    border: '1px solid #bbf7d0',
+                                    fontWeight: '700',
+                                    fontSize: '0.72rem',
+                                    marginTop: '4px',
+                                  }}
+                                >
+                                  <i className="fa-solid fa-hard-hat" style={{ fontSize: '0.68rem' }} />
+                                  Taskforce • {u.department || 'Operations'}{u.taskforceHierarchyLevel ? ` (${u.taskforceHierarchyLevel.toUpperCase()})` : ''}
+                                </span>
+                              )}
 
                               {/* If Agent, display agency name & commission pill */}
                               {isAgent && (
@@ -1963,7 +2019,7 @@ export const UserManagementPage = () => {
                       </div>
 
                       {/* Role Pill */}
-                      <div style={{ marginBottom: '14px' }}>
+                      <div style={{ marginBottom: '10px' }}>
                         <span
                           style={{
                             display: 'inline-flex',
@@ -1982,6 +2038,53 @@ export const UserManagementPage = () => {
                           {u.roleId?.roleName || 'Unassigned Role'}
                         </span>
                       </div>
+
+                      {/* Taskforce Badge & Credentials */}
+                      {(u.isTaskforceMember || u.department || u.initialPassword) && (
+                        <div
+                          style={{
+                            marginBottom: '12px',
+                            padding: '10px 12px',
+                            borderRadius: '8px',
+                            backgroundColor: '#f8fafc',
+                            border: '1px solid #e2e8f0',
+                            fontSize: '0.78rem',
+                          }}
+                        >
+                          {(u.isTaskforceMember || u.department) && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#166534', fontWeight: '800', marginBottom: '6px' }}>
+                              <i className="fa-solid fa-hard-hat" style={{ fontSize: '0.75rem' }} />
+                              <span>Taskforce • {u.department || 'Operations'}</span>
+                              {u.taskforceHierarchyLevel && (
+                                <span style={{ fontSize: '0.68rem', backgroundColor: '#dcfce7', color: '#15803d', padding: '1px 5px', borderRadius: '4px' }}>
+                                  {u.taskforceHierarchyLevel.toUpperCase()}
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                          {u.initialPassword && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '5px 8px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                              <div>
+                                <span style={{ color: '#64748b', fontSize: '0.72rem' }}>Login Pass: </span>
+                                <code style={{ color: '#2563eb', fontWeight: '800', fontSize: '0.8rem' }}>{u.initialPassword}</code>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigator.clipboard.writeText(`Username: ${u.username}\nPassword: ${u.initialPassword}`);
+                                  showFeedback(`Credentials for @${u.username} copied!`);
+                                }}
+                                title="Copy ID & Password"
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2563eb', display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.72rem', fontWeight: '700' }}
+                              >
+                                <Copy size={11} /> Copy
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Contact Details */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.82rem', color: '#475569' }}>
@@ -3027,6 +3130,64 @@ export const UserManagementPage = () => {
             </div>
 
             <form onSubmit={handleSaveUser} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* Taskforce Operator Credentials Banner */}
+                {editingUser && (editingUser.isTaskforceMember || editingUser.department || editingUser.initialPassword) && (
+                  <div
+                    style={{
+                      marginBottom: '16px',
+                      padding: '12px 14px',
+                      borderRadius: '10px',
+                      backgroundColor: '#f0fdf4',
+                      border: '1.5px solid #bbf7d0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800', color: '#166534', fontSize: '0.85rem' }}>
+                        <i className="fa-solid fa-hard-hat" /> Taskforce Team Member
+                        {editingUser.taskforceHierarchyLevel && (
+                          <span style={{ fontSize: '0.72rem', backgroundColor: '#dcfce7', color: '#15803d', padding: '1px 6px', borderRadius: '4px' }}>
+                            {editingUser.taskforceHierarchyLevel.toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#15803d', marginTop: '3px' }}>
+                        Department: <strong>{editingUser.department || 'Operations'}</strong>
+                        {editingUser.initialPassword && (
+                          <span style={{ marginLeft: '10px' }}>
+                            Initial Password: <strong style={{ color: '#1d4ed8' }}>{editingUser.initialPassword}</strong>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {editingUser.initialPassword && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`Username: ${editingUser.username}\nPassword: ${editingUser.initialPassword}`);
+                          showFeedback(`Credentials copied for @${editingUser.username}!`);
+                        }}
+                        style={{
+                          padding: '5px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #86efac',
+                          backgroundColor: '#ffffff',
+                          color: '#166534',
+                          fontWeight: '700',
+                          fontSize: '0.74rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        <Copy size={12} /> Copy Credentials
+                      </button>
+                    )}
+                  </div>
+                )}
               {/* SECTION 1: Personal Identity */}
               <div>
                 <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>

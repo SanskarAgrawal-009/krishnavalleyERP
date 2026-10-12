@@ -198,7 +198,7 @@ export const TaskforceMemberDrawer = ({
                   </span>
                 )}
 
-                {memberObj?.trade && (
+                {(memberObj?.department || memberObj?.trade) && (
                   <span
                     style={{
                       padding: '2px 8px',
@@ -209,7 +209,7 @@ export const TaskforceMemberDrawer = ({
                       color: '#475569',
                     }}
                   >
-                    {memberObj.trade}
+                    {memberObj.department || memberObj.trade}
                   </span>
                 )}
               </div>

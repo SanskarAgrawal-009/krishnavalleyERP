@@ -1282,10 +1282,10 @@ export const TaskDetailModal = ({
                       {task.assignedMembers.map((m) => {
                         const tierBadge =
                           m.hierarchyLevel === 'head'
-                            ? { label: '👑 HEAD', bg: '#fef3c7', color: '#92400e' }
+                            ? { label: 'HEAD', bg: '#fef3c7', color: '#92400e' }
                             : m.hierarchyLevel === 'supervisor'
-                            ? { label: '🛡️ SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' }
-                            : { label: '👷 HELPER', bg: '#f1f5f9', color: '#334155' };
+                            ? { label: 'SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' }
+                            : { label: 'HELPER', bg: '#f1f5f9', color: '#334155' };
                         return (
                           <div
                             key={m._id}
@@ -1323,7 +1323,7 @@ export const TaskDetailModal = ({
                                 </span>
                               </div>
                               <div style={{ fontSize: '11px', color: '#64748b' }}>
-                                {m.trade || m.role || 'Field Personnel'}
+                                {m.department || m.trade || m.role || 'Field Personnel'}
                               </div>
                             </div>
                           </div>
@@ -1511,11 +1511,11 @@ export const TaskDetailModal = ({
                       const stageStyle = stageLabels[up.stage] || stageLabels.other;
 
                       const roleLabels = {
-                        helper: { label: '👷 HELPER', bg: '#f1f5f9', color: '#334155' },
-                        supervisor: { label: '🛡️ SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' },
-                        head: { label: '👑 HEAD', bg: '#fef3c7', color: '#92400e' },
-                        manager: { label: '⚡ MANAGER', bg: '#fdf2f8', color: '#9d174d' },
-                        admin: { label: '⚡ ADMIN', bg: '#fdf2f8', color: '#9d174d' },
+                        helper: { label: 'HELPER', bg: '#f1f5f9', color: '#334155' },
+                        supervisor: { label: 'SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' },
+                        head: { label: 'HEAD', bg: '#fef3c7', color: '#92400e' },
+                        manager: { label: 'MANAGER', bg: '#fdf2f8', color: '#9d174d' },
+                        admin: { label: 'ADMIN', bg: '#fdf2f8', color: '#9d174d' },
                       };
                       const roleStyle = roleLabels[up.uploaderRole] || { label: (up.uploaderRole || 'MEMBER').toUpperCase(), bg: '#f1f5f9', color: '#475569' };
 

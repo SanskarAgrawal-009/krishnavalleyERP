@@ -54,6 +54,12 @@ const TaskforceMemberSchema = new mongoose.Schema(
       default: 'General Operations', // e.g. Civil, Electrical, Plumbing, Snagging, Painting, Housekeeping
     },
 
+    department: {
+      type: String,
+      trim: true,
+      default: 'General Operations', // Department allocation (e.g. Civil & Snagging, Electrical & Power)
+    },
+
     status: {
       type: String,
       enum: ['active', 'inactive', 'on_leave'],

@@ -31,6 +31,7 @@ import { SettingsPage } from './pages/Settings/SettingsPage.jsx';
 import { AuditLogsPage } from './pages/Audit/AuditLogsPage.jsx';
 import { TaskforcePage } from './pages/Taskforce/TaskforcePage.jsx';
 import { TaskforceManagerPage } from './pages/Taskforce/TaskforceManagerPage.jsx';
+import { TaskforceDashboardPage } from './pages/Taskforce/TaskforceDashboardPage.jsx';
 
 import './styles/global.css';
 import './styles/layout.css';
@@ -209,6 +210,17 @@ export const App = () => {
                 </ProtectedRoute>
               }
             />
+
+            {/* Taskforce Dedicated Dashboard */}
+            <Route
+              path="taskforce-dashboard"
+              element={
+                <ProtectedRoute permissions={['tasks:view', 'tasks:manage']}>
+                  <TaskforceDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="taskforce/dashboard" element={<Navigate to="/taskforce-dashboard" replace />} />
 
             {/* Taskforce & Management */}
             <Route

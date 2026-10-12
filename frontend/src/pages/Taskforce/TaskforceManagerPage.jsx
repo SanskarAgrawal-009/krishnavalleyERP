@@ -96,11 +96,8 @@ export const TaskforceManagerPage = () => {
   const [newTaskInitialData, setNewTaskInitialData] = useState(null);
 
   const tabs = [
-    { key: 'team', label: 'Field Hierarchy (Head/Sup/Helper)', icon: Shield, color: '#059669' },
+    { key: 'team', label: 'Departments & Hierarchy', icon: Building2, color: '#059669' },
     { key: 'workforce', label: 'Team & Workload', icon: Users, color: '#1a73e8' },
-    { key: 'timeline', label: 'Gantt Timeline', icon: GanttChart, color: '#1e40af' },
-    { key: 'performance', label: 'Performance KPIs', icon: Award, color: '#0f172a' },
-    { key: 'departments', label: 'Department Analytics', icon: Building2, color: '#2563eb' },
     { key: 'delegation', label: 'Delegation Hub', icon: GitBranch, color: '#1e293b' },
   ];
 
@@ -1371,7 +1368,7 @@ export const TaskforceManagerPage = () => {
             </span>
           </div>
           <p style={{ fontSize: '13px', color: '#64748b', marginTop: '6px', margin: 0 }}>
-            Team workload management, Gantt timeline, performance KPIs, department analytics, and task delegation hub.
+            Team workload management, department hierarchy, and task delegation hub.
           </p>
         </div>
 
@@ -1432,7 +1429,7 @@ export const TaskforceManagerPage = () => {
       </div>
 
       {/* Department Filter (shared across tabs) */}
-      {['workforce', 'timeline'].includes(activeTab) && (
+      {['workforce'].includes(activeTab) && (
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <select
             value={selectedDept}

@@ -1,9 +1,10 @@
 import { Task } from '../models/Task.js';
 import { User } from '../models/User.js';
+import { TaskforceMember } from '../models/TaskforceMember.js';
 import { DEPARTMENTS } from './taskController.js';
 
 /**
- * @desc   Get workforce overview: per-user workload, capacity, task distribution
+ * @desc   Get workforce overview: per-member workload, capacity, task distribution (Taskforce Team ONLY)
  * @route  GET /api/taskforce-manager/workforce
  * @access Authenticated
  */
@@ -11,101 +12,137 @@ export const getWorkforceOverview = async (req, res) => {
   try {
     const { department } = req.query;
 
-    // Get all active users
-    const userFilter = { status: 'active' };
-    const users = await User.find(userFilter)
-      .populate('roleId', 'roleName roleCode')
-      .select('firstName lastName username email mobileNo roleId status')
-      .sort({ firstName: 1 })
+    // Query Taskforce Members strictly (exclude unrelated ERP staff)
+    const memberFilter = { status: { $ne: 'deleted' } };
+    if (department && department !== 'all') {
+      memberFilter.$or = [
+        { department: { $regex: new RegExp(`^${department.trim()}$`, 'i') } },
+        { trade: { $regex: new RegExp(`^${department.trim()}$`, 'i') } },
+      ];
+    }
+
+    const members = await TaskforceMember.find(memberFilter)
+      .populate('userId', 'firstName lastName username email mobileNo roleId status')
+      .populate('supervisorId', 'name trade department hierarchyLevel')
+      .populate('headId', 'name trade department hierarchyLevel')
+      .sort({ hierarchyLevel: -1, name: 1 })
       .lean();
 
     // Get all non-cancelled tasks
     const taskFilter = { status: { $nin: ['cancelled'] } };
     if (department && department !== 'all') {
-      taskFilter.department = department;
+      taskFilter.department = { $regex: new RegExp(`^${department.trim()}$`, 'i') };
     }
     const tasks = await Task.find(taskFilter)
-      .select('assignedTo status priority department progress dueDate startDate isMDDirective roadblockAlert completedAt')
+      .select('assignedTo assignedMembers status priority department progress dueDate startDate isMDDirective roadblockAlert completedAt')
       .lean();
-
-    // Build per-user workload map
-    const userWorkloadMap = {};
-    users.forEach((u) => {
-      userWorkloadMap[u._id.toString()] = {
-        user: u,
-        totalAssigned: 0,
-        active: 0,
-        completed: 0,
-        delayed: 0,
-        overdue: 0,
-        urgent: 0,
-        high: 0,
-        medium: 0,
-        low: 0,
-        avgProgress: 0,
-        progressSum: 0,
-        activeProgressSum: 0,
-        activeCount: 0,
-        departments: new Set(),
-        mdDirectives: 0,
-        roadblocks: 0,
-      };
-    });
 
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    tasks.forEach((task) => {
-      const assignees = (task.assignedTo || []).map((a) => a.toString());
-      assignees.forEach((uid) => {
-        if (!userWorkloadMap[uid]) return;
-        const entry = userWorkloadMap[uid];
-        entry.totalAssigned++;
-        entry.departments.add(task.department);
+    // Build per-member workload array
+    const workforce = members.map((member) => {
+      const mId = member._id.toString();
+      const uId = member.userId?._id?.toString();
+
+      // Find tasks assigned to this member via assignedMembers or linked assignedTo
+      const memberTasks = tasks.filter((t) => {
+        const hasMember = (t.assignedMembers || []).some((am) => am.toString() === mId);
+        const hasUser = uId && (t.assignedTo || []).some((at) => at.toString() === uId);
+        return hasMember || hasUser;
+      });
+
+      let active = 0;
+      let completed = 0;
+      let delayed = 0;
+      let overdue = 0;
+      let urgent = 0;
+      let high = 0;
+      let medium = 0;
+      let low = 0;
+      let progressSum = 0;
+      let activeProgressSum = 0;
+      let mdDirectives = 0;
+      let roadblocks = 0;
+      const memberDepts = new Set();
+      if (member.department) memberDepts.add(member.department);
+      if (member.trade) memberDepts.add(member.trade);
+
+      memberTasks.forEach((task) => {
+        if (task.department) memberDepts.add(task.department);
 
         if (['pending', 'in_progress', 'under_review'].includes(task.status)) {
-          entry.active++;
-          entry.activeProgressSum += task.progress || 0;
-          entry.activeCount++;
+          active++;
+          activeProgressSum += task.progress || 0;
         }
-        if (task.status === 'completed') entry.completed++;
-        if (task.status === 'delayed') entry.delayed++;
+        if (task.status === 'completed') completed++;
+        if (task.status === 'delayed') delayed++;
         if (task.dueDate && new Date(task.dueDate) < startOfDay && task.status !== 'completed') {
-          entry.overdue++;
+          overdue++;
         }
 
-        // Priority counts
-        if (task.priority === 'urgent') entry.urgent++;
-        else if (task.priority === 'high') entry.high++;
-        else if (task.priority === 'medium') entry.medium++;
-        else entry.low++;
+        if (task.priority === 'urgent') urgent++;
+        else if (task.priority === 'high') high++;
+        else if (task.priority === 'medium') medium++;
+        else low++;
 
-        entry.progressSum += task.progress || 0;
-        if (task.isMDDirective) entry.mdDirectives++;
+        progressSum += task.progress || 0;
+        if (task.isMDDirective) mdDirectives++;
         if (task.roadblockAlert?.hasRoadblock && !task.roadblockAlert?.isResolved) {
-          entry.roadblocks++;
+          roadblocks++;
         }
       });
+
+      const totalAssigned = memberTasks.length;
+      const avgProgress = totalAssigned > 0 ? Math.round(progressSum / totalAssigned) : 0;
+      const activeAvgProgress = active > 0 ? Math.round(activeProgressSum / active) : 0;
+      const completionRate = totalAssigned > 0 ? Math.round((completed / totalAssigned) * 100) : 0;
+      const capacityScore = Math.max(0, 100 - (active * 12 + urgent * 8 + roadblocks * 15));
+
+      const nameParts = (member.name || '').trim().split(' ');
+      const firstName = nameParts[0] || member.name;
+      const lastName = nameParts.slice(1).join(' ');
+
+      return {
+        user: {
+          _id: member.userId?._id || member._id,
+          memberId: member._id,
+          firstName,
+          lastName,
+          username: member.userId?.username || member.name,
+          email: member.email || member.userId?.email || '',
+          mobileNo: member.mobileNo || member.userId?.mobileNo || '',
+          status: member.status || 'active',
+          roleId: {
+            roleName: `${member.hierarchyLevel.toUpperCase()} • ${member.department || member.trade || 'Taskforce'}`,
+            roleCode: member.hierarchyLevel,
+          },
+          hierarchyLevel: member.hierarchyLevel,
+          trade: member.trade,
+          department: member.department,
+          supervisor: member.supervisorId?.name || null,
+          head: member.headId?.name || null,
+        },
+        totalAssigned,
+        active,
+        completed,
+        delayed,
+        overdue,
+        urgent,
+        high,
+        medium,
+        low,
+        avgProgress,
+        activeAvgProgress,
+        completionRate,
+        capacityScore,
+        departments: Array.from(memberDepts),
+        mdDirectives,
+        roadblocks,
+      };
     });
 
-    // Convert to array with computed fields
-    const workforce = Object.values(userWorkloadMap)
-      .map((entry) => ({
-        ...entry,
-        departments: Array.from(entry.departments),
-        avgProgress: entry.totalAssigned > 0
-          ? Math.round(entry.progressSum / entry.totalAssigned)
-          : 0,
-        activeAvgProgress: entry.activeCount > 0
-          ? Math.round(entry.activeProgressSum / entry.activeCount)
-          : 0,
-        completionRate: entry.totalAssigned > 0
-          ? Math.round((entry.completed / entry.totalAssigned) * 100)
-          : 0,
-        capacityScore: Math.max(0, 100 - (entry.active * 12 + entry.urgent * 8 + entry.roadblocks * 15)),
-      }))
-      .filter((entry) => entry.totalAssigned > 0 || req.query.showAll === 'true')
-      .sort((a, b) => b.active - a.active);
+    workforce.sort((a, b) => b.active - a.active);
 
     return res.json({
       success: true,
@@ -426,6 +463,31 @@ export const getDepartmentStats = async (req, res) => {
 export const bulkReassignTasks = async (req, res) => {
   try {
     const { taskIds, fromUserId, toUserId } = req.body;
+
+    // Authorization: ONLY Admin, Taskforce Manager, and VP Department can reassign tasks
+    const callerRole = (req.user?.role || '').toLowerCase();
+    let callerDept = '';
+    try {
+      const callerUser = await User.findById(req.user.id).select('department designation role');
+      callerDept = (callerUser?.department || '').toLowerCase().trim();
+    } catch (_) {}
+
+    const isAdmin = callerRole === 'admin' || callerRole === 'super_admin';
+    const isTaskforceManager = callerRole === 'taskforce_manager' || callerRole === 'taskforce_mgr';
+    const isVPDept =
+      callerDept === "vp's" ||
+      callerDept === 'vp' ||
+      callerDept.startsWith('vp') ||
+      callerDept.includes('vice president') ||
+      callerRole === 'vp' ||
+      callerRole.includes('vp');
+
+    if (!isAdmin && !isTaskforceManager && !isVPDept) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Only Admin, Taskforce Manager, and the VP Department can assign and reassign tasks.',
+      });
+    }
 
     if (!taskIds || !Array.isArray(taskIds) || taskIds.length === 0) {
       return res.status(400).json({ success: false, message: 'Task IDs are required' });

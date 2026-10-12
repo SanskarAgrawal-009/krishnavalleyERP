@@ -12,6 +12,10 @@ import {
   addTeamMember,
   updateTeamMember,
   deleteTeamMember,
+  getTaskforceDepartments,
+  createTaskforceDepartment,
+  updateTaskforceDepartment,
+  deleteDepartment,
   getMemberDashboard,
 } from '../controllers/taskforceTeamController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
@@ -23,12 +27,19 @@ const router = express.Router();
 router.use(authenticateToken);
 
 // ==========================================
-// TASKFORCE TEAM HIERARCHY (Helper -> Supervisor -> Head)
+// TASKFORCE TEAM HIERARCHY & DEPARTMENTS
 // ==========================================
 router.get('/team', authorizePermission('tasks:view', 'tasks:manage'), getTeamMembers);
 router.post('/team', authorizePermission('tasks:create', 'tasks:manage'), addTeamMember);
 router.put('/team/:id', authorizePermission('tasks:edit', 'tasks:manage'), updateTeamMember);
 router.delete('/team/:id', authorizePermission('tasks:manage'), deleteTeamMember);
+
+// Managed Departments CRUD
+router.get('/departments', authorizePermission('tasks:view', 'tasks:manage'), getTaskforceDepartments);
+router.post('/departments', authorizePermission('tasks:manage', 'tasks:create'), createTaskforceDepartment);
+router.put('/departments/:id', authorizePermission('tasks:manage'), updateTaskforceDepartment);
+router.delete('/departments/:id', authorizePermission('tasks:manage'), deleteDepartment);
+router.post('/department/delete', authorizePermission('tasks:manage'), deleteDepartment);
 
 // Member Personal & Scoped Dashboard
 router.get('/team/:id/dashboard', authorizePermission('tasks:view', 'tasks:manage'), getMemberDashboard);

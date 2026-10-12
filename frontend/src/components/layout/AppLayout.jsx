@@ -5,6 +5,7 @@ import { ErrorBoundary } from '../common/ErrorBoundary.jsx';
 import { NotificationAlertBox } from './NotificationAlertBox.jsx';
 import { useReminderAlerts } from '../../hooks/useReminderAlerts.js';
 import { InAppReminderBanner } from '../common/InAppReminderBanner.jsx';
+import { isTaskforceTeamMember } from '../../utils/taskPermissions.js';
 import {
   LayoutDashboard,
   Building2,
@@ -70,12 +71,21 @@ export const NAV_CATEGORIES = [
         permission: 'dashboard:view'
       },
       {
+        path: '/taskforce-dashboard',
+        label: 'Taskforce Dashboard',
+        icon: Target,
+        badge: 'Ops Live',
+        highlight: true,
+        permission: ['tasks:view', 'tasks:manage']
+      },
+      {
         path: '/taskforce',
         label: 'Taskforce & Allocation',
         icon: Target,
         badge: 'Directives',
         permission: 'tasks:view',
         subItems: [
+          { path: '/taskforce-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
           { path: '/taskforce?view=kanban', label: 'Taskforce Board', icon: Layers },
           { path: '/taskforce?view=radar', label: 'Follow-up Radar', icon: Clock },
           { path: '/taskforce?view=list', label: 'Directives Register', icon: FileText },
@@ -90,13 +100,10 @@ export const NAV_CATEGORIES = [
         highlight: true,
         permission: ['tasks:manage', 'tasks:view'],
         subItems: [
-          { path: '/taskforce-manager?tab=team', label: 'Field Hierarchy (Head/Sup/Helper)', icon: Shield },
+          { path: '/taskforce-manager?tab=team', label: 'Departments & Hierarchy', icon: Building2 },
           { path: '/taskforce-manager?tab=workforce', label: 'Team & Workload', icon: Users },
-          { path: '/taskforce-manager?tab=timeline', label: 'Gantt Timeline', icon: BarChart3 },
-          { path: '/taskforce-manager?tab=performance', label: 'Performance KPIs', icon: Award },
-          { path: '/taskforce-manager?tab=departments', label: 'Department Analytics', icon: Building2 },
-          { path: '/taskforce-manager?tab=delegation', label: 'Delegation Hub', icon: Target }
-        ]
+          { path: '/taskforce-manager?tab=delegation', label: 'Delegation Hub', icon: Target },
+        ],
       },
       {
         path: '/reports',
@@ -331,7 +338,7 @@ export const AppLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, userRole: authRole, logout, hasPermission, isSuperAdmin, login } = useAuth();
-  
+
   // Profile dropdown state
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const profileDropdownRef = useRef(null);
@@ -357,7 +364,7 @@ export const AppLayout = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  
+
   // Responsive layout state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -416,6 +423,7 @@ export const AppLayout = () => {
       : user?.role?.roleCode || user?.roleCode || '')
   ).toLowerCase();
   const isAgentUser = userRole === 'agent';
+  const isTaskforceUser = isTaskforceTeamMember(user, userRole);
   const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
 
   const FINANCIAL_PATHS = [
@@ -448,6 +456,16 @@ export const AppLayout = () => {
       return false;
     }
 
+    // 4. Hide Executive Dashboard for taskforce manager (dedicated Taskforce Dashboard is used)
+    if (userRole === 'taskforce_manager' && item.path === '/dashboard') {
+      return false;
+    }
+
+    // 5. Taskforce Dashboard is exclusively for Taskforce team members & Admin
+    if (item.path === '/taskforce-dashboard') {
+      return isTaskforceUser;
+    }
+
     if (!item.permission) return true;
     if (Array.isArray(item.permission)) {
       return item.permission.some((p) => hasPermission(p));
@@ -471,7 +489,11 @@ export const AppLayout = () => {
     if (item.path === '/agent-network' && isAgentUser) return false;
 
     if (item.path === '/dashboard') {
-      return location.pathname === '/dashboard' || location.pathname === '/';
+      return (location.pathname === '/dashboard' || location.pathname === '/') && userRole !== 'taskforce_manager';
+    }
+
+    if (item.path === '/taskforce-dashboard') {
+      return location.pathname === '/taskforce-dashboard' || (location.pathname === '/' && userRole === 'taskforce_manager');
     }
 
     // 1. Direct match on parent path
@@ -566,6 +588,12 @@ export const AppLayout = () => {
       if (isFinancialRestricted && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals')) {
         return false;
       }
+      if (userRole === 'taskforce_manager' && item.path === '/dashboard') {
+        return false;
+      }
+      if (item.path === '/taskforce-dashboard') {
+        return isTaskforceUser;
+      }
       if (!item.permission) return true;
       if (Array.isArray(item.permission)) {
         return item.permission.some((p) => hasPermission(p));
@@ -573,13 +601,17 @@ export const AppLayout = () => {
       return hasPermission(item.permission);
     }).map((item) => {
       if (!item.subItems) return item;
+      let subs = item.subItems;
       if (isFinancialRestricted) {
-        return {
-          ...item,
-          subItems: item.subItems.filter((sub) => !FINANCIAL_PATHS.includes(sub.path))
-        };
+        subs = subs.filter((sub) => !FINANCIAL_PATHS.includes(sub.path));
       }
-      return item;
+      if (!isTaskforceUser) {
+        subs = subs.filter((sub) => sub.path !== '/taskforce-dashboard');
+      }
+      return {
+        ...item,
+        subItems: subs
+      };
     });
 
     if (!navSearch.trim()) {
@@ -987,262 +1019,262 @@ export const AppLayout = () => {
               )}
 
               {category.items.map((item) => {
-            const IconComp = item.icon;
-            const isDashboard = item.path === '/dashboard';
-            const isSelected = isItemActive(item);
-            const isOpen = item.forceOpen || Boolean(expanded[item.path]);
-            const hasSubs = item.subItems && item.subItems.length > 0;
-            const showFlyout = hoveredFlyout === item.path && isCollapsed && !isMobile;
+                const IconComp = item.icon;
+                const isDashboard = item.path === '/dashboard';
+                const isSelected = isItemActive(item);
+                const isOpen = item.forceOpen || Boolean(expanded[item.path]);
+                const hasSubs = item.subItems && item.subItems.length > 0;
+                const showFlyout = hoveredFlyout === item.path && isCollapsed && !isMobile;
 
-            return (
-              <div
-                key={item.path}
-                style={{ marginBottom: '3px', position: 'relative' }}
-                onMouseEnter={() => isCollapsed && !isMobile && setHoveredFlyout(item.path)}
-                onMouseLeave={() => isCollapsed && !isMobile && setHoveredFlyout(null)}
-              >
-                {/* Unified Parent Module Nav Item (Full Row Combined) */}
-                <div
-                  onClick={(e) => handleRowClick(item, e)}
-                  title={isCollapsed && !isMobile ? item.label : undefined}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: isCollapsed && !isMobile ? 'center' : 'space-between',
-                    padding: isCollapsed && !isMobile ? '10px 0' : '10px 14px 10px 18px',
-                    marginRight: isCollapsed && !isMobile ? '0' : '12px',
-                    borderRadius: isCollapsed && !isMobile ? '8px' : '0 9999px 9999px 0',
-                    backgroundColor: isSelected
-                      ? (item.highlight ? '#d8e2ff' : '#4d8efe')
-                      : 'transparent',
-                    color: isSelected
-                      ? (item.highlight ? '#00285c' : '#00285c')
-                      : 'var(--on-surface-variant)',
-                    fontWeight: isSelected ? '700' : '500',
-                    fontSize: '0.86rem',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    transition: 'all 0.15s ease',
-                    minHeight: '42px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isSelected) {
-                      e.currentTarget.style.backgroundColor = '#edeeef';
-                      e.currentTarget.style.color = 'var(--on-surface)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isSelected) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = 'var(--on-surface-variant)';
-                    }
-                  }}
-                >
-                  {/* Left: Icon & Label */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
-                    <IconComp
-                      size={19}
-                      color={
-                        isSelected
-                          ? '#00285c'
-                          : 'var(--on-surface-variant)'
-                      }
-                      strokeWidth={isSelected ? 2.5 : 2}
-                      style={{ flexShrink: 0 }}
-                    />
-
-                    {(!isCollapsed || isMobile) && (
-                      <span
-                        style={{
-                          flex: 1,
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}
-                      >
-                        {item.label}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Right: Badge & Chevron Indicator */}
-                  {(!isCollapsed || isMobile) && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                      {item.badge && (
-                        <span
-                          style={{
-                            fontSize: '0.65rem',
-                            fontWeight: '700',
-                            backgroundColor: isSelected
-                              ? '#00285c'
-                              : (item.highlight ? '#005bbf' : '#1a73e8'),
-                            color: '#ffffff',
-                            padding: '1px 6px',
-                            borderRadius: '9999px'
-                          }}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-
-                      {hasSubs && (
-                        <span
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: isSelected
-                              ? (item.highlight ? '#00285c' : '#00285c')
-                              : 'var(--on-surface-variant)',
-                            transition: 'transform 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
-                            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-                          }}
-                        >
-                          <ChevronDown size={17} />
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Sub-menu Navigation Links (Expanded Tree) */}
-                {hasSubs && isOpen && (!isCollapsed || isMobile) && (
+                return (
                   <div
-                    style={{
-                      paddingLeft: '28px',
-                      paddingRight: '12px',
-                      marginTop: '2px',
-                      marginBottom: '6px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '2px',
-                      borderLeft: '2px solid #dadce0',
-                      marginLeft: '26px'
-                    }}
+                    key={item.path}
+                    style={{ marginBottom: '3px', position: 'relative' }}
+                    onMouseEnter={() => isCollapsed && !isMobile && setHoveredFlyout(item.path)}
+                    onMouseLeave={() => isCollapsed && !isMobile && setHoveredFlyout(null)}
                   >
-                    {item.subItems.map((sub) => {
-                      const currentFull = `${location.pathname}${location.search}`;
-                      const subBase = sub.path.split('?')[0];
-                      const isSubActive =
-                        currentFull === sub.path ||
-                        (location.pathname === subBase && (!sub.path.includes('?') || currentFull.startsWith(sub.path)));
+                    {/* Unified Parent Module Nav Item (Full Row Combined) */}
+                    <div
+                      onClick={(e) => handleRowClick(item, e)}
+                      title={isCollapsed && !isMobile ? item.label : undefined}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: isCollapsed && !isMobile ? 'center' : 'space-between',
+                        padding: isCollapsed && !isMobile ? '10px 0' : '10px 14px 10px 18px',
+                        marginRight: isCollapsed && !isMobile ? '0' : '12px',
+                        borderRadius: isCollapsed && !isMobile ? '8px' : '0 9999px 9999px 0',
+                        backgroundColor: isSelected
+                          ? (item.highlight ? '#d8e2ff' : '#4d8efe')
+                          : 'transparent',
+                        color: isSelected
+                          ? (item.highlight ? '#00285c' : '#00285c')
+                          : 'var(--on-surface-variant)',
+                        fontWeight: isSelected ? '700' : '500',
+                        fontSize: '0.86rem',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'all 0.15s ease',
+                        minHeight: '42px'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.backgroundColor = '#edeeef';
+                          e.currentTarget.style.color = 'var(--on-surface)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.color = 'var(--on-surface-variant)';
+                        }
+                      }}
+                    >
+                      {/* Left: Icon & Label */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
+                        <IconComp
+                          size={19}
+                          color={
+                            isSelected
+                              ? '#00285c'
+                              : 'var(--on-surface-variant)'
+                          }
+                          strokeWidth={isSelected ? 2.5 : 2}
+                          style={{ flexShrink: 0 }}
+                        />
 
-                      return (
-                        <NavLink
-                          key={sub.path}
-                          to={sub.path}
-                          onClick={() => isMobile && setMobileMenuOpen(false)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '7px 12px',
-                            borderRadius: '6px',
-                            fontSize: '0.8rem',
-                            fontWeight: isSubActive ? '700' : '500',
-                            textDecoration: 'none',
-                            color: isSubActive ? '#1a73e8' : 'var(--on-surface-variant)',
-                            backgroundColor: isSubActive ? '#e8f0fe' : 'transparent',
-                            transition: 'all 0.12s ease'
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isSubActive) {
-                              e.currentTarget.style.backgroundColor = '#edeeef';
-                              e.currentTarget.style.color = 'var(--on-surface)';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isSubActive) {
-                              e.currentTarget.style.backgroundColor = 'transparent';
-                              e.currentTarget.style.color = 'var(--on-surface-variant)';
-                            }
-                          }}
-                        >
+                        {(!isCollapsed || isMobile) && (
                           <span
                             style={{
-                              width: '5px',
-                              height: '5px',
-                              borderRadius: '50%',
-                              backgroundColor: isSubActive ? '#1a73e8' : '#727785',
-                              flexShrink: 0
-                            }}
-                          />
-                          <span
-                            style={{
+                              flex: 1,
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis'
                             }}
                           >
-                            {sub.label}
+                            {item.label}
                           </span>
-                        </NavLink>
-                      );
-                    })}
-                  </div>
-                )}
+                        )}
+                      </div>
 
-                {/* Collapsed Mode Flyout Popover */}
-                {showFlyout && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: '74px',
-                      top: '0',
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #dadce0',
-                      borderRadius: '8px',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                      padding: '8px',
-                      minWidth: '200px',
-                      zIndex: 100,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px'
-                    }}
-                  >
-                    <div
-                      style={{
-                        padding: '6px 10px',
-                        fontSize: '0.82rem',
-                        fontWeight: '700',
-                        color: '#1a73e8',
-                        borderBottom: '1px solid #edeef0',
-                        marginBottom: '4px'
-                      }}
-                    >
-                      {item.label}
+                      {/* Right: Badge & Chevron Indicator */}
+                      {(!isCollapsed || isMobile) && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                          {item.badge && (
+                            <span
+                              style={{
+                                fontSize: '0.65rem',
+                                fontWeight: '700',
+                                backgroundColor: isSelected
+                                  ? '#00285c'
+                                  : (item.highlight ? '#005bbf' : '#1a73e8'),
+                                color: '#ffffff',
+                                padding: '1px 6px',
+                                borderRadius: '9999px'
+                              }}
+                            >
+                              {item.badge}
+                            </span>
+                          )}
+
+                          {hasSubs && (
+                            <span
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: isSelected
+                                  ? (item.highlight ? '#00285c' : '#00285c')
+                                  : 'var(--on-surface-variant)',
+                                transition: 'transform 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
+                                transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                              }}
+                            >
+                              <ChevronDown size={17} />
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    {(item.subItems || [{ path: item.path, label: item.label }]).map((sub) => (
-                      <NavLink
-                        key={sub.path}
-                        to={sub.path}
-                        onClick={() => setHoveredFlyout(null)}
+
+                    {/* Sub-menu Navigation Links (Expanded Tree) */}
+                    {hasSubs && isOpen && (!isCollapsed || isMobile) && (
+                      <div
                         style={{
+                          paddingLeft: '28px',
+                          paddingRight: '12px',
+                          marginTop: '2px',
+                          marginBottom: '6px',
                           display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '6px 10px',
-                          borderRadius: '6px',
-                          fontSize: '0.8rem',
-                          color: 'var(--on-surface)',
-                          textDecoration: 'none',
-                          fontWeight: '500'
+                          flexDirection: 'column',
+                          gap: '2px',
+                          borderLeft: '2px solid #dadce0',
+                          marginLeft: '26px'
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f5'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                       >
-                        {sub.label}
-                      </NavLink>
-                    ))}
+                        {item.subItems.map((sub) => {
+                          const currentFull = `${location.pathname}${location.search}`;
+                          const subBase = sub.path.split('?')[0];
+                          const isSubActive =
+                            currentFull === sub.path ||
+                            (location.pathname === subBase && (!sub.path.includes('?') || currentFull.startsWith(sub.path)));
+
+                          return (
+                            <NavLink
+                              key={sub.path}
+                              to={sub.path}
+                              onClick={() => isMobile && setMobileMenuOpen(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '7px 12px',
+                                borderRadius: '6px',
+                                fontSize: '0.8rem',
+                                fontWeight: isSubActive ? '700' : '500',
+                                textDecoration: 'none',
+                                color: isSubActive ? '#1a73e8' : 'var(--on-surface-variant)',
+                                backgroundColor: isSubActive ? '#e8f0fe' : 'transparent',
+                                transition: 'all 0.12s ease'
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!isSubActive) {
+                                  e.currentTarget.style.backgroundColor = '#edeeef';
+                                  e.currentTarget.style.color = 'var(--on-surface)';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!isSubActive) {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                  e.currentTarget.style.color = 'var(--on-surface-variant)';
+                                }
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: '5px',
+                                  height: '5px',
+                                  borderRadius: '50%',
+                                  backgroundColor: isSubActive ? '#1a73e8' : '#727785',
+                                  flexShrink: 0
+                                }}
+                              />
+                              <span
+                                style={{
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {sub.label}
+                              </span>
+                            </NavLink>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Collapsed Mode Flyout Popover */}
+                    {showFlyout && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: '74px',
+                          top: '0',
+                          backgroundColor: '#ffffff',
+                          border: '1px solid #dadce0',
+                          borderRadius: '8px',
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                          padding: '8px',
+                          minWidth: '200px',
+                          zIndex: 100,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '4px'
+                        }}
+                      >
+                        <div
+                          style={{
+                            padding: '6px 10px',
+                            fontSize: '0.82rem',
+                            fontWeight: '700',
+                            color: '#1a73e8',
+                            borderBottom: '1px solid #edeef0',
+                            marginBottom: '4px'
+                          }}
+                        >
+                          {item.label}
+                        </div>
+                        {(item.subItems || [{ path: item.path, label: item.label }]).map((sub) => (
+                          <NavLink
+                            key={sub.path}
+                            to={sub.path}
+                            onClick={() => setHoveredFlyout(null)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '6px 10px',
+                              borderRadius: '6px',
+                              fontSize: '0.8rem',
+                              color: 'var(--on-surface)',
+                              textDecoration: 'none',
+                              fontWeight: '500'
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f5'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                          >
+                            {sub.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
 
         {/* Bottom Pinned Area */}
         {(isSuperAdmin || hasPermission('settings:view')) && (

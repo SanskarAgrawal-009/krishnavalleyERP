@@ -178,34 +178,10 @@ const TaskSchema = new mongoose.Schema(
       default: '',
     },
 
-    // Department Allocation (KV- Departments & Administration)
+    // Department Allocation (KV- Departments & Administration, Taskforce Departments, & Custom Units)
     department: {
       type: String,
-      enum: [
-        // KV- DEPARTMENTS
-        'hr',
-        'it',
-        'procurement',
-        'hotel',
-        'security',
-        'accounts',
-        'crm',
-        'admin_operations',
-        'maintenance',
-        'civil',
-        'licensing',
-        // ADMINISTRATION
-        'hotel_restaurant',
-        'viramah',
-        // Legacy compatibility
-        'sales',
-        'construction',
-        'legal',
-        'operations',
-        'management',
-        'rentals',
-        'general',
-      ],
+      trim: true,
       default: 'civil',
       index: true,
     },

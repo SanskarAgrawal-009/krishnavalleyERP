@@ -55,7 +55,7 @@ export const LoginPage = () => {
         : (roleCode === 'hr_manager' && from === '/dashboard'
             ? '/hr'
             : (roleCode === 'taskforce_manager' && from === '/dashboard'
-                ? '/taskforce-manager'
+                ? '/taskforce-dashboard'
                 : from));
       navigate(targetPath, { replace: true });
     } catch (err) {
@@ -80,7 +80,7 @@ export const LoginPage = () => {
         : (roleCode === 'hr_manager' && from === '/dashboard'
             ? '/hr'
             : (roleCode === 'taskforce_manager' && from === '/dashboard'
-                ? '/taskforce-manager'
+                ? '/taskforce-dashboard'
                 : from));
       navigate(targetPath, { replace: true });
     } catch (err) {

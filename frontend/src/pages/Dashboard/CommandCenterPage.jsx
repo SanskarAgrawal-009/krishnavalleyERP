@@ -154,8 +154,12 @@ export const CommandCenterPage = () => {
   };
 
   useEffect(() => {
+    if (userRole === 'taskforce_manager') {
+      navigate('/taskforce-dashboard', { replace: true });
+      return;
+    }
     fetchDashboardData();
-  }, []);
+  }, [userRole, navigate]);
 
   // Format INR in standard Indian notations
   const formatINR = (val) => {

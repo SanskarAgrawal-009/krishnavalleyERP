@@ -3,6 +3,7 @@ import { User } from '../models/User.js';
 import { Project } from '../models/Project.js';
 import { Flat } from '../models/Flat.js';
 import { TaskforceMember } from '../models/TaskforceMember.js';
+import { TaskforceDepartment } from '../models/TaskforceDepartment.js';
 import { getScopedTaskforceContext } from './taskforceTeamController.js';
 import { escapeRegex } from '../utils/regexUtil.js';
 
@@ -136,7 +137,7 @@ export const getTasks = async (req, res) => {
       Task.find(query)
         .populate('assignedBy', 'firstName lastName username email role')
         .populate('assignedTo', 'firstName lastName username email mobileNo')
-        .populate('assignedMembers', 'name trade hierarchyLevel')
+        .populate('assignedMembers', 'name trade department hierarchyLevel')
         .populate('apartmentDetails.projectId', 'projectName projectCode')
         .populate('apartmentDetails.flatId', 'flatNumber floor tower status')
         .populate('followUpLogs.loggedBy', 'firstName lastName username')
@@ -275,7 +276,7 @@ export const getTaskById = async (req, res) => {
     const task = await Task.findById(req.params.id)
       .populate('assignedBy', 'firstName lastName username email role')
       .populate('assignedTo', 'firstName lastName username email mobileNo')
-      .populate('assignedMembers', 'name trade hierarchyLevel status')
+      .populate('assignedMembers', 'name trade department hierarchyLevel status')
       .populate('apartmentDetails.projectId', 'projectName projectCode')
       .populate('apartmentDetails.flatId', 'flatNumber floor tower status')
       .populate('followUpLogs.loggedBy', 'firstName lastName username')
@@ -342,6 +343,31 @@ export const createTask = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Task title is required',
+      });
+    }
+
+    // Authorization: ONLY Admin, Taskforce Manager, and VP Department can create and assign tasks
+    const callerRole = (req.user?.role || '').toLowerCase();
+    let callerDept = '';
+    try {
+      const callerUser = await User.findById(req.user.id).select('department designation role');
+      callerDept = (callerUser?.department || '').toLowerCase().trim();
+    } catch (_) {}
+
+    const isAdmin = callerRole === 'admin' || callerRole === 'super_admin';
+    const isTaskforceManager = callerRole === 'taskforce_manager' || callerRole === 'taskforce_mgr';
+    const isVPDept =
+      callerDept === "vp's" ||
+      callerDept === 'vp' ||
+      callerDept.startsWith('vp') ||
+      callerDept.includes('vice president') ||
+      callerRole === 'vp' ||
+      callerRole.includes('vp');
+
+    if (!isAdmin && !isTaskforceManager && !isVPDept) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Only Admin, Taskforce Manager, and the VP Department are authorized to create and assign tasks.',
       });
     }
 
@@ -861,17 +887,54 @@ export const getTaskAssigneesMeta = async (req, res) => {
         .sort({ firstName: 1 }),
       Project.find().select('projectName projectCode buildings').lean(),
       TaskforceMember.find({ status: 'active' })
-        .populate('supervisorId', 'name trade hierarchyLevel')
-        .populate('headId', 'name trade hierarchyLevel')
+        .populate('supervisorId', 'name trade department hierarchyLevel')
+        .populate('headId', 'name trade department hierarchyLevel')
         .sort({ hierarchyLevel: -1, name: 1 })
         .lean(),
     ]);
+
+    const activeMemberDepts = taskforceMembers
+      .map((m) => m.department || m.trade)
+      .filter(Boolean);
+
+    const TASKFORCE_DEFAULTS = [
+      'Civil & Snagging',
+      'Electrical & Power',
+      'Plumbing & Sanitation',
+      'Painting & Waterproofing',
+      'Carpentry & Woodwork',
+      'Housekeeping & Deep Cleaning',
+      'Security & Access Control',
+      'HVAC & Air Conditioning',
+      'General Operations',
+    ];
+
+    const dbDepartments = await TaskforceDepartment.find({ status: 'active' })
+      .sort({ order: 1, name: 1 })
+      .lean();
+
+    const managedNames = dbDepartments.map((d) => d.name);
+    const combinedDeptNames = Array.from(
+      new Set([...managedNames, ...activeMemberDepts, ...TASKFORCE_DEFAULTS])
+    );
+
+    const taskforceDeptList = combinedDeptNames.map((d) => {
+      const dbMatch = dbDepartments.find((item) => item.name.toLowerCase() === d.toLowerCase());
+      return {
+        key: d,
+        label: d,
+        code: dbMatch?.code || d.substring(0, 4).toUpperCase(),
+        color: dbMatch?.color || '#2563eb',
+        description: dbMatch?.description || '',
+        group: 'Taskforce Operations',
+      };
+    });
 
     return res.json({
       success: true,
       assignees: users,
       taskforceMembers,
-      departments: DEPARTMENTS,
+      departments: [...taskforceDeptList, ...DEPARTMENTS],
       projects,
     });
   } catch (error) {

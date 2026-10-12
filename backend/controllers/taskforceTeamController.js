@@ -1,7 +1,124 @@
 import { TaskforceMember } from '../models/TaskforceMember.js';
+import { TaskforceDepartment } from '../models/TaskforceDepartment.js';
 import { Task } from '../models/Task.js';
 import { User } from '../models/User.js';
+import { Role } from '../models/Role.js';
+import { Branch } from '../models/Branch.js';
 import bcrypt from 'bcryptjs';
+
+/**
+ * Helper to ensure a TaskforceMember has a corresponding User in Access Control & Governance
+ */
+export const ensureUserForTaskforceMember = async (member, plainPassword = null, customUsername = null) => {
+  try {
+    if (member.userId) {
+      const existing = await User.findById(member.userId);
+      if (existing) {
+        let changed = false;
+        if (existing.department !== member.department) {
+          existing.department = member.department;
+          changed = true;
+        }
+        if (!existing.isTaskforceMember) {
+          existing.isTaskforceMember = true;
+          changed = true;
+        }
+        if (existing.taskforceHierarchyLevel !== member.hierarchyLevel) {
+          existing.taskforceHierarchyLevel = member.hierarchyLevel;
+          changed = true;
+        }
+        if (!existing.initialPassword) {
+          existing.initialPassword = plainPassword || 'Taskforce@123';
+          changed = true;
+        }
+        if (changed) await existing.save();
+        return existing;
+      }
+    }
+
+    // Derive username
+    let cleanUsername = (customUsername || '').toLowerCase().trim().replace(/[^a-z0-9_]/g, '_');
+    if (!cleanUsername) {
+      cleanUsername = (member.name || 'member')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9_]/g, '_');
+    }
+
+    // Check if username taken, append suffix if needed
+    let finalUsername = cleanUsername;
+    let counter = 1;
+    while (await User.findOne({ username: finalUsername })) {
+      finalUsername = `${cleanUsername}_${counter++}`;
+    }
+
+    const pwd = plainPassword || 'Taskforce@123';
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(pwd, salt);
+
+    // Role resolution
+    let roleDoc = null;
+    if (member.hierarchyLevel === 'head') {
+      roleDoc = (await Role.findOne({ roleCode: 'taskforce_lead' })) || (await Role.findOne({ roleCode: 'head' }));
+    } else if (member.hierarchyLevel === 'supervisor') {
+      roleDoc = (await Role.findOne({ roleCode: 'taskforce_supervisor' })) || (await Role.findOne({ roleCode: 'supervisor' }));
+    } else {
+      roleDoc = (await Role.findOne({ roleCode: 'taskforce_member' })) || (await Role.findOne({ roleCode: 'helper' })) || (await Role.findOne({ roleCode: 'staff' }));
+    }
+    if (!roleDoc) {
+      roleDoc = (await Role.findOne({ roleCode: 'staff' })) || (await Role.findOne({ roleCode: 'employee' })) || (await Role.findOne());
+    }
+
+    // Default branch
+    const branch = (await Branch.findOne({ isHeadOffice: true })) || (await Branch.findOne());
+    const branchAccess = branch ? [{ branchId: branch._id, accessLevel: 'view', isPrimary: true }] : [];
+
+    const nameParts = (member.name || 'Taskforce Member').trim().split(' ');
+    const firstName = nameParts[0] || 'Taskforce';
+    const lastName = nameParts.slice(1).join(' ') || (member.department || 'Operations');
+
+    const newUser = await User.create({
+      firstName,
+      lastName,
+      username: finalUsername,
+      email: member.email || `${finalUsername}@krishnavalley.com`,
+      mobileNo: member.mobileNo || '',
+      passwordHash,
+      initialPassword: pwd,
+      department: member.department || 'General Operations',
+      isTaskforceMember: true,
+      taskforceHierarchyLevel: member.hierarchyLevel || 'helper',
+      roleId: roleDoc?._id,
+      branchAccess,
+      status: 'active',
+    });
+
+    member.userId = newUser._id;
+    await member.save();
+
+    return newUser;
+  } catch (err) {
+    console.error(`Error creating user for member "${member.name}":`, err);
+    return null;
+  }
+};
+
+/**
+ * Auto-sync all TaskforceMembers without a user account to Access Control & Governance
+ */
+export const syncAllTaskforceMembersToUsers = async () => {
+  try {
+    const allMembers = await TaskforceMember.find({
+      status: { $ne: 'deleted' },
+    });
+
+    for (const m of allMembers) {
+      await ensureUserForTaskforceMember(m, 'Taskforce@123');
+    }
+  } catch (err) {
+    console.error('Error auto-syncing taskforce members to user accounts:', err);
+  }
+};
 
 /**
  * Helper: Resolve caller's hierarchy scope and allowed IDs
@@ -117,6 +234,9 @@ export const getScopedTaskforceContext = async (user) => {
  */
 export const getTeamMembers = async (req, res) => {
   try {
+    // Auto-sync any existing unlinked taskforce members so they exist in Access Control & Governance
+    await syncAllTaskforceMembersToUsers();
+
     const scope = await getScopedTaskforceContext(req.user);
 
     const query = {};
@@ -125,9 +245,9 @@ export const getTeamMembers = async (req, res) => {
     }
 
     const members = await TaskforceMember.find(query)
-      .populate('userId', 'firstName lastName username email mobileNo status')
-      .populate('supervisorId', 'name trade hierarchyLevel')
-      .populate('headId', 'name trade hierarchyLevel')
+      .populate('userId', 'firstName lastName username email mobileNo status initialPassword')
+      .populate('supervisorId', 'name trade department hierarchyLevel')
+      .populate('headId', 'name trade department hierarchyLevel')
       .sort({ hierarchyLevel: -1, name: 1 })
       .lean();
 
@@ -214,6 +334,7 @@ export const addTeamMember = async (req, res) => {
       hierarchyLevel = 'helper',
       supervisorId,
       headId,
+      department,
       trade = 'General Operations',
       notes,
       userId,
@@ -226,58 +347,54 @@ export const addTeamMember = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Member name is required' });
     }
 
-    let linkedUserId = userId || null;
+    const deptValue = (department || trade || 'General Operations').trim();
 
-    // Auto-create login user account if requested
-    if (createLoginUser && username && password) {
-      const existingUser = await User.findOne({
-        $or: [{ username: username.toLowerCase().trim() }, { email: (email || '').toLowerCase().trim() }],
-      });
-
-      if (existingUser) {
-        linkedUserId = existingUser._id;
-      } else {
-        const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash(password, salt);
-
-        // Find or fallback role for member
-        const { Role } = await import('../models/Role.js');
-        const defaultRole =
-          (await Role.findOne({ roleCode: 'staff' })) ||
-          (await Role.findOne({ roleCode: 'employee' })) ||
-          (await Role.findOne());
-
-        const newUser = await User.create({
-          firstName: name.trim().split(' ')[0] || name.trim(),
-          lastName: name.trim().split(' ').slice(1).join(' ') || '',
-          username: username.toLowerCase().trim(),
-          email: (email || `${username.toLowerCase().trim()}@krishnavalley.com`).toLowerCase().trim(),
-          mobileNo: mobileNo || '',
-          passwordHash,
-          roleId: defaultRole?._id,
-          status: 'active',
-        });
-        linkedUserId = newUser._id;
-      }
-    }
-
-    const member = await TaskforceMember.create({
+    // 1. Create the Taskforce Member
+    const member = new TaskforceMember({
       name: name.trim(),
       mobileNo: mobileNo ? mobileNo.trim() : '',
       email: email ? email.toLowerCase().trim() : '',
       hierarchyLevel,
-      supervisorId: supervisorId || null,
+      supervisorId: hierarchyLevel === 'helper' ? supervisorId || null : null,
       headId: headId || null,
-      trade: trade ? trade.trim() : 'General Operations',
+      department: deptValue,
+      trade: deptValue,
       notes: notes ? notes.trim() : '',
-      userId: linkedUserId,
+      userId: userId || null,
       addedBy: req.user.id,
     });
 
+    // 2. Guarantee that an account with ID and Password exists in Access Control & Governance
+    const linkedUser = await ensureUserForTaskforceMember(
+      member,
+      password || 'Taskforce@123',
+      username || null
+    );
+
+    if (linkedUser) {
+      member.userId = linkedUser._id;
+    }
+    await member.save();
+
     return res.status(201).json({
       success: true,
-      message: `Team member "${member.name}" (${member.hierarchyLevel.toUpperCase()}) added successfully`,
-      member,
+      message: `Team member "${member.name}" added successfully and registered in Access Control & Governance! (User ID: @${linkedUser?.username || 'member'}, Password: ${linkedUser?.initialPassword || password || 'Taskforce@123'})`,
+      member: {
+        ...member.toObject(),
+        userId: linkedUser
+          ? {
+              _id: linkedUser._id,
+              username: linkedUser.username,
+              initialPassword: linkedUser.initialPassword,
+              email: linkedUser.email,
+              department: linkedUser.department,
+            }
+          : null,
+      },
+      credentials: {
+        username: linkedUser?.username,
+        initialPassword: linkedUser?.initialPassword || password || 'Taskforce@123',
+      },
     });
   } catch (error) {
     console.error('Error adding team member:', error);
@@ -299,6 +416,7 @@ export const updateTeamMember = async (req, res) => {
       hierarchyLevel,
       supervisorId,
       headId,
+      department,
       trade,
       status,
       notes,
@@ -316,12 +434,51 @@ export const updateTeamMember = async (req, res) => {
     if (hierarchyLevel !== undefined) member.hierarchyLevel = hierarchyLevel;
     if (supervisorId !== undefined) member.supervisorId = supervisorId || null;
     if (headId !== undefined) member.headId = headId || null;
-    if (trade !== undefined) member.trade = trade.trim();
+    if (trade !== undefined || department !== undefined) {
+      const dVal = (department || trade || '').trim();
+      member.department = dVal;
+      member.trade = dVal;
+    }
     if (status !== undefined) member.status = status;
     if (notes !== undefined) member.notes = notes.trim();
     if (userId !== undefined) member.userId = userId || null;
 
     await member.save();
+
+    // Sync changes into linked User in Access Control & Governance
+    if (member.userId) {
+      try {
+        const u = await User.findById(member.userId);
+        if (u) {
+          let uChanged = false;
+          if (name !== undefined) {
+            const parts = name.trim().split(' ');
+            u.firstName = parts[0] || u.firstName;
+            u.lastName = parts.slice(1).join(' ') || u.lastName;
+            uChanged = true;
+          }
+          if (mobileNo !== undefined && mobileNo !== u.mobileNo) {
+            u.mobileNo = mobileNo;
+            uChanged = true;
+          }
+          if (email !== undefined && email !== u.email) {
+            u.email = email;
+            uChanged = true;
+          }
+          if (member.department && u.department !== member.department) {
+            u.department = member.department;
+            uChanged = true;
+          }
+          if (hierarchyLevel !== undefined && u.taskforceHierarchyLevel !== hierarchyLevel) {
+            u.taskforceHierarchyLevel = hierarchyLevel;
+            uChanged = true;
+          }
+          if (uChanged) await u.save();
+        }
+      } catch (uErr) {
+        console.error('Error syncing User on updateTeamMember:', uErr);
+      }
+    }
 
     return res.json({
       success: true,
@@ -364,6 +521,259 @@ export const deleteTeamMember = async (req, res) => {
   }
 };
 
+export const DEFAULT_TASKFORCE_DEPTS = [
+  { name: 'Civil & Snagging', code: 'CIVIL', color: '#0284c7', description: 'Structural defects, masonry, snagging & finishing' },
+  { name: 'Electrical & Power', code: 'ELEC', color: '#f59e0b', description: 'Wiring, sub-stations, DB panels, fittings & power backup' },
+  { name: 'Plumbing & Sanitation', code: 'PLUMB', color: '#06b6d4', description: 'Water pipelines, drainage, sanitary fixtures & pumps' },
+  { name: 'Painting & Waterproofing', code: 'PAINT', color: '#8b5cf6', description: 'Internal & external coatings, terrace & wall waterproofing' },
+  { name: 'Carpentry & Woodwork', code: 'CARP', color: '#d97706', description: 'Doors, windows, modular joinery & woodwork repairs' },
+  { name: 'Housekeeping & Deep Cleaning', code: 'CLEAN', color: '#10b981', description: 'Tower cleaning, handover preparation & site hygiene' },
+  { name: 'Security & Access Control', code: 'SEC', color: '#64748b', description: 'Surveillance, gate control & site asset safety' },
+  { name: 'HVAC & Air Conditioning', code: 'HVAC', color: '#0ea5e9', description: 'Ventilation ducts, central air, split AC installations' },
+  { name: 'General Operations', code: 'GEN', color: '#475569', description: 'Material movement, general maintenance & site logistics' },
+];
+
+/**
+ * @desc   Get all Taskforce departments with hierarchy stats & member breakdowns
+ * @route  GET /api/taskforce-manager/departments
+ */
+export const getTaskforceDepartments = async (req, res) => {
+  try {
+    // Auto-seed defaults if collection empty
+    const count = await TaskforceDepartment.countDocuments();
+    if (count === 0) {
+      await TaskforceDepartment.insertMany(DEFAULT_TASKFORCE_DEPTS);
+      // Also register any distinct departments from existing TaskforceMember records
+      const existingDepts = await TaskforceMember.distinct('department');
+      for (const d of existingDepts) {
+        if (d && !DEFAULT_TASKFORCE_DEPTS.some((def) => def.name.toLowerCase() === d.toLowerCase())) {
+          await TaskforceDepartment.create({
+            name: d.trim(),
+            code: d.trim().substring(0, 4).toUpperCase(),
+            description: `${d.trim()} department operations`,
+            color: '#2563eb',
+          });
+        }
+      }
+    }
+
+    const departments = await TaskforceDepartment.find({ status: 'active' })
+      .populate('headMemberId', 'name mobileNo email hierarchyLevel')
+      .sort({ order: 1, name: 1 })
+      .lean();
+
+    // Query active members to aggregate hierarchy stats per department
+    const members = await TaskforceMember.find({ status: { $ne: 'deleted' } })
+      .select('_id name department trade hierarchyLevel')
+      .lean();
+
+    // Query tasks to get active/completed counts per department
+    const tasks = await Task.find({ status: { $nin: ['cancelled'] } })
+      .select('department status')
+      .lean();
+
+    const enrichedDepts = departments.map((dept) => {
+      const deptName = dept.name;
+      const deptLower = deptName.toLowerCase();
+
+      const deptMembers = members.filter((m) => {
+        const md = (m.department || m.trade || '').toLowerCase();
+        return md === deptLower;
+      });
+
+      const deptTasks = tasks.filter((t) => (t.department || '').toLowerCase() === deptLower);
+
+      const headsCount = deptMembers.filter((m) => m.hierarchyLevel === 'head').length;
+      const supervisorsCount = deptMembers.filter((m) => m.hierarchyLevel === 'supervisor').length;
+      const helpersCount = deptMembers.filter((m) => m.hierarchyLevel === 'helper').length;
+      const activeTasks = deptTasks.filter((t) => ['pending', 'in_progress', 'under_review'].includes(t.status)).length;
+      const completedTasks = deptTasks.filter((t) => t.status === 'completed').length;
+
+      return {
+        ...dept,
+        stats: {
+          totalMembers: deptMembers.length,
+          headsCount,
+          supervisorsCount,
+          helpersCount,
+          activeTasks,
+          completedTasks,
+        },
+      };
+    });
+
+    const totalActiveTasks = tasks.filter((t) => ['pending', 'in_progress', 'under_review'].includes(t.status)).length;
+
+    return res.json({
+      success: true,
+      departments: enrichedDepts,
+      summary: {
+        totalDepartments: enrichedDepts.length,
+        totalMembers: members.length,
+        totalActiveTasks,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching taskforce departments:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * @desc   Create new Taskforce Department
+ * @route  POST /api/taskforce-manager/departments
+ */
+export const createTaskforceDepartment = async (req, res) => {
+  try {
+    const { name, code, description, color, headMemberId } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: 'Department name is required' });
+    }
+
+    const trimmedName = name.trim();
+    const existing = await TaskforceDepartment.findOne({
+      name: { $regex: new RegExp(`^${trimmedName.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
+      status: 'active',
+    });
+
+    if (existing) {
+      return res.status(400).json({ success: false, message: `Department "${trimmedName}" already exists` });
+    }
+
+    const department = await TaskforceDepartment.create({
+      name: trimmedName,
+      code: code ? code.trim().toUpperCase() : trimmedName.substring(0, 4).toUpperCase(),
+      description: (description || '').trim(),
+      color: color || '#2563eb',
+      headMemberId: headMemberId || null,
+      createdBy: req.user?.id || null,
+      status: 'active',
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: `Department "${department.name}" created successfully`,
+      department,
+    });
+  } catch (error) {
+    console.error('Error creating department:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * @desc   Update Taskforce Department
+ * @route  PUT /api/taskforce-manager/departments/:id
+ */
+export const updateTaskforceDepartment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, code, description, color, headMemberId } = req.body;
+
+    const department = await TaskforceDepartment.findById(id);
+    if (!department) {
+      return res.status(404).json({ success: false, message: 'Department not found' });
+    }
+
+    const oldName = department.name;
+    if (name && name.trim() && name.trim() !== oldName) {
+      const newName = name.trim();
+      const duplicate = await TaskforceDepartment.findOne({
+        _id: { $ne: id },
+        name: { $regex: new RegExp(`^${newName.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
+        status: 'active',
+      });
+      if (duplicate) {
+        return res.status(400).json({ success: false, message: `Department "${newName}" already exists` });
+      }
+
+      department.name = newName;
+      // Reassign existing members
+      await TaskforceMember.updateMany(
+        { $or: [{ department: oldName }, { trade: oldName }] },
+        { $set: { department: newName, trade: newName } }
+      );
+      // Reassign existing tasks
+      await Task.updateMany(
+        { department: oldName },
+        { $set: { department: newName } }
+      );
+    }
+
+    if (code !== undefined) department.code = code.trim().toUpperCase();
+    if (description !== undefined) department.description = description.trim();
+    if (color !== undefined) department.color = color;
+    if (headMemberId !== undefined) department.headMemberId = headMemberId || null;
+
+    await department.save();
+
+    return res.json({
+      success: true,
+      message: `Department "${department.name}" updated successfully`,
+      department,
+    });
+  } catch (error) {
+    console.error('Error updating department:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * @desc   Delete / remove department from Taskforce (reassign members & tasks to fallback department)
+ * @route  POST /api/taskforce-manager/department/delete or DELETE /api/taskforce-manager/departments/:id
+ */
+export const deleteDepartment = async (req, res) => {
+  try {
+    const departmentIdent = req.params?.id || req.body?.department || req.body?.id || req.query?.department;
+    if (!departmentIdent || (typeof departmentIdent === 'string' && !departmentIdent.trim())) {
+      return res.status(400).json({ success: false, message: 'Department identifier is required' });
+    }
+
+    const fallbackDepartment = (req.body?.fallbackDepartment || 'General Operations').trim();
+    const rawIdent = typeof departmentIdent === 'string' ? departmentIdent.trim() : '';
+
+    // Check if Mongo ID or Name
+    let deptDoc = null;
+    if (rawIdent.match(/^[0-9a-fA-F]{24}$/)) {
+      deptDoc = await TaskforceDepartment.findById(rawIdent);
+    }
+    if (!deptDoc && rawIdent) {
+      deptDoc = await TaskforceDepartment.findOne({
+        name: { $regex: new RegExp(`^${rawIdent.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
+      });
+    }
+
+    const deptName = deptDoc ? deptDoc.name : rawIdent;
+
+    if (deptDoc) {
+      await TaskforceDepartment.findByIdAndDelete(deptDoc._id);
+    }
+
+    // Reassign any existing members with this department/trade
+    const memberResult = await TaskforceMember.updateMany(
+      { $or: [{ department: deptName }, { trade: deptName }] },
+      { $set: { department: fallbackDepartment, trade: fallbackDepartment } }
+    );
+
+    // Reassign tasks
+    await Task.updateMany(
+      { department: deptName },
+      { $set: { department: fallbackDepartment } }
+    );
+
+    return res.json({
+      success: true,
+      message: `Department "${deptName}" deleted. ${memberResult.modifiedCount} member(s) updated to "${fallbackDepartment}".`,
+      modifiedCount: memberResult.modifiedCount,
+      department: deptName,
+      fallbackDepartment,
+    });
+  } catch (error) {
+    console.error('Error deleting department:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 /**
  * @desc   Get Member Dashboard (Scoped strictly by Hierarchy: helper -> supervisor -> head -> admin)
  * @route  GET /api/taskforce-manager/team/:id/dashboard or /api/taskforce-manager/my-dashboard
@@ -377,8 +787,8 @@ export const getMemberDashboard = async (req, res) => {
     if (targetId && targetId !== 'me') {
       targetMember = await TaskforceMember.findById(targetId)
         .populate('userId', 'firstName lastName username email mobileNo status')
-        .populate('supervisorId', 'name trade hierarchyLevel')
-        .populate('headId', 'name trade hierarchyLevel')
+        .populate('supervisorId', 'name trade department hierarchyLevel')
+        .populate('headId', 'name trade department hierarchyLevel')
         .lean();
 
       if (!targetMember) {
@@ -453,7 +863,7 @@ export const getMemberDashboard = async (req, res) => {
     const tasks = await Task.find(taskQuery)
       .populate('assignedBy', 'firstName lastName username')
       .populate('assignedTo', 'firstName lastName username email mobileNo')
-      .populate('assignedMembers', 'name trade hierarchyLevel')
+      .populate('assignedMembers', 'name trade department hierarchyLevel')
       .populate('apartmentDetails.projectId', 'projectName projectCode')
       .sort({ updatedAt: -1 })
       .lean();

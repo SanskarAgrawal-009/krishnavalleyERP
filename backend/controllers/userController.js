@@ -5,6 +5,7 @@ import { Branch } from '../models/Branch.js';
 import { SalesTeamMember } from '../models/SalesTeamMember.js';
 import { escapeRegex } from '../utils/regexUtil.js';
 import { recordAuditEvent } from '../middleware/auditMiddleware.js';
+import { syncAllTaskforceMembersToUsers } from './taskforceTeamController.js';
 
 /**
  * @desc   Get all users with optional filters & search
@@ -13,6 +14,13 @@ import { recordAuditEvent } from '../middleware/auditMiddleware.js';
  */
 export const getUsers = async (req, res) => {
   try {
+    // Proactively ensure any Taskforce members are registered with IDs & Passwords
+    try {
+      await syncAllTaskforceMembersToUsers();
+    } catch (syncErr) {
+      console.error('Non-blocking taskforce user sync error:', syncErr);
+    }
+
     const { search, role, status, branchId, page = 1, limit = 50 } = req.query;
 
     const query = {};
@@ -25,6 +33,7 @@ export const getUsers = async (req, res) => {
         { username: searchRegex },
         { email: searchRegex },
         { mobileNo: searchRegex },
+        { department: searchRegex },
       ];
     }
 

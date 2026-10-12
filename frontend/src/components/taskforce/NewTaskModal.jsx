@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { taskService } from '../../services/taskService.js';
+import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { useToast } from '../../context/ToastContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { canUserAssignTasks } from '../../utils/taskPermissions.js';
+import {
+  getDepartmentTheme,
+  getDepartmentIcon,
+  getHierarchyTheme,
+} from '../../utils/departmentIcons.js';
 import {
   Sparkles,
   Users,
@@ -16,174 +24,25 @@ import {
   Check,
   Trash2,
   ArrowRight,
+  ArrowLeft,
   ListTodo,
   Layers,
   Shield,
   Briefcase,
   HelpCircle,
-  CheckSquare
+  CheckSquare,
+  Filter,
+  FileText,
+  Zap,
+  Phone,
 } from 'lucide-react';
 
-const DEPARTMENT_PRESETS = {
-  civil: [
-    {
-      title: 'Tower A - Final Snagging Inspection & Balcony Waterproofing',
-      checkpoints: [
-        'Inspect joint sealant & waterproofing in balcony area',
-        'Verify electrical main switchboard & MCB trip test',
-        'Check tile grouting, hollow sound test, and plumbing drain flow',
-        'Record final photographic evidence and obtain site engineer sign-off',
-      ],
-    },
-    {
-      title: 'Site Concreting & Structural Curing Audit',
-      checkpoints: [
-        'Check concrete cube test compressive strength reports',
-        'Ensure continuous 14-day water ponding curing on roof slab',
-        'Inspect formwork deshutting safety clearances',
-      ],
-    },
-  ],
-  crm: [
-    {
-      title: 'Milestone Demand Notices Dispatch & High-Value Follow-ups',
-      checkpoints: [
-        'Extract list of enrolled buyers with pending slab demands',
-        'Verify ledger balances with Accounts team',
-        'Dispatch formal demand notices via WhatsApp & Speed Post',
-        'Log phone call responses from all prioritized customers',
-      ],
-    },
-    {
-      title: 'Allotment Agreement Signatures & Buyer KYC Verification',
-      checkpoints: [
-        'Draft tripartite allotment agreement copy',
-        'Collect buyer KYC, PAN, and passport size photographs',
-        'Schedule sub-registrar appointment with legal counsel',
-      ],
-    },
-  ],
-  accounts: [
-    {
-      title: 'Sub-Contractor Billing & Vendor Reconciliation',
-      checkpoints: [
-        'Cross-check store Goods Receipt Notes (GRN) with vendor tax invoice',
-        'Audit GST compliance & TDS deductions',
-        'Seek MD approval for net RTGS disbursement',
-      ],
-    },
-  ],
-  maintenance: [
-    {
-      title: 'Apartment Snags & Plumbing Pressure Investigation',
-      checkpoints: [
-        'Inspect bathroom pressure pump & concealed pipe joints for seepages',
-        'Replace faulty drainage trap or washers if required',
-        'Obtain written satisfaction certificate from flat resident',
-      ],
-    },
-    {
-      title: 'Elevator & Common Area Power Backup Preventive AMC',
-      checkpoints: [
-        'Inspect elevator brake shoe, emergency alarm & ARD battery',
-        'Check diesel generator fuel levels and radiator coolant',
-        'Service common staircase illumination lights',
-      ],
-    },
-  ],
-  hr: [
-    {
-      title: 'Monthly Biometric Attendance Audit & Payroll Processing',
-      checkpoints: [
-        'Reconcile site muster roll with biometric punch data',
-        'Calculate overtime, site allowances, and leaves',
-        'Prepare bank salary disbursement file for approval',
-      ],
-    },
-  ],
-  it: [
-    {
-      title: 'ERP Server Backup, Network Security & Biometric Machine Check',
-      checkpoints: [
-        'Perform incremental database snapshot and offsite sync',
-        'Check site CCTV DVR live feed status across all towers',
-        'Test site biometric punch terminal internet connectivity',
-      ],
-    },
-  ],
-  procurement: [
-    {
-      title: 'Bulk Material Purchase Order & Steel/Cement Rate Quotations',
-      checkpoints: [
-        'Collect 3 competitive vendor quotations for Grade 53 cement',
-        'Prepare comparative cost analysis sheet',
-        'Generate purchase order (PO) with staggered site delivery dates',
-      ],
-    },
-  ],
-  security: [
-    {
-      title: 'Perimeter Security Inspection & Night Guard Patrolling Audit',
-      checkpoints: [
-        'Inspect main entry gate barrier and RFID vehicle scanner',
-        'Verify night guard checkpoint biometric logs',
-        'Audit visitor register & vendor gate passes',
-      ],
-    },
-  ],
-  hotel: [
-    {
-      title: 'Guest Rooms Quality Audit & Housekeeping Readiness',
-      checkpoints: [
-        'Inspect air conditioning temperature & HVAC duct cleanliness',
-        'Check linen replenishment, minibar, and bathroom amenities',
-        'Verify electronic door lock batteries & keycard encoding',
-      ],
-    },
-  ],
-  hotel_restaurant: [
-    {
-      title: 'Restaurant F&B Stock Inventory & Kitchen Hygiene Audit',
-      checkpoints: [
-        'Audit dry pantry items, dairy, and fresh produce stock expiry',
-        'Inspect kitchen cold room temperature logs',
-        'Conduct deep cleaning sanitation audit of cook stations',
-      ],
-    },
-  ],
-  admin_operations: [
-    {
-      title: 'Estate Operations & Common Utility Bill Clearing',
-      checkpoints: [
-        'Verify monthly electricity substation DISCOM bill calculation',
-        'Inspect water filtration plant backwash and TDS levels',
-        'Audit common area housekeeping staff attendance & consumables',
-      ],
-    },
-  ],
-  licensing: [
-    {
-      title: 'UPRERA Portal Compliance & Fire Safety NOC Renewal',
-      checkpoints: [
-        'Update quarterly construction progress on UPRERA website',
-        'Submit chartered engineer financial escrow audit certificate',
-        'Schedule Fire Department inspection for NOC renewal',
-      ],
-    },
-  ],
-  viramah: [
-    {
-      title: 'Viramah Luxury Villas Maintenance & Landscape Inspection',
-      checkpoints: [
-        'Inspect private pool filtration and chemical dosing',
-        'Audit landscaped garden sprinkler timing & horticulture pruning',
-        'Check villa exterior lighting & architectural facade illumination',
-      ],
-    },
-  ],
-};
-
-const COMMON_TOWERS = ['Tower A', 'Tower B', 'Tower C', 'Tower D', 'Clubhouse / Commercial'];
+const PRIORITY_OPTIONS = [
+  { value: 'low', label: 'Low', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+  { value: 'medium', label: 'Medium', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
+  { value: 'high', label: 'High Priority', color: '#ea580c', bg: '#fff7ed', border: '#fed7aa' },
+  { value: 'urgent', label: 'Urgent Directive', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
+];
 
 export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = null }) => {
   const { showToast } = useToast();
@@ -196,9 +55,10 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
   const [metaProjects, setMetaProjects] = useState([]);
 
   // Form State
+  const [currentStep, setCurrentStep] = useState(1); // 1: 'details', 2: 'assignees', 3: 'schedule'
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [department, setDepartment] = useState('civil');
+  const [department, setDepartment] = useState('');
   const [priority, setPriority] = useState('high');
   const [isMDDirective, setIsMDDirective] = useState(true);
   const [isApartmentRelated, setIsApartmentRelated] = useState(false);
@@ -224,15 +84,18 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
   // Assignee Search & Filter State
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [assigneeDeptFilter, setAssigneeDeptFilter] = useState('all');
+  const [autoFetchedInfo, setAutoFetchedInfo] = useState(null);
+  const [showOnlyDeptMembers, setShowOnlyDeptMembers] = useState(true);
 
   // Load assignees and department metadata
   useEffect(() => {
     if (isOpen) {
       loadMeta();
+      setCurrentStep(1);
       if (initialData) {
         setTitle(initialData.title || '');
         setDescription(initialData.description || '');
-        setDepartment(initialData.department || 'civil');
+        setDepartment(initialData.department || '');
         setPriority(initialData.priority || 'high');
         setIsMDDirective(Boolean(initialData.isMDDirective));
         setIsApartmentRelated(Boolean(initialData.isApartmentRelated));
@@ -275,7 +138,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
         // Fresh modal defaults
         setTitle('');
         setDescription('');
-        setDepartment('civil');
+        setDepartment('');
         setPriority('high');
         setIsMDDirective(true);
         setIsApartmentRelated(false);
@@ -285,7 +148,6 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
         setSelectedAssignees([]);
         setSelectedTaskforceMembers([]);
         setStartDate(new Date().toISOString().split('T')[0]);
-        // Set deadline to 3 days ahead as default
         const defDue = new Date();
         defDue.setDate(defDue.getDate() + 3);
         setDueDate(defDue.toISOString().split('T')[0]);
@@ -299,17 +161,81 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
     }
   }, [isOpen, initialData]);
 
+  useEffect(() => {
+    const handleDeptUpdated = () => {
+      if (isOpen) {
+        loadMeta();
+      }
+    };
+    window.addEventListener('departmentsUpdated', handleDeptUpdated);
+    return () => window.removeEventListener('departmentsUpdated', handleDeptUpdated);
+  }, [isOpen]);
+
   const loadMeta = async () => {
     try {
       setLoadingMeta(true);
-      const res = await taskService.getAssigneesMeta();
+      const [res, deptRes] = await Promise.all([
+        taskService.getAssigneesMeta(),
+        taskforceManagerService.getDepartments().catch(() => null),
+      ]);
+
       if (res && res.success) {
-        setMetaAssignees(res.assignees || []);
-        setMetaTaskforceMembers(res.taskforceMembers || []);
-        setMetaDepartments(res.departments || []);
+        const tf = res.taskforceMembers || [];
+        const staff = res.assignees || [];
+        setMetaAssignees(staff);
+        setMetaTaskforceMembers(tf);
+
+        let finalDepts = [];
+        if (deptRes?.success && Array.isArray(deptRes.departments) && deptRes.departments.length > 0) {
+          finalDepts = deptRes.departments.map((d) => ({
+            key: d.name,
+            label: d.name,
+            code: d.code,
+            color: d.color,
+            description: d.description,
+            group: 'Taskforce Operations',
+          }));
+        } else if (res.departments?.length > 0) {
+          finalDepts = res.departments;
+        }
+
+        // Deduplicate
+        const seen = new Set();
+        const uniqueDepts = [];
+        for (const d of finalDepts) {
+          const id = (d.label || d.key || d.name || '').toLowerCase().trim();
+          if (id && !seen.has(id)) {
+            seen.add(id);
+            uniqueDepts.push({
+              key: d.key || d.name || d.label,
+              label: d.label || d.name || d.key,
+              code: d.code,
+              color: d.color,
+              description: d.description,
+              group: d.group || 'Taskforce Operations',
+            });
+          }
+        }
+
+        setMetaDepartments(uniqueDepts);
         setMetaProjects(res.projects || []);
         if (res.projects?.length > 0 && !selectedProjectId) {
           setSelectedProjectId(res.projects[0]._id);
+        }
+
+        // If creating fresh task, auto-fetch for the initial department
+        if (uniqueDepts.length > 0) {
+          const currentTarget = (initialData?.department || department || '').toLowerCase().trim();
+          const matchedDept =
+            uniqueDepts.find((d) => {
+              const dk = (d.key || '').toLowerCase().trim();
+              return dk === currentTarget || (currentTarget && (dk.includes(currentTarget) || currentTarget.includes(dk)));
+            }) || uniqueDepts[0];
+          const initialDeptKey = matchedDept.key;
+          setDepartment(initialDeptKey);
+          if (!initialData) {
+            autoFetchPersonnelForDept(initialDeptKey, tf, staff);
+          }
         }
       }
     } catch (err) {
@@ -317,6 +243,189 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
     } finally {
       setLoadingMeta(false);
     }
+  };
+
+  const getTfMemberDetails = (member) => {
+    if (!member) {
+      return {
+        name: 'Team Member',
+        initials: 'TM',
+        roleTitle: 'Field Personnel',
+        bg: '#f1f5f9',
+        color: '#334155',
+        border: '#cbd5e1',
+        badgeBg: '#f8fafc',
+        badgeColor: '#475569',
+        badgeBorder: '#e2e8f0',
+      };
+    }
+
+    const name =
+      member.name ||
+      member.fullName ||
+      (member.userId
+        ? `${member.userId.firstName || ''} ${member.userId.lastName || ''}`.trim()
+        : '') ||
+      'Team Member';
+
+    const nameParts = name.trim().split(/\s+/).filter(Boolean);
+    const initials =
+      nameParts.length >= 2
+        ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+        : name.slice(0, 2).toUpperCase() || 'TM';
+
+    const level = (member.hierarchyLevel || '').toLowerCase();
+    if (level === 'head') {
+      return {
+        name,
+        initials,
+        roleTitle: 'Department Head',
+        bg: '#fef3c7',
+        color: '#92400e',
+        border: '#fde68a',
+        badgeBg: '#fef3c7',
+        badgeColor: '#78350f',
+        badgeBorder: '#fcd34d',
+      };
+    }
+    if (level === 'supervisor') {
+      return {
+        name,
+        initials,
+        roleTitle: 'Field Supervisor',
+        bg: '#eff6ff',
+        color: '#1d4ed8',
+        border: '#bfdbfe',
+        badgeBg: '#dbeafe',
+        badgeColor: '#1e40af',
+        badgeBorder: '#93c5fd',
+      };
+    }
+    return {
+      name,
+      initials,
+      roleTitle: member.trade ? `${member.trade} Technician` : 'Field Helper',
+      bg: '#f0fdf4',
+      color: '#166534',
+      border: '#bbf7d0',
+      badgeBg: '#dcfce7',
+      badgeColor: '#15803d',
+      badgeBorder: '#86efac',
+    };
+  };
+
+  const getErpStaffDetails = (user) => {
+    if (!user) {
+      return {
+        name: 'ERP Staff',
+        initials: 'ST',
+        designation: 'Staff Member',
+        department: 'General',
+      };
+    }
+    const name = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'Staff Member';
+    const nameParts = name.split(/\s+/).filter(Boolean);
+    const initials =
+      nameParts.length >= 2
+        ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+        : name.slice(0, 2).toUpperCase() || 'ST';
+    const designation = user.roleId?.roleName || 'ERP Staff';
+    const department = user.department || user.roleId?.roleCode || 'Staff';
+
+    return {
+      name,
+      initials,
+      designation,
+      department,
+    };
+  };
+
+  const autoFetchPersonnelForDept = (deptKey, tfList = metaTaskforceMembers, staffList = metaAssignees) => {
+    if (!deptKey) return;
+    const target = deptKey.toLowerCase().trim();
+
+    // Match Taskforce members
+    const matchingTf = (tfList || []).filter((m) => {
+      const mDept = (m.department || m.trade || '').toLowerCase().trim();
+      return (
+        mDept === target ||
+        mDept.includes(target) ||
+        target.includes(mDept) ||
+        (target.includes('civil') && mDept.includes('civil')) ||
+        (target.includes('snag') && mDept.includes('snag')) ||
+        (target.includes('plumb') && mDept.includes('plumb')) ||
+        (target.includes('elect') && mDept.includes('elect')) ||
+        (target.includes('paint') && mDept.includes('paint')) ||
+        (target.includes('carpent') && mDept.includes('carpent')) ||
+        (target.includes('housekeep') && mDept.includes('housekeep')) ||
+        (target.includes('secur') && mDept.includes('secur')) ||
+        (target.includes('hvac') && mDept.includes('hvac'))
+      );
+    });
+
+    // Match ERP Staff
+    const matchingStaff = (staffList || []).filter((s) => {
+      const roleName = (s.roleId?.roleName || '').toLowerCase();
+      const roleCode = (s.roleId?.roleCode || '').toLowerCase();
+      const deptName = (s.department || '').toLowerCase();
+      return (
+        deptName.includes(target) ||
+        roleName.includes(target) ||
+        roleCode.includes(target) ||
+        (target.includes('civil') && (roleName.includes('site') || roleName.includes('engineer') || roleName.includes('civil'))) ||
+        (target.includes('snag') && roleName.includes('snag')) ||
+        (target.includes('crm') && (roleName.includes('sales') || roleName.includes('client') || roleName.includes('crm'))) ||
+        (target.includes('account') && (roleName.includes('account') || roleName.includes('finance') || roleName.includes('tax') || roleName.includes('bill'))) ||
+        (target.includes('maint') && (roleName.includes('technician') || roleName.includes('maint') || roleName.includes('repair'))) ||
+        (target.includes('procure') && (roleName.includes('procure') || roleName.includes('purchase') || roleName.includes('store'))) ||
+        (target.includes('secur') && (roleName.includes('security') || roleName.includes('guard'))) ||
+        (target.includes('hotel') && (roleName.includes('hotel') || roleName.includes('housekeep') || roleName.includes('guest')))
+      );
+    });
+
+    const matchingTfIds = matchingTf.map((m) => m._id);
+    const matchingStaffIds = matchingStaff.map((s) => s._id);
+
+    // Auto-select the personnel
+    if (matchingTfIds.length > 0) {
+      setSelectedTaskforceMembers(matchingTfIds);
+      setAssigneeCategoryTab('taskforce');
+    } else {
+      setSelectedTaskforceMembers([]);
+    }
+
+    if (matchingStaffIds.length > 0 && matchingTfIds.length === 0) {
+      setSelectedAssignees(matchingStaffIds);
+      setAssigneeCategoryTab('erp');
+    }
+
+    const headsCount = matchingTf.filter(
+      (m) => (m.hierarchyLevel || '').toLowerCase() === 'head'
+    ).length;
+    const supervisorsCount = matchingTf.filter(
+      (m) => (m.hierarchyLevel || '').toLowerCase() === 'supervisor'
+    ).length;
+    const helpersCount = matchingTf.filter(
+      (m) => (m.hierarchyLevel || '').toLowerCase() === 'helper'
+    ).length;
+
+    setAutoFetchedInfo({
+      department: deptKey,
+      count: matchingTfIds.length + matchingStaffIds.length,
+      tfCount: matchingTfIds.length,
+      staffCount: matchingStaffIds.length,
+      headsCount,
+      supervisorsCount,
+      helpersCount,
+      tfMembers: matchingTf,
+      staffMembers: matchingStaff,
+    });
+  };
+
+  const handleDepartmentChange = (newDept) => {
+    setDepartment(newDept);
+    setAssigneeDeptFilter(newDept);
+    autoFetchPersonnelForDept(newDept);
   };
 
   // Filtered Assignees list with real-time search & department match
@@ -391,24 +500,65 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
   };
 
   const filteredTaskforceMembers = useMemo(() => {
+    const target = (department || '').toLowerCase().trim();
+
     return metaTaskforceMembers.filter((m) => {
-      const name = (m.fullName || '').toLowerCase();
-      const trade = (m.trade || '').toLowerCase();
-      const role = (m.role || '').toLowerCase();
-      const s = assigneeSearch.toLowerCase();
-      return !s || name.includes(s) || trade.includes(s) || role.includes(s);
+      const name = (m.name || m.fullName || '').toLowerCase();
+      const mDept = (m.department || m.trade || '').toLowerCase().trim();
+      const role = (m.role || m.hierarchyLevel || '').toLowerCase();
+      const s = assigneeSearch.toLowerCase().trim();
+
+      const matchesSearch = !s || name.includes(s) || mDept.includes(s) || role.includes(s);
+      if (!matchesSearch) return false;
+
+      if (!showOnlyDeptMembers) return true;
+
+      return (
+        mDept === target ||
+        mDept.includes(target) ||
+        target.includes(mDept) ||
+        (target.includes('civil') && mDept.includes('civil')) ||
+        (target.includes('snag') && mDept.includes('snag')) ||
+        (target.includes('plumb') && mDept.includes('plumb')) ||
+        (target.includes('elect') && mDept.includes('elect')) ||
+        (target.includes('paint') && mDept.includes('paint')) ||
+        (target.includes('carpent') && mDept.includes('carpent')) ||
+        (target.includes('housekeep') && mDept.includes('housekeep')) ||
+        (target.includes('secur') && mDept.includes('secur')) ||
+        (target.includes('hvac') && mDept.includes('hvac'))
+      );
     });
-  }, [metaTaskforceMembers, assigneeSearch]);
+  }, [metaTaskforceMembers, assigneeSearch, department, showOnlyDeptMembers]);
 
   const handleSelectAllFiltered = () => {
-    const ids = filteredAssignees.map((a) => a._id);
-    const combined = Array.from(new Set([...selectedAssignees, ...ids]));
-    setSelectedAssignees(combined);
+    if (assigneeCategoryTab === 'taskforce') {
+      const ids = filteredTaskforceMembers.map((m) => m._id);
+      setSelectedTaskforceMembers((prev) => Array.from(new Set([...prev, ...ids])));
+    } else {
+      const ids = filteredAssignees.map((a) => a._id);
+      setSelectedAssignees((prev) => Array.from(new Set([...prev, ...ids])));
+    }
   };
 
   const handleClearSelection = () => {
     setSelectedAssignees([]);
     setSelectedTaskforceMembers([]);
+  };
+
+  const handleGoToStep2 = () => {
+    if (!title.trim()) {
+      showToast('Please enter a task title before proceeding to assign team', 'error');
+      return;
+    }
+    setCurrentStep(2);
+  };
+
+  const handleGoToStep3 = () => {
+    if (selectedAssignees.length === 0 && selectedTaskforceMembers.length === 0) {
+      showToast('Please select at least one person to assign this task', 'error');
+      return;
+    }
+    setCurrentStep(3);
   };
 
   // Quick preset title applicator
@@ -448,14 +598,16 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!title.trim()) {
       showToast('Please provide a task title or work description', 'error');
+      setCurrentStep(1);
       return;
     }
 
     if (selectedAssignees.length === 0 && selectedTaskforceMembers.length === 0) {
       showToast('Please allocate this task to at least one team member or taskforce staff', 'error');
+      setCurrentStep(2);
       return;
     }
 
@@ -518,6 +670,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
     }
   };
 
+  const totalSelectedCount = selectedAssignees.length + selectedTaskforceMembers.length;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -525,1076 +679,1809 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
       title={initialData ? 'Edit Task Directive' : 'Assign New Task Directive'}
       maxWidth="880px"
     >
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
-        {/* TOP: MD Directive Banner */}
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* STEP PROGRESS WIZARD NAVIGATION BAR */}
         <div
           style={{
-            padding: '14px 18px',
-            borderRadius: '12px',
-            backgroundColor: isMDDirective ? '#fefce8' : '#f8fafc',
-            border: isMDDirective ? '1.5px solid #ca8a04' : '1px solid #e2e8f0',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            boxShadow: isMDDirective ? '0 3px 12px rgba(202, 138, 4, 0.12)' : 'none',
-            transition: 'all 0.2s ease',
+            backgroundColor: '#f1f5f9',
+            padding: '4px',
+            borderRadius: '12px',
+            gap: '6px',
+            border: '1px solid #e2e8f0',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                backgroundColor: isMDDirective ? '#ca8a04' : '#64748b',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: isMDDirective ? '0 2px 8px rgba(202, 138, 4, 0.3)' : 'none',
-                flexShrink: 0,
-              }}
-            >
-              <Sparkles size={22} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '14px', color: '#0f172a' }}>
-                Managing Director (MD) Executive Directive
-              </div>
-              <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                Tags this assignment with top executive priority, elevated follow-up radar, and daily MD tracking.
-              </div>
-            </div>
-          </div>
-
-          <label
+          {/* Step 1 Tab */}
+          <button
+            type="button"
+            onClick={() => setCurrentStep(1)}
             style={{
+              flex: 1,
               display: 'flex',
               alignItems: 'center',
-              cursor: 'pointer',
+              justifyContent: 'center',
               gap: '8px',
-              backgroundColor: isMDDirective ? '#fef08a' : '#ffffff',
-              padding: '6px 12px',
-              borderRadius: '20px',
-              border: isMDDirective ? '1px solid #ca8a04' : '1px solid #cbd5e1',
+              padding: '9px 12px',
+              borderRadius: '9px',
+              border: 'none',
+              cursor: 'pointer',
+              backgroundColor: currentStep === 1 ? '#ffffff' : 'transparent',
+              color: currentStep === 1 ? '#005bbf' : '#64748b',
+              fontWeight: currentStep === 1 ? 700 : 500,
+              fontSize: '13px',
+              boxShadow: currentStep === 1 ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
+              transition: 'all 0.15s ease',
             }}
           >
-            <input
-              type="checkbox"
-              checked={isMDDirective}
-              onChange={(e) => setIsMDDirective(e.target.checked)}
-              style={{ width: '17px', height: '17px', accentColor: '#ca8a04', cursor: 'pointer' }}
-            />
-            <span style={{ fontSize: '12px', fontWeight: 700, color: isMDDirective ? '#854d0e' : '#475569' }}>
-              {isMDDirective ? 'MD DIRECTIVE ACTIVE' : 'Standard Work'}
-            </span>
-          </label>
-        </div>
-
-        {/* SECTION 1: Task Title & Department Presets */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
-              Task Title / Action Item <span style={{ color: '#ef4444' }}>*</span>
-            </label>
-            <span style={{ fontSize: '11px', color: '#64748b' }}>
-              Click preset below to auto-fill title & checklist
-            </span>
-          </div>
-
-          <input
-            type="text"
-            className="search-input"
-            style={{ width: '100%', height: '44px', fontSize: '14px', fontWeight: 500 }}
-            placeholder="e.g. Tower A - Complete Flat 402 Final Snagging & Handover Inspection"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-
-          {/* Quick Department Presets */}
-          {DEPARTMENT_PRESETS[department] && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '2px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#475569' }}>
-                Suggested Templates:
-              </span>
-              {DEPARTMENT_PRESETS[department].map((preset, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => applyPreset(preset)}
-                  style={{
-                    padding: '3px 10px',
-                    borderRadius: '14px',
-                    backgroundColor: '#f1f5f9',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '11px',
-                    color: '#0f172a',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#e2e8f0')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#f1f5f9')}
-                >
-                  + {preset.title.slice(0, 38)}...
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* SECTION 2: Department & Priority Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
-              Target Department <span style={{ color: '#ef4444' }}>*</span>
-            </label>
-            <select
-              className="search-input"
-              style={{ width: '100%', height: '42px', fontSize: '13px', fontWeight: 500 }}
-              value={department}
-              onChange={(e) => {
-                setDepartment(e.target.value);
-                setAssigneeDeptFilter(e.target.value);
+            <span
+              style={{
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                backgroundColor: currentStep === 1 ? '#005bbf' : '#cbd5e1',
+                color: '#ffffff',
+                fontSize: '11px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {metaDepartments.map((dept) => (
-                <option key={dept.key} value={dept.key}>
-                  {dept.label}
-                </option>
-              ))}
-            </select>
-          </div>
+              1
+            </span>
+            <span>Task & Trade</span>
+            {title ? (
+              <span
+                style={{
+                  fontSize: '11px',
+                  backgroundColor: '#dcfce7',
+                  color: '#15803d',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  fontWeight: 700,
+                }}
+              >
+                Done
+              </span>
+            ) : null}
+          </button>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
-              Priority Level <span style={{ color: '#ef4444' }}>*</span>
-            </label>
-            <select
-              className="search-input"
-              style={{ width: '100%', height: '42px', fontSize: '13px', fontWeight: 600 }}
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
+          {/* Step 2 Tab */}
+          <button
+            type="button"
+            onClick={() => setCurrentStep(2)}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '9px 12px',
+              borderRadius: '9px',
+              border: 'none',
+              cursor: 'pointer',
+              backgroundColor: currentStep === 2 ? '#ffffff' : 'transparent',
+              color: currentStep === 2 ? '#005bbf' : '#64748b',
+              fontWeight: currentStep === 2 ? 700 : 500,
+              fontSize: '13px',
+              boxShadow: currentStep === 2 ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <span
+              style={{
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                backgroundColor: currentStep === 2 ? '#005bbf' : '#cbd5e1',
+                color: '#ffffff',
+                fontSize: '11px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <option value="urgent">Urgent (Immediate Escalation & Daily Check)</option>
-              <option value="high">High Priority (Elevated Attention)</option>
-              <option value="medium">Medium Priority (Standard Timeline)</option>
-              <option value="low">Low Priority (Routine Backlog)</option>
-            </select>
-          </div>
+              2
+            </span>
+            <span>Assign Team</span>
+            {totalSelectedCount > 0 ? (
+              <span
+                style={{
+                  fontSize: '11px',
+                  backgroundColor: currentStep === 2 ? '#e0f2fe' : '#e2e8f0',
+                  color: currentStep === 2 ? '#0284c7' : '#475569',
+                  padding: '2px 8px',
+                  borderRadius: '10px',
+                  fontWeight: 700,
+                }}
+              >
+                {totalSelectedCount} Selected
+              </span>
+            ) : null}
+          </button>
+
+          {/* Step 3 Tab */}
+          <button
+            type="button"
+            onClick={() => setCurrentStep(3)}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '9px 12px',
+              borderRadius: '9px',
+              border: 'none',
+              cursor: 'pointer',
+              backgroundColor: currentStep === 3 ? '#ffffff' : 'transparent',
+              color: currentStep === 3 ? '#005bbf' : '#64748b',
+              fontWeight: currentStep === 3 ? 700 : 500,
+              fontSize: '13px',
+              boxShadow: currentStep === 3 ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <span
+              style={{
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                backgroundColor: currentStep === 3 ? '#005bbf' : '#cbd5e1',
+                color: '#ffffff',
+                fontSize: '11px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              3
+            </span>
+            <span>Timeline & Steps</span>
+            {checkpoints.length > 0 ? (
+              <span
+                style={{
+                  fontSize: '11px',
+                  backgroundColor: '#f1f5f9',
+                  color: '#475569',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  fontWeight: 700,
+                }}
+              >
+                {checkpoints.length} Steps
+              </span>
+            ) : null}
+          </button>
         </div>
 
-        {/* SECTION 3: Multiple Assignee Allocation (Enhanced & Responsive) */}
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #cbd5e1',
-            borderRadius: '12px',
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-          }}
-        >
-          {/* Header Row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div
+        {/* ================= STEP 1: TASK DETAILS & DEPARTMENT ================= */}
+        {currentStep === 1 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            {/* MD Directive Banner */}
+            <div
+              style={{
+                padding: '12px 16px',
+                borderRadius: '10px',
+                backgroundColor: isMDDirective ? '#fefce8' : '#f8fafc',
+                border: isMDDirective ? '1.5px solid #ca8a04' : '1px solid #e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                boxShadow: isMDDirective ? '0 2px 8px rgba(202, 138, 4, 0.1)' : 'none',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    backgroundColor: isMDDirective ? '#ca8a04' : '#64748b',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: isMDDirective ? '0 2px 6px rgba(202, 138, 4, 0.25)' : 'none',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>
+                    Managing Director (MD) Executive Directive
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    Tags this directive for daily MD executive status tracking.
+                  </div>
+                </div>
+              </div>
+
+              <label
                 style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '6px',
-                  backgroundColor: '#eff6ff',
-                  color: '#005bbf',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  color: isMDDirective ? '#854d0e' : '#64748b',
+                  userSelect: 'none',
                 }}
               >
-                <Users size={16} />
-              </div>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
-                Allocate Personnel (Multiple Assignees) <span style={{ color: '#ef4444' }}>*</span>
-              </span>
+                <input
+                  type="checkbox"
+                  checked={isMDDirective}
+                  onChange={(e) => setIsMDDirective(e.target.checked)}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#ca8a04' }}
+                />
+                <span>Active</span>
+              </label>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <button
-                type="button"
-                onClick={handleSelectAllFiltered}
+            {/* Department Selection with Quick-Pills & Auto-Fetch */}
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <label style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                    Department / Trade Category
+                  </label>
+                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
+                    Selecting automatically loads and assigns that department’s field personnel.
+                  </div>
+                </div>
+
+                {autoFetchedInfo && (
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      backgroundColor: autoFetchedInfo.count > 0 ? '#eff6ff' : '#f8fafc',
+                      color: autoFetchedInfo.count > 0 ? '#005bbf' : '#64748b',
+                      border: `1px solid ${autoFetchedInfo.count > 0 ? '#bfdbfe' : '#e2e8f0'}`,
+                      padding: '4px 10px',
+                      borderRadius: '12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                    }}
+                  >
+                    <i
+                      className={autoFetchedInfo.count > 0 ? 'fa-solid fa-bolt-lightning' : 'fa-solid fa-circle-info'}
+                      style={{ color: autoFetchedInfo.count > 0 ? '#005bbf' : '#94a3b8' }}
+                    />
+                    <span>
+                      {autoFetchedInfo.count > 0
+                        ? `Auto-fetched ${autoFetchedInfo.count} staff (${[
+                            autoFetchedInfo.headsCount > 0 ? `${autoFetchedInfo.headsCount} Head` : '',
+                            autoFetchedInfo.supervisorsCount > 0 ? `${autoFetchedInfo.supervisorsCount} Sup` : '',
+                            autoFetchedInfo.helpersCount > 0 ? `${autoFetchedInfo.helpersCount} Helper` : '',
+                          ]
+                            .filter(Boolean)
+                            .join(', ')})`
+                        : '0 staff mapped to this department'}
+                    </span>
+                  </span>
+                )}
+              </div>
+
+              {/* Dynamic Department Selector Chips (Fetched from Departments & Hierarchy) */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {metaDepartments.map((dept) => {
+                  const deptName = dept.label || dept.name || dept.key;
+                  const theme = getDepartmentTheme(deptName);
+                  const isSelected = department.toLowerCase().trim() === deptName.toLowerCase().trim();
+
+                  // Live count of members in this department
+                  const count = metaTaskforceMembers.filter((m) => {
+                    const mDept = (m.department || '').toLowerCase().trim();
+                    const mTrade = (m.trade || '').toLowerCase().trim();
+                    const t = deptName.toLowerCase().trim();
+                    if (mDept === t || mTrade === t) return true;
+                    if (mDept && (t.includes(mDept) || mDept.includes(t))) return true;
+                    if (mTrade && (t.includes(mTrade) || mTrade.includes(t))) return true;
+                    const targetTokens = t.split(/[\s&,/\\-]+/).filter((tok) => tok.length >= 3);
+                    const memberTokens = `${mDept} ${mTrade}`.split(/[\s&,/\\-]+/).filter((tok) => tok.length >= 3);
+                    return targetTokens.some((tt) => memberTokens.some((mt) => mt.includes(tt) || tt.includes(mt)));
+                  }).length;
+
+                  return (
+                    <button
+                      key={dept.key || deptName}
+                      type="button"
+                      onClick={() => handleDepartmentChange(deptName)}
+                      style={{
+                        padding: '7px 14px',
+                        borderRadius: '20px',
+                        border: isSelected ? `2px solid ${theme.color}` : '1px solid #cbd5e1',
+                        backgroundColor: isSelected ? theme.bg : '#f8fafc',
+                        color: isSelected ? theme.color : '#334155',
+                        fontWeight: isSelected ? 800 : 600,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '7px',
+                        boxShadow: isSelected ? `0 2px 8px ${theme.color}30` : 'none',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <i className={theme.icon} style={{ fontSize: '13px', color: isSelected ? theme.color : '#64748b' }} />
+                      <span>{deptName}</span>
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          padding: '1px 6px',
+                          borderRadius: '10px',
+                          backgroundColor: isSelected ? theme.color : '#e2e8f0',
+                          color: isSelected ? '#ffffff' : '#475569',
+                        }}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* All Departments Dropdown */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '2px' }}>
+                <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>All Departments:</span>
+                <select
+                  value={department}
+                  onChange={(e) => handleDepartmentChange(e.target.value)}
+                  className="search-input"
+                  style={{
+                    flex: 1,
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #cbd5e1',
+                  }}
+                >
+                  {metaDepartments.map((dept) => {
+                    const deptName = dept.label || dept.name || dept.key;
+                    return (
+                      <option key={dept.key || deptName} value={deptName}>
+                        {deptName}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+
+            {/* Task Title & Presets */}
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                  Task Title / Work Directive <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="search-input"
+                  style={{
+                    width: '100%',
+                    fontSize: '14px',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontWeight: 600,
+                    marginTop: '6px',
+                  }}
+                  placeholder="e.g., Tower B - Master Bedroom Wall Seepage Repair & Drain Pressure Check"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Visual Priority Selector */}
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
+                Priority Level
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                {PRIORITY_OPTIONS.map((p) => {
+                  const isSelected = priority === p.value;
+                  return (
+                    <button
+                      key={p.value}
+                      type="button"
+                      onClick={() => setPriority(p.value)}
+                      style={{
+                        padding: '10px 8px',
+                        borderRadius: '10px',
+                        border: isSelected ? `2px solid ${p.color}` : '1px solid #e2e8f0',
+                        backgroundColor: isSelected ? p.bg : '#ffffff',
+                        color: isSelected ? p.color : '#475569',
+                        fontWeight: isSelected ? 800 : 600,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: isSelected ? `0 2px 8px ${p.border}` : 'none',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          borderRadius: '50%',
+                          backgroundColor: p.color,
+                          display: 'inline-block',
+                        }}
+                      />
+                      <span>{p.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Apartment / Tower Link (Collapsible Card) */}
+            <div
+              style={{
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '10px',
+                padding: '12px 16px',
+              }}
+            >
+              <label
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: '#005bbf',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
                   cursor: 'pointer',
-                  textDecoration: 'underline',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  color: '#1e293b',
+                  userSelect: 'none',
                 }}
               >
-                Select All Filtered
-              </button>
-              {selectedAssignees.length > 0 && (
+                <input
+                  type="checkbox"
+                  checked={isApartmentRelated}
+                  onChange={(e) => setIsApartmentRelated(e.target.checked)}
+                  style={{ width: '17px', height: '17px', cursor: 'pointer', accentColor: '#005bbf' }}
+                />
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Building2 size={16} color="#005bbf" />
+                  Link to Specific Tower / Flat (Optional)
+                </span>
+              </label>
+
+              {isApartmentRelated && (
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '12px',
+                    marginTop: '12px',
+                    paddingTop: '12px',
+                    borderTop: '1px solid #e2e8f0',
+                  }}
+                >
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>
+                      PROJECT
+                    </label>
+                    <select
+                      value={selectedProjectId}
+                      onChange={(e) => setSelectedProjectId(e.target.value)}
+                      className="search-input"
+                      style={{ width: '100%', fontSize: '13px', padding: '7px 10px', borderRadius: '6px' }}
+                    >
+                      <option value="">Select Project</option>
+                      {metaProjects.map((p) => (
+                        <option key={p._id} value={p._id}>
+                          {p.projectName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>
+                      TOWER / BLOCK
+                    </label>
+                    <input
+                      type="text"
+                      list="towers-list"
+                      className="search-input"
+                      style={{ width: '100%', fontSize: '13px', padding: '7px 10px', borderRadius: '6px' }}
+                      placeholder="e.g. Tower A"
+                      value={tower}
+                      onChange={(e) => setTower(e.target.value)}
+                    />
+                    <datalist id="towers-list">
+                      {COMMON_TOWERS.map((t) => (
+                        <option key={t} value={t} />
+                      ))}
+                    </datalist>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748b', marginBottom: '4px' }}>
+                      FLAT / UNIT NUMBER
+                    </label>
+                    <input
+                      type="text"
+                      className="search-input"
+                      style={{ width: '100%', fontSize: '13px', padding: '7px 10px', borderRadius: '6px' }}
+                      placeholder="e.g. 402, Villa 12"
+                      value={flatNumber}
+                      onChange={(e) => setFlatNumber(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Scope of Work / Notes */}
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>
+                Scope of Work & Technical Guidelines (Optional)
+              </label>
+              <textarea
+                className="search-input"
+                rows={2}
+                style={{
+                  width: '100%',
+                  fontSize: '13px',
+                  padding: '10px 12px',
+                  lineHeight: '1.4',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                }}
+                placeholder="Specify exact work guidelines, materials to carry, client contact instructions, or quality checks..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ================= STEP 2: ASSIGN TEAM (BEAUTIFIED & SPACIOUS) ================= */}
+        {currentStep === 2 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Auto-Fetch Status Banner & Quick Action Buttons */}
+            <div
+              style={{
+                backgroundColor: '#eff6ff',
+                border: '1.5px solid #bfdbfe',
+                borderRadius: '10px',
+                padding: '10px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '8px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Users size={18} color="#005bbf" />
+                <span style={{ fontSize: '13px', color: '#1e3a8a', fontWeight: 600 }}>
+                  Showing team members for <strong style={{ textTransform: 'capitalize' }}>{department}</strong>
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={handleSelectAllFiltered}
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    padding: '5px 10px',
+                    borderRadius: '6px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #93c5fd',
+                    color: '#005bbf',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <Check size={13} />
+                  Select All Filtered
+                </button>
                 <button
                   type="button"
                   onClick={handleClearSelection}
                   style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '11px',
+                    fontSize: '12px',
                     fontWeight: 600,
-                    color: '#dc2626',
+                    padding: '5px 10px',
+                    borderRadius: '6px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    color: '#64748b',
                     cursor: 'pointer',
                   }}
                 >
-                  Clear ({selectedAssignees.length})
+                  Clear All
                 </button>
-              )}
+              </div>
             </div>
-          </div>
 
-          {/* Selected Personnel Chips Row */}
-          {(selectedTaskforceMembers.length > 0 || selectedAssignees.length > 0) ? (
+            {/* BEAUTIFIED SELECTED CHIPS: Person Name with Designation Badge */}
             <div
               style={{
+                backgroundColor: '#ffffff',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '12px 14px',
                 display: 'flex',
-                flexWrap: 'wrap',
+                flexDirection: 'column',
                 gap: '8px',
-                padding: '10px 12px',
-                backgroundColor: '#f8fafc',
-                borderRadius: '8px',
-                border: '1px solid #e2e8f0',
               }}
             >
-              {/* Taskforce Members Chips */}
-              {selectedTaskforceMembers.map((mId) => {
-                const member = metaTaskforceMembers.find((m) => m._id === mId);
-                if (!member) return null;
-                const tierColor =
-                  member.hierarchyLevel === 'head'
-                    ? { bg: '#fef3c7', text: '#92400e', border: '#fde68a', icon: '👑' }
-                    : member.hierarchyLevel === 'supervisor'
-                    ? { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe', icon: '🛡️' }
-                    : { bg: '#f1f5f9', text: '#334155', border: '#cbd5e1', icon: '👷' };
-                return (
-                  <div
-                    key={mId}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
+                  Assigned Team ({totalSelectedCount})
+                </span>
+                {totalSelectedCount > 0 && (
+                  <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 700 }}>
+                    Ready to allocate
+                  </span>
+                )}
+              </div>
+
+              {totalSelectedCount === 0 ? (
+                <div
+                  style={{
+                    padding: '14px',
+                    textAlign: 'center',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '8px',
+                    border: '1px dashed #cbd5e1',
+                    color: '#64748b',
+                    fontSize: '13px',
+                  }}
+                >
+                  Click on any team member below to assign them to this task directive.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '120px', overflowY: 'auto' }}>
+                  {/* Selected Taskforce Members */}
+                  {selectedTaskforceMembers.map((mId) => {
+                    const member = metaTaskforceMembers.find((m) => m._id === mId);
+                    const details = getTfMemberDetails(member);
+                    return (
+                      <div
+                        key={mId}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '4px 10px 4px 6px',
+                          borderRadius: '24px',
+                          backgroundColor: details.badgeBg || '#eff6ff',
+                          border: `1.5px solid ${details.badgeBorder || '#bfdbfe'}`,
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            backgroundColor: details.color || '#005bbf',
+                            color: '#ffffff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '10px',
+                            fontWeight: 800,
+                          }}
+                        >
+                          {details.initials}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>
+                            {details.name}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              padding: '2px 6px',
+                              borderRadius: '6px',
+                              backgroundColor: '#ffffff',
+                              color: details.badgeColor || '#005bbf',
+                              border: `1px solid ${details.badgeBorder || '#bfdbfe'}`,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                            }}
+                          >
+                            {details.roleTitle}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleTaskforceMember(mId)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '2px',
+                            display: 'flex',
+                            color: '#64748b',
+                            borderRadius: '50%',
+                          }}
+                          title="Remove member"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    );
+                  })}
+
+                  {/* Selected ERP Staff */}
+                  {selectedAssignees.map((sId) => {
+                    const staff = metaAssignees.find((s) => s._id === sId);
+                    const details = getErpStaffDetails(staff);
+                    return (
+                      <div
+                        key={sId}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '4px 10px 4px 6px',
+                          borderRadius: '24px',
+                          backgroundColor: '#f3e8ff',
+                          border: '1.5px solid #d8b4fe',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            backgroundColor: '#7e22ce',
+                            color: '#ffffff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '10px',
+                            fontWeight: 800,
+                          }}
+                        >
+                          {details.initials}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>
+                            {details.name}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              padding: '2px 6px',
+                              borderRadius: '6px',
+                              backgroundColor: '#ffffff',
+                              color: '#7e22ce',
+                              border: '1px solid #d8b4fe',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                            }}
+                          >
+                            {details.designation}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleAssignee(sId)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '2px',
+                            display: 'flex',
+                            color: '#64748b',
+                            borderRadius: '50%',
+                          }}
+                          title="Remove staff"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Category Tabs & Search Bar */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                {/* Category Switcher */}
+                <div style={{ display: 'flex', gap: '6px', backgroundColor: '#f1f5f9', padding: '3px', borderRadius: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setAssigneeCategoryTab('taskforce')}
                     style={{
+                      padding: '6px 14px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      backgroundColor: assigneeCategoryTab === 'taskforce' ? '#ffffff' : 'transparent',
+                      color: assigneeCategoryTab === 'taskforce' ? '#005bbf' : '#64748b',
+                      fontWeight: assigneeCategoryTab === 'taskforce' ? 700 : 500,
+                      fontSize: '12px',
+                      cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      padding: '4px 10px',
-                      borderRadius: '20px',
-                      backgroundColor: tierColor.bg,
-                      border: `1.5px solid ${tierColor.border}`,
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: tierColor.text,
+                      boxShadow: assigneeCategoryTab === 'taskforce' ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
                     }}
                   >
-                    <span>{tierColor.icon}</span>
-                    <span>{member.fullName}</span>
-                    <span style={{ fontSize: '10px', opacity: 0.8 }}>({member.trade || member.hierarchyLevel})</span>
-                    <button
-                      type="button"
-                      onClick={() => handleToggleTaskforceMember(mId)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: tierColor.text,
-                        cursor: 'pointer',
-                        padding: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <X size={13} />
-                    </button>
-                  </div>
-                );
-              })}
-
-              {/* ERP User Chips */}
-              {selectedAssignees.map((userId) => {
-                const user = metaAssignees.find((u) => u._id === userId);
-                if (!user) return null;
-                const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
-                return (
-                  <div
-                    key={userId}
+                    <Users size={14} />
+                    <span>Taskforce Field Team ({filteredTaskforceMembers.length})</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAssigneeCategoryTab('erp')}
                     style={{
+                      padding: '6px 14px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      backgroundColor: assigneeCategoryTab === 'erp' ? '#ffffff' : 'transparent',
+                      color: assigneeCategoryTab === 'erp' ? '#005bbf' : '#64748b',
+                      fontWeight: assigneeCategoryTab === 'erp' ? 700 : 500,
+                      fontSize: '12px',
+                      cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px',
-                      padding: '4px 10px',
-                      borderRadius: '20px',
-                      backgroundColor: '#eff6ff',
-                      border: '1.5px solid #93c5fd',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: '#1d4ed8',
+                      gap: '6px',
+                      boxShadow: assigneeCategoryTab === 'erp' ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
                     }}
                   >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        backgroundColor: '#1d4ed8',
-                        color: '#ffffff',
-                        fontSize: '10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {initials}
-                    </div>
-                    <span>{user.firstName} {user.lastName}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleToggleAssignee(userId)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#1d4ed8',
-                        cursor: 'pointer',
-                        padding: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic' }}>
-              No team members allocated yet. Select assignees from the Taskforce Team or ERP Staff below.
-            </div>
-          )}
-
-          {/* Category Switcher Tabs */}
-          <div style={{ display: 'flex', gap: '8px', borderBottom: '2px solid #e2e8f0', paddingBottom: '2px' }}>
-            <button
-              type="button"
-              onClick={() => setAssigneeCategoryTab('taskforce')}
-              style={{
-                padding: '6px 14px',
-                border: 'none',
-                background: 'none',
-                fontWeight: 700,
-                fontSize: '12px',
-                color: assigneeCategoryTab === 'taskforce' ? '#005bbf' : '#64748b',
-                borderBottom: assigneeCategoryTab === 'taskforce' ? '2px solid #005bbf' : '2px solid transparent',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-            >
-              <span>👷 Taskforce Field Team ({metaTaskforceMembers.length})</span>
-              {selectedTaskforceMembers.length > 0 && (
-                <span style={{ backgroundColor: '#005bbf', color: '#fff', borderRadius: '10px', padding: '1px 6px', fontSize: '10px' }}>
-                  {selectedTaskforceMembers.length}
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setAssigneeCategoryTab('erp')}
-              style={{
-                padding: '6px 14px',
-                border: 'none',
-                background: 'none',
-                fontWeight: 700,
-                fontSize: '12px',
-                color: assigneeCategoryTab === 'erp' ? '#005bbf' : '#64748b',
-                borderBottom: assigneeCategoryTab === 'erp' ? '2px solid #005bbf' : '2px solid transparent',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-            >
-              <span>🏢 ERP Department Staff ({metaAssignees.length})</span>
-              {selectedAssignees.length > 0 && (
-                <span style={{ backgroundColor: '#005bbf', color: '#fff', borderRadius: '10px', padding: '1px 6px', fontSize: '10px' }}>
-                  {selectedAssignees.length}
-                </span>
-              )}
-            </button>
-          </div>
-
-          {/* Search Toolbar */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
-              <Search size={14} color="#64748b" style={{ position: 'absolute', left: '10px', top: '10px' }} />
-              <input
-                type="text"
-                placeholder={assigneeCategoryTab === 'taskforce' ? 'Search taskforce by name, trade or role...' : 'Search staff by name or role...'}
-                value={assigneeSearch}
-                onChange={(e) => setAssigneeSearch(e.target.value)}
-                style={{
-                  width: '100%',
-                  height: '34px',
-                  paddingLeft: '32px',
-                  paddingRight: '12px',
-                  borderRadius: '6px',
-                  border: '1px solid #dadce0',
-                  fontSize: '12px',
-                  outline: 'none',
-                }}
-              />
-            </div>
-
-            {assigneeCategoryTab === 'erp' && (
-              <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '2px' }}>
-                {[
-                  { key: 'all', label: 'All Staff' },
-                  { key: 'civil', label: 'Civil' },
-                  { key: 'crm', label: 'C.R.M.' },
-                  { key: 'accounts', label: 'Accounts' },
-                  { key: 'hr', label: 'HR' },
-                  { key: 'it', label: 'I.T.' },
-                  { key: 'procurement', label: 'Procurement' },
-                  { key: 'security', label: 'Security' },
-                  { key: 'hotel', label: 'Hotel' },
-                  { key: 'hotel_restaurant', label: 'Hotel & Rest.' },
-                  { key: 'admin_operations', label: 'Admin / Ops' },
-                  { key: 'maintenance', label: 'Maintenance' },
-                  { key: 'licensing', label: 'Licensing' },
-                  { key: 'viramah', label: 'Viramah' },
-                ].map((tab) => (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => setAssigneeDeptFilter(tab.key)}
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      border: 'none',
-                      backgroundColor: assigneeDeptFilter === tab.key ? '#005bbf' : '#f1f5f9',
-                      color: assigneeDeptFilter === tab.key ? '#ffffff' : '#475569',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {tab.label}
+                    <Briefcase size={14} />
+                    <span>ERP Office Staff ({filteredAssignees.length})</span>
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
+                </div>
 
-          {/* TAB 1: TASKFORCE FIELD TEAM MEMBERS */}
-          {assigneeCategoryTab === 'taskforce' && (
+                {/* Filter Department Checkbox */}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: '#475569',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={showOnlyDeptMembers}
+                    onChange={(e) => setShowOnlyDeptMembers(e.target.checked)}
+                    style={{ accentColor: '#005bbf', cursor: 'pointer' }}
+                  />
+                  <span>Show only {department} staff</span>
+                </label>
+              </div>
+
+              {/* Search Bar */}
+              <div style={{ position: 'relative' }}>
+                <Search
+                  size={15}
+                  style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#94a3b8',
+                  }}
+                />
+                <input
+                  type="text"
+                  className="search-input"
+                  style={{
+                    width: '100%',
+                    fontSize: '13px',
+                    padding: '8px 12px 8px 36px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                  }}
+                  placeholder="Search by name, phone, trade, or designation..."
+                  value={assigneeSearch}
+                  onChange={(e) => setAssigneeSearch(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* INTERACTIVE TEAM MEMBER CARDS GRID */}
             <div
               style={{
-                maxHeight: '220px',
+                maxHeight: '320px',
                 overflowY: 'auto',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                padding: '8px',
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                gap: '8px',
-                backgroundColor: '#fafbfc',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                gap: '10px',
+                padding: '4px',
               }}
             >
-              {loadingMeta ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-                  Loading taskforce members...
-                </div>
-              ) : filteredTaskforceMembers.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px', gridColumn: '1 / -1' }}>
-                  No taskforce members found. Add team members in the "Team & Hierarchy" tab of the Task Force Manager.
+              {assigneeCategoryTab === 'taskforce' ? (
+                filteredTaskforceMembers.length === 0 ? (
+                  <div
+                    style={{
+                      gridColumn: '1 / -1',
+                      padding: '24px',
+                      textAlign: 'center',
+                      backgroundColor: '#f8fafc',
+                      borderRadius: '8px',
+                      color: '#64748b',
+                      fontSize: '13px',
+                    }}
+                  >
+                    No taskforce personnel found matching &quot;{assigneeSearch || department}&quot;. Uncheck &quot;Show only {department}&quot; to view all site staff.
+                  </div>
+                ) : (
+                  [
+                    {
+                      title: 'Department Heads (Level 3)',
+                      faIcon: 'fa-solid fa-user-tie',
+                      color: '#0891b2',
+                      badgeBg: '#ecfeff',
+                      badgeBorder: '#a5f3fc',
+                      list: filteredTaskforceMembers.filter((m) => m.hierarchyLevel === 'head'),
+                    },
+                    {
+                      title: 'Site Supervisors (Level 2)',
+                      faIcon: 'fa-solid fa-user-gear',
+                      color: '#4f46e5',
+                      badgeBg: '#eef2ff',
+                      badgeBorder: '#c7d2fe',
+                      list: filteredTaskforceMembers.filter((m) => m.hierarchyLevel === 'supervisor'),
+                    },
+                    {
+                      title: 'Field Helpers & Technicians (Level 1)',
+                      faIcon: 'fa-solid fa-person-digging',
+                      color: '#2563eb',
+                      badgeBg: '#eff6ff',
+                      badgeBorder: '#bfdbfe',
+                      list: filteredTaskforceMembers.filter((m) => m.hierarchyLevel === 'helper' || !m.hierarchyLevel),
+                    },
+                  ]
+                    .filter((tier) => tier.list.length > 0)
+                    .map((tier) => (
+                      <div key={tier.title} style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '8px' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '4px 2px',
+                            borderBottom: '1px solid #e2e8f0',
+                          }}
+                        >
+                          <i className={tier.faIcon} style={{ fontSize: '13px', color: tier.color }} />
+                          <span style={{ fontSize: '12px', fontWeight: 800, color: '#0f172a' }}>
+                            {tier.title}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: 800,
+                              padding: '1px 6px',
+                              borderRadius: '8px',
+                              backgroundColor: tier.badgeBg,
+                              color: tier.color,
+                              border: `1px solid ${tier.badgeBorder}`,
+                            }}
+                          >
+                            {tier.list.length}
+                          </span>
+                        </div>
+
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                            gap: '10px',
+                          }}
+                        >
+                          {tier.list.map((member) => {
+                            const isSelected = selectedTaskforceMembers.includes(member._id);
+                            const details = getTfMemberDetails(member);
+                            const deptTheme = getDepartmentTheme(member.department || member.trade);
+                            const tierTheme = getHierarchyTheme(member.hierarchyLevel);
+                            const phone = member.mobileNo || member.phone;
+
+                            return (
+                              <div
+                                key={member._id}
+                                onClick={() => handleToggleTaskforceMember(member._id)}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  padding: '10px 12px',
+                                  borderRadius: '10px',
+                                  backgroundColor: isSelected ? '#f0f9ff' : '#ffffff',
+                                  border: isSelected ? '2px solid #005bbf' : '1px solid #e2e8f0',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  boxShadow: isSelected ? '0 2px 8px rgba(0,91,191,0.12)' : 'none',
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                                  <div
+                                    style={{
+                                      width: '36px',
+                                      height: '36px',
+                                      borderRadius: '50%',
+                                      backgroundColor: details.bg,
+                                      color: details.color,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontSize: '12px',
+                                      fontWeight: 800,
+                                      flexShrink: 0,
+                                    }}
+                                  >
+                                    {details.initials}
+                                  </div>
+
+                                  <div style={{ minWidth: 0 }}>
+                                    <div
+                                      style={{
+                                        fontWeight: 700,
+                                        fontSize: '13px',
+                                        color: '#0f172a',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                      }}
+                                    >
+                                      {details.name}
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px', flexWrap: 'wrap' }}>
+                                      <span
+                                        style={{
+                                          fontSize: '10px',
+                                          fontWeight: 700,
+                                          padding: '1px 6px',
+                                          borderRadius: '4px',
+                                          backgroundColor: details.badgeBg,
+                                          color: details.badgeColor,
+                                          border: `1px solid ${details.badgeBorder}`,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '3px',
+                                        }}
+                                      >
+                                        <i className={tierTheme.icon} style={{ fontSize: '9px' }} />
+                                        <span>{details.roleTitle}</span>
+                                      </span>
+
+                                      {(member.trade || member.department) && (
+                                        <span
+                                          style={{
+                                            fontSize: '10px',
+                                            fontWeight: 600,
+                                            padding: '1px 5px',
+                                            borderRadius: '4px',
+                                            backgroundColor: '#f1f5f9',
+                                            color: '#475569',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '3px',
+                                          }}
+                                        >
+                                          <i className={deptTheme.icon} style={{ fontSize: '9px', color: deptTheme.color }} />
+                                          <span>{member.trade || member.department}</span>
+                                        </span>
+                                      )}
+                                    </div>
+                                    {phone && (
+                                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <i className="fa-solid fa-phone" style={{ fontSize: '10px', color: '#059669' }} />
+                                        <span>{phone}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div
+                                  style={{
+                                    width: '22px',
+                                    height: '22px',
+                                    borderRadius: '50%',
+                                    border: isSelected ? 'none' : '2px solid #cbd5e1',
+                                    backgroundColor: isSelected ? '#005bbf' : 'transparent',
+                                    color: '#ffffff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0,
+                                    marginLeft: '8px',
+                                    fontSize: '11px',
+                                  }}
+                                >
+                                  {isSelected && <i className="fa-solid fa-check" />}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))
+                )
+              ) : filteredAssignees.length === 0 ? (
+                <div
+                  style={{
+                    gridColumn: '1 / -1',
+                    padding: '24px',
+                    textAlign: 'center',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '8px',
+                    color: '#64748b',
+                    fontSize: '13px',
+                  }}
+                >
+                  No ERP staff members found matching &quot;{assigneeSearch}&quot;.
                 </div>
               ) : (
-                filteredTaskforceMembers.map((member) => {
-                  const isSelected = selectedTaskforceMembers.includes(member._id);
-                  const tierBadge =
-                    member.hierarchyLevel === 'head'
-                      ? { label: '👑 HEAD', bg: '#fef3c7', color: '#92400e' }
-                      : member.hierarchyLevel === 'supervisor'
-                      ? { label: '🛡️ SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' }
-                      : { label: '👷 HELPER', bg: '#f1f5f9', color: '#334155' };
-
+                filteredAssignees.map((staff) => {
+                  const isSelected = selectedAssignees.includes(staff._id);
+                  const details = getErpStaffDetails(staff);
                   return (
                     <div
-                      key={member._id}
-                      onClick={() => handleToggleTaskforceMember(member._id)}
+                      key={staff._id}
+                      onClick={() => handleToggleAssignee(staff._id)}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '10px',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        border: isSelected ? '1.5px solid #005bbf' : '1px solid #e2e8f0',
-                        backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
-                        boxShadow: isSelected ? '0 2px 6px rgba(0, 91, 191, 0.1)' : '0 1px 2px rgba(0,0,0,0.03)',
+                        justifyContent: 'space-between',
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        backgroundColor: isSelected ? '#faf5ff' : '#ffffff',
+                        border: isSelected ? '2px solid #7e22ce' : '1px solid #e2e8f0',
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
+                        boxShadow: isSelected ? '0 2px 8px rgba(126,34,206,0.12)' : 'none',
                       }}
                     >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        style={{ cursor: 'pointer', accentColor: '#005bbf', width: '16px', height: '16px', flexShrink: 0 }}
-                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                        <div
+                          style={{
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '50%',
+                            backgroundColor: '#f3e8ff',
+                            color: '#7e22ce',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '12px',
+                            fontWeight: 800,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {details.initials}
+                        </div>
 
-                      <div
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: '50%',
-                          backgroundColor: tierBadge.bg,
-                          color: tierBadge.color,
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {member.fullName?.charAt(0) || 'M'}
-                      </div>
-
-                      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span
+                        <div style={{ minWidth: 0 }}>
+                          <div
                             style={{
-                              fontSize: '13px',
                               fontWeight: 700,
+                              fontSize: '13px',
                               color: '#0f172a',
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                             }}
                           >
-                            {member.fullName}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: '9px',
-                              fontWeight: 700,
-                              padding: '1px 5px',
-                              borderRadius: '4px',
-                              backgroundColor: tierBadge.bg,
-                              color: tierBadge.color,
-                              flexShrink: 0,
-                            }}
-                          >
-                            {tierBadge.label}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '11px',
-                            color: '#64748b',
-                            fontWeight: 500,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {member.trade || member.role || 'Field Personnel'}
-                          {member.supervisorId?.fullName && ` • Reports to: ${member.supervisorId.fullName}`}
+                            {details.name}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                backgroundColor: '#f3e8ff',
+                                color: '#7e22ce',
+                                border: '1px solid #e9d5ff',
+                              }}
+                            >
+                              {details.designation}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                            @{staff.username || 'staff'}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          )}
 
-          {/* TAB 2: GENERAL ERP STAFF */}
-          {assigneeCategoryTab === 'erp' && (
-            <div
-              style={{
-                maxHeight: '190px',
-                overflowY: 'auto',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                padding: '8px',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                gap: '8px',
-                backgroundColor: '#fafbfc',
-              }}
-            >
-              {loadingMeta ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-                  Loading staff members...
-                </div>
-              ) : filteredAssignees.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-                  No personnel found matching your filter.
-                </div>
-              ) : (
-                filteredAssignees.map((user) => {
-                  const isSelected = selectedAssignees.includes(user._id);
-                  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
-
-                  return (
-                    <div
-                      key={user._id}
-                      onClick={() => handleToggleAssignee(user._id)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        border: isSelected ? '1.5px solid #005bbf' : '1px solid #e2e8f0',
-                        backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
-                        boxShadow: isSelected ? '0 2px 6px rgba(0, 91, 191, 0.1)' : '0 1px 2px rgba(0,0,0,0.03)',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        style={{ cursor: 'pointer', accentColor: '#005bbf', width: '16px', height: '16px', flexShrink: 0 }}
-                      />
-
-                      {/* Colored Avatar */}
                       <div
                         style={{
-                          width: '32px',
-                          height: '32px',
+                          width: '22px',
+                          height: '22px',
                           borderRadius: '50%',
-                          backgroundColor: isSelected ? '#005bbf' : '#64748b',
+                          border: isSelected ? 'none' : '2px solid #cbd5e1',
+                          backgroundColor: isSelected ? '#7e22ce' : 'transparent',
                           color: '#ffffff',
-                          fontSize: '11px',
-                          fontWeight: 700,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           flexShrink: 0,
+                          marginLeft: '8px',
                         }}
                       >
-                        {initials}
-                      </div>
-
-                      {/* Info */}
-                      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                        <div
-                          style={{
-                            fontSize: '13px',
-                            fontWeight: 700,
-                            color: '#0f172a',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {user.firstName} {user.lastName}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '11px',
-                            color: isSelected ? '#005bbf' : '#64748b',
-                            fontWeight: 500,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {user.roleId?.roleName || user.username}
-                        </div>
+                        {isSelected && <Check size={14} />}
                       </div>
                     </div>
                   );
                 })
               )}
             </div>
-          )}
-        </div>
-
-        {/* SECTION 4: Apartment / Flat / Property Context (Optional) */}
-        <div
-          style={{
-            padding: '14px 16px',
-            borderRadius: '10px',
-            backgroundColor: isApartmentRelated ? '#f0f9ff' : '#ffffff',
-            border: isApartmentRelated ? '1.5px solid #bae6fd' : '1px solid #e2e8f0',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>
-              <Building2 size={18} color={isApartmentRelated ? '#0284c7' : '#64748b'} />
-              Is this work tied to a specific Apartment / Flat / Tower?
-            </label>
-            <input
-              type="checkbox"
-              checked={isApartmentRelated}
-              onChange={(e) => setIsApartmentRelated(e.target.checked)}
-              style={{ width: '18px', height: '18px', accentColor: '#005bbf', cursor: 'pointer' }}
-            />
           </div>
+        )}
 
-          {isApartmentRelated && (
-            <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {/* Project & Flat Number Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
-                    Select Project Site
-                  </label>
-                  <select
-                    className="search-input"
-                    style={{ width: '100%', height: '38px', fontSize: '12px' }}
-                    value={selectedProjectId}
-                    onChange={(e) => setSelectedProjectId(e.target.value)}
-                  >
-                    {metaProjects.map((p) => (
-                      <option key={p._id} value={p._id}>
-                        {p.projectName} ({p.projectCode || 'Site'})
-                      </option>
-                    ))}
-                  </select>
+        {/* ================= STEP 3: TIMELINE & ACTION STEPS ================= */}
+        {currentStep === 3 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            {/* Directive Overview Summary Pill */}
+            <div
+              style={{
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '10px',
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '8px',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
+                  Target Directive
                 </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
-                    Flat / Unit Number
-                  </label>
-                  <input
-                    type="text"
-                    className="search-input"
-                    style={{ width: '100%', height: '38px', fontSize: '12px' }}
-                    placeholder="e.g. Flat 402, 3BHK"
-                    value={flatNumber}
-                    onChange={(e) => setFlatNumber(e.target.value)}
-                  />
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
+                  {title || 'Untitled Directive'}
                 </div>
               </div>
 
-              {/* Quick Tower Selector Pills */}
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
-                  Tower / Building
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: '#e0f2fe',
+                    color: '#0369a1',
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {department}
+                </span>
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: '#f1f5f9',
+                    color: '#334155',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                  }}
+                >
+                  <Users size={13} />
+                  <span>{totalSelectedCount} Personnel</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Target Due Date with Quick Buttons */}
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                  Completion Deadline / Target Date
                 </label>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                  {COMMON_TOWERS.map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setTower(t)}
-                      style={{
-                        padding: '4px 12px',
-                        borderRadius: '6px',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        border: tower === t ? '1.5px solid #0284c7' : '1px solid #cbd5e1',
-                        backgroundColor: tower === t ? '#e0f2fe' : '#ffffff',
-                        color: tower === t ? '#0369a1' : '#334155',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                  <input
-                    type="text"
-                    placeholder="Or enter tower..."
-                    value={tower}
-                    onChange={(e) => setTower(e.target.value)}
+                {dueDate && (
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#005bbf' }}>
+                    Target: {new Date(dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </span>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="date"
+                  className="search-input"
+                  style={{
+                    fontSize: '13px',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontWeight: 600,
+                  }}
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
+
+                {/* 1-Click Quick Presets */}
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setQuickDeadlineDays(0)}
                     style={{
-                      height: '30px',
-                      padding: '0 8px',
+                      fontSize: '12px',
+                      padding: '6px 10px',
                       borderRadius: '6px',
                       border: '1px solid #cbd5e1',
-                      fontSize: '11px',
-                      width: '130px',
+                      backgroundColor: '#f8fafc',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      color: '#334155',
                     }}
-                  />
+                  >
+                    Today
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickDeadlineDays(1)}
+                    style={{
+                      fontSize: '12px',
+                      padding: '6px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid #cbd5e1',
+                      backgroundColor: '#f8fafc',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      color: '#334155',
+                    }}
+                  >
+                    Tomorrow
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickDeadlineDays(3)}
+                    style={{
+                      fontSize: '12px',
+                      padding: '6px 10px',
+                      borderRadius: '6px',
+                      border: '1.5px solid #005bbf',
+                      backgroundColor: '#eff6ff',
+                      cursor: 'pointer',
+                      fontWeight: 700,
+                      color: '#005bbf',
+                    }}
+                  >
+                    +3 Days (Recommended)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickDeadlineDays(7)}
+                    style={{
+                      fontSize: '12px',
+                      padding: '6px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid #cbd5e1',
+                      backgroundColor: '#f8fafc',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      color: '#334155',
+                    }}
+                  >
+                    +1 Week
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickDeadlineDays(30)}
+                    style={{
+                      fontSize: '12px',
+                      padding: '6px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid #cbd5e1',
+                      backgroundColor: '#f8fafc',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      color: '#334155',
+                    }}
+                  >
+                    +1 Month
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* SECTION 5: Schedule & Follow-up Cadence (Responsive Grid) */}
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '12px',
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Calendar size={18} color="#ca8a04" />
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
-              Schedule & Systematic Follow-up Tracking
-            </span>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
-                Start Date
-              </label>
-              <input
-                type="date"
-                className="search-input"
-                style={{ width: '100%', height: '38px', fontSize: '12px' }}
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
-                  Target Deadline
-                </label>
-              </div>
-              <input
-                type="date"
-                className="search-input"
-                style={{ width: '100%', height: '38px', fontSize: '12px' }}
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-              />
-              {/* Quick Presets */}
-              <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
-                {[
-                  { label: '+1D', days: 1 },
-                  { label: '+3D', days: 3 },
-                  { label: '+1W', days: 7 },
-                  { label: '+1M', days: 30 },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => setQuickDeadlineDays(item.days)}
-                    style={{
-                      padding: '2px 6px',
-                      fontSize: '10px',
-                      borderRadius: '4px',
-                      border: '1px solid #cbd5e1',
-                      backgroundColor: '#f8fafc',
-                      color: '#475569',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
-                Follow-up Cadence
-              </label>
-              <select
-                className="search-input"
-                style={{ width: '100%', height: '38px', fontSize: '12px' }}
-                value={followUpFrequency}
-                onChange={(e) => handleCadenceChange(e.target.value)}
-              >
-                <option value="daily">Daily Follow-up (Every 24h)</option>
-                <option value="alternate_days">Alternate Days (Every 48h)</option>
-                <option value="weekly">Weekly Check-in</option>
-                <option value="once">One-off Final Review</option>
-              </select>
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#ca8a04', marginBottom: '4px' }}>
-                Next Follow-Up Due
-              </label>
-              <input
-                type="date"
-                className="search-input"
-                style={{ width: '100%', height: '38px', fontSize: '12px', borderColor: '#ca8a04', backgroundColor: '#fefce8' }}
-                value={nextFollowUpDate}
-                onChange={(e) => setNextFollowUpDate(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* SECTION 6: Action Checkpoints / Subtasks (NEW & HIGHLY DETAILED) */}
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '12px',
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ListTodo size={18} color="#005bbf" />
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
-                Action Checkpoints & Sub-deliverables ({checkpoints.length})
-              </span>
-            </div>
-            <span style={{ fontSize: '11px', color: '#64748b' }}>
-              Assignees can check off each milestone as they progress
-            </span>
-          </div>
-
-          {/* Add Checkpoint Input */}
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              className="search-input"
-              style={{ flex: 1, height: '38px', fontSize: '13px' }}
-              placeholder="e.g. 1. Inspect water joint, 2. Run leak test, 3. Upload photo sign-off..."
-              value={newCheckpointInput}
-              onChange={(e) => setNewCheckpointInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleAddCheckpoint();
-                }
+            {/* Executive Follow-up Cadence */}
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
               }}
-            />
+            >
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                  Executive Radar & Follow-up Cadence
+                </label>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
+                  System will alert supervisors and MD dashboard at this recurring interval.
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                {[
+                  { value: 'daily', label: 'Daily (24h)' },
+                  { value: 'alternate_days', label: 'Every 2 Days' },
+                  { value: 'weekly', label: 'Weekly' },
+                  { value: 'none', label: 'One-off' },
+                ].map((cad) => {
+                  const isSelected = followUpFrequency === cad.value;
+                  return (
+                    <button
+                      key={cad.value}
+                      type="button"
+                      onClick={() => handleCadenceChange(cad.value)}
+                      style={{
+                        padding: '9px 8px',
+                        borderRadius: '8px',
+                        border: isSelected ? '2px solid #005bbf' : '1px solid #e2e8f0',
+                        backgroundColor: isSelected ? '#eff6ff' : '#f8fafc',
+                        color: isSelected ? '#005bbf' : '#334155',
+                        fontWeight: isSelected ? 800 : 600,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      {cad.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Action Checkpoints / Steps */}
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <label style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                    Action Milestones & Quality Checkpoints ({checkpoints.length})
+                  </label>
+                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
+                    Field supervisors can tick off each checkpoint as physical work progresses.
+                  </div>
+                </div>
+              </div>
+
+              {/* Add Checkpoint Input */}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  className="search-input"
+                  style={{
+                    flex: 1,
+                    fontSize: '13px',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                  }}
+                  placeholder="e.g., Check concealed pipe pressure for 24 hours..."
+                  value={newCheckpointInput}
+                  onChange={(e) => setNewCheckpointInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddCheckpoint();
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddCheckpoint}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: '#005bbf',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <Plus size={16} />
+                  Add Step
+                </button>
+              </div>
+
+              {/* Checkpoints List */}
+              {checkpoints.length === 0 ? (
+                <div
+                  style={{
+                    padding: '14px',
+                    textAlign: 'center',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '8px',
+                    border: '1px dashed #cbd5e1',
+                    color: '#64748b',
+                    fontSize: '12px',
+                  }}
+                >
+                  No checkpoints added yet. Type a milestone above and click &quot;Add Step&quot; or press Enter.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto' }}>
+                  {checkpoints.map((cp, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        backgroundColor: '#f8fafc',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span
+                          style={{
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            backgroundColor: '#e2e8f0',
+                            color: '#475569',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {idx + 1}
+                        </span>
+                        <span style={{ fontSize: '13px', color: '#1e293b', fontWeight: 500 }}>
+                          {cp.title}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveCheckpoint(idx)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#ef4444',
+                          cursor: 'pointer',
+                          padding: '4px',
+                          display: 'flex',
+                          borderRadius: '4px',
+                        }}
+                        title="Remove checkpoint"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ================= MODAL FOOTER STEP NAVIGATION ================= */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderTop: '1px solid #e2e8f0',
+            paddingTop: '14px',
+            marginTop: '8px',
+          }}
+        >
+          {/* Left Action: Back or Cancel */}
+          {currentStep > 1 ? (
             <button
               type="button"
               className="btn-secondary"
-              onClick={handleAddCheckpoint}
+              onClick={() => setCurrentStep((prev) => prev - 1)}
               style={{
-                padding: '0 16px',
-                height: '38px',
-                fontSize: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
+                padding: '9px 16px',
+                fontSize: '13px',
+                fontWeight: 600,
               }}
             >
-              <Plus size={14} /> Add Step
+              <ArrowLeft size={16} />
+              Back to {currentStep === 2 ? 'Task & Trade' : 'Assign Team'}
             </button>
-          </div>
+          ) : (
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={onClose}
+              disabled={loading}
+              style={{ padding: '9px 18px', fontSize: '13px' }}
+            >
+              Cancel
+            </button>
+          )}
 
-          {/* Checkpoint list */}
-          {checkpoints.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
-              {checkpoints.map((cp, idx) => (
-                <div
-                  key={idx}
+          {/* Right Actions */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            {/* Step 1 Next Button */}
+            {currentStep === 1 && (
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleGoToStep2}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 22px',
+                  fontSize: '13px',
+                  backgroundColor: '#005bbf',
+                  fontWeight: 700,
+                }}
+              >
+                <span>Next: Assign Team</span>
+                <ArrowRight size={16} />
+              </button>
+            )}
+
+            {/* Step 2 Next & Quick Dispatch Buttons */}
+            {currentStep === 2 && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading || totalSelectedCount === 0 || !title.trim()}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '8px 12px',
+                    gap: '6px',
+                    padding: '9px 16px',
+                    fontSize: '13px',
                     borderRadius: '8px',
-                    backgroundColor: '#f8fafc',
-                    border: '1px solid #e2e8f0',
+                    border: '1.5px solid #22c55e',
+                    backgroundColor: '#f0fdf4',
+                    color: '#16a34a',
+                    fontWeight: 700,
+                    cursor: totalSelectedCount === 0 || !title.trim() ? 'not-allowed' : 'pointer',
+                    opacity: totalSelectedCount === 0 || !title.trim() ? 0.6 : 1,
+                  }}
+                  title="Dispatch directive immediately without extra checkpoints"
+                >
+                  <Zap size={15} />
+                  Quick Dispatch
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={handleGoToStep3}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '9px 22px',
+                    fontSize: '13px',
+                    backgroundColor: '#005bbf',
+                    fontWeight: 700,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#1e293b' }}>
-                    <span
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        backgroundColor: '#e2e8f0',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        color: '#475569',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {idx + 1}
-                    </span>
-                    <span>{cp.title}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveCheckpoint(idx)}
-                    style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', padding: '2px' }}
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* SECTION 7: Scope of Work / MD Instructions */}
-        <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
-            Detailed Scope of Work & Guidelines
-          </label>
-          <textarea
-            className="search-input"
-            rows={3}
-            style={{ width: '100%', height: '80px', fontSize: '13px', padding: '10px', lineHeight: '1.5' }}
-            placeholder="Specify work details, material requirements, contractor coordination notes, or escalation rules..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        {/* Modal Footer Actions */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '12px',
-            borderTop: '1px solid #edeef0',
-            paddingTop: '16px',
-          }}
-        >
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={onClose}
-            disabled={loading}
-            style={{ padding: '9px 20px', fontSize: '13px' }}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={loading}
-            style={{
-              padding: '9px 26px',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: isMDDirective ? '#ca8a04' : '#005bbf',
-            }}
-          >
-            {loading ? (
-              'Allocating...'
-            ) : (
-              <>
-                <CheckCircle2 size={16} />
-                {initialData ? 'Save Changes' : 'Dispatch Directive'}
+                  <span>Next: Timeline & Steps</span>
+                  <ArrowRight size={16} />
+                </button>
               </>
             )}
-          </button>
+
+            {/* Step 3 Final Dispatch Button */}
+            {currentStep === 3 && (
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={loading}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 26px',
+                  fontSize: '13px',
+                  backgroundColor: isMDDirective ? '#ca8a04' : '#005bbf',
+                  fontWeight: 800,
+                  boxShadow: isMDDirective
+                    ? '0 2px 8px rgba(202, 138, 4, 0.3)'
+                    : '0 2px 8px rgba(0, 91, 191, 0.25)',
+                }}
+              >
+                {loading ? (
+                  'Allocating Directive...'
+                ) : (
+                  <>
+                    <CheckCircle2 size={17} />
+                    {initialData ? 'Save Changes' : 'Dispatch Task Directive'}
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
       </form>
     </Modal>

@@ -311,7 +311,7 @@ export const TaskforceMemberDashboard = ({
                   <badgeInfo.icon size={13} />
                   {badgeInfo.label}
                 </span>
-                {member?.trade && (
+                {(member?.department || member?.trade) && (
                   <span
                     style={{
                       padding: '2px 8px',
@@ -322,7 +322,7 @@ export const TaskforceMemberDashboard = ({
                       color: '#475569',
                     }}
                   >
-                    {member.trade}
+                    {member.department || member.trade}
                   </span>
                 )}
               </div>
@@ -367,7 +367,7 @@ export const TaskforceMemberDashboard = ({
                   <option value="">-- All / Team Overview --</option>
                   {allMembers.map((m) => (
                     <option key={m._id} value={m._id}>
-                      {m.name} ({m.hierarchyLevel?.toUpperCase()} • {m.trade})
+                      {m.name} ({m.hierarchyLevel?.toUpperCase()} • {m.department || m.trade})
                     </option>
                   ))}
                 </select>

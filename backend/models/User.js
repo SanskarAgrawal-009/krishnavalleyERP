@@ -134,6 +134,33 @@ const UserSchema = new mongoose.Schema(
     },
 
     // ==========================================
+    // TASKFORCE & DEPARTMENT GOVERNANCE
+    // ==========================================
+
+    department: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
+    isTaskforceMember: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    initialPassword: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
+    taskforceHierarchyLevel: {
+      type: String,
+      default: '',
+    },
+
+    // ==========================================
     // AGENT / CHANNEL PARTNER PROFILE
     // ==========================================
 
