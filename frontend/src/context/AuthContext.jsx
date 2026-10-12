@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/authService.js';
+import { extractRoleCode } from '../utils/taskPermissions.js';
 
 const AuthContext = createContext(null);
 
@@ -75,11 +76,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Safe role code resolution
-  const userRole = (
-    typeof user?.role === 'string'
-      ? user.role
-      : user?.role?.roleCode || user?.roleCode || ''
-  ).toLowerCase();
+  const userRole = extractRoleCode(user);
 
   // Permission and role checking helpers
   const isSuperAdmin = userRole === 'super_admin' || userRole === 'admin';

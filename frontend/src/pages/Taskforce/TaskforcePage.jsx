@@ -43,7 +43,7 @@ import {
 
 export const TaskforcePage = () => {
   const { user } = useAuth();
-  const canAssign = canUserAssignTasks(user, user?.role);
+  const canAssign = canUserAssignTasks(user);
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 

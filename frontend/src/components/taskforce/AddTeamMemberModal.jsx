@@ -40,19 +40,21 @@ export const AddTeamMemberModal = ({
   const [headId, setHeadId] = useState('');
 
   const DEFAULT_DEPARTMENTS = [
-    'Civil & Snagging',
-    'Electrical & Power',
-    'Plumbing & Sanitation',
-    'Painting & Waterproofing',
-    'Carpentry & Woodwork',
-    'Housekeeping & Deep Cleaning',
-    'Security & Access Control',
-    'HVAC & Air Conditioning',
-    'General Operations',
+    'Human Resource',
+    'I.T.',
+    'Procurement',
+    'Hotel',
+    'Security',
+    'Accounts',
+    'C.R.M.',
+    'Admin / Operations',
+    'Maintenance',
+    'Civil',
+    'Licensing',
   ];
 
   const [managedDepartments, setManagedDepartments] = useState([]);
-  const [department, setDepartment] = useState('Civil & Snagging');
+  const [department, setDepartment] = useState('Civil');
   const [notes, setNotes] = useState('');
 
   // User Account Options
@@ -102,7 +104,7 @@ export const AddTeamMemberModal = ({
       if (initialDepartment) {
         setDepartment(initialDepartment);
       } else if (!department || !list.includes(department)) {
-        setDepartment(list[0] || 'Civil & Snagging');
+        setDepartment(list[0] || 'Civil');
       }
     } catch (err) {
       setManagedDepartments(DEFAULT_DEPARTMENTS);
@@ -177,7 +179,7 @@ export const AddTeamMemberModal = ({
     setHierarchyLevel('helper');
     setSupervisorId('');
     setHeadId('');
-    setDepartment('Civil & Snagging');
+    setDepartment('Civil');
     
     setNotes('');
     setAccountType('create_user');

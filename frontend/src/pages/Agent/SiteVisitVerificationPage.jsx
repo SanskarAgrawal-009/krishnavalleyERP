@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { extractRoleCode } from '../../utils/taskPermissions.js';
 import { agentService } from '../../services/agentService.js';
 import { projectService } from '../../services/projectService.js';
 import { NewSiteVisitModal } from '../../components/agent/NewSiteVisitModal.jsx';
@@ -43,7 +44,7 @@ export const SiteVisitVerificationPage = () => {
   const [selectedVisitForVerify, setSelectedVisitForVerify] = useState(null);
 
   const { user: currentUser } = useAuth();
-  const userRole = currentUser?.role?.roleCode || currentUser?.roleCode || currentUser?.role || '';
+  const userRole = extractRoleCode(currentUser);
   const canApprove = ['admin', 'sales_head', 'crm_manager', 'super_admin', 'general_manager'].includes(userRole);
 
   const fetchSiteVisits = async () => {

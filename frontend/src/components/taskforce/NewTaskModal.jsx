@@ -503,9 +503,9 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
     const target = (department || '').toLowerCase().trim();
 
     return metaTaskforceMembers.filter((m) => {
-      const name = (m.name || m.fullName || '').toLowerCase();
-      const mDept = (m.department || m.trade || '').toLowerCase().trim();
-      const role = (m.role || m.hierarchyLevel || '').toLowerCase();
+      const name = (typeof m.name === 'string' ? m.name : m.fullName || '').toLowerCase();
+      const mDept = (typeof m.department === 'string' ? m.department : m.trade || '').toLowerCase().trim();
+      const role = (typeof m.role === 'string' ? m.role : m.hierarchyLevel || '').toLowerCase();
       const s = assigneeSearch.toLowerCase().trim();
 
       const matchesSearch = !s || name.includes(s) || mDept.includes(s) || role.includes(s);

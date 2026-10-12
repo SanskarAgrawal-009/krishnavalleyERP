@@ -21,8 +21,8 @@ import { leadService } from '../../services/leadService.js';
 import { inventoryService } from '../../services/inventoryService.js';
 import { maintenanceService } from '../../services/maintenanceService.js';
 import { rentalService } from '../../services/rentalService.js';
-import { taskService } from '../../services/taskService.js';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { extractRoleCode } from '../../utils/taskPermissions.js';
 import {
   Building2,
   TrendingUp,
@@ -58,12 +58,7 @@ import {
 export const CommandCenterPage = () => {
   const navigate = useNavigate();
   const { user, userRole: authRole, isSuperAdmin, hasPermission } = useAuth();
-  const userRole = (
-    authRole ||
-    (typeof user?.role === 'string'
-      ? user.role
-      : user?.role?.roleCode || user?.roleCode || '')
-  ).toLowerCase();
+  const userRole = extractRoleCode(user, authRole);
   const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
 
   const [loading, setLoading] = useState(false);

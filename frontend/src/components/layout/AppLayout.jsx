@@ -5,7 +5,7 @@ import { ErrorBoundary } from '../common/ErrorBoundary.jsx';
 import { NotificationAlertBox } from './NotificationAlertBox.jsx';
 import { useReminderAlerts } from '../../hooks/useReminderAlerts.js';
 import { InAppReminderBanner } from '../common/InAppReminderBanner.jsx';
-import { isTaskforceTeamMember } from '../../utils/taskPermissions.js';
+import { isTaskforceTeamMember, extractRoleCode } from '../../utils/taskPermissions.js';
 import {
   LayoutDashboard,
   Building2,
@@ -416,12 +416,7 @@ export const AppLayout = () => {
   }, [isMobile, mobileMenuOpen]);
 
   // Filter items based on user permissions, role, and search
-  const userRole = (
-    authRole ||
-    (typeof user?.role === 'string'
-      ? user.role
-      : user?.role?.roleCode || user?.roleCode || '')
-  ).toLowerCase();
+  const userRole = extractRoleCode(user, authRole);
   const isAgentUser = userRole === 'agent';
   const isTaskforceUser = isTaskforceTeamMember(user, userRole);
   const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');

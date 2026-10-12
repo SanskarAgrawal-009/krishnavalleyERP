@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { reportService } from '../../services/reportService.js';
 import { projectService } from '../../services/projectService.js';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { extractRoleCode } from '../../utils/taskPermissions.js';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { TableSkeleton, CardGridSkeleton } from '../../components/common/SkeletonLoader.jsx';
 import { EmptyState } from '../../components/common/EmptyState.jsx';
@@ -56,12 +57,7 @@ export const ReportsPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const userRole = (
-    authRole ||
-    (typeof user?.role === 'string'
-      ? user.role
-      : user?.role?.roleCode || user?.roleCode || '')
-  ).toLowerCase();
+  const userRole = extractRoleCode(user, authRole);
   const isSuperAdmin = userRole === 'super_admin' || userRole === 'admin';
   const hasFinancePermission = (user?.permissionCodes || []).includes('reports:financial') || (user?.permissions || []).some((p) => (typeof p === 'string' ? p : p.permissionCode) === 'reports:financial');
   const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasFinancePermission && userRole !== 'accounts_manager');

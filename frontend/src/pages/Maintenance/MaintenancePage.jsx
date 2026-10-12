@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { extractRoleCode } from '../../utils/taskPermissions.js';
 import { maintenanceService } from '../../services/maintenanceService.js';
 import { NewBillModal } from '../../components/maintenance/NewBillModal.jsx';
 import { NewServiceRequestModal } from '../../components/maintenance/NewServiceRequestModal.jsx';
@@ -93,7 +94,7 @@ export const MaintenancePage = () => {
   const [loading, setLoading] = useState(false);
 
   const { user: currentUser } = useAuth();
-  const userRole = currentUser?.role?.roleCode || currentUser?.roleCode || currentUser?.role || '';
+  const userRole = extractRoleCode(currentUser);
   const isAdminOrAccountant = ['admin', 'accounts_head', 'finance_manager', 'super_admin', 'general_manager'].includes(userRole);
 
   // Fetch Bills

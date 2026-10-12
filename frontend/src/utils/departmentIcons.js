@@ -5,95 +5,88 @@
 
 export const DEPARTMENT_ICON_MAP = [
   {
-    keywords: ['vp', "vp's", 'vice president', 'president'],
-    icon: 'fa-solid fa-crown',
-    color: '#7c3aed', // Royal Violet
+    keywords: ['human resource', 'hr', 'people', 'talent'],
+    icon: 'fa-solid fa-users',
+    color: '#8b5cf6', // Violet
     bg: '#f5f3ff',
     border: '#ddd6fe',
   },
   {
-    keywords: ['paint', 'waterproof', 'coating'],
-    icon: 'fa-solid fa-paint-roller',
-    color: '#8b5cf6', // Violet / Purple
-    bg: '#f5f3ff',
-    border: '#ddd6fe',
+    keywords: ['i.t.', 'it', 'software', 'tech', 'computer'],
+    icon: 'fa-solid fa-laptop-code',
+    color: '#0284c7', // Sky Blue
+    bg: '#f0f9ff',
+    border: '#bae6fd',
   },
   {
-    keywords: ['elect', 'power', 'wiring', 'light'],
-    icon: 'fa-solid fa-bolt-lightning',
-    color: '#f59e0b', // Amber / Gold
+    keywords: ['procurement', 'purchase', 'vendor', 'supply', 'proc'],
+    icon: 'fa-solid fa-box-open',
+    color: '#d97706', // Amber / Orange
     bg: '#fffbeb',
     border: '#fde68a',
   },
   {
-    keywords: ['plumb', 'sanitat', 'water', 'pipe', 'drain'],
-    icon: 'fa-solid fa-faucet-drip',
+    keywords: ['hotel', 'guest', 'stay', 'hospitality'],
+    icon: 'fa-solid fa-hotel',
+    color: '#ec4899', // Pink
+    bg: '#fdf2f8',
+    border: '#fbcfe8',
+  },
+  {
+    keywords: ['security', 'guard', 'cctv', 'surveil', 'access', 'gate', 'sec'],
+    icon: 'fa-solid fa-shield-halved',
+    color: '#475569', // Slate
+    bg: '#f8fafc',
+    border: '#cbd5e1',
+  },
+  {
+    keywords: ['accounts', 'account', 'finance', 'billing', 'tax', 'audit', 'acc'],
+    icon: 'fa-solid fa-sack-dollar',
+    color: '#10b981', // Emerald
+    bg: '#ecfdf5',
+    border: '#a7f3d0',
+  },
+  {
+    keywords: ['c.r.m.', 'crm', 'client', 'customer', 'relationship'],
+    icon: 'fa-solid fa-handshake',
+    color: '#f59e0b', // Gold / Amber
+    bg: '#fffbeb',
+    border: '#fde68a',
+  },
+  {
+    keywords: ['admin / operations', 'admin', 'operations', 'governance'],
+    icon: 'fa-solid fa-building',
+    color: '#6366f1', // Indigo
+    bg: '#eef2ff',
+    border: '#c7d2fe',
+  },
+  {
+    keywords: ['maintenance', 'maint', 'repair', 'servicing', 'fix'],
+    icon: 'fa-solid fa-wrench',
     color: '#06b6d4', // Cyan
     bg: '#ecfeff',
     border: '#a5f3fc',
   },
   {
     keywords: ['civil', 'snag', 'mason', 'concrete', 'structure', 'build'],
-    icon: 'fa-solid fa-helmet-safety',
-    color: '#2563eb', // Royal Blue
-    bg: '#eff6ff',
-    border: '#bfdbfe',
-  },
-  {
-    keywords: ['carpent', 'wood', 'furniture', 'door', 'joiner'],
-    icon: 'fa-solid fa-hammer',
-    color: '#d97706', // Bronze / Warm Amber
-    bg: '#fffbeb',
-    border: '#fde68a',
-  },
-  {
-    keywords: ['clean', 'housekeep', 'hygiene', 'sweep'],
-    icon: 'fa-solid fa-broom',
-    color: '#10b981', // Emerald
-    bg: '#ecfdf5',
-    border: '#a7f3d0',
-  },
-  {
-    keywords: ['secur', 'guard', 'cctv', 'surveil', 'access', 'gate'],
-    icon: 'fa-solid fa-shield-halved',
-    color: '#64748b', // Slate
-    bg: '#f8fafc',
-    border: '#cbd5e1',
-  },
-  {
-    keywords: ['hvac', 'ac', 'cool', 'ventil', 'air'],
-    icon: 'fa-solid fa-fan',
-    color: '#0ea5e9', // Sky Blue
-    bg: '#f0f9ff',
-    border: '#bae6fd',
-  },
-  {
-    keywords: ['crm', 'sales', 'lead', 'client', 'customer'],
-    icon: 'fa-solid fa-headset',
-    color: '#3b82f6',
-    bg: '#eff6ff',
-    border: '#bfdbfe',
-  },
-  {
-    keywords: ['account', 'finance', 'billing', 'tax', 'audit'],
-    icon: 'fa-solid fa-file-invoice-dollar',
-    color: '#059669',
-    bg: '#ecfdf5',
-    border: '#a7f3d0',
-  },
-  {
-    keywords: ['maint', 'repair', 'fix'],
-    icon: 'fa-solid fa-wrench',
-    color: '#ea580c',
+    icon: 'fa-solid fa-trowel-bricks',
+    color: '#ea580c', // Rust Orange
     bg: '#fff7ed',
     border: '#fed7aa',
   },
   {
-    keywords: ['gen', 'operat', 'logist'],
-    icon: 'fa-solid fa-gears',
-    color: '#475569',
-    bg: '#f1f5f9',
-    border: '#cbd5e1',
+    keywords: ['licensing', 'license', 'permit', 'statutory', 'compliance', 'lic'],
+    icon: 'fa-solid fa-scroll',
+    color: '#eab308', // Warm Yellow
+    bg: '#fefce8',
+    border: '#fef08a',
+  },
+  {
+    keywords: ['vp', "vp's", 'vice president', 'president'],
+    icon: 'fa-solid fa-crown',
+    color: '#7c3aed', // Royal Violet
+    bg: '#f5f3ff',
+    border: '#ddd6fe',
   },
 ];
 

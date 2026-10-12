@@ -16,6 +16,7 @@ import {
 import {
   isTaskforceTeamMember,
   canUserAssignTasks,
+  extractRoleCode,
 } from '../../utils/taskPermissions.js';
 
 export const TaskforceDashboardPage = () => {
@@ -24,12 +25,7 @@ export const TaskforceDashboardPage = () => {
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const userRole = (
-    authRole ||
-    (typeof user?.role === 'string'
-      ? user.role
-      : user?.role?.roleCode || user?.roleCode || '')
-  ).toLowerCase();
+  const userRole = extractRoleCode(user, authRole);
 
   const isTaskforceUser = isTaskforceTeamMember(user, userRole);
   const canAssign = canUserAssignTasks(user, userRole);
@@ -238,7 +234,7 @@ export const TaskforceDashboardPage = () => {
       }
 
       // Department filter
-      if (selectedDept !== 'all' && t.department?.toLowerCase() !== selectedDept.toLowerCase()) {
+      if (selectedDept !== 'all' && (t.department || '').toLowerCase() !== (selectedDept || '').toLowerCase()) {
         return false;
       }
 

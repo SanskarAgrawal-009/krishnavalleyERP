@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { extractRoleCode } from '../../utils/taskPermissions.js';
 import { agentService } from '../../services/agentService.js';
 import { leadService } from '../../services/leadService.js';
 import { NewSiteVisitModal } from '../../components/agent/NewSiteVisitModal.jsx';
@@ -76,7 +77,7 @@ export const AgentPortalPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('all');
 
-  const userRole = (currentUser?.role?.roleCode || currentUser?.roleCode || currentUser?.role || '').toLowerCase();
+  const userRole = extractRoleCode(currentUser);
   const isInhouse = ['admin', 'super_admin', 'sales_head', 'crm_manager', 'site_incharge', 'general_manager', 'sales_executive', 'front_desk'].includes(userRole);
   const isViewingOtherAgent = !!viewAgentId;
 

@@ -7,24 +7,19 @@ import { TaskforceDepartment } from '../models/TaskforceDepartment.js';
 import { getScopedTaskforceContext } from './taskforceTeamController.js';
 import { escapeRegex } from '../utils/regexUtil.js';
 
-// Department dictionary for consistent labelling and filtering (KV- Departments & Administration)
+// Department dictionary for consistent labelling and filtering (KV- Departments)
 export const DEPARTMENTS = [
-  // KV- DEPARTMENTS
-  { key: 'hr', label: 'Human Resource', icon: '👥', group: 'KV Departments' },
-  { key: 'it', label: 'I.T.', icon: '💻', group: 'KV Departments' },
-  { key: 'procurement', label: 'Procurement', icon: '📦', group: 'KV Departments' },
-  { key: 'hotel', label: 'Hotel', icon: '🏨', group: 'KV Departments' },
-  { key: 'security', label: 'Security', icon: '🛡️', group: 'KV Departments' },
-  { key: 'accounts', label: 'Accounts', icon: '💰', group: 'KV Departments' },
-  { key: 'crm', label: 'C.R.M.', icon: '🤝', group: 'KV Departments' },
-  { key: 'admin_operations', label: 'Admin / Operations', icon: '🏢', group: 'KV Departments' },
-  { key: 'maintenance', label: 'Maintenance', icon: '🔧', group: 'KV Departments' },
-  { key: 'civil', label: 'Civil', icon: '🏗️', group: 'KV Departments' },
-  { key: 'licensing', label: 'Licensing', icon: '📜', group: 'KV Departments' },
-
-  // ADMINISTRATION
-  { key: 'hotel_restaurant', label: 'HOTEL & RESTAURANT', icon: '🏨', group: 'Administration' },
-  { key: 'viramah', label: 'VIRAMAH', icon: '🏢', group: 'Administration' },
+  { key: 'Human Resource', label: 'Human Resource', icon: '👥', group: 'KV Departments' },
+  { key: 'I.T.', label: 'I.T.', icon: '💻', group: 'KV Departments' },
+  { key: 'Procurement', label: 'Procurement', icon: '📦', group: 'KV Departments' },
+  { key: 'Hotel', label: 'Hotel', icon: '🏨', group: 'KV Departments' },
+  { key: 'Security', label: 'Security', icon: '🛡️', group: 'KV Departments' },
+  { key: 'Accounts', label: 'Accounts', icon: '💰', group: 'KV Departments' },
+  { key: 'C.R.M.', label: 'C.R.M.', icon: '🤝', group: 'KV Departments' },
+  { key: 'Admin / Operations', label: 'Admin / Operations', icon: '🏢', group: 'KV Departments' },
+  { key: 'Maintenance', label: 'Maintenance', icon: '🔧', group: 'KV Departments' },
+  { key: 'Civil', label: 'Civil', icon: '🏗️', group: 'KV Departments' },
+  { key: 'Licensing', label: 'Licensing', icon: '📜', group: 'KV Departments' },
 ];
 
 /**
@@ -898,15 +893,17 @@ export const getTaskAssigneesMeta = async (req, res) => {
       .filter(Boolean);
 
     const TASKFORCE_DEFAULTS = [
-      'Civil & Snagging',
-      'Electrical & Power',
-      'Plumbing & Sanitation',
-      'Painting & Waterproofing',
-      'Carpentry & Woodwork',
-      'Housekeeping & Deep Cleaning',
-      'Security & Access Control',
-      'HVAC & Air Conditioning',
-      'General Operations',
+      'Human Resource',
+      'I.T.',
+      'Procurement',
+      'Hotel',
+      'Security',
+      'Accounts',
+      'C.R.M.',
+      'Admin / Operations',
+      'Maintenance',
+      'Civil',
+      'Licensing',
     ];
 
     const dbDepartments = await TaskforceDepartment.find({ status: 'active' })
@@ -915,7 +912,7 @@ export const getTaskAssigneesMeta = async (req, res) => {
 
     const managedNames = dbDepartments.map((d) => d.name);
     const combinedDeptNames = Array.from(
-      new Set([...managedNames, ...activeMemberDepts, ...TASKFORCE_DEFAULTS])
+      new Set(managedNames.length > 0 ? managedNames : TASKFORCE_DEFAULTS)
     );
 
     const taskforceDeptList = combinedDeptNames.map((d) => {

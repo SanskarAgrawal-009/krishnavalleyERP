@@ -541,15 +541,17 @@ export const deleteTeamMember = async (req, res) => {
 };
 
 export const DEFAULT_TASKFORCE_DEPTS = [
-  { name: 'Civil & Snagging', code: 'CIVIL', color: '#0284c7', description: 'Structural defects, masonry, snagging & finishing' },
-  { name: 'Electrical & Power', code: 'ELEC', color: '#f59e0b', description: 'Wiring, sub-stations, DB panels, fittings & power backup' },
-  { name: 'Plumbing & Sanitation', code: 'PLUMB', color: '#06b6d4', description: 'Water pipelines, drainage, sanitary fixtures & pumps' },
-  { name: 'Painting & Waterproofing', code: 'PAINT', color: '#8b5cf6', description: 'Internal & external coatings, terrace & wall waterproofing' },
-  { name: 'Carpentry & Woodwork', code: 'CARP', color: '#d97706', description: 'Doors, windows, modular joinery & woodwork repairs' },
-  { name: 'Housekeeping & Deep Cleaning', code: 'CLEAN', color: '#10b981', description: 'Tower cleaning, handover preparation & site hygiene' },
-  { name: 'Security & Access Control', code: 'SEC', color: '#64748b', description: 'Surveillance, gate control & site asset safety' },
-  { name: 'HVAC & Air Conditioning', code: 'HVAC', color: '#0ea5e9', description: 'Ventilation ducts, central air, split AC installations' },
-  { name: 'General Operations', code: 'GEN', color: '#475569', description: 'Material movement, general maintenance & site logistics' },
+  { name: 'Human Resource', code: 'HR', color: '#8b5cf6', description: 'Human Resource management, staff welfare & recruitment', order: 1 },
+  { name: 'I.T.', code: 'IT', color: '#0284c7', description: 'Information Technology, software, systems & IT infrastructure', order: 2 },
+  { name: 'Procurement', code: 'PROC', color: '#d97706', description: 'Material procurement, purchase orders & vendor logistics', order: 3 },
+  { name: 'Hotel', code: 'HOTEL', color: '#ec4899', description: 'Hotel property operations, hospitality & guest amenities', order: 4 },
+  { name: 'Security', code: 'SEC', color: '#475569', description: 'Surveillance, perimeter access control & site safety', order: 5 },
+  { name: 'Accounts', code: 'ACC', color: '#10b981', description: 'Billing, financial accounts, audits & payments', order: 6 },
+  { name: 'C.R.M.', code: 'CRM', color: '#f59e0b', description: 'Customer relationship management, client coordination & support', order: 7 },
+  { name: 'Admin / Operations', code: 'ADMIN', color: '#6366f1', description: 'Administrative operations, site coordination & facility oversight', order: 8 },
+  { name: 'Maintenance', code: 'MAINT', color: '#06b6d4', description: 'Preventive maintenance, utility upkeep & repairs', order: 9 },
+  { name: 'Civil', code: 'CIVIL', color: '#ea580c', description: 'Civil works, masonry, structural snagging & construction', order: 10 },
+  { name: 'Licensing', code: 'LIC', color: '#eab308', description: 'Statutory compliance, legal permits & licensing', order: 11 },
 ];
 
 /**
@@ -562,18 +564,6 @@ export const getTaskforceDepartments = async (req, res) => {
     const count = await TaskforceDepartment.countDocuments();
     if (count === 0) {
       await TaskforceDepartment.insertMany(DEFAULT_TASKFORCE_DEPTS);
-      // Also register any distinct departments from existing TaskforceMember records
-      const existingDepts = await TaskforceMember.distinct('department');
-      for (const d of existingDepts) {
-        if (d && !DEFAULT_TASKFORCE_DEPTS.some((def) => def.name.toLowerCase() === d.toLowerCase())) {
-          await TaskforceDepartment.create({
-            name: d.trim(),
-            code: d.trim().substring(0, 4).toUpperCase(),
-            description: `${d.trim()} department operations`,
-            color: '#2563eb',
-          });
-        }
-      }
     }
 
     const departments = await TaskforceDepartment.find({ status: 'active' })
