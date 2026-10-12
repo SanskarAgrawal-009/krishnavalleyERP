@@ -37,7 +37,7 @@ export const ensureUserForTaskforceMember = async (member, plainPassword = null,
         changed = true;
       }
       if (!existing.initialPassword) {
-        existing.initialPassword = plainPassword || 'Taskforce@123';
+        existing.initialPassword = plainPassword || member.mobileNo || 'Taskforce@123';
         changed = true;
       }
       if (changed) await existing.save();
@@ -71,7 +71,7 @@ export const ensureUserForTaskforceMember = async (member, plainPassword = null,
       finalEmail = `${finalUsername}_${Date.now()}@krishnavalley.com`;
     }
 
-    const pwd = plainPassword || 'Taskforce@123';
+    const pwd = plainPassword || member.mobileNo || 'Taskforce@123';
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(pwd, salt);
 
@@ -384,9 +384,10 @@ export const addTeamMember = async (req, res) => {
     });
 
     // 2. Guarantee that an account with ID and Password exists in Access Control & Governance
+    const finalPassword = password || req.body.mobileNo || member.mobileNo || 'Taskforce@123';
     const linkedUser = await ensureUserForTaskforceMember(
       member,
-      password || 'Taskforce@123',
+      finalPassword,
       username || null
     );
 
@@ -397,14 +398,14 @@ export const addTeamMember = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: `Team member "${member.name}" added successfully and registered in Access Control & Governance! (User ID: @${linkedUser?.username || 'member'}, Password: ${linkedUser?.initialPassword || password || 'Taskforce@123'})`,
+      message: `Team member "${member.name}" added successfully and registered in Access Control & Governance! (User ID: @${linkedUser?.username || 'member'}, Password: ${linkedUser?.initialPassword || finalPassword})`,
       member: {
         ...member.toObject(),
         userId: linkedUser
           ? {
               _id: linkedUser._id,
               username: linkedUser.username,
-              initialPassword: linkedUser.initialPassword,
+              initialPassword: linkedUser.initialPassword || finalPassword,
               email: linkedUser.email,
               department: linkedUser.department,
             }
@@ -412,7 +413,7 @@ export const addTeamMember = async (req, res) => {
       },
       credentials: {
         username: linkedUser?.username,
-        initialPassword: linkedUser?.initialPassword || password || 'Taskforce@123',
+        initialPassword: linkedUser?.initialPassword || finalPassword,
       },
     });
   } catch (error) {

@@ -62,7 +62,8 @@ export const AddTeamMemberModal = ({
   const [selectedUserId, setSelectedUserId] = useState('');
   const [newUsername, setNewUsername] = useState('');
   const [usernameTouched, setUsernameTouched] = useState(false);
-  const [newPassword, setNewPassword] = useState('Taskforce@123');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordTouched, setPasswordTouched] = useState(false);
 
   const handleNameChange = (val) => {
     setName(val);
@@ -73,6 +74,13 @@ export const AddTeamMemberModal = ({
         .replace(/\s+/g, '_')
         .replace(/[^a-z0-9_]/g, '');
       setNewUsername(slug);
+    }
+  };
+
+  const handleMobileChange = (val) => {
+    setMobileNo(val);
+    if (!passwordTouched) {
+      setNewPassword(val);
     }
   };
 
@@ -153,7 +161,7 @@ export const AddTeamMemberModal = ({
           name.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
         payload.createLoginUser = true;
         payload.username = finalUname;
-        payload.password = newPassword.trim() || 'Taskforce@123';
+        payload.password = newPassword.trim() || mobileNo.trim() || 'Taskforce@123';
       }
 
       const res = await taskforceManagerService.addTeamMember(payload);
@@ -186,7 +194,8 @@ export const AddTeamMemberModal = ({
     setSelectedUserId('');
     setNewUsername('');
     setUsernameTouched(false);
-    setNewPassword('Taskforce@123');
+    setNewPassword('');
+    setPasswordTouched(false);
     onClose();
   };
 
@@ -196,7 +205,10 @@ export const AddTeamMemberModal = ({
     const found = systemUsers.find((u) => u._id === uid);
     if (found) {
       if (!name) setName(`${found.firstName || ''} ${found.lastName || ''}`.trim());
-      if (!mobileNo && found.mobileNo) setMobileNo(found.mobileNo);
+      if (!mobileNo && found.mobileNo) {
+        setMobileNo(found.mobileNo);
+        if (!passwordTouched) setNewPassword(found.mobileNo);
+      }
       if (!email && found.email) setEmail(found.email);
     }
   };
@@ -497,7 +509,7 @@ export const AddTeamMemberModal = ({
                   type="tel"
                   placeholder="+91 98765 43210"
                   value={mobileNo}
-                  onChange={(e) => setMobileNo(e.target.value)}
+                  onChange={(e) => handleMobileChange(e.target.value)}
                   style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                 />
               </div>
@@ -582,12 +594,16 @@ export const AddTeamMemberModal = ({
                     </label>
                     <input
                       type="text"
+                      placeholder={mobileNo || 'Auto-filled from Mobile No'}
                       value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPasswordTouched(true);
+                        setNewPassword(e.target.value);
+                      }}
                       style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', fontWeight: '600', color: '#2563eb' }}
                     />
                     <span style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '2px', display: 'block' }}>
-                      Default or custom password
+                      {mobileNo ? 'Auto-filled from Mobile Number (editable)' : 'Auto-fills from Mobile Number (or custom password)'}
                     </span>
                   </div>
                 </div>
