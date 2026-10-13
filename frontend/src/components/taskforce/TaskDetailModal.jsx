@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { taskService } from '../../services/taskService.js';
 import { getFileUrl } from '../../services/api.js';
@@ -40,6 +40,7 @@ export const TaskDetailModal = ({
   isOpen,
   onClose,
   taskId,
+  initialTab = 'followups',
   onTaskUpdated,
   onEditTask,
 }) => {
@@ -48,7 +49,7 @@ export const TaskDetailModal = ({
 
   const [loading, setLoading] = useState(false);
   const [task, setTask] = useState(null);
-  const [activeTab, setActiveTab] = useState('followups'); // 'followups', 'chat', 'details', 'uploads'
+  const [activeTab, setActiveTab] = useState(initialTab || 'followups'); // 'followups', 'chat', 'details', 'uploads'
 
   // Proof / Uploads State
   const [selectedProofFile, setSelectedProofFile] = useState(null);
@@ -76,16 +77,19 @@ export const TaskDetailModal = ({
   const [fuNextDate, setFuNextDate] = useState('');
   const [submittingFollowUp, setSubmittingFollowUp] = useState(false);
 
-  // Communication / Chat State
+  // Dedicated Task Communication Chat State
   const [chatMessage, setChatMessage] = useState('');
+  const [chatMessageType, setChatMessageType] = useState('chat'); // 'chat' | 'query' | 'guideline' | 'md_note'
+  const [chatFilter, setChatFilter] = useState('all'); // 'all' | 'query' | 'guideline' | 'md_note'
   const [isMDNote, setIsMDNote] = useState(false);
   const [submittingChat, setSubmittingChat] = useState(false);
 
   useEffect(() => {
     if (isOpen && taskId) {
+      if (initialTab) setActiveTab(initialTab);
       loadTaskDetails();
     }
-  }, [isOpen, taskId]);
+  }, [isOpen, taskId, initialTab]);
 
   const commentsEndRef = useRef(null);
 
@@ -235,21 +239,35 @@ export const TaskDetailModal = ({
     }
   };
 
-  const handleSendComment = async (e) => {
-    if (e) e.preventDefault();
+  const handleSendComment = async (e, typeOverride) => {
+    if (e && e.preventDefault) e.preventDefault();
     const messageToSend = chatMessage.trim();
     if (!messageToSend || submittingChat) return;
+
+    const chosenType = typeOverride || chatMessageType;
+    const isMD = chosenType === 'md_note' || isMDNote;
 
     try {
       setSubmittingChat(true);
       const res = await taskService.addComment(task._id, {
         message: messageToSend,
-        isMDNote,
+        isMDNote: isMD,
+        messageType: chosenType,
       });
 
-      showToast(isMDNote ? 'MD Directive note posted successfully' : 'Communication update posted successfully', 'success');
+      showToast(
+        isMD
+          ? 'MD Directive note posted successfully'
+          : chosenType === 'query'
+          ? 'Task query posted to assigned team'
+          : chosenType === 'guideline'
+          ? 'Task guideline posted for crew'
+          : 'Message posted to task chat',
+        'success'
+      );
       setChatMessage('');
       setIsMDNote(false);
+      setChatMessageType('chat');
 
       if (res && res.comments) {
         setTask((prev) => (prev ? { ...prev, comments: res.comments } : prev));
@@ -262,6 +280,77 @@ export const TaskDetailModal = ({
       setSubmittingChat(false);
     }
   };
+
+  const allParticipants = useMemo(() => {
+    if (!task) return [];
+    const list = [];
+    if (task.assignedBy) {
+      const u = task.assignedBy;
+      list.push({
+        id: u._id || 'creator',
+        name: u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : u.username || 'Creator',
+        role: (u.role || 'Admin/Manager').toUpperCase(),
+        isCreator: true,
+      });
+    }
+    (task.assignedTo || []).forEach((u) => {
+      if (u) {
+        list.push({
+          id: u._id,
+          name: u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : u.username || 'Staff',
+          role: u.role ? u.role.toUpperCase() : 'STAFF',
+        });
+      }
+    });
+    (task.assignedMembers || []).forEach((m) => {
+      if (m) {
+        list.push({
+          id: m._id,
+          name: m.name || m.fullName || 'Crew',
+          role: (m.hierarchyLevel || 'CREW').toUpperCase(),
+        });
+      }
+    });
+    const seen = new Set();
+    return list.filter((item) => {
+      const key = `${item.name}-${item.role}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [task]);
+
+  const getSenderRoleBadge = (commentSender) => {
+    if (!commentSender) return { label: 'STAFF', bg: '#f1f5f9', color: '#475569' };
+    const role = (commentSender.role || '').toLowerCase();
+    const username = (commentSender.username || '').toLowerCase();
+
+    if (role.includes('admin') || username.includes('admin')) {
+      return { label: 'ADMIN', bg: '#fee2e2', color: '#dc2626' };
+    }
+    if (role.includes('manager') || username.includes('manager')) {
+      return { label: 'TF MANAGER', bg: '#fdf2f8', color: '#db2777' };
+    }
+    if (role.includes('head') || username.includes('head')) {
+      return { label: 'HEAD', bg: '#ecfeff', color: '#0891b2' };
+    }
+    if (role.includes('supervisor')) {
+      return { label: 'SUPERVISOR', bg: '#eef2ff', color: '#4f46e5' };
+    }
+    if (role.includes('helper') || role.includes('crew')) {
+      return { label: 'CREW', bg: '#eff6ff', color: '#2563eb' };
+    }
+    return { label: 'ASSIGNED', bg: '#f1f5f9', color: '#334155' };
+  };
+
+  const filteredComments = useMemo(() => {
+    const list = task?.comments || [];
+    if (chatFilter === 'all') return list;
+    if (chatFilter === 'query') return list.filter((c) => c.messageType === 'query');
+    if (chatFilter === 'guideline') return list.filter((c) => c.messageType === 'guideline');
+    if (chatFilter === 'md_note') return list.filter((c) => c.isMDNote || c.messageType === 'md_note');
+    return list;
+  }, [task?.comments, chatFilter]);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to permanently delete this task?')) {
@@ -842,7 +931,7 @@ export const TaskDetailModal = ({
               }}
             >
               <MessageSquare size={16} />
-              Communication & Directives ({task.comments?.length || 0})
+              Queries & Guidelines Chat ({task.comments?.length || 0})
             </button>
 
             <button
@@ -1137,73 +1226,369 @@ export const TaskDetailModal = ({
             </div>
           )}
 
-          {/* TAB 2: COMMUNICATION & DIRECTIVES */}
+          {/* TAB 2: QUERIES, GUIDELINES & DIRECTIVE CHAT BOX */}
           {activeTab === 'chat' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {/* Messages feed */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* 1. TRANSPARENCY & PARTICIPANTS HEADER */}
               <div
                 style={{
-                  maxHeight: '340px',
-                  minHeight: '140px',
+                  background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%)',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '12px',
+                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      background: '#dbeafe',
+                      color: '#1d4ed8',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <ShieldCheck size={20} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>Transparent Directive & Queries Thread</span>
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          background: '#dcfce7',
+                          color: '#15803d',
+                          border: '1px solid #86efac',
+                          padding: '1px 6px',
+                          borderRadius: '10px',
+                          fontWeight: 800,
+                          letterSpacing: '0.5px',
+                        }}
+                      >
+                        ALL VISIBLE
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                      Every query, guideline, and message is visible in real-time to the <strong>Taskforce Manager</strong>, <strong>Administrators</strong>, and all <strong>{allParticipants.length} assigned personnel</strong>.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Participant badges */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  {allParticipants.slice(0, 4).map((p, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        background: '#ffffff',
+                        border: '1px solid #cbd5e1',
+                        color: '#1e293b',
+                        padding: '3px 8px',
+                        borderRadius: '12px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }}></span>
+                      {p.name} <span style={{ fontSize: '9px', color: '#64748b' }}>({p.role})</span>
+                    </span>
+                  ))}
+                  {allParticipants.length > 4 && (
+                    <span style={{ fontSize: '11px', color: '#2563eb', fontWeight: 700, background: '#eff6ff', padding: '3px 8px', borderRadius: '12px' }}>
+                      +{allParticipants.length - 4} more
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* 2. CHAT CATEGORY FILTER TABS */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {[
+                    { id: 'all', label: `All Messages (${task.comments?.length || 0})` },
+                    {
+                      id: 'query',
+                      label: `❓ Queries (${task.comments?.filter((c) => c.messageType === 'query').length || 0})`,
+                      color: '#d97706',
+                    },
+                    {
+                      id: 'guideline',
+                      label: `📋 Guidelines (${task.comments?.filter((c) => c.messageType === 'guideline').length || 0})`,
+                      color: '#0d9488',
+                    },
+                    {
+                      id: 'md_note',
+                      label: `👑 MD Notes (${task.comments?.filter((c) => c.isMDNote || c.messageType === 'md_note').length || 0})`,
+                      color: '#ca8a04',
+                    },
+                  ].map((filterTab) => {
+                    const isSelected = chatFilter === filterTab.id;
+                    return (
+                      <button
+                        key={filterTab.id}
+                        type="button"
+                        onClick={() => setChatFilter(filterTab.id)}
+                        style={{
+                          background: isSelected ? '#0f172a' : '#ffffff',
+                          color: isSelected ? '#ffffff' : filterTab.color || '#475569',
+                          border: isSelected ? '1px solid #0f172a' : '1px solid #e2e8f0',
+                          padding: '4px 10px',
+                          borderRadius: '16px',
+                          fontSize: '11px',
+                          fontWeight: isSelected ? 800 : 600,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        {filterTab.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                  Press Enter to send • Shift+Enter for new line
+                </span>
+              </div>
+
+              {/* 3. MESSAGES CHAT FEED (THREAD CONTAINER) */}
+              <div
+                style={{
+                  height: '340px',
                   overflowY: 'auto',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '10px',
-                  padding: '12px',
-                  backgroundColor: '#fafbfc',
-                  borderRadius: '8px',
+                  gap: '12px',
+                  padding: '16px',
+                  backgroundColor: '#f8fafc',
+                  borderRadius: '12px',
                   border: '1px solid #e2e8f0',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
                 }}
               >
-                {!task.comments || task.comments.length === 0 ? (
-                  <div style={{ padding: '36px 20px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
-                    No communication messages posted yet. Post updates or directives below.
+                {filteredComments.length === 0 ? (
+                  <div style={{ margin: 'auto', textAlign: 'center', padding: '30px 20px', color: '#94a3b8' }}>
+                    <div
+                      style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '50%',
+                        background: '#eff6ff',
+                        color: '#3b82f6',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 10px',
+                        fontSize: '20px',
+                      }}
+                    >
+                      <MessageSquare size={22} />
+                    </div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#334155' }}>
+                      {chatFilter === 'all'
+                        ? 'No task communication messages yet'
+                        : `No ${chatFilter} messages found`}
+                    </div>
+                    <div style={{ fontSize: '12px', marginTop: '4px', maxWidth: '380px' }}>
+                      Use the chat box below to ask queries, share site guidelines, or communicate with the team. Everything is transparent to managers and assigned members.
+                    </div>
                   </div>
                 ) : (
-                  task.comments.map((comment, index) => {
+                  filteredComments.map((comment, index) => {
+                    const senderId = comment.sender?._id || comment.sender;
+                    const myId = currentUser?._id || currentUser?.id;
+                    const isMe = Boolean(senderId && myId && senderId.toString() === myId.toString());
+
+                    const senderName = comment.sender?.firstName
+                      ? `${comment.sender.firstName} ${comment.sender.lastName || ''}`.trim()
+                      : comment.sender?.username || 'Staff Member';
+
+                    const roleBadge = getSenderRoleBadge(comment.sender);
+                    const isQuery = comment.messageType === 'query';
+                    const isGuideline = comment.messageType === 'guideline';
+                    const isMD = comment.isMDNote || comment.messageType === 'md_note';
+
+                    // Avatar initials
+                    const initials = senderName
+                      .split(' ')
+                      .map((n) => n[0])
+                      .slice(0, 2)
+                      .join('')
+                      .toUpperCase() || 'U';
+
                     return (
                       <div
                         key={comment._id || index}
                         style={{
-                          padding: '10px 14px',
-                          borderRadius: '8px',
-                          backgroundColor: comment.isMDNote ? '#fefce8' : '#ffffff',
-                          border: comment.isMDNote ? '1px solid #fef08a' : '1px solid #e2e8f0',
-                          boxShadow: comment.isMDNote ? '0 2px 8px rgba(202, 138, 4, 0.1)' : '0 1px 3px rgba(0,0,0,0.02)',
+                          display: 'flex',
+                          flexDirection: isMe ? 'row-reverse' : 'row',
+                          alignItems: 'flex-start',
+                          gap: '10px',
+                          maxWidth: '85%',
+                          alignSelf: isMe ? 'flex-end' : 'flex-start',
                         }}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            {comment.isMDNote && (
-                              <span
-                                style={{
-                                  fontSize: '10px',
-                                  fontWeight: 700,
-                                  backgroundColor: '#ca8a04',
-                                  color: '#ffffff',
-                                  padding: '2px 6px',
-                                  borderRadius: '10px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '3px',
-                                }}
-                              >
-                                <Sparkles size={10} /> MD NOTE
-                              </span>
-                            )}
-                            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                              {comment.sender?.firstName || 'Staff'} {comment.sender?.lastName || ''}
+                        {/* Avatar */}
+                        <div
+                          style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '50%',
+                            background: isMe
+                              ? '#005bbf'
+                              : isMD
+                              ? '#ca8a04'
+                              : isQuery
+                              ? '#d97706'
+                              : isGuideline
+                              ? '#0d9488'
+                              : '#475569',
+                            color: '#ffffff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '11px',
+                            fontWeight: 800,
+                            flexShrink: 0,
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                          }}
+                        >
+                          {initials}
+                        </div>
+
+                        {/* Message Bubble */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: isMe ? 'flex-end' : 'flex-start',
+                          }}
+                        >
+                          {/* Sender name & role info */}
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              marginBottom: '3px',
+                              fontSize: '11px',
+                            }}
+                          >
+                            <span style={{ fontWeight: 700, color: isMe ? '#005bbf' : '#1e293b' }}>
+                              {isMe ? 'You' : senderName}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: '9px',
+                                fontWeight: 800,
+                                padding: '1px 5px',
+                                borderRadius: '4px',
+                                background: roleBadge.bg,
+                                color: roleBadge.color,
+                              }}
+                            >
+                              {roleBadge.label}
+                            </span>
+                            <span style={{ color: '#94a3b8', fontSize: '10px' }}>
+                              {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>
 
-                          <span style={{ fontSize: '11px', color: '#64748b' }}>
-                            {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} •{' '}
-                            {new Date(comment.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
+                          {/* Bubble Body */}
+                          <div
+                            style={{
+                              padding: '10px 14px',
+                              borderRadius: isMe ? '14px 14px 3px 14px' : '14px 14px 14px 3px',
+                              background: isMe
+                                ? isMD
+                                  ? 'linear-gradient(135deg, #ca8a04, #a16207)'
+                                  : isQuery
+                                  ? 'linear-gradient(135deg, #d97706, #b45309)'
+                                  : isGuideline
+                                  ? 'linear-gradient(135deg, #0d9488, #0f766e)'
+                                  : 'linear-gradient(135deg, #005bbf, #0284c7)'
+                                : isMD
+                                ? '#fefce8'
+                                : isQuery
+                                ? '#fffbeb'
+                                : isGuideline
+                                ? '#f0fdfa'
+                                : '#ffffff',
+                              color: isMe ? '#ffffff' : '#1e293b',
+                              border: isMe
+                                ? 'none'
+                                : isMD
+                                ? '1px solid #fef08a'
+                                : isQuery
+                                ? '1px solid #fde68a'
+                                : isGuideline
+                                ? '1px solid #99f6e4'
+                                : '1px solid #e2e8f0',
+                              boxShadow: isMe
+                                ? '0 3px 10px rgba(0, 91, 191, 0.2)'
+                                : '0 2px 6px rgba(0,0,0,0.04)',
+                            }}
+                          >
+                            {/* Category Indicator Tag */}
+                            {(isQuery || isGuideline || isMD) && (
+                              <div
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  fontSize: '10px',
+                                  fontWeight: 800,
+                                  marginBottom: '5px',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  background: isMe
+                                    ? 'rgba(255,255,255,0.2)'
+                                    : isMD
+                                    ? '#fef08a'
+                                    : isQuery
+                                    ? '#fde68a'
+                                    : '#ccfbf1',
+                                  color: isMe
+                                    ? '#ffffff'
+                                    : isMD
+                                    ? '#854d0e'
+                                    : isQuery
+                                    ? '#92400e'
+                                    : '#0f766e',
+                                }}
+                              >
+                                {isMD ? (
+                                  <>
+                                    <Sparkles size={11} /> MD DIRECTIVE NOTE
+                                  </>
+                                ) : isQuery ? (
+                                  <>
+                                    <span>❓</span> TASK QUERY / CLARIFICATION
+                                  </>
+                                ) : (
+                                  <>
+                                    <span>📋</span> WORK GUIDELINE / SOP
+                                  </>
+                                )}
+                              </div>
+                            )}
 
-                        <div style={{ fontSize: '13px', color: '#334155', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
-                          {comment.message}
+                            <div style={{ fontSize: '13px', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                              {comment.message}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
@@ -1212,70 +1597,192 @@ export const TaskDetailModal = ({
                 <div ref={commentsEndRef} />
               </div>
 
-              {/* Post comment input box */}
-              <form onSubmit={handleSendComment} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <textarea
-                  className="search-input"
-                  rows={2}
-                  style={{
-                    width: '100%',
-                    minHeight: '68px',
-                    fontSize: '13px',
-                    padding: '10px 12px',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    resize: 'vertical',
-                    boxSizing: 'border-box',
-                  }}
-                  placeholder="Post directive, update, or roadblock comment... (Press Enter to post, Shift+Enter for new line)"
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendComment(e);
-                    }
-                  }}
-                />
+              {/* 4. MESSAGE TYPE SELECTOR & PROMPT TEMPLATES */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#475569' }}>Tag Message As:</span>
+                    {[
+                      { type: 'chat', label: '💬 General Chat', color: '#005bbf' },
+                      { type: 'query', label: '❓ Task Query', color: '#d97706' },
+                      { type: 'guideline', label: '📋 Work Guideline', color: '#0d9488' },
+                      { type: 'md_note', label: '👑 MD Note', color: '#ca8a04' },
+                    ].map((btn) => {
+                      const isActive = chatMessageType === btn.type;
+                      return (
+                        <button
+                          key={btn.type}
+                          type="button"
+                          onClick={() => {
+                            setChatMessageType(btn.type);
+                            setIsMDNote(btn.type === 'md_note');
+                          }}
+                          style={{
+                            background: isActive ? btn.color : '#f1f5f9',
+                            color: isActive ? '#ffffff' : '#475569',
+                            border: isActive ? `1px solid ${btn.color}` : '1px solid #cbd5e1',
+                            padding: '3px 8px',
+                            borderRadius: '12px',
+                            fontSize: '11px',
+                            fontWeight: isActive ? 800 : 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                          }}
+                        >
+                          {btn.label}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#854d0e', cursor: 'pointer', fontWeight: 600 }}>
-                    <input
-                      type="checkbox"
-                      checked={isMDNote}
-                      onChange={(e) => setIsMDNote(e.target.checked)}
-                      style={{ accentColor: '#ca8a04', cursor: 'pointer' }}
-                    />
-                    Highlight as Senior Management / MD Directive Note
-                  </label>
-
-                  <button
-                    type="submit"
-                    className="btn-primary"
-                    disabled={submittingChat || !chatMessage.trim()}
-                    style={{
-                      padding: '7px 20px',
-                      fontSize: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      backgroundColor: isMDNote ? '#ca8a04' : '#005bbf',
-                      opacity: submittingChat || !chatMessage.trim() ? 0.5 : 1,
-                      cursor: submittingChat || !chatMessage.trim() ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    {submittingChat ? (
-                      <span>Posting...</span>
-                    ) : (
-                      <>
-                        <Send size={13} />
-                        Post Update
-                      </>
-                    )}
-                  </button>
+                  {/* Clear prompt */}
+                  {chatMessage && (
+                    <button
+                      type="button"
+                      onClick={() => setChatMessage('')}
+                      style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '11px', cursor: 'pointer' }}
+                    >
+                      Clear
+                    </button>
+                  )}
                 </div>
-              </form>
+
+                {/* Quick guideline / query clickable suggestions */}
+                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+                  {[
+                    { label: '❓ Need specs clarification', text: 'Please clarify specifications and measurements before proceeding.', type: 'query' },
+                    { label: '❓ Site access clearance', text: 'Site access is currently obstructed, awaiting supervisor clearance.', type: 'query' },
+                    { label: '📋 Safety & Snagging SOP', text: 'Reminder: Follow mandatory safety gear guidelines and inspect snag points thoroughly.', type: 'guideline' },
+                    { label: '📋 Proofs required', text: 'Please upload verified before and after work evidence photos upon completion.', type: 'guideline' },
+                  ].map((chip, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setChatMessage(chip.text);
+                        setChatMessageType(chip.type);
+                        setIsMDNote(false);
+                      }}
+                      style={{
+                        background: '#ffffff',
+                        border: '1px dashed #cbd5e1',
+                        borderRadius: '12px',
+                        padding: '2px 8px',
+                        fontSize: '10px',
+                        fontWeight: 600,
+                        color: '#475569',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                      }}
+                      title={chip.text}
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 5. INTERACTIVE INPUT BOX & SEND BUTTON */}
+                <form onSubmit={handleSendComment} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ position: 'relative' }}>
+                    <textarea
+                      rows={2}
+                      style={{
+                        width: '100%',
+                        minHeight: '68px',
+                        fontSize: '13px',
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border:
+                          chatMessageType === 'query'
+                            ? '1px solid #f59e0b'
+                            : chatMessageType === 'guideline'
+                            ? '1px solid #14b8a6'
+                            : chatMessageType === 'md_note'
+                            ? '1px solid #eab308'
+                            : '1px solid #cbd5e1',
+                        background:
+                          chatMessageType === 'query'
+                            ? '#fffbeb'
+                            : chatMessageType === 'guideline'
+                            ? '#f0fdfa'
+                            : chatMessageType === 'md_note'
+                            ? '#fefce8'
+                            : '#ffffff',
+                        resize: 'vertical',
+                        boxSizing: 'border-box',
+                        outline: 'none',
+                      }}
+                      placeholder={
+                        chatMessageType === 'query'
+                          ? 'Ask a query or question regarding this task (visible to team lead, manager & crew)...'
+                          : chatMessageType === 'guideline'
+                          ? 'Post an execution guideline or standard instruction for this task...'
+                          : chatMessageType === 'md_note'
+                          ? 'Post a senior management MD directive note for the team...'
+                          : 'Type a message or update for this task (transparent to all assigned crew & managers)...'
+                      }
+                      value={chatMessage}
+                      onChange={(e) => setChatMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendComment(e);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#64748b' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+                      <span>Real-time thread broadcast to Taskforce Manager, Admin & Allocated Crew</span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={submittingChat || !chatMessage.trim()}
+                      style={{
+                        padding: '8px 22px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        backgroundColor:
+                          chatMessageType === 'query'
+                            ? '#d97706'
+                            : chatMessageType === 'guideline'
+                            ? '#0d9488'
+                            : chatMessageType === 'md_note'
+                            ? '#ca8a04'
+                            : '#005bbf',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        opacity: submittingChat || !chatMessage.trim() ? 0.5 : 1,
+                        cursor: submittingChat || !chatMessage.trim() ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.15s ease',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                      }}
+                    >
+                      {submittingChat ? (
+                        <span>Sending...</span>
+                      ) : (
+                        <>
+                          <Send size={13} />
+                          {chatMessageType === 'query'
+                            ? 'Post Query'
+                            : chatMessageType === 'guideline'
+                            ? 'Post Guideline'
+                            : chatMessageType === 'md_note'
+                            ? 'Post MD Note'
+                            : 'Send Message'}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           )}
 

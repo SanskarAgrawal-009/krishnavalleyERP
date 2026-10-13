@@ -27,7 +27,9 @@ import {
   MessageSquare,
   Sparkles,
   Bell,
-  Megaphone
+  Megaphone,
+  HelpCircle,
+  BookOpen
 } from 'lucide-react';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { taskService } from '../../services/taskService.js';
@@ -230,22 +232,43 @@ export const TaskforceMemberDashboard = ({
         });
       }
 
-      // 3. Directive updates & communication
+      // 3. Directive updates & transparent communications (queries, guidelines, chat)
       const regularComments = (t.comments || []).filter((c) => !c.isMDNote);
       if (regularComments.length > 0) {
         const latestComment = regularComments[regularComments.length - 1];
+        const msgType = latestComment.messageType || 'chat';
+        let alertLabel = 'TASK CHAT UPDATE';
+        let alertColor = '#0284c7';
+        let alertBg = '#f0f9ff';
+        let alertBorderColor = '#bae6fd';
+        let AlertIcon = MessageSquare;
+
+        if (msgType === 'query') {
+          alertLabel = 'TASK QUERY / CLARIFICATION';
+          alertColor = '#d97706';
+          alertBg = '#fffbeb';
+          alertBorderColor = '#fde68a';
+          AlertIcon = HelpCircle;
+        } else if (msgType === 'guideline') {
+          alertLabel = 'WORK GUIDELINE / SOP';
+          alertColor = '#0d9488';
+          alertBg = '#f0fdfa';
+          alertBorderColor = '#99f6e4';
+          AlertIcon = BookOpen;
+        }
+
         list.push({
           id: `comm-${t._id}-${latestComment._id || regularComments.length}`,
           taskId: t._id,
           taskCode: t.taskCode,
           taskTitle: t.title,
           type: 'comment',
-          label: 'DIRECTIVE UPDATE',
+          label: alertLabel,
           message: `${latestComment.sender?.firstName || 'Staff'}: "${latestComment.message}"`,
-          color: '#0284c7',
-          bg: '#f0f9ff',
-          borderColor: '#bae6fd',
-          icon: MessageSquare,
+          color: alertColor,
+          bg: alertBg,
+          borderColor: alertBorderColor,
+          icon: AlertIcon,
           time: latestComment.createdAt,
         });
       }
@@ -692,7 +715,17 @@ export const TaskforceMemberDashboard = ({
               return (
                 <div
                   key={alert.id}
-                  onClick={() => onOpenTaskDetail && onOpenTaskDetail(alert.taskId)}
+                  onClick={() =>
+                    onOpenTaskDetail &&
+                    onOpenTaskDetail(
+                      alert.taskId,
+                      alert.type === 'comment' || alert.type === 'md_note'
+                        ? 'chat'
+                        : alert.type === 'proof'
+                        ? 'evidence'
+                        : 'overview'
+                    )
+                  }
                   style={{
                     background: alert.bg,
                     border: `1px solid ${alert.borderColor}`,
@@ -1104,6 +1137,27 @@ export const TaskforceMemberDashboard = ({
                         }}
                       >
                         <Camera size={12} /> Proof
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onOpenTaskDetail && onOpenTaskDetail(t._id, 'chat')}
+                        style={{
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          background: '#f0fdf4',
+                          border: '1px solid #bbf7d0',
+                          fontSize: '0.72rem',
+                          fontWeight: '700',
+                          color: '#15803d',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                        title="Open task queries, guidelines, and transparent chat"
+                      >
+                        <MessageSquare size={12} /> Chat
                       </button>
 
                       <button

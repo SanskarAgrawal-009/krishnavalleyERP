@@ -71,6 +71,7 @@ export const TaskforcePage = () => {
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [detailModalInitialTab, setDetailModalInitialTab] = useState('overview');
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedMemberForDrawer, setSelectedMemberForDrawer] = useState(null);
   const [isMemberDrawerOpen, setIsMemberDrawerOpen] = useState(false);
@@ -158,7 +159,8 @@ export const TaskforcePage = () => {
     }
   };
 
-  const handleOpenDetail = (taskId) => {
+  const handleOpenDetail = (taskId, tab = 'overview') => {
+    setDetailModalInitialTab(tab);
     setSelectedTaskId(taskId);
     setIsDetailModalOpen(true);
   };
@@ -1573,8 +1575,10 @@ export const TaskforcePage = () => {
         onClose={() => {
           setIsDetailModalOpen(false);
           setSelectedTaskId(null);
+          setDetailModalInitialTab('overview');
         }}
         taskId={selectedTaskId}
+        initialTab={detailModalInitialTab}
         onTaskUpdated={fetchTasksAndStats}
         onEditTask={handleOpenEdit}
       />

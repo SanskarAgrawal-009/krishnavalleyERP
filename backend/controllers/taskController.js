@@ -136,7 +136,7 @@ export const getTasks = async (req, res) => {
         .populate('apartmentDetails.projectId', 'projectName projectCode')
         .populate('apartmentDetails.flatId', 'flatNumber floor tower status')
         .populate('followUpLogs.loggedBy', 'firstName lastName username')
-        .populate('comments.sender', 'firstName lastName username')
+        .populate('comments.sender', 'firstName lastName username role')
         .sort({ isMDDirective: -1, 'followUpSchedule.nextFollowUpDate': 1, createdAt: -1 })
         .skip(skip)
         .limit(Number(limit))
@@ -275,7 +275,7 @@ export const getTaskById = async (req, res) => {
       .populate('apartmentDetails.projectId', 'projectName projectCode')
       .populate('apartmentDetails.flatId', 'flatNumber floor tower status')
       .populate('followUpLogs.loggedBy', 'firstName lastName username')
-      .populate('comments.sender', 'firstName lastName username')
+      .populate('comments.sender', 'firstName lastName username role')
       .populate('roadblockAlert.reportedBy', 'firstName lastName username')
       .populate('auditTrail.performedBy', 'firstName lastName username')
       .populate('uploads.uploadedBy', 'firstName lastName username role')
@@ -801,7 +801,7 @@ export const addComment = async (req, res) => {
       });
     }
 
-    const { message, isMDNote = false } = req.body;
+    const { message, isMDNote = false, messageType = 'chat' } = req.body;
 
     if (!message || !message.trim()) {
       return res.status(400).json({
@@ -810,10 +810,13 @@ export const addComment = async (req, res) => {
       });
     }
 
+    const finalMDNote = Boolean(isMDNote || messageType === 'md_note');
+
     const newComment = {
       sender: req.user.id,
       message: message.trim(),
-      isMDNote: Boolean(isMDNote),
+      messageType: finalMDNote ? 'md_note' : (messageType || 'chat'),
+      isMDNote: finalMDNote,
       createdAt: new Date(),
     };
 
@@ -821,11 +824,11 @@ export const addComment = async (req, res) => {
     await task.save();
 
     const populated = await Task.findById(task._id)
-      .populate('comments.sender', 'firstName lastName username');
+      .populate('comments.sender', 'firstName lastName username role');
 
     return res.status(201).json({
       success: true,
-      message: 'Update posted successfully',
+      message: 'Message posted successfully',
       comments: populated.comments,
     });
   } catch (error) {

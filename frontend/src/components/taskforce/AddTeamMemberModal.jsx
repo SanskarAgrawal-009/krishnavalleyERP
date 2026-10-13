@@ -189,7 +189,7 @@ export const AddTeamMemberModal = ({
     setSupervisorId('');
     setHeadId('');
     setDepartment('Civil');
-    
+
     setNotes('');
     setAccountType('create_user');
     setSelectedUserId('');
@@ -300,7 +300,7 @@ export const AddTeamMemberModal = ({
         {/* Form Body */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
           <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '18px' }}>
-            
+
             {/* Hierarchy Level Selection */}
             <div>
               <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '800', color: '#1e293b', marginBottom: '8px' }}>

@@ -91,6 +91,7 @@ export const TaskforceManagerPage = () => {
   const [selectedMemberForDrawer, setSelectedMemberForDrawer] = useState(null);
   const [isMemberDrawerOpen, setIsMemberDrawerOpen] = useState(false);
   const [selectedTaskIdForModal, setSelectedTaskIdForModal] = useState(null);
+  const [taskDetailInitialTab, setTaskDetailInitialTab] = useState('overview');
   const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
   const [newTaskInitialData, setNewTaskInitialData] = useState(null);
@@ -1548,8 +1549,9 @@ export const TaskforceManagerPage = () => {
           });
           setShowNewTaskModal(true);
         }}
-        onOpenTaskDetail={(taskId) => {
+        onOpenTaskDetail={(taskId, initialTab = 'overview') => {
           setSelectedTaskIdForModal(taskId);
+          setTaskDetailInitialTab(initialTab);
           setIsTaskDetailModalOpen(true);
         }}
       />
@@ -1560,8 +1562,10 @@ export const TaskforceManagerPage = () => {
         onClose={() => {
           setIsTaskDetailModalOpen(false);
           setSelectedTaskIdForModal(null);
+          setTaskDetailInitialTab('overview');
         }}
         taskId={selectedTaskIdForModal}
+        initialTab={taskDetailInitialTab}
         onTaskUpdated={() => loadTabData(activeTab)}
       />
 

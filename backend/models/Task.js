@@ -51,6 +51,11 @@ const TaskCommentSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    messageType: {
+      type: String,
+      enum: ['chat', 'query', 'guideline', 'md_note', 'update'],
+      default: 'chat',
+    },
     isMDNote: {
       type: Boolean,
       default: false,

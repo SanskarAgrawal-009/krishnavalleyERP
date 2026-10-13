@@ -84,6 +84,7 @@ export const TaskforceDashboardPage = () => {
   // Modals & Drawers
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [detailModalInitialTab, setDetailModalInitialTab] = useState('overview');
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedMemberForDrawer, setSelectedMemberForDrawer] = useState(null);
   const [isMemberDrawerOpen, setIsMemberDrawerOpen] = useState(false);
@@ -305,10 +306,31 @@ export const TaskforceDashboardPage = () => {
         });
       }
 
-      // 3. Directive updates & communication
+      // 3. Directive updates & transparent communications (chat, queries, guidelines)
       const regularComments = (t.comments || []).filter((c) => !c.isMDNote);
       if (regularComments.length > 0) {
         const latestComment = regularComments[regularComments.length - 1];
+        const msgType = latestComment.messageType || 'chat';
+        let alertLabel = 'DIRECTIVE UPDATE';
+        let alertColor = '#0284c7';
+        let alertBg = '#f0f9ff';
+        let alertBorderColor = '#bae6fd';
+        let alertIcon = 'fa-solid fa-comments';
+
+        if (msgType === 'query') {
+          alertLabel = 'TASK QUERY / CLARIFICATION';
+          alertColor = '#d97706';
+          alertBg = '#fffbeb';
+          alertBorderColor = '#fde68a';
+          alertIcon = 'fa-solid fa-circle-question';
+        } else if (msgType === 'guideline') {
+          alertLabel = 'WORK GUIDELINE / SOP';
+          alertColor = '#0d9488';
+          alertBg = '#f0fdfa';
+          alertBorderColor = '#99f6e4';
+          alertIcon = 'fa-solid fa-clipboard-list';
+        }
+
         list.push({
           id: `comm-${t._id}-${latestComment._id || regularComments.length}`,
           taskId: t._id,
@@ -317,12 +339,12 @@ export const TaskforceDashboardPage = () => {
           department: t.department,
           flat: t.apartmentDetails?.flatNumber,
           category: 'comment',
-          label: 'DIRECTIVE UPDATE',
+          label: alertLabel,
           message: latestComment.message,
-          color: '#0284c7',
-          bg: '#f0f9ff',
-          borderColor: '#bae6fd',
-          icon: 'fa-solid fa-comments',
+          color: alertColor,
+          bg: alertBg,
+          borderColor: alertBorderColor,
+          icon: alertIcon,
           time: latestComment.createdAt,
           author: latestComment.sender?.firstName
             ? `${latestComment.sender.firstName} ${latestComment.sender.lastName || ''}`.trim()
@@ -1168,6 +1190,13 @@ export const TaskforceDashboardPage = () => {
                     key={alert.id}
                     onClick={() => {
                       setSelectedTaskId(alert.taskId);
+                      setDetailModalInitialTab(
+                        alert.category === 'comment' || alert.category === 'md_directive'
+                          ? 'chat'
+                          : alert.category === 'proof'
+                          ? 'evidence'
+                          : 'overview'
+                      );
                       setIsDetailModalOpen(true);
                     }}
                     style={{
@@ -1592,7 +1621,7 @@ export const TaskforceDashboardPage = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
                         {(task.comments?.length || 0) > 0 && (
                           <span
-                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setDetailModalInitialTab('chat'); setIsDetailModalOpen(true); }}
                             style={{
                               fontSize: '11px',
                               fontWeight: 700,
@@ -1614,7 +1643,7 @@ export const TaskforceDashboardPage = () => {
 
                         {(task.isMDDirective || (task.comments || []).some((c) => c.isMDNote)) && (
                           <span
-                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setDetailModalInitialTab('chat'); setIsDetailModalOpen(true); }}
                             style={{
                               fontSize: '11px',
                               fontWeight: 800,
@@ -1636,7 +1665,7 @@ export const TaskforceDashboardPage = () => {
 
                         {(task.uploads?.length || 0) > 0 && (
                           <span
-                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setDetailModalInitialTab('evidence'); setIsDetailModalOpen(true); }}
                             style={{
                               fontSize: '11px',
                               fontWeight: 700,
@@ -2121,7 +2150,7 @@ export const TaskforceDashboardPage = () => {
 
                     {(task.isMDDirective || (task.comments || []).some((c) => c.isMDNote)) && (
                       <span
-                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setDetailModalInitialTab('chat'); setIsDetailModalOpen(true); }}
                         style={{
                           fontSize: '10px',
                           fontWeight: 800,
@@ -2142,7 +2171,7 @@ export const TaskforceDashboardPage = () => {
 
                     {(task.comments?.length || 0) > 0 && (
                       <span
-                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setDetailModalInitialTab('chat'); setIsDetailModalOpen(true); }}
                         style={{
                           fontSize: '10px',
                           fontWeight: 700,
@@ -2163,7 +2192,7 @@ export const TaskforceDashboardPage = () => {
 
                     {(task.uploads?.length || 0) > 0 && (
                       <span
-                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setDetailModalInitialTab('evidence'); setIsDetailModalOpen(true); }}
                         style={{
                           fontSize: '10px',
                           fontWeight: 700,
@@ -2687,8 +2716,10 @@ export const TaskforceDashboardPage = () => {
         onClose={() => {
           setIsDetailModalOpen(false);
           setSelectedTaskId(null);
+          setDetailModalInitialTab('overview');
         }}
         taskId={selectedTaskId}
+        initialTab={detailModalInitialTab}
         onTaskUpdated={() => {
           fetchDashboardData(true);
         }}
@@ -2703,8 +2734,9 @@ export const TaskforceDashboardPage = () => {
           fetchDashboardData(true);
         }}
         member={selectedMemberForDrawer}
-        onOpenTaskDetail={(taskId) => {
+        onOpenTaskDetail={(taskId, initialTab = 'overview') => {
           setSelectedTaskId(taskId);
+          setDetailModalInitialTab(initialTab);
           setIsDetailModalOpen(true);
         }}
       />
