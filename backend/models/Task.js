@@ -137,8 +137,11 @@ const TaskUploadSchema = new mongoose.Schema(
     },
     uploaderRole: {
       type: String,
-      enum: ['helper', 'supervisor', 'head', 'taskforce_manager', 'admin'],
       default: 'helper',
+    },
+    caption: {
+      type: String,
+      trim: true,
     },
     remarks: {
       type: String,
@@ -146,7 +149,7 @@ const TaskUploadSchema = new mongoose.Schema(
     },
     stage: {
       type: String,
-      enum: ['before', 'in_progress', 'completed', 'inspection', 'proof'],
+      enum: ['before', 'in_progress', 'during', 'after', 'completed', 'completion', 'milestone', 'inspection', 'proof', 'other'],
       default: 'proof',
     },
     uploadedAt: {

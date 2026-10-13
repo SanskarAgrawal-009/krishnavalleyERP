@@ -143,6 +143,21 @@ export const SalesPage = () => {
     fetchSalesLeads();
   }, [statusFilter]);
 
+  useEffect(() => {
+    const handleRemoteSalesUpdate = () => {
+      fetchSalesLeads();
+      fetchFlatsData();
+    };
+    window.addEventListener('salesUpdated', handleRemoteSalesUpdate);
+    window.addEventListener('flatBuybackRecorded', handleRemoteSalesUpdate);
+    window.addEventListener('rentalsUpdated', handleRemoteSalesUpdate);
+    return () => {
+      window.removeEventListener('salesUpdated', handleRemoteSalesUpdate);
+      window.removeEventListener('flatBuybackRecorded', handleRemoteSalesUpdate);
+      window.removeEventListener('rentalsUpdated', handleRemoteSalesUpdate);
+    };
+  }, []);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchSalesLeads();

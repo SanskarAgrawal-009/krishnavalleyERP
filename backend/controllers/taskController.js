@@ -278,6 +278,7 @@ export const getTaskById = async (req, res) => {
       .populate('comments.sender', 'firstName lastName username')
       .populate('roadblockAlert.reportedBy', 'firstName lastName username')
       .populate('auditTrail.performedBy', 'firstName lastName username')
+      .populate('uploads.uploadedBy', 'firstName lastName username role')
       .lean();
 
     if (!task) {

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { taskService } from '../../services/taskService.js';
+import { getFileUrl } from '../../services/api.js';
 import { useToast } from '../../context/ToastContext.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import {
@@ -27,6 +28,9 @@ import {
   Camera,
   UploadCloud,
   FileImage,
+  FileText,
+  Film,
+  Music,
   ExternalLink,
   ShieldCheck,
   Award
@@ -83,9 +87,36 @@ export const TaskDetailModal = ({
     }
   }, [isOpen, taskId]);
 
-  const loadTaskDetails = async () => {
+  const commentsEndRef = useRef(null);
+
+  useEffect(() => {
+    if (activeTab === 'chat' && commentsEndRef.current) {
+      commentsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeTab, task?.comments?.length]);
+
+  const notifyTaskUpdated = () => {
+    if (onTaskUpdated) onTaskUpdated();
+    window.dispatchEvent(
+      new CustomEvent('taskforceTaskUpdated', {
+        detail: { taskId: task?._id || taskId },
+      })
+    );
+  };
+
+  useEffect(() => {
+    const handleRemoteTaskUpdated = (e) => {
+      if (isOpen && taskId && (!e.detail?.taskId || e.detail.taskId === taskId)) {
+        loadTaskDetails(true);
+      }
+    };
+    window.addEventListener('taskforceTaskUpdated', handleRemoteTaskUpdated);
+    return () => window.removeEventListener('taskforceTaskUpdated', handleRemoteTaskUpdated);
+  }, [isOpen, taskId]);
+
+  const loadTaskDetails = async (isSilent = false) => {
     try {
-      setLoading(true);
+      if (!isSilent) setLoading(true);
       const res = await taskService.getTaskById(taskId);
       if (res && res.success) {
         setTask(res.data);
@@ -102,7 +133,7 @@ export const TaskDetailModal = ({
       console.error('Failed to load task details', err);
       showToast('Could not load task details', 'error');
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
   };
 
@@ -112,8 +143,8 @@ export const TaskDetailModal = ({
       const val = typeof newVal === 'number' ? newVal : progressVal;
       await taskService.updateProgress(task._id, { progress: val });
       showToast(`Progress updated to ${val}%`, 'success');
-      loadTaskDetails();
-      if (onTaskUpdated) onTaskUpdated();
+      loadTaskDetails(true);
+      notifyTaskUpdated();
     } catch (err) {
       showToast(err.message || 'Failed to update progress', 'error');
     } finally {
@@ -128,7 +159,7 @@ export const TaskDetailModal = ({
         setTask(res.data);
         setProgressVal(res.data.progress || 0);
         showToast(res.message || 'Checkpoint updated', 'success');
-        if (onTaskUpdated) onTaskUpdated();
+        notifyTaskUpdated();
       }
     } catch (err) {
       showToast(err.message || 'Failed to update checkpoint', 'error');
@@ -140,8 +171,8 @@ export const TaskDetailModal = ({
       setCurrentStatus(newStatus);
       await taskService.updateProgress(task._id, { status: newStatus });
       showToast(`Status updated to ${newStatus.replace('_', ' ').toUpperCase()}`, 'success');
-      loadTaskDetails();
-      if (onTaskUpdated) onTaskUpdated();
+      loadTaskDetails(true);
+      notifyTaskUpdated();
     } catch (err) {
       showToast(err.message || 'Failed to update status', 'error');
     }
@@ -167,8 +198,8 @@ export const TaskDetailModal = ({
         });
         showToast('Roadblock marked as resolved', 'success');
       }
-      loadTaskDetails();
-      if (onTaskUpdated) onTaskUpdated();
+      loadTaskDetails(true);
+      notifyTaskUpdated();
     } catch (err) {
       showToast(err.message || 'Failed to update roadblock', 'error');
     } finally {
@@ -195,8 +226,8 @@ export const TaskDetailModal = ({
       showToast('Follow-up logged successfully', 'success');
       setFuRemarks('');
       setShowFollowUpForm(false);
-      loadTaskDetails();
-      if (onTaskUpdated) onTaskUpdated();
+      loadTaskDetails(true);
+      notifyTaskUpdated();
     } catch (err) {
       showToast(err.message || 'Failed to record follow-up', 'error');
     } finally {
@@ -205,17 +236,26 @@ export const TaskDetailModal = ({
   };
 
   const handleSendComment = async (e) => {
-    e.preventDefault();
-    if (!chatMessage.trim()) return;
+    if (e) e.preventDefault();
+    const messageToSend = chatMessage.trim();
+    if (!messageToSend || submittingChat) return;
 
     try {
       setSubmittingChat(true);
-      await taskService.addComment(task._id, {
-        message: chatMessage.trim(),
+      const res = await taskService.addComment(task._id, {
+        message: messageToSend,
         isMDNote,
       });
+
+      showToast(isMDNote ? 'MD Directive note posted successfully' : 'Communication update posted successfully', 'success');
       setChatMessage('');
-      loadTaskDetails();
+      setIsMDNote(false);
+
+      if (res && res.comments) {
+        setTask((prev) => (prev ? { ...prev, comments: res.comments } : prev));
+      }
+      loadTaskDetails(true);
+      notifyTaskUpdated();
     } catch (err) {
       showToast(err.message || 'Failed to post message', 'error');
     } finally {
@@ -229,7 +269,7 @@ export const TaskDetailModal = ({
         await taskService.deleteTask(task._id);
         showToast('Task removed successfully', 'success');
         onClose();
-        if (onTaskUpdated) onTaskUpdated();
+        notifyTaskUpdated();
       } catch (err) {
         showToast(err.message || 'Failed to delete task', 'error');
       }
@@ -238,9 +278,7 @@ export const TaskDetailModal = ({
 
   const getFullProofUrl = (url) => {
     if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
-    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+    return getFileUrl(url);
   };
 
   const handleProofSubmit = async (e) => {
@@ -254,7 +292,10 @@ export const TaskDetailModal = ({
       const formData = new FormData();
       formData.append('file', selectedProofFile);
       formData.append('stage', proofStage);
-      if (proofCaption) formData.append('caption', proofCaption.trim());
+      if (proofCaption) {
+        formData.append('caption', proofCaption.trim());
+        formData.append('remarks', proofCaption.trim());
+      }
 
       const res = await taskService.uploadProof(task._id, formData);
       if (res && res.success) {
@@ -263,8 +304,8 @@ export const TaskDetailModal = ({
         setProofCaption('');
         const fi = document.getElementById('task-proof-file-input');
         if (fi) fi.value = '';
-        loadTaskDetails();
-        if (onTaskUpdated) onTaskUpdated();
+        loadTaskDetails(true);
+        notifyTaskUpdated();
       }
     } catch (err) {
       showToast(err.message || 'Failed to upload proof', 'error');
@@ -279,8 +320,8 @@ export const TaskDetailModal = ({
       const res = await taskService.deleteProof(task._id, uploadId);
       if (res && res.success) {
         showToast('Proof removed', 'success');
-        loadTaskDetails();
-        if (onTaskUpdated) onTaskUpdated();
+        loadTaskDetails(true);
+        notifyTaskUpdated();
       }
     } catch (err) {
       showToast(err.message || 'Failed to delete proof', 'error');
@@ -327,9 +368,30 @@ export const TaskDetailModal = ({
       title={task ? `${task.taskCode || 'Task'} • ${task.title}` : 'Task Directive'}
       maxWidth="880px"
     >
-      {loading || !task ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+      {loading ? (
+        <div style={{ padding: '60px 20px', textAlign: 'center', color: '#64748b' }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '28px', color: '#005bbf', marginBottom: '12px', display: 'block' }}></i>
           Loading task details & communication logs...
+        </div>
+      ) : !task ? (
+        <div style={{ padding: '50px 20px', textAlign: 'center', color: '#64748b' }}>
+          <i className="fa-solid fa-triangle-exclamation" style={{ fontSize: '36px', color: '#f59e0b', marginBottom: '12px', display: 'block' }}></i>
+          <div style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>Task directive could not be loaded</div>
+          <div style={{ fontSize: '13px', marginTop: '6px', color: '#64748b' }}>This task may have been removed or is temporarily unavailable.</div>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '16px' }}>
+            <button
+              onClick={() => loadTaskDetails()}
+              style={{ padding: '8px 16px', borderRadius: '8px', background: '#005bbf', color: '#ffffff', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+            >
+              Retry
+            </button>
+            <button
+              onClick={onClose}
+              style={{ padding: '8px 16px', borderRadius: '8px', background: '#e2e8f0', color: '#334155', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+            >
+              Close
+            </button>
+          </div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1081,19 +1143,20 @@ export const TaskDetailModal = ({
               {/* Messages feed */}
               <div
                 style={{
-                  maxHeight: '320px',
+                  maxHeight: '340px',
+                  minHeight: '140px',
                   overflowY: 'auto',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '10px',
-                  padding: '8px',
+                  padding: '12px',
                   backgroundColor: '#fafbfc',
                   borderRadius: '8px',
                   border: '1px solid #e2e8f0',
                 }}
               >
                 {!task.comments || task.comments.length === 0 ? (
-                  <div style={{ padding: '30px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+                  <div style={{ padding: '36px 20px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
                     No communication messages posted yet. Post updates or directives below.
                   </div>
                 ) : (
@@ -1139,13 +1202,14 @@ export const TaskDetailModal = ({
                           </span>
                         </div>
 
-                        <div style={{ fontSize: '13px', color: '#334155', whiteSpace: 'pre-wrap' }}>
+                        <div style={{ fontSize: '13px', color: '#334155', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
                           {comment.message}
                         </div>
                       </div>
                     );
                   })
                 )}
+                <div ref={commentsEndRef} />
               </div>
 
               {/* Post comment input box */}
@@ -1153,13 +1217,28 @@ export const TaskDetailModal = ({
                 <textarea
                   className="search-input"
                   rows={2}
-                  style={{ width: '100%', height: '60px', fontSize: '13px', padding: '8px' }}
-                  placeholder="Post directive, update, or roadblock comment..."
+                  style={{
+                    width: '100%',
+                    minHeight: '68px',
+                    fontSize: '13px',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    resize: 'vertical',
+                    boxSizing: 'border-box',
+                  }}
+                  placeholder="Post directive, update, or roadblock comment... (Press Enter to post, Shift+Enter for new line)"
                   value={chatMessage}
                   onChange={(e) => setChatMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendComment(e);
+                    }
+                  }}
                 />
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#854d0e', cursor: 'pointer', fontWeight: 600 }}>
                     <input
                       type="checkbox"
@@ -1175,16 +1254,25 @@ export const TaskDetailModal = ({
                     className="btn-primary"
                     disabled={submittingChat || !chatMessage.trim()}
                     style={{
-                      padding: '6px 18px',
+                      padding: '7px 20px',
                       fontSize: '12px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
                       backgroundColor: isMDNote ? '#ca8a04' : '#005bbf',
+                      opacity: submittingChat || !chatMessage.trim() ? 0.5 : 1,
+                      cursor: submittingChat || !chatMessage.trim() ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <Send size={13} />
-                    Post Update
+                    {submittingChat ? (
+                      <span>Posting...</span>
+                    ) : (
+                      <>
+                        <Send size={13} />
+                        Post Update
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
@@ -1423,12 +1511,12 @@ export const TaskDetailModal = ({
 
                     <div>
                       <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
-                        File (Photo or Document)
+                        File (Any Photo, Video, Audio, PDF, Document, or File)
                       </label>
                       <input
                         id="task-proof-file-input"
                         type="file"
-                        accept="image/*,.pdf,.doc,.docx"
+                        accept="*/*"
                         onChange={(e) => setSelectedProofFile(e.target.files[0] || null)}
                         className="form-control"
                         style={{ fontSize: '12px', padding: '5px 10px' }}
@@ -1461,6 +1549,9 @@ export const TaskDetailModal = ({
                         display: 'flex',
                         alignItems: 'center',
                         gap: '6px',
+                        opacity: uploadingProof || !selectedProofFile ? 0.5 : 1,
+                        cursor: uploadingProof || !selectedProofFile ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.15s ease',
                       }}
                     >
                       <UploadCloud size={14} />
@@ -1505,7 +1596,10 @@ export const TaskDetailModal = ({
                         before: { label: 'Pre-Work', bg: '#fef3c7', color: '#92400e' },
                         in_progress: { label: 'In Progress', bg: '#eff6ff', color: '#1d4ed8' },
                         after: { label: 'Completed', bg: '#dcfce7', color: '#15803d' },
+                        completed: { label: 'Completed', bg: '#dcfce7', color: '#15803d' },
                         milestone: { label: 'Milestone', bg: '#f3e8ff', color: '#7e22ce' },
+                        inspection: { label: 'Inspection', bg: '#e0e7ff', color: '#3730a3' },
+                        proof: { label: 'Evidence', bg: '#f1f5f9', color: '#334155' },
                         other: { label: 'General', bg: '#f1f5f9', color: '#475569' },
                       };
                       const stageStyle = stageLabels[up.stage] || stageLabels.other;
@@ -1514,8 +1608,10 @@ export const TaskDetailModal = ({
                         helper: { label: 'HELPER', bg: '#f1f5f9', color: '#334155' },
                         supervisor: { label: 'SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' },
                         head: { label: 'HEAD', bg: '#fef3c7', color: '#92400e' },
+                        taskforce_manager: { label: 'MANAGER', bg: '#fdf2f8', color: '#9d174d' },
                         manager: { label: 'MANAGER', bg: '#fdf2f8', color: '#9d174d' },
                         admin: { label: 'ADMIN', bg: '#fdf2f8', color: '#9d174d' },
+                        super_admin: { label: 'ADMIN', bg: '#fdf2f8', color: '#9d174d' },
                       };
                       const roleStyle = roleLabels[up.uploaderRole] || { label: (up.uploaderRole || 'MEMBER').toUpperCase(), bg: '#f1f5f9', color: '#475569' };
 
@@ -1548,19 +1644,43 @@ export const TaskDetailModal = ({
                             title="Click to view full image in new tab"
                           >
                             {isImage ? (
-                              <img
-                                src={fullUrl}
-                                alt={up.caption || up.fileName || 'Proof image'}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  e.target.parentElement.innerHTML = '<div style="color:#94a3b8;font-size:12px;padding:10px;text-align:center;">Preview unavailable</div>';
-                                }}
-                              />
+                              <>
+                                <img
+                                  src={fullUrl}
+                                  alt={up.caption || up.remarks || up.fileName || 'Proof image'}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const next = e.currentTarget.nextElementSibling;
+                                    if (next) next.style.display = 'flex';
+                                  }}
+                                />
+                                <div style={{ display: 'none', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#94a3b8', gap: '4px' }}>
+                                  <FileImage size={32} />
+                                  <span style={{ fontSize: '11px', fontWeight: 600 }}>Image preview unavailable</span>
+                                </div>
+                              </>
+                            ) : up.fileType === 'pdf' || (up.fileName && /\.pdf$/i.test(up.fileName)) ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#f87171', gap: '6px' }}>
+                                <FileText size={36} color="#ef4444" />
+                                <span style={{ fontSize: '11px', color: '#fca5a5', fontWeight: 700 }}>PDF Document</span>
+                              </div>
+                            ) : up.fileType === 'video' || (up.fileName && /\.(mp4|mov|avi|webm)$/i.test(up.fileName)) ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#60a5fa', gap: '6px' }}>
+                                <Film size={36} color="#3b82f6" />
+                                <span style={{ fontSize: '11px', color: '#93c5fd', fontWeight: 700 }}>Video File</span>
+                              </div>
+                            ) : up.fileType === 'audio' || (up.fileName && /\.(mp3|wav|m4a|aac)$/i.test(up.fileName)) ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#34d399', gap: '6px' }}>
+                                <Music size={36} color="#10b981" />
+                                <span style={{ fontSize: '11px', color: '#6ee7b7', fontWeight: 700 }}>Audio Note</span>
+                              </div>
                             ) : (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#94a3b8', gap: '6px' }}>
                                 <FileImage size={36} />
-                                <span style={{ fontSize: '11px', color: '#cbd5e1' }}>Document / File</span>
+                                <span style={{ fontSize: '11px', color: '#cbd5e1' }}>
+                                  {up.fileName?.split('.').pop()?.toUpperCase() || 'DOCUMENT'} File
+                                </span>
                               </div>
                             )}
 
@@ -1601,16 +1721,16 @@ export const TaskDetailModal = ({
 
                           {/* Info Content */}
                           <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-                            {up.caption && (
+                            {(up.caption || up.remarks) && (
                               <div style={{ fontSize: '12px', color: '#0f172a', fontWeight: 600 }}>
-                                "{up.caption}"
+                                "{up.caption || up.remarks}"
                               </div>
                             )}
 
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginTop: 'auto', paddingTop: '4px', borderTop: '1px solid #f1f5f9' }}>
                               <div style={{ overflow: 'hidden' }}>
                                 <div style={{ fontSize: '11px', fontWeight: 600, color: '#334155', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <span>{up.uploadedBy?.firstName ? `${up.uploadedBy.firstName} ${up.uploadedBy.lastName || ''}`.trim() : 'Team Member'}</span>
+                                  <span>{up.uploadedBy?.firstName ? `${up.uploadedBy.firstName} ${up.uploadedBy.lastName || ''}`.trim() : (up.uploaderName || 'Team Member')}</span>
                                   <span
                                     style={{
                                       fontSize: '9px',

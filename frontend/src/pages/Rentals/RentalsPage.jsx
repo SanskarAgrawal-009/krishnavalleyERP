@@ -142,6 +142,19 @@ export const RentalsPage = () => {
     fetchRentals();
   }, [statusFilter, rentBackFilter]);
 
+  useEffect(() => {
+    const handleRemoteRentalsUpdate = () => {
+      fetchRentals();
+      fetchRentalUnits();
+    };
+    window.addEventListener('rentalsUpdated', handleRemoteRentalsUpdate);
+    window.addEventListener('flatBuybackRecorded', handleRemoteRentalsUpdate);
+    return () => {
+      window.removeEventListener('rentalsUpdated', handleRemoteRentalsUpdate);
+      window.removeEventListener('flatBuybackRecorded', handleRemoteRentalsUpdate);
+    };
+  }, []);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchRentals();

@@ -960,9 +960,16 @@ export const getMemberDashboard = async (req, res) => {
 export const uploadTaskProof = async (req, res) => {
   try {
     const { id } = req.params;
-    const { remarks = '', stage = 'proof' } = req.body;
+    const rawRemarks = req.body.remarks || req.body.caption || '';
+    const rawCaption = req.body.caption || req.body.remarks || '';
+    const stage = req.body.stage || 'proof';
 
-    if (!req.file) {
+    const uploadedFile =
+      req.file ||
+      (req.files &&
+        (req.files.find((f) => f.fieldname === 'file' || f.fieldname === 'proof') || req.files[0]));
+
+    if (!uploadedFile) {
       return res.status(400).json({ success: false, message: 'No proof file uploaded' });
     }
 
@@ -983,10 +990,27 @@ export const uploadTaskProof = async (req, res) => {
       fs.default.mkdirSync(uploadsDir, { recursive: true });
     }
 
-    const ext = pathModule.default.extname(req.file.originalname) || '.jpg';
+    // Detect extension properly for ANY file type (mobile browsers sometimes omit extension)
+    let ext = pathModule.default.extname(uploadedFile.originalname || '');
+    const mime = (uploadedFile.mimetype || '').toLowerCase();
+    if (!ext) {
+      if (mime.startsWith('image/jpeg')) ext = '.jpg';
+      else if (mime.startsWith('image/png')) ext = '.png';
+      else if (mime.startsWith('image/webp')) ext = '.webp';
+      else if (mime.startsWith('image/gif')) ext = '.gif';
+      else if (mime.startsWith('image/heic') || mime.startsWith('image/heif')) ext = '.heic';
+      else if (mime.includes('pdf')) ext = '.pdf';
+      else if (mime.includes('word') || mime.includes('document')) ext = '.docx';
+      else if (mime.includes('excel') || mime.includes('sheet') || mime.includes('csv')) ext = '.xlsx';
+      else if (mime.startsWith('video/')) ext = '.mp4';
+      else if (mime.startsWith('audio/')) ext = '.mp3';
+      else if (mime.includes('zip') || mime.includes('compressed')) ext = '.zip';
+      else ext = '.bin';
+    }
+
     const safeName = `proof_${task.taskCode || task._id}_${Date.now()}${ext}`;
     const filePath = pathModule.default.join(uploadsDir, safeName);
-    fs.default.writeFileSync(filePath, req.file.buffer);
+    fs.default.writeFileSync(filePath, uploadedFile.buffer);
 
     const fileUrl = `/uploads/taskforce_proofs/${safeName}`;
 
@@ -995,15 +1019,37 @@ export const uploadTaskProof = async (req, res) => {
     const uploaderRole = scope.isManagerOrAdmin ? 'taskforce_manager' : scope.hierarchyLevel;
     const uploaderName = req.user.username || scope.member?.name || 'Staff';
 
+    // Accurately categorize fileType for mobile & web viewing
+    let detectedFileType = 'document';
+    const extLower = ext.toLowerCase();
+    if (mime.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif|svg|bmp|heic|heif)$/i.test(extLower)) {
+      detectedFileType = 'image';
+    } else if (mime.includes('pdf') || extLower === '.pdf') {
+      detectedFileType = 'pdf';
+    } else if (mime.startsWith('video/') || /\.(mp4|mov|avi|wmv|mkv|webm|3gp)$/i.test(extLower)) {
+      detectedFileType = 'video';
+    } else if (mime.startsWith('audio/') || /\.(mp3|wav|m4a|aac|ogg|wma)$/i.test(extLower)) {
+      detectedFileType = 'audio';
+    } else if (/\.(doc|docx|rtf|txt)$/i.test(extLower)) {
+      detectedFileType = 'word';
+    } else if (/\.(xls|xlsx|csv)$/i.test(extLower)) {
+      detectedFileType = 'excel';
+    } else if (/\.(zip|rar|7z|tar|gz)$/i.test(extLower)) {
+      detectedFileType = 'archive';
+    } else {
+      detectedFileType = 'file';
+    }
+
     const uploadEntry = {
-      fileName: req.file.originalname,
+      fileName: uploadedFile.originalname || `evidence${ext}`,
       fileUrl,
-      fileSize: req.file.size,
-      fileType: ext.toLowerCase().includes('pdf') ? 'pdf' : 'image',
+      fileSize: uploadedFile.size,
+      fileType: detectedFileType,
       uploadedBy: req.user.id,
       uploaderName,
       uploaderRole,
-      remarks,
+      remarks: rawRemarks,
+      caption: rawCaption,
       stage,
       uploadedAt: new Date(),
     };

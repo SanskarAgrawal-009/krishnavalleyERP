@@ -23,7 +23,11 @@ import {
   Building2,
   X,
   Camera,
-  Layers
+  Layers,
+  MessageSquare,
+  Sparkles,
+  Bell,
+  Megaphone
 } from 'lucide-react';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { taskService } from '../../services/taskService.js';
@@ -48,6 +52,7 @@ export const TaskforceMemberDashboard = ({
   const [activeTab, setActiveTab] = useState('tasks');
   const [taskStatusFilter, setTaskStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [memberAlertFilter, setMemberAlertFilter] = useState('all');
 
   // Quick Proof Upload Modal State
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -76,6 +81,12 @@ export const TaskforceMemberDashboard = ({
 
   useEffect(() => {
     loadDashboard();
+
+    const handleRemoteTaskUpdated = () => {
+      loadDashboard();
+    };
+    window.addEventListener('taskforceTaskUpdated', handleRemoteTaskUpdated);
+    return () => window.removeEventListener('taskforceTaskUpdated', handleRemoteTaskUpdated);
   }, [selectedMemberId]);
 
   const loadMembersList = async () => {
@@ -121,8 +132,10 @@ export const TaskforceMemberDashboard = ({
       setSubmittingProof(true);
       const formData = new FormData();
       formData.append('file', selectedFile);
+      formData.append('proof', selectedFile);
       formData.append('stage', uploadStage);
       formData.append('remarks', uploadRemarks);
+      formData.append('caption', uploadRemarks);
 
       const res = await taskService.uploadProof(uploadTaskId, formData);
       if (res && res.success) {
@@ -130,6 +143,7 @@ export const TaskforceMemberDashboard = ({
         setIsUploadModalOpen(false);
         setSelectedFile(null);
         setUploadRemarks('');
+        window.dispatchEvent(new CustomEvent('taskforceTaskUpdated', { detail: { taskId: uploadTaskId } }));
         loadDashboard();
       } else {
         showToast(res?.message || 'Failed to upload proof', 'error');
@@ -153,6 +167,7 @@ export const TaskforceMemberDashboard = ({
       if (res && res.success) {
         showToast('Task progress updated!', 'success');
         setIsProgressModalOpen(false);
+        window.dispatchEvent(new CustomEvent('taskforceTaskUpdated', { detail: { taskId: progressTaskId } }));
         loadDashboard();
       } else {
         showToast(res?.message || 'Failed to update progress', 'error');
@@ -172,6 +187,124 @@ export const TaskforceMemberDashboard = ({
   const hierarchyLevel = dashboardData?.hierarchyLevel || 'helper';
   const callerLevel = dashboardData?.callerLevel || 'helper';
   const isManagerOrAdmin = ['admin', 'super_admin', 'taskforce_manager'].includes(user?.role);
+
+  // Compute live task notifications and directives for the dashboard
+  const taskAlerts = React.useMemo(() => {
+    const list = [];
+    tasks.forEach((t) => {
+      // 1. Roadblock alerts
+      if (t.roadblockAlert?.hasRoadblock && !t.roadblockAlert?.isResolved) {
+        list.push({
+          id: `rb-${t._id}`,
+          taskId: t._id,
+          taskCode: t.taskCode,
+          taskTitle: t.title,
+          type: 'roadblock',
+          label: 'ROADBLOCK REPORTED',
+          message: t.roadblockAlert.reason || 'Roadblock hindrance reported on this directive.',
+          color: '#dc2626',
+          bg: '#fee2e2',
+          borderColor: '#fca5a5',
+          icon: AlertTriangle,
+          time: t.roadblockAlert.reportedAt,
+        });
+      }
+
+      // 2. MD Directives / Management Notes
+      const mdNotes = (t.comments || []).filter((c) => c.isMDNote);
+      if (t.isMDDirective || mdNotes.length > 0) {
+        const latestNote = mdNotes[mdNotes.length - 1];
+        list.push({
+          id: `md-${t._id}`,
+          taskId: t._id,
+          taskCode: t.taskCode,
+          taskTitle: t.title,
+          type: 'md_directive',
+          label: 'MD DIRECTIVE NOTE',
+          message: latestNote?.message || 'High priority management directive note posted.',
+          color: '#ca8a04',
+          bg: '#fefce8',
+          borderColor: '#fef08a',
+          icon: Sparkles,
+          time: latestNote?.createdAt || t.updatedAt,
+        });
+      }
+
+      // 3. Directive updates & communication
+      const regularComments = (t.comments || []).filter((c) => !c.isMDNote);
+      if (regularComments.length > 0) {
+        const latestComment = regularComments[regularComments.length - 1];
+        list.push({
+          id: `comm-${t._id}-${latestComment._id || regularComments.length}`,
+          taskId: t._id,
+          taskCode: t.taskCode,
+          taskTitle: t.title,
+          type: 'comment',
+          label: 'DIRECTIVE UPDATE',
+          message: `${latestComment.sender?.firstName || 'Staff'}: "${latestComment.message}"`,
+          color: '#0284c7',
+          bg: '#f0f9ff',
+          borderColor: '#bae6fd',
+          icon: MessageSquare,
+          time: latestComment.createdAt,
+        });
+      }
+
+      // 4. Overdue or Due Today follow-up inspections
+      if (t.followUpSchedule?.nextFollowUpDate && t.status !== 'completed') {
+        const now = new Date();
+        const nextD = new Date(t.followUpSchedule.nextFollowUpDate);
+        const isToday =
+          now.getFullYear() === nextD.getFullYear() &&
+          now.getMonth() === nextD.getMonth() &&
+          now.getDate() === nextD.getDate();
+        const isOverdue = nextD < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        if (isOverdue || isToday) {
+          list.push({
+            id: `fu-${t._id}`,
+            taskId: t._id,
+            taskCode: t.taskCode,
+            taskTitle: t.title,
+            type: 'followup',
+            label: isOverdue ? 'FOLLOW-UP OVERDUE' : 'FOLLOW-UP DUE TODAY',
+            message: `Inspection scheduled ${isToday ? 'today' : 'was due ' + nextD.toLocaleDateString()}`,
+            color: isOverdue ? '#e11d48' : '#d97706',
+            bg: isOverdue ? '#fff1f2' : '#fffbeb',
+            borderColor: isOverdue ? '#fecdd3' : '#fde68a',
+            icon: Clock,
+            time: nextD,
+          });
+        }
+      }
+
+      // 5. Work evidence / field proofs
+      if ((t.uploads || []).length > 0) {
+        const latestUpload = t.uploads[t.uploads.length - 1];
+        list.push({
+          id: `proof-${t._id}-${latestUpload._id || t.uploads.length}`,
+          taskId: t._id,
+          taskCode: t.taskCode,
+          taskTitle: t.title,
+          type: 'proof',
+          label: 'WORK PROOF UPLOADED',
+          message: latestUpload.caption || latestUpload.remarks || `Work proof uploaded (${latestUpload.stage || 'proof'})`,
+          color: '#7c3aed',
+          bg: '#f5f3ff',
+          borderColor: '#ddd6fe',
+          icon: Camera,
+          time: latestUpload.uploadedAt || latestUpload.createdAt,
+        });
+      }
+    });
+
+    return list.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
+  }, [tasks]);
+
+  const filteredMemberAlerts = React.useMemo(() => {
+    if (memberAlertFilter === 'all') return taskAlerts;
+    return taskAlerts.filter((a) => a.type === memberAlertFilter);
+  }, [taskAlerts, memberAlertFilter]);
 
   // Filter tasks
   const filteredTasks = tasks.filter((t) => {
@@ -456,6 +589,181 @@ export const TaskforceMemberDashboard = ({
       </div>
 
       {/* ========================================================================= */}
+      {/* 2.5 LIVE TASK NOTIFICATIONS & DIRECTIVES BANNER */}
+      {/* ========================================================================= */}
+      {taskAlerts.length > 0 && (
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '14px',
+            border: '1px solid #e2e8f0',
+            padding: '16px 20px',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  background: '#eff6ff',
+                  color: '#2563eb',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Bell size={15} />
+              </div>
+              <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a' }}>
+                Task Notifications & Directives Alert Center
+              </span>
+              <span
+                style={{
+                  background: '#fee2e2',
+                  color: '#dc2626',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                }}
+              >
+                {taskAlerts.length} Active
+              </span>
+            </div>
+            <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+              Click any notification to open task details
+            </span>
+          </div>
+
+          {/* Category Filter Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            {[
+              { id: 'all', label: `All (${taskAlerts.length})` },
+              { id: 'roadblock', label: `Roadblocks (${taskAlerts.filter((a) => a.type === 'roadblock').length})`, color: '#dc2626' },
+              { id: 'md_directive', label: `MD Notes (${taskAlerts.filter((a) => a.type === 'md_directive').length})`, color: '#ca8a04' },
+              { id: 'comment', label: `Updates (${taskAlerts.filter((a) => a.type === 'comment').length})`, color: '#0284c7' },
+              { id: 'proof', label: `Proofs (${taskAlerts.filter((a) => a.type === 'proof').length})`, color: '#7c3aed' },
+              { id: 'followup', label: `Follow-ups (${taskAlerts.filter((a) => a.type === 'followup').length})`, color: '#d97706' },
+            ].map((pill) => {
+              const count =
+                pill.id === 'all'
+                  ? taskAlerts.length
+                  : taskAlerts.filter((a) => a.type === pill.id).length;
+              if (count === 0 && pill.id !== 'all') return null;
+
+              const isSelected = memberAlertFilter === pill.id;
+              return (
+                <button
+                  key={pill.id}
+                  onClick={() => setMemberAlertFilter(pill.id)}
+                  style={{
+                    background: isSelected ? '#0f172a' : '#f8fafc',
+                    color: isSelected ? '#ffffff' : pill.color || '#475569',
+                    border: isSelected ? '1px solid #0f172a' : '1px solid #cbd5e1',
+                    padding: '4px 10px',
+                    borderRadius: '16px',
+                    fontSize: '0.72rem',
+                    fontWeight: isSelected ? 800 : 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {pill.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '10px',
+            }}
+          >
+            {filteredMemberAlerts.map((alert) => {
+              const IconComponent = alert.icon;
+              return (
+                <div
+                  key={alert.id}
+                  onClick={() => onOpenTaskDetail && onOpenTaskDetail(alert.taskId)}
+                  style={{
+                    background: alert.bg,
+                    border: `1px solid ${alert.borderColor}`,
+                    borderRadius: '10px',
+                    padding: '10px 14px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    transition: 'transform 0.12s ease, box-shadow 0.12s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.06)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span
+                      style={{
+                        fontSize: '0.64rem',
+                        fontWeight: 800,
+                        color: alert.color,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <IconComponent size={12} />
+                      {alert.label}
+                    </span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#1e293b', fontFamily: 'monospace' }}>
+                      {alert.taskCode}
+                    </span>
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: '#0f172a',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {alert.taskTitle}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: '0.72rem',
+                      color: '#475569',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {alert.message}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
       {/* 3. TABS NAVIGATION */}
       {/* ========================================================================= */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '2px' }}>
@@ -625,6 +933,82 @@ export const TaskforceMemberDashboard = ({
                     >
                       {t.status.replace('_', ' ')}
                     </span>
+                  </div>
+
+                  {/* Task Notifications Badges Bar */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    {t.roadblockAlert?.hasRoadblock && !t.roadblockAlert?.isResolved && (
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          background: '#fee2e2',
+                          color: '#dc2626',
+                          border: '1px solid #fca5a5',
+                          padding: '1px 6px',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                        }}
+                      >
+                        <AlertTriangle size={10} /> ROADBLOCK
+                      </span>
+                    )}
+                    {(t.isMDDirective || (t.comments || []).some((c) => c.isMDNote)) && (
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          background: '#fefce8',
+                          color: '#a16207',
+                          border: '1px solid #fef08a',
+                          padding: '1px 6px',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                        }}
+                      >
+                        <Sparkles size={10} /> MD NOTE
+                      </span>
+                    )}
+                    {(t.comments?.length || 0) > 0 && (
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          background: '#f0f9ff',
+                          color: '#0369a1',
+                          border: '1px solid #bae6fd',
+                          padding: '1px 6px',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                        }}
+                      >
+                        <MessageSquare size={10} /> {t.comments.length}
+                      </span>
+                    )}
+                    {(t.uploads?.length || 0) > 0 && (
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          background: '#f5f3ff',
+                          color: '#7c3aed',
+                          border: '1px solid #ddd6fe',
+                          padding: '1px 6px',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                        }}
+                      >
+                        <Camera size={10} /> {t.uploads.length} proofs
+                      </span>
+                    )}
                   </div>
 
                   {/* Apartment / Property Context */}
@@ -1002,11 +1386,11 @@ export const TaskforceMemberDashboard = ({
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                  Select Photo / Document *
+                  Select File (Any Photo, Video, Audio, Document, or File) *
                 </label>
                 <input
                   type="file"
-                  accept="image/*,.pdf,.doc,.docx"
+                  accept="*/*"
                   required
                   onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
                   style={{ width: '100%', padding: '8px', borderRadius: '7px', border: '1px dashed #94a3b8', fontSize: '0.78rem' }}

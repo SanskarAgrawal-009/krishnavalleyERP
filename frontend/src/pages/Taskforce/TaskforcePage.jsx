@@ -96,6 +96,26 @@ export const TaskforcePage = () => {
 
   useEffect(() => {
     fetchTasksAndStats();
+
+    const handleRemoteTaskUpdated = () => {
+      fetchTasksAndStats();
+    };
+    const handleRemoteTeamUpdated = () => {
+      fetchTasksAndStats();
+    };
+    const handleRemoteDeptUpdated = () => {
+      fetchTasksAndStats();
+    };
+
+    window.addEventListener('taskforceTaskUpdated', handleRemoteTaskUpdated);
+    window.addEventListener('taskforceTeamUpdated', handleRemoteTeamUpdated);
+    window.addEventListener('departmentsUpdated', handleRemoteDeptUpdated);
+
+    return () => {
+      window.removeEventListener('taskforceTaskUpdated', handleRemoteTaskUpdated);
+      window.removeEventListener('taskforceTeamUpdated', handleRemoteTeamUpdated);
+      window.removeEventListener('departmentsUpdated', handleRemoteDeptUpdated);
+    };
   }, [
     selectedDept,
     selectedPriority,
@@ -1522,6 +1542,7 @@ export const TaskforcePage = () => {
         onClose={() => {
           setIsMemberDrawerOpen(false);
           setSelectedMemberForDrawer(null);
+          fetchTasksAndStats();
         }}
         member={selectedMemberForDrawer}
         onAssignTask={(member) => {

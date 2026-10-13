@@ -103,6 +103,26 @@ export const TaskforceManagerPage = () => {
 
   useEffect(() => {
     loadTabData(activeTab);
+
+    const handleRemoteTaskUpdated = () => {
+      loadTabData(activeTab);
+    };
+    const handleRemoteTeamUpdated = () => {
+      loadTabData(activeTab);
+    };
+    const handleRemoteDeptUpdated = () => {
+      loadTabData(activeTab);
+    };
+
+    window.addEventListener('taskforceTaskUpdated', handleRemoteTaskUpdated);
+    window.addEventListener('taskforceTeamUpdated', handleRemoteTeamUpdated);
+    window.addEventListener('departmentsUpdated', handleRemoteDeptUpdated);
+
+    return () => {
+      window.removeEventListener('taskforceTaskUpdated', handleRemoteTaskUpdated);
+      window.removeEventListener('taskforceTeamUpdated', handleRemoteTeamUpdated);
+      window.removeEventListener('departmentsUpdated', handleRemoteDeptUpdated);
+    };
   }, [activeTab, selectedDept, performancePeriod]);
 
   const loadTabData = async (tab) => {
@@ -1126,8 +1146,30 @@ export const TaskforceManagerPage = () => {
                 textTransform: 'uppercase', backgroundColor: priStyle.bg, color: priStyle.color,
               }}>{task.priority}</span>
             </div>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div
+              onClick={() => { setSelectedTaskIdForModal(task._id); setIsTaskDetailModalOpen(true); }}
+              style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+              title="Click to view task details & communication"
+            >
               {task.title}
+            </div>
+            {/* Live Notification Badges */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+              {task.roadblockAlert?.hasRoadblock && !task.roadblockAlert?.isResolved && (
+                <span style={{ fontSize: '9px', fontWeight: 700, backgroundColor: '#fee2e2', color: '#dc2626', padding: '1px 5px', borderRadius: '4px' }}>
+                  🚨 Roadblock
+                </span>
+              )}
+              {(task.comments?.length || 0) > 0 && (
+                <span style={{ fontSize: '9px', fontWeight: 700, backgroundColor: '#e0f2fe', color: '#0369a1', padding: '1px 5px', borderRadius: '4px' }}>
+                  💬 {task.comments.length}
+                </span>
+              )}
+              {(task.uploads?.length || 0) > 0 && (
+                <span style={{ fontSize: '9px', fontWeight: 700, backgroundColor: '#f5f3ff', color: '#7c3aed', padding: '1px 5px', borderRadius: '4px' }}>
+                  📸 {task.uploads.length}
+                </span>
+              )}
             </div>
           </div>
 
@@ -1497,6 +1539,7 @@ export const TaskforceManagerPage = () => {
         onClose={() => {
           setIsMemberDrawerOpen(false);
           setSelectedMemberForDrawer(null);
+          loadTabData(activeTab);
         }}
         member={selectedMemberForDrawer}
         onAssignTask={(member) => {

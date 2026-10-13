@@ -127,6 +127,9 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
       if (res.success) {
         alert(res.message || 'Buyback/Resale transaction executed successfully!');
         if (onSuccess) onSuccess();
+        window.dispatchEvent(new CustomEvent('flatBuybackRecorded', { detail: { flatId, payload } }));
+        window.dispatchEvent(new CustomEvent('salesUpdated'));
+        window.dispatchEvent(new CustomEvent('rentalsUpdated'));
         onClose();
       } else {
         setError(res.message || 'Action failed');

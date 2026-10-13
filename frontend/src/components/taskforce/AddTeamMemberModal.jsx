@@ -168,6 +168,7 @@ export const AddTeamMemberModal = ({
       if (res && res.success) {
         showToast(res.message || 'Team member added successfully!', 'success');
         if (onMemberAdded) onMemberAdded(res.member);
+        window.dispatchEvent(new CustomEvent('taskforceTeamUpdated', { detail: { member: res.member } }));
         handleClose();
       } else {
         showToast(res?.message || 'Failed to add team member', 'error');

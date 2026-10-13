@@ -168,7 +168,11 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
       }
     };
     window.addEventListener('departmentsUpdated', handleDeptUpdated);
-    return () => window.removeEventListener('departmentsUpdated', handleDeptUpdated);
+    window.addEventListener('taskforceTeamUpdated', handleDeptUpdated);
+    return () => {
+      window.removeEventListener('departmentsUpdated', handleDeptUpdated);
+      window.removeEventListener('taskforceTeamUpdated', handleDeptUpdated);
+    };
   }, [isOpen]);
 
   const loadMeta = async () => {
@@ -661,6 +665,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
       }
 
       if (onTaskCreated) onTaskCreated();
+      window.dispatchEvent(new CustomEvent('taskforceTaskUpdated'));
       onClose();
     } catch (error) {
       console.error('Save task error:', error);

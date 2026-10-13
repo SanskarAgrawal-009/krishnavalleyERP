@@ -18,6 +18,25 @@ import {
   canUserAssignTasks,
   extractRoleCode,
 } from '../../utils/taskPermissions.js';
+const getFileTypeMeta = (url = '', fileName = '') => {
+  const target = (fileName || url || '').split('?')[0].toLowerCase();
+  if (target.endsWith('.pdf')) {
+    return { type: 'pdf', isImage: false, icon: 'fa-solid fa-file-pdf', color: '#ef4444', label: 'PDF Document' };
+  }
+  if (target.match(/\.(mp4|webm|mov|mkv|avi)$/)) {
+    return { type: 'video', isImage: false, icon: 'fa-solid fa-file-video', color: '#8b5cf6', label: 'Video File' };
+  }
+  if (target.match(/\.(mp3|wav|ogg|m4a)$/)) {
+    return { type: 'audio', isImage: false, icon: 'fa-solid fa-file-audio', color: '#06b6d4', label: 'Audio Clip' };
+  }
+  if (target.match(/\.(doc|docx|xls|xlsx|csv|ppt|pptx|txt)$/)) {
+    return { type: 'doc', isImage: false, icon: 'fa-solid fa-file-lines', color: '#3b82f6', label: 'Document' };
+  }
+  if (target.match(/\.(zip|rar|7z)$/)) {
+    return { type: 'archive', isImage: false, icon: 'fa-solid fa-file-zipper', color: '#f59e0b', label: 'Archive' };
+  }
+  return { type: 'image', isImage: true, icon: 'fa-solid fa-image', color: '#10b981', label: 'Photo' };
+};
 
 export const TaskforceDashboardPage = () => {
   const navigate = useNavigate();
@@ -59,6 +78,8 @@ export const TaskforceDashboardPage = () => {
   const [filterDueToday, setFilterDueToday] = useState(false);
   const [filterMDOnly, setFilterMDOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [alertFilter, setAlertFilter] = useState('all');
+  const [isAlertCenterCollapsed, setIsAlertCenterCollapsed] = useState(false);
 
   // Modals & Drawers
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
@@ -145,6 +166,26 @@ export const TaskforceDashboardPage = () => {
 
   useEffect(() => {
     fetchDashboardData();
+
+    const handleTaskUpdated = () => {
+      fetchDashboardData(true);
+    };
+    const handleTeamUpdated = () => {
+      fetchDashboardData(true);
+    };
+    const handleDeptUpdated = () => {
+      fetchDashboardData(true);
+    };
+
+    window.addEventListener('taskforceTaskUpdated', handleTaskUpdated);
+    window.addEventListener('taskforceTeamUpdated', handleTeamUpdated);
+    window.addEventListener('departmentsUpdated', handleDeptUpdated);
+
+    return () => {
+      window.removeEventListener('taskforceTaskUpdated', handleTaskUpdated);
+      window.removeEventListener('taskforceTeamUpdated', handleTeamUpdated);
+      window.removeEventListener('departmentsUpdated', handleDeptUpdated);
+    };
   }, []);
 
   // Compute Active KPIs
@@ -213,6 +254,170 @@ export const TaskforceDashboardPage = () => {
       workforceList,
     };
   }, [tasks, workforceData]);
+
+  // Live Task Notifications & Activity Alerts for Manager & Team
+  const managerTaskAlerts = useMemo(() => {
+    const list = [];
+    tasks.forEach((t) => {
+      // 1. Field Roadblock Alerts (Highest Priority)
+      if (t.roadblockAlert?.hasRoadblock && !t.roadblockAlert?.isResolved) {
+        list.push({
+          id: `rb-${t._id}`,
+          taskId: t._id,
+          taskCode: t.taskCode,
+          taskTitle: t.title,
+          department: t.department,
+          flat: t.apartmentDetails?.flatNumber,
+          category: 'roadblock',
+          label: 'ROADBLOCK REPORTED',
+          message: t.roadblockAlert.reason || 'Field obstacle or roadblock reported on this directive.',
+          color: '#dc2626',
+          bg: '#fee2e2',
+          borderColor: '#fca5a5',
+          icon: 'fa-solid fa-triangle-exclamation',
+          time: t.roadblockAlert.reportedAt || t.updatedAt,
+          author: t.roadblockAlert.reportedBy?.name || t.roadblockAlert.reportedBy?.firstName || 'Field Crew',
+        });
+      }
+
+      // 2. MD Directives / Management Directives
+      const mdNotes = (t.comments || []).filter((c) => c.isMDNote);
+      if (t.isMDDirective || mdNotes.length > 0) {
+        const latestNote = mdNotes[mdNotes.length - 1];
+        list.push({
+          id: `md-${t._id}`,
+          taskId: t._id,
+          taskCode: t.taskCode,
+          taskTitle: t.title,
+          department: t.department,
+          flat: t.apartmentDetails?.flatNumber,
+          category: 'md_directive',
+          label: 'MD DIRECTIVE NOTE',
+          message: latestNote?.message || 'High-priority management directive note posted.',
+          color: '#ca8a04',
+          bg: '#fefce8',
+          borderColor: '#fef08a',
+          icon: 'fa-solid fa-crown',
+          time: latestNote?.createdAt || t.updatedAt,
+          author: latestNote?.sender?.firstName
+            ? `${latestNote.sender.firstName} ${latestNote.sender.lastName || ''}`.trim()
+            : 'MD Office',
+        });
+      }
+
+      // 3. Directive updates & communication
+      const regularComments = (t.comments || []).filter((c) => !c.isMDNote);
+      if (regularComments.length > 0) {
+        const latestComment = regularComments[regularComments.length - 1];
+        list.push({
+          id: `comm-${t._id}-${latestComment._id || regularComments.length}`,
+          taskId: t._id,
+          taskCode: t.taskCode,
+          taskTitle: t.title,
+          department: t.department,
+          flat: t.apartmentDetails?.flatNumber,
+          category: 'comment',
+          label: 'DIRECTIVE UPDATE',
+          message: latestComment.message,
+          color: '#0284c7',
+          bg: '#f0f9ff',
+          borderColor: '#bae6fd',
+          icon: 'fa-solid fa-comments',
+          time: latestComment.createdAt,
+          author: latestComment.sender?.firstName
+            ? `${latestComment.sender.firstName} ${latestComment.sender.lastName || ''}`.trim()
+            : 'Staff Member',
+        });
+      }
+
+      // 4. Work evidence & field proof uploads
+      if ((t.uploads || []).length > 0) {
+        const latestUpload = t.uploads[t.uploads.length - 1];
+        list.push({
+          id: `proof-${t._id}-${latestUpload._id || t.uploads.length}`,
+          taskId: t._id,
+          taskCode: t.taskCode,
+          taskTitle: t.title,
+          department: t.department,
+          flat: t.apartmentDetails?.flatNumber,
+          category: 'proof',
+          label: 'WORK PROOF UPLOADED',
+          message:
+            latestUpload.caption ||
+            latestUpload.remarks ||
+            `Work proof uploaded (${latestUpload.stage || 'proof'})`,
+          color: '#7c3aed',
+          bg: '#f5f3ff',
+          borderColor: '#ddd6fe',
+          icon: 'fa-solid fa-camera',
+          time: latestUpload.uploadedAt || latestUpload.createdAt,
+          author: latestUpload.uploadedBy?.firstName
+            ? `${latestUpload.uploadedBy.firstName} ${latestUpload.uploadedBy.lastName || ''}`.trim()
+            : 'Field Personnel',
+          fileUrl: latestUpload.fileUrl || latestUpload.path,
+        });
+      }
+
+      // 5. Follow-up / inspection due alerts
+      if (t.followUpSchedule?.nextFollowUpDate && t.status !== 'completed') {
+        const now = new Date();
+        const nextD = new Date(t.followUpSchedule.nextFollowUpDate);
+        const isToday =
+          now.getFullYear() === nextD.getFullYear() &&
+          now.getMonth() === nextD.getMonth() &&
+          now.getDate() === nextD.getDate();
+        const isOverdue = nextD < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        if (isOverdue || isToday) {
+          list.push({
+            id: `fu-${t._id}`,
+            taskId: t._id,
+            taskCode: t.taskCode,
+            taskTitle: t.title,
+            department: t.department,
+            flat: t.apartmentDetails?.flatNumber,
+            category: 'followup',
+            label: isOverdue ? 'INSPECTION OVERDUE' : 'INSPECTION DUE TODAY',
+            message:
+              t.followUpSchedule.remarks ||
+              `Inspection scheduled ${isToday ? 'today' : 'was due ' + nextD.toLocaleDateString()}`,
+            color: isOverdue ? '#e11d48' : '#d97706',
+            bg: isOverdue ? '#fff1f2' : '#fffbeb',
+            borderColor: isOverdue ? '#fecdd3' : '#fde68a',
+            icon: 'fa-solid fa-clock-rotate-left',
+            time: nextD,
+            author: 'Inspection Schedule',
+          });
+        }
+      }
+    });
+
+    return list.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
+  }, [tasks]);
+
+  const filteredAlerts = useMemo(() => {
+    if (alertFilter === 'all') return managerTaskAlerts;
+    return managerTaskAlerts.filter((a) => a.category === alertFilter);
+  }, [managerTaskAlerts, alertFilter]);
+
+  const formatTimeAgo = (date) => {
+    if (!date) return '';
+    const now = new Date();
+    const d = new Date(date);
+    const diffMs = now - d;
+    if (diffMs < 0) {
+      const days = Math.ceil(Math.abs(diffMs) / (1000 * 60 * 60 * 24));
+      return days === 0 ? 'Due today' : `Due in ${days}d`;
+    }
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  };
 
   // Filtered Tasks for Operational Queue
   const filteredTasks = useMemo(() => {
@@ -332,7 +537,9 @@ export const TaskforceDashboardPage = () => {
       if (res && res.success) {
         showToast('Operation progress updated successfully', 'success');
         setIsQuickProgressOpen(false);
+        const updatedId = quickProgressTask._id;
         setQuickProgressTask(null);
+        window.dispatchEvent(new CustomEvent('taskforceTaskUpdated', { detail: { taskId: updatedId } }));
         fetchDashboardData(true);
       } else {
         showToast(res?.message || 'Failed to update progress', 'error');
@@ -360,9 +567,11 @@ export const TaskforceDashboardPage = () => {
     try {
       setUploadingProof(true);
       const formData = new FormData();
+      formData.append('file', proofFile);
       formData.append('proof', proofFile);
       formData.append('stage', proofStage);
       formData.append('remarks', proofRemarks);
+      formData.append('caption', proofRemarks);
 
       const res = await taskService.uploadProof(proofTaskId, formData);
       if (res && res.success) {
@@ -370,7 +579,9 @@ export const TaskforceDashboardPage = () => {
         setIsQuickProofOpen(false);
         setProofFile(null);
         setProofRemarks('');
+        const updatedId = proofTaskId;
         setProofTaskId('');
+        window.dispatchEvent(new CustomEvent('taskforceTaskUpdated', { detail: { taskId: updatedId } }));
         fetchDashboardData(true);
       } else {
         showToast(res?.message || 'Failed to upload proof', 'error');
@@ -398,9 +609,11 @@ export const TaskforceDashboardPage = () => {
         });
         if (res && res.success) {
           showToast('Roadblock reported and team alerted', 'warning');
+          const updatedId = roadblockTask._id;
           setRoadblockModalMode(null);
           setRoadblockTask(null);
           setRoadblockReason('');
+          window.dispatchEvent(new CustomEvent('taskforceTaskUpdated', { detail: { taskId: updatedId } }));
           fetchDashboardData(true);
         }
       } else if (roadblockModalMode === 'resolve') {
@@ -409,8 +622,10 @@ export const TaskforceDashboardPage = () => {
         });
         if (res && res.success) {
           showToast('Roadblock marked resolved! Task back in progress.', 'success');
+          const updatedId = roadblockTask._id;
           setRoadblockModalMode(null);
           setRoadblockTask(null);
+          window.dispatchEvent(new CustomEvent('taskforceTaskUpdated', { detail: { taskId: updatedId } }));
           fetchDashboardData(true);
         }
       }
@@ -793,56 +1008,286 @@ export const TaskforceDashboardPage = () => {
       </div>
 
       {/* ======================================================== */}
-      {/* 3. ROADBLOCK ALERT BANNER (IF ANY HALTED TASKS)           */}
+      {/* 3. LIVE TASK NOTIFICATIONS & DIRECTIVES ALERT CENTER      */}
       {/* ======================================================== */}
-      {kpis.roadblocksCount > 0 && activeMode !== 'roadblocks' && (
+      {managerTaskAlerts.length > 0 && (
         <div
           style={{
-            background: '#fff1f2',
-            border: '1px solid #fecdd3',
-            borderRadius: '12px',
-            padding: '14px 20px',
+            background: '#ffffff',
+            borderRadius: '14px',
+            border: '1px solid #e2e8f0',
+            padding: '16px 20px',
             marginBottom: '24px',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            flexWrap: 'wrap',
+            flexDirection: 'column',
+            gap: '12px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ffe4e6', color: '#e11d48', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <i className="fa-solid fa-triangle-exclamation" style={{ fontSize: '16px' }}></i>
+          {/* Header Row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '50%',
+                  background: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#fee2e2' : '#eff6ff',
+                  color: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#dc2626' : '#2563eb',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 0 0 4px rgba(37, 99, 235, 0.08)',
+                }}
+              >
+                <i className="fa-solid fa-bell" style={{ fontSize: '15px' }}></i>
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>
+                    Task Notifications &amp; Directives Alert Center
+                  </span>
+                  <span
+                    style={{
+                      background: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#fee2e2' : '#e0f2fe',
+                      color: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#dc2626' : '#0369a1',
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                    }}
+                  >
+                    {managerTaskAlerts.length} Active Notice{managerTaskAlerts.length > 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
+                  Live task-level roadblocks, directives, communication updates &amp; site evidence. Click any card to open task.
+                </div>
+              </div>
             </div>
-            <div>
-              <div style={{ fontWeight: 700, color: '#9f1239', fontSize: '14px' }}>
-                {kpis.roadblocksCount} Taskforce Directive{kpis.roadblocksCount > 1 ? 's' : ''} Stalled due to Field Roadblocks!
-              </div>
-              <div style={{ fontSize: '12px', color: '#be123c' }}>
-                Field issues reported (material shortages, approvals, structural holds). Immediate supervisor resolution recommended.
-              </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {kpis.roadblocksCount > 0 && activeMode !== 'roadblocks' && (
+                <button
+                  onClick={() => handleModeChange('roadblocks')}
+                  style={{
+                    background: '#fff1f2',
+                    border: '1px solid #fecdd3',
+                    color: '#e11d48',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <i className="fa-solid fa-triangle-exclamation"></i>
+                  {kpis.roadblocksCount} Roadblock{kpis.roadblocksCount > 1 ? 's' : ''}
+                </button>
+              )}
+              <button
+                onClick={() => setIsAlertCenterCollapsed(!isAlertCenterCollapsed)}
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  color: '#475569',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <i className={`fa-solid ${isAlertCenterCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'}`}></i>
+                {isAlertCenterCollapsed ? 'Expand' : 'Collapse'}
+              </button>
             </div>
           </div>
 
-          <button
-            onClick={() => handleModeChange('roadblocks')}
-            style={{
-              background: '#e11d48',
-              color: '#ffffff',
-              border: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              fontSize: '13px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            <i className="fa-solid fa-wrench"></i>
-            Review Roadblocks
-          </button>
+          {!isAlertCenterCollapsed && (
+            <>
+              {/* Category Filter Pills */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                {[
+                  { id: 'all', label: `All (${managerTaskAlerts.length})`, icon: 'fa-solid fa-layer-group' },
+                  { id: 'roadblock', label: `Roadblocks (${managerTaskAlerts.filter((a) => a.category === 'roadblock').length})`, icon: 'fa-solid fa-triangle-exclamation', color: '#dc2626' },
+                  { id: 'md_directive', label: `MD Notes (${managerTaskAlerts.filter((a) => a.category === 'md_directive').length})`, icon: 'fa-solid fa-crown', color: '#ca8a04' },
+                  { id: 'comment', label: `Updates (${managerTaskAlerts.filter((a) => a.category === 'comment').length})`, icon: 'fa-solid fa-comments', color: '#0284c7' },
+                  { id: 'proof', label: `Site Evidence (${managerTaskAlerts.filter((a) => a.category === 'proof').length})`, icon: 'fa-solid fa-camera', color: '#7c3aed' },
+                  { id: 'followup', label: `Follow-ups (${managerTaskAlerts.filter((a) => a.category === 'followup').length})`, icon: 'fa-solid fa-clock-rotate-left', color: '#d97706' },
+                ].map((pill) => {
+                  const count =
+                    pill.id === 'all'
+                      ? managerTaskAlerts.length
+                      : managerTaskAlerts.filter((a) => a.category === pill.id).length;
+                  if (count === 0 && pill.id !== 'all') return null;
+
+                  const isSelected = alertFilter === pill.id;
+                  return (
+                    <button
+                      key={pill.id}
+                      onClick={() => setAlertFilter(pill.id)}
+                      style={{
+                        background: isSelected ? '#0f172a' : '#f8fafc',
+                        color: isSelected ? '#ffffff' : pill.color || '#475569',
+                        border: isSelected ? '1px solid #0f172a' : '1px solid #e2e8f0',
+                        padding: '5px 12px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: isSelected ? 700 : 600,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <i className={pill.icon}></i>
+                      {pill.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Alert Cards Grid */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
+                  gap: '12px',
+                }}
+              >
+                {filteredAlerts.slice(0, 9).map((alert) => (
+                  <div
+                    key={alert.id}
+                    onClick={() => {
+                      setSelectedTaskId(alert.taskId);
+                      setIsDetailModalOpen(true);
+                    }}
+                    style={{
+                      background: alert.bg,
+                      border: `1px solid ${alert.borderColor}`,
+                      borderRadius: '12px',
+                      padding: '12px 14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '6px',
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.06)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    {/* Alert Top Strip */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          color: alert.color,
+                          letterSpacing: '0.04em',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                        }}
+                      >
+                        <i className={alert.icon}></i>
+                        {alert.label}
+                      </span>
+                      <span style={{ fontSize: '11px', color: '#64748b' }}>
+                        {formatTimeAgo(alert.time)}
+                      </span>
+                    </div>
+
+                    {/* Task Title & Code */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: '#334155', fontFamily: 'monospace' }}>
+                        {alert.taskCode}
+                      </span>
+                      {alert.department && (
+                        <span style={{ fontSize: '10px', background: 'rgba(255,255,255,0.7)', color: '#475569', padding: '1px 5px', borderRadius: '4px', fontWeight: 600 }}>
+                          {alert.department}
+                        </span>
+                      )}
+                      {alert.flat && (
+                        <span style={{ fontSize: '10px', background: 'rgba(255,255,255,0.7)', color: '#475569', padding: '1px 5px', borderRadius: '4px', fontWeight: 600 }}>
+                          Flat {alert.flat}
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', lineHeight: 1.3 }}>
+                      {alert.taskTitle}
+                    </div>
+
+                    {/* Alert Content / Message */}
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: '12px',
+                        color: '#334155',
+                        lineHeight: 1.4,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {alert.message}
+                    </p>
+
+                    {/* Bottom Metadata & CTA */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '4px',
+                        paddingTop: '6px',
+                        borderTop: '1px dashed rgba(0,0,0,0.08)',
+                      }}
+                    >
+                      <span style={{ fontSize: '11px', color: '#64748b' }}>
+                        By: <strong style={{ color: '#1e293b' }}>{alert.author}</strong>
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          color: alert.color,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        Open Task <i className="fa-solid fa-arrow-right"></i>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {filteredAlerts.length > 9 && (
+                <div style={{ textAlign: 'center', marginTop: '6px' }}>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>
+                    Showing top 9 of {filteredAlerts.length} notices. Click any directive card below to see full history.
+                  </span>
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
 
@@ -1143,6 +1588,97 @@ export const TaskforceDashboardPage = () => {
                         </div>
                       )}
 
+                      {/* Live Task Notification Badges Bar */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                        {(task.comments?.length || 0) > 0 && (
+                          <span
+                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              background: '#f0f9ff',
+                              color: '#0369a1',
+                              border: '1px solid #bae6fd',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              cursor: 'pointer',
+                            }}
+                            title="Click to view directive updates & comments"
+                          >
+                            <i className="fa-solid fa-comments"></i> {task.comments.length} update{task.comments.length > 1 ? 's' : ''}
+                          </span>
+                        )}
+
+                        {(task.isMDDirective || (task.comments || []).some((c) => c.isMDNote)) && (
+                          <span
+                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              background: '#fefce8',
+                              color: '#a16207',
+                              border: '1px solid #fef08a',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              cursor: 'pointer',
+                            }}
+                            title="Click to view management directive instructions"
+                          >
+                            <i className="fa-solid fa-crown"></i> MD Note
+                          </span>
+                        )}
+
+                        {(task.uploads?.length || 0) > 0 && (
+                          <span
+                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              background: '#f5f3ff',
+                              color: '#7c3aed',
+                              border: '1px solid #ddd6fe',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              cursor: 'pointer',
+                            }}
+                            title="Click to view uploaded work evidence"
+                          >
+                            <i className="fa-solid fa-camera"></i> {task.uploads.length} proof{task.uploads.length > 1 ? 's' : ''}
+                          </span>
+                        )}
+
+                        {task.followUpSchedule?.nextFollowUpDate && (
+                          <span
+                            onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              background: '#fffbeb',
+                              color: '#d97706',
+                              border: '1px solid #fde68a',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              cursor: 'pointer',
+                            }}
+                            title="Scheduled inspection"
+                          >
+                            <i className="fa-solid fa-clock-rotate-left"></i> Follow-up
+                          </span>
+                        )}
+                      </div>
+
                       {/* Roadblock Reason note if blocked */}
                       {isBlocked && (
                         <div style={{ background: '#ffe4e6', borderRadius: '6px', padding: '8px 12px', marginBottom: '10px', fontSize: '12px', color: '#9f1239' }}>
@@ -1432,40 +1968,74 @@ export const TaskforceDashboardPage = () => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                   {kpis.allProofs.slice(0, 6).map((proof, idx) => {
-                    const imgUrl = getFileUrl(proof.fileUrl || proof.path);
+                    const rawUrl = proof.fileUrl || proof.path || '';
+                    const imgUrl = getFileUrl(rawUrl);
+                    const fileMeta = getFileTypeMeta(rawUrl, proof.fileName || proof.caption || proof.remarks);
+                    const isImg = fileMeta.isImage;
+
                     return (
                       <div
                         key={idx}
-                        onClick={() => setLightboxImage(imgUrl)}
+                        onClick={() => {
+                          if (isImg) {
+                            setLightboxImage({ url: imgUrl, title: proof.taskTitle || 'Site Photo', meta: fileMeta });
+                          } else {
+                            window.open(imgUrl, '_blank');
+                          }
+                        }}
+                        title={isImg ? 'Click to view photo' : `Click to open ${fileMeta.label}`}
                         style={{
                           height: '75px',
                           borderRadius: '8px',
-                          background: '#f1f5f9',
+                          background: isImg ? '#f1f5f9' : '#f8fafc',
                           overflow: 'hidden',
                           cursor: 'pointer',
                           position: 'relative',
-                          border: '1px solid #e2e8f0',
+                          border: `1px solid ${isImg ? '#e2e8f0' : fileMeta.color + '40'}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
-                        <img
-                          src={imgUrl}
-                          alt="Site proof"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.parentElement.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:11px;"><i class="fa-solid fa-file"></i></div>';
-                          }}
-                        />
+                        {isImg ? (
+                          <img
+                            src={imgUrl}
+                            alt="Site proof"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const next = e.currentTarget.nextElementSibling;
+                              if (next) next.style.display = 'flex';
+                            }}
+                          />
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', padding: '4px' }}>
+                            <i className={fileMeta.icon} style={{ fontSize: '20px', color: fileMeta.color }}></i>
+                            <span style={{ fontSize: '9px', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>
+                              {fileMeta.type}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Hidden fallback container if image load errors */}
+                        {isImg && (
+                          <div style={{ display: 'none', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#94a3b8', gap: '2px' }}>
+                            <i className="fa-solid fa-file-image" style={{ fontSize: '18px' }}></i>
+                            <span style={{ fontSize: '8px', fontWeight: 600 }}>Image</span>
+                          </div>
+                        )}
+
                         <span
                           style={{
                             position: 'absolute',
                             bottom: '2px',
                             left: '2px',
-                            background: 'rgba(0,0,0,0.65)',
+                            background: isImg ? 'rgba(0,0,0,0.65)' : fileMeta.color,
                             color: '#ffffff',
                             fontSize: '9px',
                             padding: '1px 4px',
                             borderRadius: '3px',
+                            fontWeight: 700,
                           }}
                         >
                           {proof.stage || 'proof'}
@@ -1522,9 +2092,96 @@ export const TaskforceDashboardPage = () => {
                     {task.title}
                   </h3>
 
-                  <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 12px 0', lineClamp: 2, overflow: 'hidden' }}>
+                  <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 10px 0', lineClamp: 2, overflow: 'hidden' }}>
                     {task.description || 'No additional details provided.'}
                   </p>
+
+                  {/* Task Notifications Strip */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                    {task.roadblockAlert?.hasRoadblock && !task.roadblockAlert?.isResolved && (
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          background: '#fee2e2',
+                          color: '#dc2626',
+                          border: '1px solid #fca5a5',
+                          padding: '2px 7px',
+                          borderRadius: '5px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <i className="fa-solid fa-triangle-exclamation"></i> Roadblock
+                      </span>
+                    )}
+
+                    {(task.isMDDirective || (task.comments || []).some((c) => c.isMDNote)) && (
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          background: '#fefce8',
+                          color: '#a16207',
+                          border: '1px solid #fef08a',
+                          padding: '2px 7px',
+                          borderRadius: '5px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <i className="fa-solid fa-crown"></i> MD Note
+                      </span>
+                    )}
+
+                    {(task.comments?.length || 0) > 0 && (
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          background: '#f0f9ff',
+                          color: '#0369a1',
+                          border: '1px solid #bae6fd',
+                          padding: '2px 7px',
+                          borderRadius: '5px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <i className="fa-solid fa-comments"></i> {task.comments.length} update{task.comments.length > 1 ? 's' : ''}
+                      </span>
+                    )}
+
+                    {(task.uploads?.length || 0) > 0 && (
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          background: '#f5f3ff',
+                          color: '#7c3aed',
+                          border: '1px solid #ddd6fe',
+                          padding: '2px 7px',
+                          borderRadius: '5px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <i className="fa-solid fa-camera"></i> {task.uploads.length} proof{task.uploads.length > 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #e2e8f0' }}>
                     <button
@@ -1624,6 +2281,51 @@ export const TaskforceDashboardPage = () => {
                     )}
                   </div>
 
+                  {/* Roadblock updates & proofs badges */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                    {(task.comments?.length || 0) > 0 && (
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          background: '#f0f9ff',
+                          color: '#0369a1',
+                          border: '1px solid #bae6fd',
+                          padding: '2px 8px',
+                          borderRadius: '5px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <i className="fa-solid fa-comments"></i> {task.comments.length} update{task.comments.length > 1 ? 's' : ''}
+                      </span>
+                    )}
+
+                    {(task.uploads?.length || 0) > 0 && (
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          background: '#f5f3ff',
+                          color: '#7c3aed',
+                          border: '1px solid #ddd6fe',
+                          padding: '2px 8px',
+                          borderRadius: '5px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <i className="fa-solid fa-camera"></i> {task.uploads.length} proof{task.uploads.length > 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
                     <button
                       onClick={() => {
@@ -1720,36 +2422,83 @@ export const TaskforceDashboardPage = () => {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
               {kpis.allProofs.map((proof, idx) => {
-                const imgUrl = getFileUrl(proof.fileUrl || proof.path);
+                const rawUrl = proof.fileUrl || proof.path || '';
+                const imgUrl = getFileUrl(rawUrl);
+                const fileMeta = getFileTypeMeta(rawUrl, proof.fileName || proof.caption || proof.remarks);
+                const isImg = fileMeta.isImage;
+
                 return (
                   <div
                     key={idx}
                     style={{
-                      background: '#f8fafc',
+                      background: '#ffffff',
                       borderRadius: '12px',
                       border: '1px solid #e2e8f0',
                       overflow: 'hidden',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+                      display: 'flex',
+                      flexDirection: 'column',
                     }}
                   >
                     <div
-                      onClick={() => setLightboxImage(imgUrl)}
-                      style={{ height: '180px', background: '#e2e8f0', cursor: 'pointer', position: 'relative' }}
+                      onClick={() => {
+                        if (isImg) {
+                          setLightboxImage({ url: imgUrl, title: proof.taskTitle || 'Site Photo', meta: fileMeta });
+                        } else {
+                          window.open(imgUrl, '_blank');
+                        }
+                      }}
+                      title={isImg ? 'Click to view photo' : `Click to open ${fileMeta.label}`}
+                      style={{
+                        height: '180px',
+                        background: isImg ? '#0f172a' : '#f8fafc',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderBottom: '1px solid #e2e8f0',
+                      }}
                     >
-                      <img
-                        src={imgUrl}
-                        alt="Evidence"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
+                      {isImg ? (
+                        <img
+                          src={imgUrl}
+                          alt="Evidence"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const next = e.currentTarget.nextElementSibling;
+                            if (next) next.style.display = 'flex';
+                          }}
+                        />
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '16px', textAlign: 'center' }}>
+                          <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: `${fileMeta.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: fileMeta.color, fontSize: '26px' }}>
+                            <i className={fileMeta.icon}></i>
+                          </div>
+                          <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
+                            {fileMeta.label}
+                          </span>
+                          <span style={{ fontSize: '11px', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <i className="fa-solid fa-arrow-up-right-from-square"></i> Click to Open / Download
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Image fallback if img tag fails */}
+                      {isImg && (
+                        <div style={{ display: 'none', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#94a3b8', gap: '6px' }}>
+                          <i className="fa-solid fa-file-image" style={{ fontSize: '32px' }}></i>
+                          <span style={{ fontSize: '12px', fontWeight: 600 }}>Image unavailable</span>
+                        </div>
+                      )}
+
                       <span
                         style={{
                           position: 'absolute',
                           top: '10px',
                           left: '10px',
-                          background: 'rgba(15, 23, 42, 0.75)',
+                          background: isImg ? 'rgba(15, 23, 42, 0.75)' : fileMeta.color,
                           color: '#ffffff',
                           fontSize: '11px',
                           fontWeight: 700,
@@ -1951,6 +2700,7 @@ export const TaskforceDashboardPage = () => {
         onClose={() => {
           setIsMemberDrawerOpen(false);
           setSelectedMemberForDrawer(null);
+          fetchDashboardData(true);
         }}
         member={selectedMemberForDrawer}
         onOpenTaskDetail={(taskId) => {
@@ -2128,11 +2878,11 @@ export const TaskforceDashboardPage = () => {
 
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
-                  Upload Photo / File *
+                  Upload Photo / File (Any file type accepted) *
                 </label>
                 <input
                   type="file"
-                  accept="image/*,.pdf,.doc,.docx"
+                  accept="*/*"
                   onChange={(e) => setProofFile(e.target.files[0])}
                   required
                   style={{ width: '100%', fontSize: '13px' }}
@@ -2265,53 +3015,120 @@ export const TaskforceDashboardPage = () => {
         </div>
       )}
 
-      {/* LIGHTBOX MODAL FOR SITE EVIDENCE PHOTOS */}
-      {lightboxImage && (
-        <div
-          onClick={() => setLightboxImage(null)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.85)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '24px',
-            cursor: 'zoom-out',
-          }}
-        >
-          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
-            <img
-              src={lightboxImage}
-              alt="Enlarged site evidence"
-              style={{ maxWidth: '100%', maxHeight: '90vh', borderRadius: '8px', objectFit: 'contain', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
-            />
-            <button
-              onClick={() => setLightboxImage(null)}
+      {/* LIGHTBOX MODAL FOR SITE EVIDENCE & MEDIA */}
+      {lightboxImage && (() => {
+        const url = typeof lightboxImage === 'string' ? lightboxImage : lightboxImage?.url;
+        const meta = typeof lightboxImage === 'object' && lightboxImage?.meta ? lightboxImage.meta : getFileTypeMeta(url);
+        const title = typeof lightboxImage === 'object' && lightboxImage?.title ? lightboxImage.title : 'Site Evidence';
+
+        return (
+          <div
+            onClick={() => setLightboxImage(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.85)',
+              backdropFilter: 'blur(6px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 99999,
+              padding: '24px',
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
               style={{
-                position: 'absolute',
-                top: '-14px',
-                right: '-14px',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                background: '#ffffff',
-                border: 'none',
-                color: '#0f172a',
-                fontSize: '16px',
-                cursor: 'pointer',
+                position: 'relative',
+                maxWidth: '90vw',
+                maxHeight: '90vh',
+                background: '#0f172a',
+                borderRadius: '12px',
+                padding: '16px',
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
               }}
             >
-              <i className="fa-solid fa-xmark"></i>
-            </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '12px', gap: '16px' }}>
+                <span style={{ color: '#ffffff', fontSize: '13px', fontWeight: 700 }}>{title}</span>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    style={{
+                      background: '#1e293b',
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                  >
+                    <i className="fa-solid fa-arrow-up-right-from-square"></i> Open Original
+                  </a>
+                  <button
+                    onClick={() => setLightboxImage(null)}
+                    style={{
+                      width: '30px',
+                      height: '30px',
+                      borderRadius: '50%',
+                      background: '#ffffff',
+                      border: 'none',
+                      color: '#0f172a',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              </div>
+
+              {meta.type === 'video' ? (
+                <video src={url} controls autoPlay style={{ maxWidth: '100%', maxHeight: '75vh', borderRadius: '8px' }} />
+              ) : meta.type === 'pdf' ? (
+                <iframe src={url} title="PDF Preview" style={{ width: '80vw', height: '75vh', border: 'none', borderRadius: '8px', background: '#ffffff' }} />
+              ) : meta.isImage ? (
+                <img
+                  src={url}
+                  alt="Enlarged site evidence"
+                  style={{ maxWidth: '100%', maxHeight: '75vh', borderRadius: '8px', objectFit: 'contain' }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const next = e.currentTarget.nextElementSibling;
+                    if (next) next.style.display = 'flex';
+                  }}
+                />
+              ) : (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#ffffff' }}>
+                  <i className={meta.icon} style={{ fontSize: '48px', color: meta.color, marginBottom: '12px' }}></i>
+                  <div style={{ fontSize: '16px', fontWeight: 700 }}>{meta.label}</div>
+                  <div style={{ fontSize: '13px', color: '#94a3b8', marginTop: '6px' }}>Click "Open Original" above to view or download this file.</div>
+                </div>
+              )}
+
+              {meta.isImage && (
+                <div style={{ display: 'none', padding: '40px', textAlign: 'center', color: '#ffffff', flexDirection: 'column', alignItems: 'center' }}>
+                  <i className="fa-solid fa-file-image" style={{ fontSize: '48px', color: '#ef4444', marginBottom: '12px' }}></i>
+                  <div style={{ fontSize: '16px', fontWeight: 700 }}>Image Preview Failed</div>
+                  <div style={{ fontSize: '13px', color: '#94a3b8', marginTop: '6px' }}>Click "Open Original" above to view directly in browser.</div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };

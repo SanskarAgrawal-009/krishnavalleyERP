@@ -73,8 +73,15 @@ export const TaskforceTeamTab = ({
     const handleDeptUpdated = () => {
       fetchData();
     };
+    const handleTeamUpdated = () => {
+      fetchData();
+    };
     window.addEventListener('departmentsUpdated', handleDeptUpdated);
-    return () => window.removeEventListener('departmentsUpdated', handleDeptUpdated);
+    window.addEventListener('taskforceTeamUpdated', handleTeamUpdated);
+    return () => {
+      window.removeEventListener('departmentsUpdated', handleDeptUpdated);
+      window.removeEventListener('taskforceTeamUpdated', handleTeamUpdated);
+    };
   }, []);
 
   const fetchData = async () => {
@@ -231,6 +238,7 @@ export const TaskforceTeamTab = ({
       const res = await taskforceManagerService.deleteTeamMember(member._id);
       if (res && res.success) {
         showToast(res.message || 'Member removed', 'success');
+        window.dispatchEvent(new CustomEvent('taskforceTeamUpdated', { detail: { removedId: member._id } }));
         fetchData();
       } else {
         showToast(res?.message || 'Failed to remove member', 'error');

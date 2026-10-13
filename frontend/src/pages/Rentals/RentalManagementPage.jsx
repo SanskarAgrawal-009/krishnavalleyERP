@@ -148,6 +148,19 @@ export const RentalManagementPage = () => {
     return () => clearTimeout(timer);
   }, [searchQuery, tenureFilter]);
 
+  useEffect(() => {
+    const handleRentalsUpdated = () => {
+      fetchActiveRentals();
+      fetchPreviousOwnersHistory();
+    };
+    window.addEventListener('rentalsUpdated', handleRentalsUpdated);
+    window.addEventListener('flatBuybackRecorded', handleRentalsUpdated);
+    return () => {
+      window.removeEventListener('rentalsUpdated', handleRentalsUpdated);
+      window.removeEventListener('flatBuybackRecorded', handleRentalsUpdated);
+    };
+  }, []);
+
   // Search trigger on submit
   const handleSearchSubmit = (e) => {
     e.preventDefault();

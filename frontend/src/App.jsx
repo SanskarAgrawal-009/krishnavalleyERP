@@ -33,14 +33,17 @@ import { TaskforcePage } from './pages/Taskforce/TaskforcePage.jsx';
 import { TaskforceManagerPage } from './pages/Taskforce/TaskforceManagerPage.jsx';
 import { TaskforceDashboardPage } from './pages/Taskforce/TaskforceDashboardPage.jsx';
 
+import { ErrorBoundary } from './components/common/ErrorBoundary.jsx';
+
 import './styles/global.css';
 import './styles/layout.css';
 
 export const App = () => {
   return (
-    <ToastProvider>
-      <TopLoadingBar />
-      <AuthProvider>
+    <ErrorBoundary>
+      <ToastProvider>
+        <TopLoadingBar />
+        <AuthProvider>
         <BrowserRouter>
         <Routes>
           {/* Public Authentication Route */}
@@ -344,8 +347,9 @@ export const App = () => {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
-  </ToastProvider>
+      </AuthProvider>
+    </ToastProvider>
+  </ErrorBoundary>
   );
 };
 

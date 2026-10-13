@@ -122,6 +122,8 @@ export const BulkEnrollRentalModal = ({
       if (res.success) {
         alert(res.message || 'Selected units successfully enrolled under 3-Year Rental Management!');
         if (onSuccess) onSuccess();
+        window.dispatchEvent(new CustomEvent('rentalsUpdated'));
+        window.dispatchEvent(new CustomEvent('salesUpdated'));
         onClose();
       } else {
         alert(res.message || 'Failed to enroll units.');
