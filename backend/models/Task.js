@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import './User.js';
 import './Project.js';
 import './Flat.js';
+import './TaskforceMember.js';
 
 const TaskFollowUpLogSchema = new mongoose.Schema(
   {

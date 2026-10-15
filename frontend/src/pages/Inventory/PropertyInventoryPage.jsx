@@ -11,6 +11,7 @@ import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { TableSkeleton, CardGridSkeleton } from '../../components/common/SkeletonLoader.jsx';
 import { EmptyState } from '../../components/common/EmptyState.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 import {
   Building2,
@@ -51,6 +52,10 @@ export const PropertyInventoryPage = () => {
   const [loading, setLoading] = useState(false);
   const [loadingFlats, setLoadingFlats] = useState(false);
   const toast = useToast();
+  const { user, isSuperAdmin, hasPermission } = useAuth();
+  const canCreate = isSuperAdmin || hasPermission('inventory:create') || hasPermission('inventory:manage');
+  const canEdit = isSuperAdmin || hasPermission('inventory:edit') || hasPermission('inventory:manage');
+  const canDelete = isSuperAdmin || hasPermission('inventory:manage');
 
   // Hierarchy Selection State
   const [selectedProject, setSelectedProject] = useState(null);
@@ -470,26 +475,28 @@ export const PropertyInventoryPage = () => {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <button
-            onClick={handleWipeAllFlats}
-            title="Wipe all flats, sales, and rentals"
-            style={{
-              background: '#f1f5f9',
-              border: '1px solid #e2e8f0',
-              color: '#0f172a',
-              padding: '8px 14px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <Trash2 size={14} /> Wipe All Inventory
-          </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {canDelete && (
+            <button
+              onClick={handleWipeAllFlats}
+              title="Wipe all flats, sales, and rentals"
+              style={{
+                background: '#f1f5f9',
+                border: '1px solid #e2e8f0',
+                color: '#0f172a',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <Trash2 size={14} /> Wipe All Inventory
+            </button>
+          )}
 
           <button
             onClick={fetchProjects}
@@ -593,27 +600,29 @@ export const PropertyInventoryPage = () => {
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
-            style={{
-              background: '#1a73e8',
-              color: '#ffffff',
-              padding: '8px 14px',
-              borderRadius: '6px',
-              fontSize: '0.82rem',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              border: 'none',
-              boxShadow: '0 1px 2px rgba(26,115,232,0.2)'
-            }}
-          >
-            <Plus size={15} /> Add Project
-          </button>
+          {canCreate && (
+            <button
+              onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
+              style={{
+                background: '#1a73e8',
+                color: '#ffffff',
+                padding: '8px 14px',
+                borderRadius: '6px',
+                fontSize: '0.82rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                border: 'none',
+                boxShadow: '0 1px 2px rgba(26,115,232,0.2)'
+              }}
+            >
+              <Plus size={15} /> Add Project
+            </button>
+          )}
 
-          {selectedProject && (
+          {canCreate && selectedProject && (
             <button
               onClick={() => setIsBuildingModalOpen(true)}
               style={{
@@ -634,7 +643,7 @@ export const PropertyInventoryPage = () => {
             </button>
           )}
 
-          {selectedBuilding && (
+          {canCreate && selectedBuilding && (
             <button
               onClick={() => setIsFloorModalOpen(true)}
               style={{
@@ -655,7 +664,7 @@ export const PropertyInventoryPage = () => {
             </button>
           )}
 
-          {selectedBuilding && (
+          {canCreate && selectedBuilding && (
             <button
               onClick={() => { setEditingFlat(null); setIsFlatModalOpen(true); }}
               style={{
@@ -676,7 +685,7 @@ export const PropertyInventoryPage = () => {
             </button>
           )}
 
-          {selectedBuilding && (
+          {canCreate && selectedBuilding && (
             <button
               onClick={() => setIsImportFlatsModalOpen(true)}
               style={{
@@ -907,8 +916,8 @@ export const PropertyInventoryPage = () => {
             />
           ) : tier1ViewMode === 'matrix' ? (
             /* CROSS-TOWER COMPARATIVE MATRIX TABLE */
-            <div className="g-card" style={{ padding: '0', borderRadius: '12px', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+            <div className="g-card table-responsive" style={{ padding: '0', borderRadius: '12px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                     <th style={{ padding: '14px 18px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase' }}>Project</th>
@@ -1297,27 +1306,31 @@ export const PropertyInventoryPage = () => {
                       paddingTop: '12px'
                     }}>
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingProject(proj);
-                            setIsProjectModalOpen(true);
-                          }}
-                          title="Edit Project"
-                          style={{ background: '#f3f4f5', color: '#414754', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer', border: '1px solid #dadce0' }}
-                        >
-                          <Edit size={13} />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteProject(proj);
-                          }}
-                          title="Delete Project"
-                          style={{ background: '#f1f5f9', color: '#0f172a', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer', border: '1px solid #f1f5f9' }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
+                        {canEdit && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingProject(proj);
+                              setIsProjectModalOpen(true);
+                            }}
+                            title="Edit Project"
+                            style={{ background: '#f3f4f5', color: '#414754', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer', border: '1px solid #dadce0' }}
+                          >
+                            <Edit size={13} />
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteProject(proj);
+                            }}
+                            title="Delete Project"
+                            style={{ background: '#f1f5f9', color: '#0f172a', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer', border: '1px solid #f1f5f9' }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
                       </div>
 
                       <button
@@ -1380,24 +1393,26 @@ export const PropertyInventoryPage = () => {
                 </div>
               </div>
 
-              <button
-                onClick={() => setIsBuildingModalOpen(true)}
-                style={{
-                  background: '#1a73e8',
-                  color: '#ffffff',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
-              >
-                <Plus size={15} /> Add Building / Tower
-              </button>
+              {canCreate && (
+                <button
+                  onClick={() => setIsBuildingModalOpen(true)}
+                  style={{
+                    background: '#1a73e8',
+                    color: '#ffffff',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    border: 'none'
+                  }}
+                >
+                  <Plus size={15} /> Add Building / Tower
+                </button>
+              )}
             </div>
 
             {/* Project Aggregated Inventory Badges */}
@@ -1559,16 +1574,18 @@ export const PropertyInventoryPage = () => {
                     paddingTop: '10px',
                     marginTop: '2px'
                   }}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteBuilding(bld);
-                      }}
-                      title="Delete Building"
-                      style={{ background: '#f1f5f9', color: '#0f172a', padding: '5px 8px', borderRadius: '4px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', border: '1px solid #f1f5f9' }}
-                    >
-                      <Trash2 size={13} /> Delete
-                    </button>
+                    {canDelete && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteBuilding(bld);
+                        }}
+                        title="Delete Building"
+                        style={{ background: '#f1f5f9', color: '#0f172a', padding: '5px 8px', borderRadius: '4px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', border: '1px solid #f1f5f9' }}
+                      >
+                        <Trash2 size={13} /> Delete
+                      </button>
+                    )}
 
                     <span style={{ fontSize: '0.8rem', color: '#1a73e8', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       View Flats Matrix <ArrowRight size={14} />
@@ -1619,45 +1636,47 @@ export const PropertyInventoryPage = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => setIsFloorModalOpen(true)}
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid #dadce0',
-                  color: '#1a73e8',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer'
-                }}
-              >
-                <Plus size={15} /> Add Floor
-              </button>
+            {canCreate && (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => setIsFloorModalOpen(true)}
+                  style={{
+                    background: '#ffffff',
+                    border: '1px solid #dadce0',
+                    color: '#1a73e8',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Plus size={15} /> Add Floor
+                </button>
 
-              <button
-                onClick={() => { setEditingFlat(null); setIsFlatModalOpen(true); }}
-                style={{
-                  background: '#1a73e8',
-                  color: '#ffffff',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
-              >
-                <Plus size={15} /> Add Flat Manually
-              </button>
-            </div>
+                <button
+                  onClick={() => { setEditingFlat(null); setIsFlatModalOpen(true); }}
+                  style={{
+                    background: '#1a73e8',
+                    color: '#ffffff',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    border: 'none'
+                  }}
+                >
+                  <Plus size={15} /> Add Flat Manually
+                </button>
+              </div>
+            )}
           </div>
 
           {flats.length === 0 ? (
@@ -2141,27 +2160,31 @@ export const PropertyInventoryPage = () => {
                         Flat Profile &amp; Passbook </button>
 
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingFlat(flat);
-                            setIsFlatModalOpen(true);
-                          }}
-                          title="Edit Flat"
-                          style={{ padding: '5px 8px', background: '#f3f4f5', borderRadius: '4px', color: '#414754', cursor: 'pointer', border: '1px solid #dadce0' }}
-                        >
-                          <Edit size={13} />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteFlat(flat);
-                          }}
-                          title="Delete Flat"
-                          style={{ padding: '5px 8px', background: '#f1f5f9', borderRadius: '4px', color: '#0f172a', cursor: 'pointer', border: '1px solid #f1f5f9' }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
+                        {canEdit && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingFlat(flat);
+                              setIsFlatModalOpen(true);
+                            }}
+                            title="Edit Flat"
+                            style={{ padding: '5px 8px', background: '#f3f4f5', borderRadius: '4px', color: '#414754', cursor: 'pointer', border: '1px solid #dadce0' }}
+                          >
+                            <Edit size={13} />
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteFlat(flat);
+                            }}
+                            title="Delete Flat"
+                            style={{ padding: '5px 8px', background: '#f1f5f9', borderRadius: '4px', color: '#0f172a', cursor: 'pointer', border: '1px solid #f1f5f9' }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -2211,7 +2234,7 @@ export const PropertyInventoryPage = () => {
       {selectedFlatIds.length > 0 && (
         <div style={{
           position: 'sticky',
-          bottom: '24px',
+          bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)',
           zIndex: 40,
           background: '#0f172a',
           color: '#ffffff',
@@ -2248,26 +2271,27 @@ export const PropertyInventoryPage = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <button
-              onClick={handleBulkDeleteSelected}
-              style={{
-                background: '#0f172a',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '9px 16px',
-                fontSize: '0.84rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                boxShadow: '0 2px 8px rgba(220,38,38,0.4)'
-              }}
-            >
-              <Trash2 size={15} /> Delete Selected ({selectedFlatIds.length})
-            </button>
-
+            {canDelete && (
+              <button
+                onClick={handleBulkDeleteSelected}
+                style={{
+                  background: '#0f172a',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '9px 16px',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 8px rgba(220,38,38,0.4)'
+                }}
+              >
+                <Trash2 size={15} /> Delete Selected ({selectedFlatIds.length})
+              </button>
+            )}
           </div>
         </div>
       )}

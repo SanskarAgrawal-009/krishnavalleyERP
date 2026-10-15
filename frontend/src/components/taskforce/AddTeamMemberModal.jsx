@@ -142,12 +142,19 @@ export const AddTeamMemberModal = ({
 
     try {
       setSubmitting(true);
+      let derivedHeadId = hierarchyLevel !== 'head' ? headId || null : null;
+      if (!derivedHeadId && hierarchyLevel === 'helper' && supervisorId) {
+        const sup = availableSupervisors.find((s) => s._id === supervisorId);
+        if (sup?.headId) derivedHeadId = sup.headId;
+      }
+
       const payload = {
         name: name.trim(),
         mobileNo: mobileNo.trim(),
         email: email.trim(),
         hierarchyLevel,
         supervisorId: hierarchyLevel === 'helper' ? supervisorId || null : null,
+        headId: derivedHeadId,
         department: department.trim(),
         trade: department.trim(),
         notes: notes.trim(),

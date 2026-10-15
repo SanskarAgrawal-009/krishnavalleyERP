@@ -213,10 +213,10 @@
 /* Mobile Devices (<= 768px) */
 @media (max-width: 768px) {
   .page-container {
-    padding: 16px;
+    padding: 14px 12px;
   }
 
-  .grid-cols-5, .grid-cols-4 {
+  .grid-cols-5, .grid-cols-4, .grid-cols-3 {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: minmax(210px, 1fr);
@@ -224,6 +224,12 @@
     padding-bottom: 8px;
     gap: 12px;
     scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+
+  .grid-cols-5 > *, .grid-cols-4 > *, .grid-cols-3 > * {
+    scroll-snap-align: start;
   }
 
   .grid-responsive {
@@ -233,55 +239,240 @@
 
   .page-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .page-title {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
+    line-height: 1.25;
   }
 
   .page-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    margin-top: 4px;
   }
 
-  .modal-content {
-    max-width: 100%;
-    max-height: 96vh;
+  /* Responsive Table Handling */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border-radius: 8px;
   }
 
-  .modal-body {
-    padding: 16px;
+  .g-card, .g-card-flat {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 14px;
+  }
+
+  table {
+    font-size: 0.8rem;
+    min-width: 580px; /* Prevents cramped illegible columns on small screens */
+  }
+
+  th, td {
+    padding: 10px 12px;
+    white-space: nowrap;
   }
 
   /* Form and Button Adaptations */
   input, select, textarea {
     font-size: 16px !important; /* Prevents auto-zoom on iOS */
+    min-height: 42px;
   }
 
-  table {
-    font-size: 0.8rem;
+  button, .btn-primary, .btn-secondary {
+    min-height: 42px;
+    touch-action: manipulation;
+  }
+}
+
+/* Mobile Bottom-sheet Modal for phones (<= 640px) */
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0 !important;
+    align-items: flex-end !important;
   }
 
-  th, td {
-    padding: 10px 12px;
+  .modal-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 94vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    border-bottom: none !important;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25) !important;
+    animation: slideUpMobile 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  @keyframes slideUpMobile {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    padding: 16px 18px !important;
+  }
+
+  .modal-body {
+    padding: 18px 14px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-footer {
+    padding: 14px 16px !important;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .modal-footer button {
+    flex: 1 1 120px;
   }
 }
 
 /* Small Phones (<= 480px) */
 @media (max-width: 480px) {
   .page-container {
-    padding: 12px 10px;
+    padding: 10px 8px;
   }
 
   .stat-card {
-    padding: 16px;
+    padding: 14px;
+    min-height: 100px;
   }
 
   .g-card {
-    padding: 14px;
+    padding: 12px 10px;
+    border-radius: 10px;
   }
 }
+
+/* ======================================================== */
+/* Mobile Bottom Navigation Bar                             */
+/* ======================================================== */
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 62px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid #dadce0;
+    z-index: 45;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .mobile-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    text-decoration: none;
+    color: #5f6368;
+    font-size: 0.67rem;
+    font-weight: 600;
+    gap: 3px;
+    transition: all 0.15s ease;
+    user-select: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-btn.active {
+    color: #1a73e8;
+    font-weight: 700;
+  }
+
+  .mobile-nav-btn.active svg {
+    color: #1a73e8;
+    transform: scale(1.1);
+  }
+
+  .mobile-action-fab {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #1a73e8;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(26, 115, 232, 0.45);
+    margin-top: -18px;
+    border: 3px solid #ffffff;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+  }
+
+  .mobile-action-fab:active {
+    transform: scale(0.92);
+    background: #1557d0;
+  }
+
+  /* Utility classes for mobile layout flow */
+  .mobile-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  .mobile-hide {
+    display: none !important;
+  }
+}
+
+/* ======================================================== */
+/* Responsive Two-Column Split Grids (Settings, Inspector)  */
+/* ======================================================== */
+.split-grid-sidebar {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .split-grid-sidebar {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .split-grid-sidebar > div:first-child {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-direction: row !important;
+    white-space: nowrap;
+    padding: 8px !important;
+  }
+
+  .split-grid-sidebar > div:first-child button {
+    flex: 0 0 auto;
+    margin-top: 0 !important;
+  }
+}
+
+
 

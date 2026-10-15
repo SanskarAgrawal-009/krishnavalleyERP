@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
+import './Role.js';
 
 const UserSchema = new mongoose.Schema(
   {
@@ -83,7 +84,7 @@ const UserSchema = new mongoose.Schema(
 
     roleId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "AccessControl",
+      ref: "Role",
       required: true,
       index: true,
     },

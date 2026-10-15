@@ -93,9 +93,16 @@ export const MaintenancePage = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
   const userRole = extractRoleCode(currentUser);
   const isAdminOrAccountant = ['admin', 'accounts_head', 'finance_manager', 'super_admin', 'general_manager'].includes(userRole);
+
+  const canCreateBill = isSuperAdmin || hasAnyPermission(['maintenance:create', 'maintenance:manage', 'admin:manage']) || isAdminOrAccountant;
+  const canVerifyPayments = isSuperAdmin || isAdminOrAccountant || hasAnyPermission(['maintenance:manage', 'accounts:manage', 'admin:manage']);
+  const canCreateServiceRequest = isSuperAdmin || hasAnyPermission(['maintenance:create', 'maintenance:manage', 'maintenance:view']);
+  const canManageServiceRequest = isSuperAdmin || hasAnyPermission(['maintenance:manage', 'admin:manage']);
+  const canIssuePenalty = isSuperAdmin || hasAnyPermission(['maintenance:manage', 'admin:manage']);
+  const canSettlePenalty = isSuperAdmin || hasAnyPermission(['maintenance:manage', 'accounts:manage', 'admin:manage']);
 
   // Fetch Bills
   const fetchBills = async () => {
@@ -413,11 +420,13 @@ export const MaintenancePage = () => {
       </div>
 
       {/* Sub-Tab Navigation Header */}
-      <div className="g-card" style={{
+      <div className="g-card no-scrollbar" style={{
         display: 'flex',
         padding: '6px',
         gap: '6px',
-        overflowX: 'auto'
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        whiteSpace: 'nowrap'
       }}>
         {[
           { id: 'bills', label: `Maintenance Invoices (${bills.length})` },
@@ -458,25 +467,27 @@ export const MaintenancePage = () => {
               <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Maintenance Invoices Register</h3>
               <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>All payments require mandatory UTR and proof document verification by Accounts.</p>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsBillModalOpen(true)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Plus size={15} /> Issue Maintenance Bill / Batch
-            </button>
+            {canCreateBill && (
+              <button
+                type="button"
+                onClick={() => setIsBillModalOpen(true)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <Plus size={15} /> Issue Maintenance Bill / Batch
+              </button>
+            )}
           </div>
 
           {/* Filter Bar */}
@@ -509,8 +520,8 @@ export const MaintenancePage = () => {
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive">
+              <table style={{ minWidth: '820px' }}>
                 <thead>
                   <tr>
                     <th>Invoice No & Month</th>
@@ -611,7 +622,7 @@ export const MaintenancePage = () => {
                           {/* ACTION BUTTONS */}
                           <td>
                             <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              {isPendingReview && isAdminOrAccountant ? (
+                              {isPendingReview && canVerifyPayments ? (
                                 <button
                                   type="button"
                                   onClick={() => handleOpenVerify(b)}
@@ -672,30 +683,32 @@ export const MaintenancePage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Resident Service Tickets ({serviceRequests.length})</h3>
-            <button
-              type="button"
-              onClick={() => setIsNewSrModalOpen(true)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Plus size={15} /> Log Service Request
-            </button>
+            {canCreateServiceRequest && (
+              <button
+                type="button"
+                onClick={() => setIsNewSrModalOpen(true)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <Plus size={15} /> Log Service Request
+              </button>
+            )}
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive">
+              <table style={{ minWidth: '780px' }}>
                 <thead>
                   <tr>
                     <th>Ticket Code</th>
@@ -763,30 +776,32 @@ export const MaintenancePage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Rule Infractions & Penalties ({penalties.length})</h3>
-            <button
-              type="button"
-              onClick={() => setIsNewPenaltyModalOpen(true)}
-              style={{
-                background: '#0f172a',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <AlertTriangle size={15} /> Issue Fine / Penalty
-            </button>
+            {canIssuePenalty && (
+              <button
+                type="button"
+                onClick={() => setIsNewPenaltyModalOpen(true)}
+                style={{
+                  background: '#0f172a',
+                  color: '#ffffff',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <AlertTriangle size={15} /> Issue Fine / Penalty
+              </button>
+            )}
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive">
+              <table style={{ minWidth: '740px' }}>
                 <thead>
                   <tr>
                     <th>Penalty Code</th>
@@ -834,7 +849,7 @@ export const MaintenancePage = () => {
                         <StatusBadge status={p.paymentStatus} />
                       </td>
                       <td>
-                        {p.paymentStatus !== 'paid' && (
+                        {p.paymentStatus !== 'paid' && canSettlePenalty && (
                           <button
                             type="button"
                             onClick={() => handleSettlePenalty(p._id, 'paid')}

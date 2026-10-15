@@ -65,7 +65,24 @@ import {
 } from 'lucide-react';
 
 export const LeadsPage = ({ onNavigateToSales }) => {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, hasPermission, isSuperAdmin, userRole } = useAuth();
+
+  // Granular Permission Checks
+  const canCreateLead = isSuperAdmin || hasPermission('crm:create');
+  const canEditLead = isSuperAdmin || hasPermission('crm:edit');
+  const canDeleteLead = isSuperAdmin || hasPermission('crm:delete') || hasPermission('crm:manage');
+  const canExportLead = isSuperAdmin || hasPermission('crm:export');
+  const canManageTeam = isSuperAdmin || hasPermission('crm:manage');
+  const canConvertDeal = isSuperAdmin || hasPermission('sales:create');
+
+  // Mobile viewport responsiveness
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const searchParam = searchParams.get('search') || '';
   const tabParam = searchParams.get('tab') || '';
@@ -671,265 +688,283 @@ export const LeadsPage = ({ onNavigateToSales }) => {
         </div>
 
         {/* Clean, Cohesive Action Buttons */}
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }}>
+        <div style={{ display: 'flex', gap: isMobile ? '8px' : '10px', alignItems: 'center', flexWrap: 'wrap', position: 'relative' }}>
           {/* Log Site Visit Button */}
-          <button
-            type="button"
-            onClick={() => {
-              setActiveLeadForSiteVisit(null);
-              setIsSiteVisitModalOpen(true);
-            }}
-            style={{
-              padding: '8px 14px',
-              borderRadius: '8px',
-              border: '1px solid #eff6ff',
-              background: '#eff6ff',
-              color: '#1e40af',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
-            title="Log an external lead or walk-in site visit"
-          >
-            <Car size={14} color="#1a73e8" />
-            Log Site Visit
-          </button>
-
-          {/* More Actions Dropdown Menu */}
-          <div style={{ position: 'relative' }}>
+          {canCreateLead && (
             <button
               type="button"
-              onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
+              onClick={() => {
+                setActiveLeadForSiteVisit(null);
+                setIsSiteVisitModalOpen(true);
+              }}
               style={{
                 padding: '8px 14px',
                 borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                background: '#ffffff',
-                color: '#334155',
+                border: '1px solid #eff6ff',
+                background: '#eff6ff',
+                color: '#1e40af',
                 fontSize: '0.82rem',
                 fontWeight: '700',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
+              title="Log an external lead or walk-in site visit"
             >
-              <Sliders size={14} color="#64748b" />
-              Actions & Tools
-              <ChevronDown size={14} color="#64748b" style={{ transform: isActionsDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
+              <Car size={14} color="#1a73e8" />
+              Log Site Visit
             </button>
+          )}
 
-            {isActionsDropdownOpen && (
-              <>
-                <div
-                  onClick={() => setIsActionsDropdownOpen(false)}
-                  style={{ position: 'fixed', inset: 0, zIndex: 40 }}
-                />
-                <div style={{
-                  position: 'absolute',
-                  right: 0,
-                  top: '115%',
-                  zIndex: 50,
-                  width: '240px',
+          {/* More Actions Dropdown Menu */}
+          {(canCreateLead || canDeleteLead || canManageTeam || canExportLead) && (
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
                   background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '10px',
-                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
-                  padding: '6px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '2px'
-                }}>
-                  {/* Bulk Excel Upload */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsDropdownOpen(false);
-                      setIsBulkUploadModalOpen(true);
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '9px 12px',
-                      background: 'transparent',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '0.82rem',
-                      fontWeight: '600',
-                      color: '#1e293b',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    <FileSpreadsheet size={15} color="#2563eb" />
-                    <span>Bulk Excel Upload</span>
-                  </button>
+                  color: '#334155',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
+              >
+                <Sliders size={14} color="#64748b" />
+                Actions & Tools
+                <ChevronDown size={14} color="#64748b" style={{ transform: isActionsDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
+              </button>
 
-                  {/* Bulk Delete by Stage */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsDropdownOpen(false);
-                      setBulkDeleteInitialStage(stageFilter || null);
-                      setIsBulkDeleteModalOpen(true);
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '9px 12px',
-                      background: 'transparent',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '0.82rem',
-                      fontWeight: '700',
-                      color: '#0f172a',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    <Trash2 size={15} color="#0f172a" />
-                    <span>Bulk Delete by Stage</span>
-                  </button>
+              {isActionsDropdownOpen && (
+                <>
+                  <div
+                    onClick={() => setIsActionsDropdownOpen(false)}
+                    style={{ position: 'fixed', inset: 0, zIndex: 40 }}
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: '115%',
+                    zIndex: 50,
+                    width: '240px',
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '10px',
+                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
+                    padding: '6px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2px'
+                  }}>
+                    {/* Bulk Excel Upload */}
+                    {canCreateLead && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsActionsDropdownOpen(false);
+                          setIsBulkUploadModalOpen(true);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '9px 12px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.82rem',
+                          fontWeight: '600',
+                          color: '#1e293b',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <FileSpreadsheet size={15} color="#2563eb" />
+                        <span>Bulk Excel Upload</span>
+                      </button>
+                    )}
 
-                  <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
+                    {/* Bulk Delete by Stage */}
+                    {canDeleteLead && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsActionsDropdownOpen(false);
+                          setBulkDeleteInitialStage(stageFilter || null);
+                          setIsBulkDeleteModalOpen(true);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '9px 12px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.82rem',
+                          fontWeight: '700',
+                          color: '#0f172a',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <Trash2 size={15} color="#0f172a" />
+                        <span>Bulk Delete by Stage</span>
+                      </button>
+                    )}
 
-                  {/* Meta Ads Integration */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsDropdownOpen(false);
-                      setIsMetaModalOpen(true);
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '9px 12px',
-                      background: 'transparent',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '0.82rem',
-                      fontWeight: '600',
-                      color: '#1e293b',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    <Globe size={15} color="#0284c7" />
-                    <span>Meta Ads Integration</span>
-                  </button>
+                    {(canCreateLead || canDeleteLead) && (canManageTeam || canExportLead) && (
+                      <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
+                    )}
 
-                  {/* Sales Team Pool */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsDropdownOpen(false);
-                      setIsTeamModalOpen(true);
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '9px 12px',
-                      background: 'transparent',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '0.82rem',
-                      fontWeight: '600',
-                      color: '#1e293b',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    <Users size={15} color="#475569" />
-                    <span>Sales Team Pool ({salesTeamOverview?.totalTeamMembers || 0})</span>
-                  </button>
+                    {/* Meta Ads Integration */}
+                    {canManageTeam && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsActionsDropdownOpen(false);
+                          setIsMetaModalOpen(true);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '9px 12px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.82rem',
+                          fontWeight: '600',
+                          color: '#1e293b',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <Globe size={15} color="#0284c7" />
+                        <span>Meta Ads Integration</span>
+                      </button>
+                    )}
 
-                  {/* Export CSV */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsDropdownOpen(false);
-                      handleExportCSV();
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '9px 12px',
-                      background: 'transparent',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '0.82rem',
-                      fontWeight: '600',
-                      color: '#1e293b',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    <Download size={15} color="#475569" />
-                    <span>Export Leads CSV</span>
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+                    {/* Sales Team Pool */}
+                    {canManageTeam && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsActionsDropdownOpen(false);
+                          setIsTeamModalOpen(true);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '9px 12px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.82rem',
+                          fontWeight: '600',
+                          color: '#1e293b',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <Users size={15} color="#475569" />
+                        <span>Sales Team Pool ({salesTeamOverview?.totalTeamMembers || 0})</span>
+                      </button>
+                    )}
+
+                    {/* Export CSV */}
+                    {canExportLead && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsActionsDropdownOpen(false);
+                          handleExportCSV();
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '9px 12px',
+                          background: 'transparent',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.82rem',
+                          fontWeight: '600',
+                          color: '#1e293b',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <Download size={15} color="#475569" />
+                        <span>Export Leads CSV</span>
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Primary CTA: Add New Lead */}
-          <button
-            type="button"
-            onClick={() => {
-              setEditingLead(null);
-              setIsLeadModalOpen(true);
-            }}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '8px',
-              background: '#1a73e8',
-              color: '#ffffff',
-              border: 'none',
-              fontSize: '0.84rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#1557b0'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#1a73e8'; }}
-          >
-            <UserPlus size={15} />
-            + Add New Lead
-          </button>
+          {canCreateLead && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingLead(null);
+                setIsLeadModalOpen(true);
+              }}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '8px',
+                background: '#1a73e8',
+                color: '#ffffff',
+                border: 'none',
+                fontSize: '0.84rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#1557b0'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#1a73e8'; }}
+            >
+              <UserPlus size={15} />
+              + Add New Lead
+            </button>
+          )}
         </div>
       </div>
 

@@ -342,8 +342,8 @@ export const TaskforceManagerPage = () => {
             boxShadow: '0 1px 3px rgba(60, 64, 67, 0.06)',
           }}
         >
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <div className="table-responsive">
+            <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', fontSize: '13px' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #dadce0', fontSize: '12px', color: '#475569' }}>
                   <th style={{ padding: '12px 16px', textAlign: 'left' }}>Team Member</th>
@@ -1429,6 +1429,7 @@ export const TaskforceManagerPage = () => {
 
       {/* Tab Navigation */}
       <div
+        className="no-scrollbar"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -1439,6 +1440,8 @@ export const TaskforceManagerPage = () => {
           padding: '6px',
           boxShadow: '0 1px 3px rgba(60, 64, 67, 0.06)',
           overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          whiteSpace: 'nowrap',
         }}
       >
         {tabs.map((tab) => {

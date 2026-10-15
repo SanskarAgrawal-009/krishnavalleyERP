@@ -100,6 +100,28 @@ export const AuthProvider = ({ children }) => {
     return roleCodes.map((r) => (r || '').toLowerCase()).includes(userRole);
   };
 
+  const hasAnyPermission = (permissionCodes = []) => {
+    if (!user) return false;
+    if (isSuperAdmin) return true;
+    if (!permissionCodes || permissionCodes.length === 0) return true;
+    const userCodes = user.permissionCodes || (user.permissions || []).map((p) => (typeof p === 'string' ? p : p.permissionCode));
+    return permissionCodes.some((code) => userCodes.includes(code));
+  };
+
+  const hasAllPermissions = (permissionCodes = []) => {
+    if (!user) return false;
+    if (isSuperAdmin) return true;
+    if (!permissionCodes || permissionCodes.length === 0) return true;
+    const userCodes = user.permissionCodes || (user.permissions || []).map((p) => (typeof p === 'string' ? p : p.permissionCode));
+    return permissionCodes.every((code) => userCodes.includes(code));
+  };
+
+  const can = (module, action) => {
+    if (!user) return false;
+    if (isSuperAdmin) return true;
+    return hasPermission(`${module}:${action}`);
+  };
+
   const primaryBranch = user?.primaryBranch || user?.branchAccess?.find((b) => b.isPrimary)?.branchId || user?.branchAccess?.[0]?.branchId;
 
   return (
@@ -114,6 +136,9 @@ export const AuthProvider = ({ children }) => {
         logout,
         refreshUser: checkAuth,
         hasPermission,
+        hasAnyPermission,
+        hasAllPermissions,
+        can,
         hasRole,
         hasAnyRole,
         isSuperAdmin,

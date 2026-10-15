@@ -2,6 +2,8 @@ import { Task } from '../models/Task.js';
 import { User } from '../models/User.js';
 import { TaskforceMember } from '../models/TaskforceMember.js';
 import { DEPARTMENTS } from './taskController.js';
+import { getScopedTaskforceContext } from './taskforceTeamController.js';
+import { escapeRegex } from '../utils/regexUtil.js';
 
 /**
  * @desc   Get workforce overview: per-member workload, capacity, task distribution (Taskforce Team ONLY)
@@ -176,10 +178,22 @@ export const getPerformanceMetrics = async (req, res) => {
     const periodStart = new Date();
     periodStart.setDate(periodStart.getDate() - daysAgo);
 
-    const users = await User.find({ status: 'active' })
-      .populate('roleId', 'roleName roleCode')
-      .select('firstName lastName username email roleId')
-      .lean();
+    const [users, taskforceMembers] = await Promise.all([
+      User.find({ status: 'active' })
+        .populate('roleId', 'roleName roleCode')
+        .select('firstName lastName username email roleId department')
+        .lean(),
+      TaskforceMember.find({ status: 'active' })
+        .select('name trade department hierarchyLevel userId mobileNo email')
+        .lean(),
+    ]);
+
+    const memberToUserMap = {};
+    taskforceMembers.forEach((m) => {
+      if (m.userId) {
+        memberToUserMap[m._id.toString()] = m.userId.toString();
+      }
+    });
 
     // All tasks created or completed in the period
     const tasks = await Task.find({
@@ -189,7 +203,7 @@ export const getPerformanceMetrics = async (req, res) => {
         { status: { $in: ['pending', 'in_progress', 'under_review', 'delayed'] } },
       ],
     })
-      .select('assignedTo status priority department progress dueDate completedAt startDate createdAt isMDDirective followUpLogs followUpSchedule')
+      .select('assignedTo assignedMembers status priority department progress dueDate completedAt startDate createdAt isMDDirective followUpLogs followUpSchedule')
       .lean();
 
     const performanceMap = {};
@@ -211,8 +225,17 @@ export const getPerformanceMetrics = async (req, res) => {
     });
 
     tasks.forEach((task) => {
-      const assignees = (task.assignedTo || []).map((a) => a.toString());
-      assignees.forEach((uid) => {
+      const assigneeIds = new Set();
+      (task.assignedTo || []).forEach((a) => assigneeIds.add(a.toString()));
+      (task.assignedMembers || []).forEach((m) => {
+        const mStr = m.toString();
+        const mappedUid = memberToUserMap[mStr];
+        if (mappedUid) {
+          assigneeIds.add(mappedUid);
+        }
+      });
+
+      assigneeIds.forEach((uid) => {
         if (!performanceMap[uid]) return;
         const p = performanceMap[uid];
         p.tasksAssigned++;
@@ -319,14 +342,43 @@ export const getTimelineData = async (req, res) => {
     } else if (status !== 'all') {
       query.status = status;
     }
-    if (department && department !== 'all') query.department = department;
-    if (assignedTo && assignedTo !== 'all') query.assignedTo = assignedTo;
+    if (department && department !== 'all') {
+      const escaped = escapeRegex(department.trim());
+      const dotted = escaped.split('').join('\\.?');
+      query.department = { $regex: new RegExp(`^(${escaped}|${dotted})$`, 'i') };
+    }
+    if (assignedTo && assignedTo !== 'all') {
+      query.$or = [{ assignedTo }, { assignedMembers: assignedTo }];
+    }
+
+    // Scoping for hierarchy
+    const scope = await getScopedTaskforceContext(req.user);
+    if (!scope.isManagerOrAdmin) {
+      const orClauses = [];
+      if (scope.allowedUserIds && scope.allowedUserIds.length) {
+        orClauses.push({ assignedTo: { $in: scope.allowedUserIds } });
+      }
+      if (scope.allowedMemberIds && scope.allowedMemberIds.length) {
+        orClauses.push({ assignedMembers: { $in: scope.allowedMemberIds } });
+      }
+      orClauses.push({ assignedBy: req.user.id });
+      if (scope.hierarchyLevel === 'head' && scope.member?.department) {
+        orClauses.push({
+          department: { $regex: new RegExp(`^${escapeRegex(scope.member.department.trim())}$`, 'i') },
+        });
+      }
+      if (orClauses.length) {
+        query.$and = query.$and || [];
+        query.$and.push({ $or: orClauses });
+      }
+    }
 
     const tasks = await Task.find(query)
       .populate('assignedBy', 'firstName lastName username')
       .populate('assignedTo', 'firstName lastName username')
+      .populate('assignedMembers', 'name trade department hierarchyLevel')
       .populate('apartmentDetails.projectId', 'projectName')
-      .select('taskCode title department status priority progress startDate dueDate completedAt assignedBy assignedTo isMDDirective roadblockAlert checkpoints apartmentDetails')
+      .select('taskCode title department status priority progress startDate dueDate completedAt assignedBy assignedTo assignedMembers isMDDirective roadblockAlert checkpoints apartmentDetails')
       .sort({ startDate: 1 })
       .lean();
 
@@ -464,7 +516,7 @@ export const bulkReassignTasks = async (req, res) => {
   try {
     const { taskIds, fromUserId, toUserId } = req.body;
 
-    // Authorization: ONLY Admin, Taskforce Manager, and VP Department can reassign tasks
+    // Authorization: Admin, Taskforce Manager, VP Department, Department Heads, and users with tasks:manage permission
     const callerRole = (req.user?.role || '').toLowerCase();
     let callerDept = '';
     try {
@@ -472,8 +524,14 @@ export const bulkReassignTasks = async (req, res) => {
       callerDept = (callerUser?.department || '').toLowerCase().trim();
     } catch (_) {}
 
+    const perms = (req.user?.permissions || req.user?.permissionCodes || []).map((p) =>
+      typeof p === 'string' ? p : p.permissionCode
+    ).filter(Boolean);
+    const hasTaskManagePerm = perms.includes('tasks:manage') || perms.includes('tasks:admin');
+
     const isAdmin = callerRole === 'admin' || callerRole === 'super_admin';
     const isTaskforceManager = callerRole === 'taskforce_manager' || callerRole === 'taskforce_mgr';
+    const isHead = callerRole === 'head' || callerRole === 'taskforce_lead' || req.user?.taskforceHierarchyLevel === 'head';
     const isVPDept =
       callerDept === "vp's" ||
       callerDept === 'vp' ||
@@ -482,10 +540,10 @@ export const bulkReassignTasks = async (req, res) => {
       callerRole === 'vp' ||
       callerRole.includes('vp');
 
-    if (!isAdmin && !isTaskforceManager && !isVPDept) {
+    if (!isAdmin && !isTaskforceManager && !isVPDept && !hasTaskManagePerm && !isHead) {
       return res.status(403).json({
         success: false,
-        message: 'Forbidden: Only Admin, Taskforce Manager, and the VP Department can assign and reassign tasks.',
+        message: 'Forbidden: You are not authorized to assign and reassign tasks.',
       });
     }
 
@@ -496,10 +554,28 @@ export const bulkReassignTasks = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Target assignee is required' });
     }
 
-    const toUser = await User.findById(toUserId).select('firstName lastName username').lean();
-    if (!toUser) {
-      return res.status(404).json({ success: false, message: 'Target user not found' });
+    // Resolve target assignee: can be User or TaskforceMember
+    let targetUser = await User.findById(toUserId).select('firstName lastName username').lean();
+    let targetMember = null;
+
+    if (!targetUser) {
+      targetMember = await TaskforceMember.findById(toUserId).lean();
+      if (targetMember && targetMember.userId) {
+        targetUser = await User.findById(targetMember.userId).select('firstName lastName username').lean();
+      }
+    } else {
+      targetMember = await TaskforceMember.findOne({ userId: targetUser._id }).lean();
     }
+
+    if (!targetUser && !targetMember) {
+      return res.status(404).json({ success: false, message: 'Target assignee not found' });
+    }
+
+    const targetDisplayName = targetUser
+      ? `${targetUser.firstName} ${targetUser.lastName || ''}`.trim()
+      : targetMember.name;
+    const finalUserId = targetUser?._id ? targetUser._id.toString() : null;
+    const finalMemberId = targetMember?._id ? targetMember._id.toString() : null;
 
     let updatedCount = 0;
 
@@ -508,14 +584,34 @@ export const bulkReassignTasks = async (req, res) => {
       if (!task) continue;
 
       if (fromUserId) {
-        // Replace specific user
-        task.assignedTo = task.assignedTo.map((a) =>
-          a.toString() === fromUserId ? toUserId : a
-        );
+        const fromStr = fromUserId.toString();
+        // Replace in assignedTo
+        task.assignedTo = (task.assignedTo || []).map((a) => {
+          if (a.toString() === fromStr) {
+            return finalUserId || a;
+          }
+          return a;
+        });
+        // Replace in assignedMembers
+        task.assignedMembers = (task.assignedMembers || []).map((m) => {
+          if (m.toString() === fromStr) {
+            return finalMemberId || m;
+          }
+          return m;
+        });
       } else {
         // Add to assignees if not already present
-        if (!task.assignedTo.map((a) => a.toString()).includes(toUserId)) {
-          task.assignedTo.push(toUserId);
+        if (finalUserId) {
+          const atList = (task.assignedTo || []).map((a) => a.toString());
+          if (!atList.includes(finalUserId)) {
+            task.assignedTo.push(finalUserId);
+          }
+        }
+        if (finalMemberId) {
+          const amList = (task.assignedMembers || []).map((m) => m.toString());
+          if (!amList.includes(finalMemberId)) {
+            task.assignedMembers.push(finalMemberId);
+          }
         }
       }
 
@@ -523,7 +619,7 @@ export const bulkReassignTasks = async (req, res) => {
         action: 'Bulk Reassigned',
         performedBy: req.user.id,
         timestamp: new Date(),
-        details: `Task reassigned to ${toUser.firstName} ${toUser.lastName || ''} by ${req.user.username || 'Manager'}`,
+        details: `Task reassigned to ${targetDisplayName} by ${req.user.username || 'Manager'}`,
       });
 
       await task.save();

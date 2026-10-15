@@ -50,11 +50,11 @@ export const TaskforceDashboardPage = () => {
   const canAssign = canUserAssignTasks(user, userRole);
 
   useEffect(() => {
-    if (!isTaskforceUser) {
-      showToast('Access restricted: Taskforce Operations Dashboard is reserved exclusively for Taskforce team members. Super Admin and General Managers use the Executive Dashboard.', 'error');
+    if (user && !isTaskforceUser) {
+      showToast('Access restricted: Taskforce Operations Dashboard is reserved for authorized Taskforce personnel and Administrators.', 'error');
       navigate('/dashboard', { replace: true });
     }
-  }, [isTaskforceUser, navigate]);
+  }, [user, isTaskforceUser, navigate]);
 
   // Active operational view mode:
   // 'command' | 'my_directives' | 'roadblocks' | 'proofs' | 'departments'
@@ -203,18 +203,20 @@ export const TaskforceDashboardPage = () => {
       (t) => t.roadblockAlert?.hasRoadblock && !t.roadblockAlert?.isResolved
     );
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    const dueToday = tasks.filter(
-      (t) =>
-        t.status !== 'completed' &&
-        t.dueDate &&
-        t.dueDate.toString().startsWith(todayStr)
-    );
-
     const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+    const dueToday = tasks.filter((t) => {
+      if (t.status === 'completed' || !t.dueDate) return false;
+      const d = new Date(t.dueDate);
+      return d >= startOfToday && d <= endOfToday;
+    });
+
     const overdue = tasks.filter((t) => {
       if (t.status === 'completed' || !t.dueDate) return false;
-      return new Date(t.dueDate) < now;
+      const d = new Date(t.dueDate);
+      return d < startOfToday;
     });
 
     // Extract all site uploads/proofs across tasks

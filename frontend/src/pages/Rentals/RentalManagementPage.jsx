@@ -52,11 +52,17 @@ import { BulkRentalDocumentsModal } from '../../components/rentals/BulkRentalDoc
 import { TableSkeleton } from '../../components/common/SkeletonLoader.jsx';
 import { EmptyState } from '../../components/common/EmptyState.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export const RentalManagementPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const toast = useToast();
+  const { user, isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
+  const canCreateRental = isSuperAdmin || hasPermission('rentals:create') || hasPermission('rentals:manage');
+  const canEditRental = isSuperAdmin || hasPermission('rentals:edit') || hasPermission('rentals:manage');
+  const canDeleteRental = isSuperAdmin || hasPermission('rentals:delete') || hasPermission('rentals:manage');
+  const canManageRentals = isSuperAdmin || hasPermission('rentals:manage');
 
   const activeTabParam = searchParams.get('tab') || 'active';
   const [activeTab, setActiveTab] = useState(activeTabParam === 'history' ? 'history' : 'active');
@@ -558,103 +564,111 @@ export const RentalManagementPage = () => {
         {/* Action Buttons Group */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {/* Primary CTA: Manual Rental Entry */}
-          <button
-            onClick={() => setIsManualEntryModalOpen(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 16px',
-              borderRadius: '9px',
-              background: '#2563eb',
-              color: '#ffffff',
-              border: 'none',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.28)',
-              transition: 'background 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#1d4ed8'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#2563eb'; }}
-          >
-            <Plus size={16} />
-            <span>Manual Rental Entry</span>
-          </button>
+          {canCreateRental && (
+            <button
+              onClick={() => setIsManualEntryModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                borderRadius: '9px',
+                background: '#2563eb',
+                color: '#ffffff',
+                border: 'none',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(37, 99, 235, 0.28)',
+                transition: 'background 0.15s ease'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#1d4ed8'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#2563eb'; }}
+            >
+              <Plus size={16} />
+              <span>Manual Rental Entry</span>
+            </button>
+          )}
 
           {/* Import by Excel */}
-          <button
-            onClick={() => setIsImportRentalModalOpen(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              borderRadius: '9px',
-              background: '#ffffff',
-              border: '1px solid #cbd5e1',
-              color: '#1e40af',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#93c5fd'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
-          >
-            <FileSpreadsheet size={15} color="#2563eb" />
-            <span>Import by Excel</span>
-          </button>
+          {canCreateRental && (
+            <button
+              onClick={() => setIsImportRentalModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '9px',
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
+                color: '#1e40af',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#93c5fd'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+            >
+              <FileSpreadsheet size={15} color="#2563eb" />
+              <span>Import by Excel</span>
+            </button>
+          )}
 
           {/* Bulk Document Upload (Registry & Agreements) */}
-          <button
-            onClick={() => setIsBulkDocumentsModalOpen(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              borderRadius: '9px',
-              background: '#eff6ff',
-              border: '1.5px solid #93c5fd',
-              color: '#1d4ed8',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-              boxShadow: '0 1px 3px rgba(37, 99, 235, 0.1)'
-            }}
-            title="Bulk Upload Registry Documents (Sale Deed) and Rent Agreements"
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#dbeafe'; e.currentTarget.style.borderColor = '#60a5fa'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#93c5fd'; }}
-          >
-            <Upload size={15} color="#2563eb" />
-            <span>Bulk Docs Upload</span>
-          </button>
+          {(canEditRental || canManageRentals) && (
+            <button
+              onClick={() => setIsBulkDocumentsModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '9px',
+                background: '#eff6ff',
+                border: '1.5px solid #93c5fd',
+                color: '#1d4ed8',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                boxShadow: '0 1px 3px rgba(37, 99, 235, 0.1)'
+              }}
+              title="Bulk Upload Registry Documents (Sale Deed) and Rent Agreements"
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#dbeafe'; e.currentTarget.style.borderColor = '#60a5fa'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#93c5fd'; }}
+            >
+              <Upload size={15} color="#2563eb" />
+              <span>Bulk Docs Upload</span>
+            </button>
+          )}
 
           {/* Passbook Ledgers Hub */}
-          <button
-            onClick={() => navigate('/rentals/ledgers')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              borderRadius: '9px',
-              background: '#f8fafc',
-              border: '1px solid #cbd5e1',
-              color: '#4338ca',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#eef2ff'; e.currentTarget.style.borderColor = '#c7d2fe'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
-          >
-            <BookOpen size={15} color="#4f46e5" />
-            <span>Passbook Ledgers Hub</span>
-          </button>
+          {canManageRentals && (
+            <button
+              onClick={() => navigate('/rentals/ledgers')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '9px',
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                color: '#4338ca',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#eef2ff'; e.currentTarget.style.borderColor = '#c7d2fe'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+            >
+              <BookOpen size={15} color="#4f46e5" />
+              <span>Passbook Ledgers Hub</span>
+            </button>
+          )}
 
           {/* Export CSV */}
           <button
@@ -1184,7 +1198,7 @@ export const RentalManagementPage = () => {
               description="No flats are currently enrolled in the active rental program matching your filters."
             />
           ) : (
-            <div style={{ overflowX: 'auto', width: '100%' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
                 <thead>
                   <tr style={{
@@ -1568,27 +1582,29 @@ export const RentalManagementPage = () => {
                         <td style={{ padding: '14px 16px', verticalAlign: 'middle', textAlign: 'center' }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                             {/* Edit Terms */}
-                            <button
-                              type="button"
-                              onClick={() => setSelectedRentalForEdit(r)}
-                              title="Edit Rental Terms & Pricing"
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '6px 10px',
-                                borderRadius: '7px',
-                                border: '1.5px solid #93c5fd',
-                                background: '#eff6ff',
-                                color: '#1d4ed8',
-                                fontSize: '0.74rem',
-                                fontWeight: '700',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              <Edit size={13} />
-                              <span>Edit</span>
-                            </button>
+                            {canEditRental && (
+                              <button
+                                type="button"
+                                onClick={() => setSelectedRentalForEdit(r)}
+                                title="Edit Rental Terms & Pricing"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '6px 10px',
+                                  borderRadius: '7px',
+                                  border: '1.5px solid #93c5fd',
+                                  background: '#eff6ff',
+                                  color: '#1d4ed8',
+                                  fontSize: '0.74rem',
+                                  fontWeight: '700',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <Edit size={13} />
+                                <span>Edit</span>
+                              </button>
+                            )}
 
                             {/* Flat Documents Hub Modal */}
                             <button
@@ -1608,55 +1624,61 @@ export const RentalManagementPage = () => {
                             </button>
 
                             {/* Record Payout */}
-                            <button
-                              type="button"
-                              onClick={() => setSelectedRentalForPayout(r)}
-                              title="Record Rental Disbursement Payout"
-                              style={{
-                                padding: '6px 8px',
-                                borderRadius: '7px',
-                                border: '1px solid #bfdbfe',
-                                background: '#eff6ff',
-                                color: '#1a73e8',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              <DollarSign size={14} />
-                            </button>
+                            {(canEditRental || canManageRentals) && (
+                              <button
+                                type="button"
+                                onClick={() => setSelectedRentalForPayout(r)}
+                                title="Record Rental Disbursement Payout"
+                                style={{
+                                  padding: '6px 8px',
+                                  borderRadius: '7px',
+                                  border: '1px solid #bfdbfe',
+                                  background: '#eff6ff',
+                                  color: '#1a73e8',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <DollarSign size={14} />
+                              </button>
+                            )}
 
                             {/* Resale Transfer */}
-                            <button
-                              type="button"
-                              onClick={() => setSelectedRentalForTransfer(r)}
-                              title="Resale Transfer (Archive to Table 2)"
-                              style={{
-                                padding: '6px 8px',
-                                borderRadius: '7px',
-                                border: '1px solid #c7d2fe',
-                                background: '#eff6ff',
-                                color: '#4f46e5',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              <Repeat size={14} />
-                            </button>
+                            {canManageRentals && (
+                              <button
+                                type="button"
+                                onClick={() => setSelectedRentalForTransfer(r)}
+                                title="Resale Transfer (Archive to Table 2)"
+                                style={{
+                                  padding: '6px 8px',
+                                  borderRadius: '7px',
+                                  border: '1px solid #c7d2fe',
+                                  background: '#eff6ff',
+                                  color: '#4f46e5',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <Repeat size={14} />
+                              </button>
+                            )}
 
                             {/* Delete / Unenroll */}
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteActiveRental(r)}
-                              title="Delete / Unenroll Rental Record"
-                              style={{
-                                padding: '6px 8px',
-                                borderRadius: '7px',
-                                border: '1px solid #e2e8f0',
-                                background: '#f1f5f9',
-                                color: '#0f172a',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              <Trash2 size={14} />
-                            </button>
+                            {canDeleteRental && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteActiveRental(r)}
+                                title="Delete / Unenroll Rental Record"
+                                style={{
+                                  padding: '6px 8px',
+                                  borderRadius: '7px',
+                                  border: '1px solid #e2e8f0',
+                                  background: '#f1f5f9',
+                                  color: '#0f172a',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1728,7 +1750,7 @@ export const RentalManagementPage = () => {
               description="As flats undergo resale or transfer, previous owners will be chronologically archived here as 'Last Owner', '2nd Last Owner', etc."
             />
           ) : (
-            <div style={{ overflowX: 'auto', width: '100%' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1250px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
@@ -1878,21 +1900,23 @@ export const RentalManagementPage = () => {
 
                       {/* Actions */}
                       <td style={{ padding: '14px 14px', verticalAlign: 'middle', textAlign: 'center' }}>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteHistoryEntry(h)}
-                          title="Delete History Entry"
-                          style={{
-                            padding: '6px 8px',
-                            borderRadius: '6px',
-                            border: '1px solid #e2e8f0',
-                            background: '#f1f5f9',
-                            color: '#0f172a',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
+                        {canDeleteRental && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteHistoryEntry(h)}
+                            title="Delete History Entry"
+                            style={{
+                              padding: '6px 8px',
+                              borderRadius: '6px',
+                              border: '1px solid #e2e8f0',
+                              background: '#f1f5f9',
+                              color: '#0f172a',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

@@ -8,6 +8,7 @@ import { NewPOModal } from '../../components/inventory/NewPOModal.jsx';
 import { NewGRNModal } from '../../components/inventory/NewGRNModal.jsx';
 import { NewIssueModal } from '../../components/inventory/NewIssueModal.jsx';
 import { NewTransferModal } from '../../components/inventory/NewTransferModal.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 import {
   Package,
@@ -37,6 +38,12 @@ import {
 } from 'lucide-react';
 
 export const MaterialInventoryPage = () => {
+  const { user, isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
+  const canCreatePO = isSuperAdmin || hasPermission('materials:create') || hasPermission('materials:manage');
+  const canCreateGRN = isSuperAdmin || hasPermission('materials:create') || hasPermission('materials:manage');
+  const canIssue = isSuperAdmin || hasPermission('materials:issue') || hasPermission('materials:manage');
+  const canManageStores = isSuperAdmin || hasPermission('materials:manage');
+
   const [searchParams, setSearchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabFromUrl || 'stocks');
@@ -344,11 +351,12 @@ export const MaterialInventoryPage = () => {
       </div>
 
       {/* Sub-Tab Navigation Header (Synchronized with Sidebar) */}
-      <div className="g-card" style={{
+      <div className="g-card table-responsive" style={{
         display: 'flex',
         padding: '6px',
         gap: '6px',
-        overflowX: 'auto'
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch'
       }}>
         {[
           { id: 'stocks', label: `Stock Ledger (${stocks.length})` },
@@ -659,73 +667,79 @@ export const MaterialInventoryPage = () => {
               </div>
 
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  onClick={() => setIsIssueModalOpen(true)}
-                  style={{
-                    background: '#ffffff',
-                    border: '1px solid #dadce0',
-                    color: '#111827',
-                    padding: '7px 14px',
-                    borderRadius: '6px',
-                    fontSize: '0.82rem',
-                    fontWeight: '700',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <ArrowUpRight size={14} color="#0f172a" /> Issue Material
-                </button>
+                {canIssue && (
+                  <button
+                    type="button"
+                    onClick={() => setIsIssueModalOpen(true)}
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid #dadce0',
+                      color: '#111827',
+                      padding: '7px 14px',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <ArrowUpRight size={14} color="#0f172a" /> Issue Material
+                  </button>
+                )}
 
-                <button
-                  type="button"
-                  onClick={() => setIsTransferModalOpen(true)}
-                  style={{
-                    background: '#ffffff',
-                    border: '1px solid #dadce0',
-                    color: '#111827',
-                    padding: '7px 14px',
-                    borderRadius: '6px',
-                    fontSize: '0.82rem',
-                    fontWeight: '700',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Repeat size={14} color="#2563eb" /> Store Transfer
-                </button>
+                {canIssue && (
+                  <button
+                    type="button"
+                    onClick={() => setIsTransferModalOpen(true)}
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid #dadce0',
+                      color: '#111827',
+                      padding: '7px 14px',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Repeat size={14} color="#2563eb" /> Store Transfer
+                  </button>
+                )}
 
-                <button
-                  type="button"
-                  onClick={() => setIsGrnModalOpen(true)}
-                  style={{
-                    background: '#1a73e8',
-                    color: '#ffffff',
-                    padding: '7px 16px',
-                    borderRadius: '6px',
-                    fontSize: '0.82rem',
-                    fontWeight: '700',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    cursor: 'pointer',
-                    border: 'none'
-                  }}
-                >
-                  <CheckCircle size={14} /> Receive GRN
-                </button>
+                {canCreateGRN && (
+                  <button
+                    type="button"
+                    onClick={() => setIsGrnModalOpen(true)}
+                    style={{
+                      background: '#1a73e8',
+                      color: '#ffffff',
+                      padding: '7px 16px',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      cursor: 'pointer',
+                      border: 'none'
+                    }}
+                  >
+                    <CheckCircle size={14} /> Receive GRN
+                  </button>
+                )}
               </div>
             </div>
 
             {/* VIEW 1: COMPREHENSIVE STOCK ACTIVITIES & TRANSACTION JOURNAL */}
             {ledgerViewMode === 'activities' && (
               <div className="g-card" style={{ overflow: 'hidden' }}>
-                <div style={{ overflowX: 'auto' }}>
-                  <table>
+                <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ minWidth: '780px' }}>
                     <thead>
                       <tr>
                         <th>Date & Time</th>
@@ -1037,31 +1051,33 @@ export const MaterialInventoryPage = () => {
                 />
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsMatModalOpen(true)}
-                style={{
-                  background: '#1a73e8',
-                  color: '#ffffff',
-                  padding: '7px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
-              >
-                <Plus size={15} /> Add New Material
-              </button>
+              {canManageStores && (
+                <button
+                  type="button"
+                  onClick={() => setIsMatModalOpen(true)}
+                  style={{
+                    background: '#1a73e8',
+                    color: '#ffffff',
+                    padding: '7px 16px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    border: 'none'
+                  }}
+                >
+                  <Plus size={15} /> Add New Material
+                </button>
+              )}
             </div>
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ minWidth: '780px' }}>
                 <thead>
                   <tr>
                     <th>Material Name & Specs</th>
@@ -1198,28 +1214,30 @@ export const MaterialInventoryPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Project Site Warehouses & Stores ({stores.length})</h3>
-            <button
-              type="button"
-              onClick={() => {
-                setEditingStore(null);
-                setIsStoreModalOpen(true);
-              }}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '7px 14px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Plus size={15} /> Add Store Warehouse
-            </button>
+            {canManageStores && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingStore(null);
+                  setIsStoreModalOpen(true);
+                }}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '7px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <Plus size={15} /> Add Store Warehouse
+              </button>
+            )}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
@@ -1242,56 +1260,58 @@ export const MaterialInventoryPage = () => {
                   <div>Location: <strong style={{ color: '#111827' }}>{s.location || 'On-site'}</strong></div>
                 </div>
 
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  borderTop: '1px solid #f1f3f4',
-                  paddingTop: '10px',
-                  marginTop: '4px'
-                }}>
-                  <button
-                    onClick={() => {
-                      setEditingStore(s);
-                      setIsStoreModalOpen(true);
-                    }}
-                    style={{
-                      background: s.storeKeeper ? '#f8fafc' : '#eff6ff',
-                      border: s.storeKeeper ? '1px solid #cbd5e1' : '1px solid #bfdbfe',
-                      color: s.storeKeeper ? '#334155' : '#1d4ed8',
-                      padding: '5px 10px',
-                      borderRadius: '6px',
-                      fontSize: '0.75rem',
-                      fontWeight: '600',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <Edit size={12} />
-                    {s.storeKeeper ? 'Edit Store' : 'Assign Storekeeper'}
-                  </button>
+                {canManageStores && (
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderTop: '1px solid #f1f3f4',
+                    paddingTop: '10px',
+                    marginTop: '4px'
+                  }}>
+                    <button
+                      onClick={() => {
+                        setEditingStore(s);
+                        setIsStoreModalOpen(true);
+                      }}
+                      style={{
+                        background: s.storeKeeper ? '#f8fafc' : '#eff6ff',
+                        border: s.storeKeeper ? '1px solid #cbd5e1' : '1px solid #bfdbfe',
+                        color: s.storeKeeper ? '#334155' : '#1d4ed8',
+                        padding: '5px 10px',
+                        borderRadius: '6px',
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <Edit size={12} />
+                      {s.storeKeeper ? 'Edit Store' : 'Assign Storekeeper'}
+                    </button>
 
-                  <button
-                    onClick={() => handleDeleteStore(s)}
-                    style={{
-                      background: '#fff1f2',
-                      border: '1px solid #e2e8f0',
-                      color: '#0f172a',
-                      padding: '5px 8px',
-                      borderRadius: '6px',
-                      fontSize: '0.75rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}
-                    title="Delete Store"
-                  >
-                    <Trash2 size={12} />
-                  </button>
-                </div>
+                    <button
+                      onClick={() => handleDeleteStore(s)}
+                      style={{
+                        background: '#fff1f2',
+                        border: '1px solid #e2e8f0',
+                        color: '#0f172a',
+                        padding: '5px 8px',
+                        borderRadius: '6px',
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                      title="Delete Store"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -1327,31 +1347,33 @@ export const MaterialInventoryPage = () => {
                 />
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsVendorModalOpen(true)}
-                style={{
-                  background: '#1a73e8',
-                  color: '#ffffff',
-                  padding: '7px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
-              >
-                <Plus size={15} /> Register Vendor
-              </button>
+              {canManageStores && (
+                <button
+                  type="button"
+                  onClick={() => setIsVendorModalOpen(true)}
+                  style={{
+                    background: '#1a73e8',
+                    color: '#ffffff',
+                    padding: '7px 16px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    border: 'none'
+                  }}
+                >
+                  <Plus size={15} /> Register Vendor
+                </button>
+              )}
             </div>
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ minWidth: '780px' }}>
                 <thead>
                   <tr>
                     <th>Vendor / Company</th>
@@ -1490,30 +1512,32 @@ export const MaterialInventoryPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Purchase Orders Register ({pos.length})</h3>
-            <button
-              type="button"
-              onClick={() => setIsPoModalOpen(true)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '7px 14px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Plus size={15} /> Raise Purchase Order
-            </button>
+            {canCreatePO && (
+              <button
+                type="button"
+                onClick={() => setIsPoModalOpen(true)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '7px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <Plus size={15} /> Raise Purchase Order
+              </button>
+            )}
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ minWidth: '780px' }}>
                 <thead>
                   <tr>
                     <th>PO Number</th>
@@ -1553,30 +1577,32 @@ export const MaterialInventoryPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Goods Receipts (GRN) Inward Register ({grns.length})</h3>
-            <button
-              type="button"
-              onClick={() => setIsGrnModalOpen(true)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '7px 14px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <CheckCircle size={15} /> Inward New GRN
-            </button>
+            {canCreateGRN && (
+              <button
+                type="button"
+                onClick={() => setIsGrnModalOpen(true)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '7px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <CheckCircle size={15} /> Inward New GRN
+              </button>
+            )}
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ minWidth: '780px' }}>
                 <thead>
                   <tr>
                     <th>GRN Number</th>
@@ -1612,30 +1638,32 @@ export const MaterialInventoryPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Material Issues to Site Contractors ({issues.length})</h3>
-            <button
-              type="button"
-              onClick={() => setIsIssueModalOpen(true)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '7px 14px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <ArrowUpRight size={15} /> Issue to Contractor
-            </button>
+            {canIssue && (
+              <button
+                type="button"
+                onClick={() => setIsIssueModalOpen(true)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '7px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <ArrowUpRight size={15} /> Issue to Contractor
+              </button>
+            )}
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ minWidth: '780px' }}>
                 <thead>
                   <tr>
                     <th>Issue Slip No</th>
@@ -1689,30 +1717,32 @@ export const MaterialInventoryPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Inter-Store Material Transfers ({transfers.length})</h3>
-            <button
-              type="button"
-              onClick={() => setIsTransferModalOpen(true)}
-              style={{
-                background: '#2563eb',
-                color: '#ffffff',
-                padding: '7px 14px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Repeat size={15} /> Transfer Between Stores
-            </button>
+            {canIssue && (
+              <button
+                type="button"
+                onClick={() => setIsTransferModalOpen(true)}
+                style={{
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  padding: '7px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <Repeat size={15} /> Transfer Between Stores
+              </button>
+            )}
           </div>
 
           <div className="g-card" style={{ overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ minWidth: '780px' }}>
                 <thead>
                   <tr>
                     <th>Transfer Code</th>
@@ -1765,7 +1795,7 @@ export const MaterialInventoryPage = () => {
                         </span>
                       </td>
                       <td style={{ textAlign: 'right' }}>
-                        {tr.status === 'in_transit' ? (
+                        {tr.status === 'in_transit' && (canIssue || canManageStores) ? (
                           <button
                             onClick={() => handleUpdateTransferStatus(tr._id || tr.id, 'received')}
                             style={{
@@ -1786,6 +1816,8 @@ export const MaterialInventoryPage = () => {
                           >
                             <CheckCircle size={13} /> Mark Received
                           </button>
+                        ) : tr.status === 'in_transit' ? (
+                          <span style={{ fontSize: '0.74rem', color: '#64748b', fontStyle: 'italic' }}>In Transit</span>
                         ) : (
                           <span style={{
                             fontSize: '0.74rem',

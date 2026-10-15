@@ -458,7 +458,7 @@ export const AgentProfilePage = () => {
       </div>
 
       {/* Tabs Bar */}
-      <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', gap: '24px', overflowX: 'auto' }}>
+      <div className="no-scrollbar" style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', gap: '24px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
         <button
           onClick={() => handleTabChange('leads')}
           style={{
@@ -632,8 +632,8 @@ export const AgentProfilePage = () => {
                 <p style={{ margin: 0, fontSize: '0.85rem' }}>No leads match your current search or filter.</p>
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+              <div className="table-responsive">
+                <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                       <th style={{ padding: '14px 18px', fontWeight: '700', color: '#475569' }}>Prospect Client</th>
@@ -850,8 +850,8 @@ export const AgentProfilePage = () => {
                 <p style={{ margin: 0, fontSize: '0.85rem' }}>No site visits match the selected filter.</p>
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+              <div className="table-responsive">
+                <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                       <th style={{ padding: '14px 18px', fontWeight: '700', color: '#475569' }}>Visit Code & Date</th>
@@ -1016,8 +1016,8 @@ export const AgentProfilePage = () => {
                 <p style={{ margin: 0, fontSize: '0.85rem' }}>Commission ledger entries will appear as site visits are approved.</p>
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+              <div className="table-responsive">
+                <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                       <th style={{ padding: '14px 18px', fontWeight: '700', color: '#475569' }}>Date</th>
@@ -1122,8 +1122,8 @@ export const AgentProfilePage = () => {
                 <p style={{ margin: 0, fontSize: '0.85rem' }}>All actions regarding this agent will be audited and displayed here.</p>
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+              <div className="table-responsive">
+                <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                       <th style={{ padding: '14px 18px', fontWeight: '700', color: '#475569' }}>Timestamp</th>

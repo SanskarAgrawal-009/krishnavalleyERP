@@ -52,15 +52,16 @@ const REPORT_TABS = [
 ];
 
 export const ReportsPage = () => {
-  const { user, userRole: authRole } = useAuth();
+  const { user, userRole: authRole, isSuperAdmin, hasPermission } = useAuth();
   const { reportType } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const userRole = extractRoleCode(user, authRole);
-  const isSuperAdmin = userRole === 'super_admin' || userRole === 'admin';
-  const hasFinancePermission = (user?.permissionCodes || []).includes('reports:financial') || (user?.permissions || []).some((p) => (typeof p === 'string' ? p : p.permissionCode) === 'reports:financial');
-  const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasFinancePermission && userRole !== 'accounts_manager');
+  const isAdminOrSuper = isSuperAdmin || userRole === 'super_admin' || userRole === 'admin';
+  const hasFinancePermission = isAdminOrSuper || hasPermission('reports:financial');
+  const canExport = isAdminOrSuper || hasPermission('reports:export');
+  const isFinancialRestricted = userRole === 'taskforce_manager' || (!isAdminOrSuper && !hasFinancePermission && userRole !== 'accounts_manager');
 
   const visibleReportTabs = useMemo(() => {
     if (isFinancialRestricted) {
@@ -313,25 +314,27 @@ export const ReportsPage = () => {
 
         {/* Global Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <button
-            onClick={handleExportCSV}
-            style={{
-              padding: '8px 14px',
-              borderRadius: '6px',
-              background: '#ffffff',
-              border: '1px solid #dadce0',
-              color: '#191c1d',
-              fontSize: '0.82rem',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer'
-            }}
-          >
-            <FileSpreadsheet size={15} color="#1a73e8" />
-            Export CSV
-          </button>
+          {canExport && (
+            <button
+              onClick={handleExportCSV}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '6px',
+                background: '#ffffff',
+                border: '1px solid #dadce0',
+                color: '#191c1d',
+                fontSize: '0.82rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              <FileSpreadsheet size={15} color="#1a73e8" />
+              Export CSV
+            </button>
+          )}
 
           <button
             onClick={handlePrint}
@@ -477,9 +480,11 @@ export const ReportsPage = () => {
       </div>
 
       {/* Report Tabs Ribbon */}
-      <div className="g-card no-print" style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+      <div className="g-card no-print no-scrollbar" style={{
+        display: 'flex',
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        whiteSpace: 'nowrap',
         gap: '6px',
         padding: '6px'
       }}>
@@ -495,7 +500,7 @@ export const ReportsPage = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                padding: '9px 12px',
+                padding: '9px 14px',
                 borderRadius: '6px',
                 border: 'none',
                 background: isActive ? '#1a73e8' : 'transparent',
@@ -505,7 +510,8 @@ export const ReportsPage = () => {
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
                 boxShadow: isActive ? '0 1px 3px rgba(26,115,232,0.3)' : 'none',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                flex: '0 0 auto'
               }}
             >
               <IconComp size={15} color={isActive ? '#ffffff' : tab.color} />
@@ -622,8 +628,8 @@ export const ReportsPage = () => {
                   </h4>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table>
+                <div className="table-responsive">
+                  <table style={{ minWidth: '780px' }}>
                     <thead>
                       <tr>
                         <th>Buyer Name</th>
@@ -722,8 +728,8 @@ export const ReportsPage = () => {
                   </h4>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table>
+                <div className="table-responsive">
+                  <table style={{ minWidth: '780px' }}>
                     <thead>
                       <tr>
                         <th>Unit & Tower</th>
@@ -1110,8 +1116,8 @@ export const ReportsPage = () => {
                   </h4>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table>
+                <div className="table-responsive">
+                  <table style={{ minWidth: '600px' }}>
                     <thead>
                       <tr>
                         <th>Acquisition Channel</th>
@@ -1183,8 +1189,8 @@ export const ReportsPage = () => {
                   </h4>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table>
+                <div className="table-responsive">
+                  <table style={{ minWidth: '600px' }}>
                     <thead>
                       <tr>
                         <th>Department</th>

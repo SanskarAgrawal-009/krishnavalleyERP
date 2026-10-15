@@ -807,15 +807,19 @@ export const NotificationManagementPage = () => {
       </div>
 
       {/* Main Module Tabs Bar */}
-      <div style={{
-        display: 'flex',
-        background: '#ffffff',
-        border: '1px solid #dadce0',
-        borderRadius: 'var(--radius-md)',
-        padding: '6px',
-        gap: '4px',
-        overflowX: 'auto'
-      }}>
+      <div
+        className="no-scrollbar"
+        style={{
+          display: 'flex',
+          background: '#ffffff',
+          border: '1px solid #dadce0',
+          borderRadius: 'var(--radius-md)',
+          padding: '6px',
+          gap: '4px',
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          whiteSpace: 'nowrap'
+        }}>
         <button
           onClick={() => setActiveTab('templates')}
           style={{
@@ -4002,8 +4006,8 @@ export const NotificationManagementPage = () => {
                   No communication delivery logs recorded yet.
                 </div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+                <div className="table-responsive">
+                  <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
                     <thead>
                       <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0', color: '#4b5563' }}>
                         <th style={{ padding: '12px 14px' }}>Channel</th>
@@ -4091,8 +4095,8 @@ export const NotificationManagementPage = () => {
                   No voice call records found. Use the In-App Softphone or Calling API to place calls.
                 </div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+                <div className="table-responsive">
+                  <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
                     <thead>
                       <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0', color: '#4b5563' }}>
                         <th style={{ padding: '12px 14px' }}>Client</th>

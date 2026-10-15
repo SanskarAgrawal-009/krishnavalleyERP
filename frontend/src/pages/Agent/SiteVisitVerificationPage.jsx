@@ -43,9 +43,10 @@ export const SiteVisitVerificationPage = () => {
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
   const [selectedVisitForVerify, setSelectedVisitForVerify] = useState(null);
 
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
   const userRole = extractRoleCode(currentUser);
-  const canApprove = ['admin', 'sales_head', 'crm_manager', 'super_admin', 'general_manager'].includes(userRole);
+  const canApprove = isSuperAdmin || ['admin', 'sales_head', 'crm_manager', 'super_admin', 'general_manager'].includes(userRole) || hasAnyPermission(['agent:verify', 'crm:manage', 'sales:approve', 'crm:edit']);
+  const canLogVisit = isSuperAdmin || hasAnyPermission(['agent:upload', 'agent:leads', 'crm:create', 'crm:edit']);
 
   const fetchSiteVisits = async () => {
     setLoading(true);
@@ -139,25 +140,27 @@ export const SiteVisitVerificationPage = () => {
             Refresh
           </button>
 
-          <button
-            type="button"
-            onClick={() => setIsNewModalOpen(true)}
-            style={{
-              background: '#1a73e8',
-              color: '#ffffff',
-              padding: '9px 18px',
-              borderRadius: '6px',
-              fontSize: '0.84rem',
-              fontWeight: '800',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <Plus size={15} /> Log New Agent Site Visit
-          </button>
+          {canLogVisit && (
+            <button
+              type="button"
+              onClick={() => setIsNewModalOpen(true)}
+              style={{
+                background: '#1a73e8',
+                color: '#ffffff',
+                padding: '9px 18px',
+                borderRadius: '6px',
+                fontSize: '0.84rem',
+                fontWeight: '800',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <Plus size={15} /> Log New Agent Site Visit
+            </button>
+          )}
         </div>
       </div>
 
@@ -283,8 +286,8 @@ export const SiteVisitVerificationPage = () => {
 
       {/* Main Table Register */}
       <div className="g-card" style={{ overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table>
+        <div className="table-responsive">
+          <table style={{ minWidth: '820px' }}>
             <thead>
               <tr>
                 <th>Visit Code & Date</th>

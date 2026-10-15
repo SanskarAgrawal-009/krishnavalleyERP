@@ -1656,8 +1656,8 @@ export const CommandCenterPage = () => {
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
+        <div className="table-responsive">
+          <table style={{ width: '100%', minWidth: '760px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.72rem', letterSpacing: '0.04em' }}>
                 <th style={{ padding: '12px 20px', fontWeight: '800' }}>PROSPECT NAME & SOURCE</th>

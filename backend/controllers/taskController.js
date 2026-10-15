@@ -55,12 +55,16 @@ export const getTasks = async (req, res) => {
       ];
     }
 
+    const scope = await getScopedTaskforceContext(req.user);
+
     if (status && status !== 'all') {
       query.status = status;
     }
 
     if (department && department !== 'all') {
-      query.department = department;
+      const escaped = escapeRegex(department.trim());
+      const dotted = escaped.split('').join('\\.?');
+      query.department = { $regex: new RegExp(`^(${escaped}|${dotted})$`, 'i') };
     }
 
     if (priority && priority !== 'all') {
@@ -71,11 +75,19 @@ export const getTasks = async (req, res) => {
       query.isMDDirective = isMDDirective === 'true';
     }
 
-    if (assignedTo) {
+    if (assignedTo && assignedTo !== 'all') {
       if (assignedTo === 'me') {
-        query.assignedTo = req.user.id;
-      } else if (assignedTo !== 'all') {
-        query.assignedTo = assignedTo;
+        const meClauses = [{ assignedTo: req.user.id }];
+        if (scope.member?._id) {
+          meClauses.push({ assignedMembers: scope.member._id });
+        }
+        query.$and = query.$and || [];
+        query.$and.push({ $or: meClauses });
+      } else {
+        query.$and = query.$and || [];
+        query.$and.push({
+          $or: [{ assignedTo }, { assignedMembers: assignedTo }],
+        });
       }
     }
 
@@ -111,7 +123,6 @@ export const getTasks = async (req, res) => {
 
     // Taskforce hierarchy scoping:
     // Helper sees only his tasks; Supervisor sees his + helpers; Head sees all 3; Manager sees all.
-    const scope = await getScopedTaskforceContext(req.user);
     if (!scope.isManagerOrAdmin) {
       const orClauses = [];
       if (scope.allowedUserIds && scope.allowedUserIds.length) {
@@ -120,6 +131,20 @@ export const getTasks = async (req, res) => {
       if (scope.allowedMemberIds && scope.allowedMemberIds.length) {
         orClauses.push({ assignedMembers: { $in: scope.allowedMemberIds } });
       }
+      // Allow creator to see tasks they assigned
+      orClauses.push({ assignedBy: req.user.id });
+
+      // If Head, allow seeing tasks for their department
+      if (scope.hierarchyLevel === 'head' && scope.member?.department) {
+        orClauses.push({
+          department: { $regex: new RegExp(`^${escapeRegex(scope.member.department.trim())}$`, 'i') },
+        });
+      } else if (scope.hierarchyLevel === 'head' && req.user?.department) {
+        orClauses.push({
+          department: { $regex: new RegExp(`^${escapeRegex(req.user.department.trim())}$`, 'i') },
+        });
+      }
+
       if (orClauses.length) {
         query.$and = query.$and || [];
         query.$and.push({ $or: orClauses });
@@ -148,9 +173,10 @@ export const getTasks = async (req, res) => {
     const tasks = rawTasks.map((t) => {
       let filteredUploads = t.uploads || [];
       if (!scope.isManagerOrAdmin && scope.allowedUserIds) {
-        filteredUploads = filteredUploads.filter((u) =>
-          scope.allowedUserIds.includes(u.uploadedBy?.toString())
-        );
+        filteredUploads = filteredUploads.filter((u) => {
+          const uId = u.uploadedBy?._id ? u.uploadedBy._id.toString() : (u.uploadedBy?.toString() || '');
+          return scope.allowedUserIds.includes(uId);
+        });
       }
       return {
         ...t,
@@ -189,6 +215,31 @@ export const getTaskStats = async (req, res) => {
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
+    const scope = await getScopedTaskforceContext(req.user);
+    const baseQuery = {};
+    if (!scope.isManagerOrAdmin) {
+      const orClauses = [];
+      if (scope.allowedUserIds && scope.allowedUserIds.length) {
+        orClauses.push({ assignedTo: { $in: scope.allowedUserIds } });
+      }
+      if (scope.allowedMemberIds && scope.allowedMemberIds.length) {
+        orClauses.push({ assignedMembers: { $in: scope.allowedMemberIds } });
+      }
+      orClauses.push({ assignedBy: req.user.id });
+      if (scope.hierarchyLevel === 'head' && scope.member?.department) {
+        orClauses.push({
+          department: { $regex: new RegExp(`^${escapeRegex(scope.member.department.trim())}$`, 'i') },
+        });
+      } else if (scope.hierarchyLevel === 'head' && req.user?.department) {
+        orClauses.push({
+          department: { $regex: new RegExp(`^${escapeRegex(req.user.department.trim())}$`, 'i') },
+        });
+      }
+      if (orClauses.length) {
+        baseQuery.$or = orClauses;
+      }
+    }
+
     const [
       totalTasks,
       activeTasks,
@@ -199,26 +250,31 @@ export const getTaskStats = async (req, res) => {
       roadblocksCount,
       departmentStats,
     ] = await Promise.all([
-      Task.countDocuments(),
-      Task.countDocuments({ status: { $in: ['pending', 'in_progress', 'under_review'] } }),
-      Task.countDocuments({ status: 'completed' }),
+      Task.countDocuments(baseQuery),
+      Task.countDocuments({ ...baseQuery, status: { $in: ['pending', 'in_progress', 'under_review'] } }),
+      Task.countDocuments({ ...baseQuery, status: 'completed' }),
       Task.countDocuments({
+        ...baseQuery,
         'followUpSchedule.nextFollowUpDate': { $gte: startOfDay, $lte: endOfDay },
         status: { $nin: ['completed', 'cancelled'] },
       }),
       Task.countDocuments({
+        ...baseQuery,
         'followUpSchedule.nextFollowUpDate': { $lt: startOfDay },
         status: { $nin: ['completed', 'cancelled'] },
       }),
       Task.countDocuments({
+        ...baseQuery,
         isMDDirective: true,
         status: { $nin: ['completed', 'cancelled'] },
       }),
       Task.countDocuments({
+        ...baseQuery,
         'roadblockAlert.hasRoadblock': true,
         'roadblockAlert.isResolved': false,
       }),
       Task.aggregate([
+        ...(Object.keys(baseQuery).length > 0 ? [{ $match: baseQuery }] : []),
         {
           $group: {
             _id: '$department',
@@ -291,9 +347,10 @@ export const getTaskById = async (req, res) => {
     // Scoped Uploads: Helper sees only his uploads; Supervisor sees his + helpers; Head sees all 3; Manager sees all
     const scope = await getScopedTaskforceContext(req.user);
     if (!scope.isManagerOrAdmin && scope.allowedUserIds) {
-      task.uploads = (task.uploads || []).filter((u) =>
-        scope.allowedUserIds.includes(u.uploadedBy?.toString())
-      );
+      task.uploads = (task.uploads || []).filter((u) => {
+        const uId = u.uploadedBy?._id ? u.uploadedBy._id.toString() : (u.uploadedBy?.toString() || '');
+        return scope.allowedUserIds.includes(uId);
+      });
     }
 
     return res.json({
@@ -342,7 +399,7 @@ export const createTask = async (req, res) => {
       });
     }
 
-    // Authorization: ONLY Admin, Taskforce Manager, and VP Department can create and assign tasks
+    // Authorization: Admin, Taskforce Manager, VP Department, Department Heads, and users with tasks:create/manage permission
     const callerRole = (req.user?.role || '').toLowerCase();
     let callerDept = '';
     try {
@@ -350,8 +407,14 @@ export const createTask = async (req, res) => {
       callerDept = (callerUser?.department || '').toLowerCase().trim();
     } catch (_) {}
 
+    const perms = (req.user?.permissions || req.user?.permissionCodes || []).map((p) =>
+      typeof p === 'string' ? p : p.permissionCode
+    ).filter(Boolean);
+    const hasTaskCreatePerm = perms.includes('tasks:create') || perms.includes('tasks:manage') || perms.includes('tasks:admin');
+
     const isAdmin = callerRole === 'admin' || callerRole === 'super_admin';
     const isTaskforceManager = callerRole === 'taskforce_manager' || callerRole === 'taskforce_mgr';
+    const isHead = callerRole === 'head' || callerRole === 'taskforce_lead' || req.user?.taskforceHierarchyLevel === 'head';
     const isVPDept =
       callerDept === "vp's" ||
       callerDept === 'vp' ||
@@ -360,10 +423,10 @@ export const createTask = async (req, res) => {
       callerRole === 'vp' ||
       callerRole.includes('vp');
 
-    if (!isAdmin && !isTaskforceManager && !isVPDept) {
+    if (!isAdmin && !isTaskforceManager && !isVPDept && !hasTaskCreatePerm && !isHead) {
       return res.status(403).json({
         success: false,
-        message: 'Forbidden: Only Admin, Taskforce Manager, and the VP Department are authorized to create and assign tasks.',
+        message: 'Forbidden: You are not authorized to create and assign tasks.',
       });
     }
 
@@ -931,11 +994,22 @@ export const getTaskAssigneesMeta = async (req, res) => {
       };
     });
 
+    const allDepts = [...taskforceDeptList, ...DEPARTMENTS];
+    const seenDepts = new Set();
+    const uniqueDepts = [];
+    for (const d of allDepts) {
+      const norm = (d.key || d.name || d.label || '').toLowerCase().trim();
+      if (!seenDepts.has(norm)) {
+        seenDepts.add(norm);
+        uniqueDepts.push(d);
+      }
+    }
+
     return res.json({
       success: true,
       assignees: users,
       taskforceMembers,
-      departments: [...taskforceDeptList, ...DEPARTMENTS],
+      departments: uniqueDepts,
       projects,
     });
   } catch (error) {

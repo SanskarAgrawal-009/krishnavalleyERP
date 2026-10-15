@@ -806,6 +806,7 @@ export const TaskforcePage = () => {
       >
         {/* Left: View Modes Switcher */}
         <div
+          className="no-scrollbar"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -813,6 +814,9 @@ export const TaskforcePage = () => {
             backgroundColor: '#f1f5f9',
             padding: '4px',
             borderRadius: '8px',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            maxWidth: '100%'
           }}
         >
           <button
@@ -1079,12 +1083,14 @@ export const TaskforcePage = () => {
       {/* 4. VIEW 1: KANBAN BOARD */}
       {viewMode === 'kanban' && (
         <div
+          className="no-scrollbar"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(5, minmax(260px, 1fr))',
             gap: '16px',
             alignItems: 'start',
             overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
             paddingBottom: '16px',
           }}
         >
@@ -1301,8 +1307,8 @@ export const TaskforcePage = () => {
             boxShadow: '0 1px 3px rgba(60, 64, 67, 0.06)',
           }}
         >
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+          <div className="table-responsive">
+            <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #dadce0', color: '#475569', fontSize: '12px' }}>
                   <th style={{ padding: '12px 16px' }}>Task Directive</th>

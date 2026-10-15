@@ -9,6 +9,7 @@ import { UploadBlueprintModal } from '../../components/documents/UploadBlueprint
 import { UploadLegalDocModal } from '../../components/documents/UploadLegalDocModal.jsx';
 import { DigitalSignatureModal } from '../../components/documents/DigitalSignatureModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 import {
   Folder,
@@ -32,6 +33,10 @@ import {
 } from 'lucide-react';
 
 export const DocumentManagementPage = () => {
+  const { isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
+  const canUploadDocs = isSuperAdmin || hasAnyPermission(['documents:upload', 'documents:manage']);
+  const canSignDocs = isSuperAdmin || hasPermission('documents:manage');
+
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -190,7 +195,7 @@ export const DocumentManagementPage = () => {
 
         {/* Dynamic Contextual Action Buttons in Header */}
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          {activeTab === 'sales' && (
+          {activeTab === 'sales' && canUploadDocs && (
             <button
               type="button"
               onClick={() => setIsSalesModalOpen(true)}
@@ -201,7 +206,7 @@ export const DocumentManagementPage = () => {
             </button>
           )}
 
-          {activeTab === 'rental' && (
+          {activeTab === 'rental' && canUploadDocs && (
             <button
               type="button"
               onClick={() => setIsRentalModalOpen(true)}
@@ -212,7 +217,7 @@ export const DocumentManagementPage = () => {
             </button>
           )}
 
-          {activeTab === 'blueprints' && (
+          {activeTab === 'blueprints' && canUploadDocs && (
             <button
               type="button"
               onClick={() => setIsBlueprintModalOpen(true)}
@@ -223,7 +228,7 @@ export const DocumentManagementPage = () => {
             </button>
           )}
 
-          {activeTab === 'legal' && (
+          {activeTab === 'legal' && canUploadDocs && (
             <button
               type="button"
               onClick={() => setIsLegalModalOpen(true)}
@@ -234,7 +239,7 @@ export const DocumentManagementPage = () => {
             </button>
           )}
 
-          {activeTab === 'signatures' && (
+          {activeTab === 'signatures' && canSignDocs && (
             <button
               type="button"
               onClick={() => openSignModal(null)}
@@ -314,11 +319,13 @@ export const DocumentManagementPage = () => {
       </div>
 
       {/* Sub-Tab Navigation Header */}
-      <div className="g-card" style={{
+      <div className="g-card no-scrollbar" style={{
         display: 'flex',
         padding: '6px',
         gap: '6px',
-        overflowX: 'auto'
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        whiteSpace: 'nowrap'
       }}>
         {[
           { id: 'sales', label: `Sales Agreements (${vaultData.saleAgreements?.length || 0})`, icon: FileText },
@@ -376,8 +383,8 @@ export const DocumentManagementPage = () => {
             </button>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table>
+          <div className="table-responsive">
+            <table style={{ minWidth: '780px' }}>
               <thead>
                 <tr>
                   <th>Buyer Name</th>
@@ -464,8 +471,8 @@ export const DocumentManagementPage = () => {
             </button>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table>
+          <div className="table-responsive">
+            <table style={{ minWidth: '780px' }}>
               <thead>
                 <tr>
                   <th>Tenant / Owner Name</th>
@@ -540,8 +547,8 @@ export const DocumentManagementPage = () => {
             </button>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table>
+          <div className="table-responsive">
+            <table style={{ minWidth: '780px' }}>
               <thead>
                 <tr>
                   <th>Title</th>
@@ -605,8 +612,8 @@ export const DocumentManagementPage = () => {
             </button>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table>
+          <div className="table-responsive">
+            <table style={{ minWidth: '780px' }}>
               <thead>
                 <tr>
                   <th>Document Title</th>
@@ -672,8 +679,8 @@ export const DocumentManagementPage = () => {
             </button>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table>
+          <div className="table-responsive">
+            <table style={{ minWidth: '780px' }}>
               <thead>
                 <tr>
                   <th>Signer Name</th>

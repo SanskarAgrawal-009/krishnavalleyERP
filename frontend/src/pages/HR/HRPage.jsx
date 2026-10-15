@@ -13,6 +13,7 @@ import { EmployeeDetailModal } from '../../components/hr/EmployeeDetailModal.jsx
 import { DisburseSalaryModal } from '../../components/hr/DisburseSalaryModal.jsx';
 import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { Modal } from '../../components/common/Modal.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 import {
   Users,
@@ -50,6 +51,11 @@ import {
 } from 'lucide-react';
 
 export const HRPage = () => {
+  const { user, isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
+  const canManageEmployees = isSuperAdmin || hasPermission('hr:manage');
+  const canEditHR = isSuperAdmin || hasPermission('hr:edit') || hasPermission('hr:manage');
+  const canManagePayroll = isSuperAdmin || hasPermission('hr:payroll') || hasPermission('hr:manage');
+
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -789,11 +795,12 @@ export const HRPage = () => {
       </div>
 
       {/* Sub-Tab Navigation Header */}
-      <div className="g-card" style={{
+      <div className="g-card table-responsive" style={{
         display: 'flex',
         padding: '6px',
         gap: '6px',
-        overflowX: 'auto'
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch'
       }}>
         {[
           { id: 'directory', label: `Staff Directory (${filteredEmployees.length})` },
@@ -838,7 +845,7 @@ export const HRPage = () => {
               <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>Showing {filteredEmployees.length} of {employees.length} total staff members</p>
             </div>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-              {employees.length === 0 && (
+              {canManageEmployees && employees.length === 0 && (
                 <button
                   type="button"
                   onClick={handleSeedSampleStaff}
@@ -859,25 +866,27 @@ export const HRPage = () => {
                   <Sparkles size={14} /> Populate Sample Staff
                 </button>
               )}
-              <button
-                type="button"
-                onClick={() => setIsEmpModalOpen(true)}
-                style={{
-                  background: '#1a73e8',
-                  color: '#ffffff',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
-              >
-                <Plus size={15} /> Onboard New Employee
-              </button>
+              {canManageEmployees && (
+                <button
+                  type="button"
+                  onClick={() => setIsEmpModalOpen(true)}
+                  style={{
+                    background: '#1a73e8',
+                    color: '#ffffff',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    border: 'none'
+                  }}
+                >
+                  <Plus size={15} /> Onboard New Employee
+                </button>
+              )}
             </div>
           </div>
 
@@ -1112,45 +1121,49 @@ export const HRPage = () => {
                             >
                               <Eye size={13} /> Dossier
                             </button>
-                            <button
-                              type="button"
-                              title="Edit Employee Profile"
-                              onClick={() => handleOpenEdit(emp)}
-                              style={{
-                                padding: '5px 9px',
-                                background: '#eff6ff',
-                                border: '1px solid #bfdbfe',
-                                color: '#1d4ed8',
-                                borderRadius: '5px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                              }}
-                            >
-                              <Edit2 size={13} /> Edit
-                            </button>
-                            <button
-                              type="button"
-                              title="Delete Employee"
-                              onClick={() => handleDeleteEmployee(emp)}
-                              style={{
-                                padding: '5px 7px',
-                                background: '#f1f5f9',
-                                border: '1px solid #e2e8f0',
-                                color: '#0f172a',
-                                borderRadius: '5px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center'
-                              }}
-                            >
-                              <Trash2 size={13} />
-                            </button>
+                            {canEditHR && (
+                              <button
+                                type="button"
+                                title="Edit Employee Profile"
+                                onClick={() => handleOpenEdit(emp)}
+                                style={{
+                                  padding: '5px 9px',
+                                  background: '#eff6ff',
+                                  border: '1px solid #bfdbfe',
+                                  color: '#1d4ed8',
+                                  borderRadius: '5px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: '700',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px'
+                                }}
+                              >
+                                <Edit2 size={13} /> Edit
+                              </button>
+                            )}
+                            {canManageEmployees && (
+                              <button
+                                type="button"
+                                title="Delete Employee"
+                                onClick={() => handleDeleteEmployee(emp)}
+                                style={{
+                                  padding: '5px 7px',
+                                  background: '#f1f5f9',
+                                  border: '1px solid #e2e8f0',
+                                  color: '#0f172a',
+                                  borderRadius: '5px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: '700',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center'
+                                }}
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1516,25 +1529,27 @@ export const HRPage = () => {
               <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Department & Role Hierarchy Matrix</h3>
               <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>Every department maintains distinct dedicated roles and operational scopes.</p>
             </div>
-            <button
-              type="button"
-              onClick={() => handleOpenDeptModal(null)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <Plus size={15} /> Add New Department
-            </button>
+            {canManageEmployees && (
+              <button
+                type="button"
+                onClick={() => handleOpenDeptModal(null)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <Plus size={15} /> Add New Department
+              </button>
+            )}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '14px' }}>
@@ -2128,26 +2143,28 @@ export const HRPage = () => {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsLeaveModalOpen(true)}
-              style={{
-                background: '#475569',
-                color: '#ffffff',
-                padding: '8px 18px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none',
-                boxShadow: '0 2px 4px rgba(176, 96, 0, 0.25)'
-              }}
-            >
-              <Plus size={15} /> Record Staff Leave
-            </button>
+            {canEditHR && (
+              <button
+                type="button"
+                onClick={() => setIsLeaveModalOpen(true)}
+                style={{
+                  background: '#475569',
+                  color: '#ffffff',
+                  padding: '8px 18px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none',
+                  boxShadow: '0 2px 4px rgba(176, 96, 0, 0.25)'
+                }}
+              >
+                <Plus size={15} /> Record Staff Leave
+              </button>
+            )}
           </div>
 
           {/* STAFF ON LEAVE TODAY BANNER */}
@@ -2612,25 +2629,27 @@ export const HRPage = () => {
                 Gross calculations, statutory deductions (PF/ESI), net pay, official slips, and bank disbursements.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsPayModalOpen(true)}
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none'
-              }}
-            >
-              <DollarSign size={15} /> Calculate & Process Payroll
-            </button>
+            {canManagePayroll && (
+              <button
+                type="button"
+                onClick={() => setIsPayModalOpen(true)}
+                style={{
+                  background: '#1a73e8',
+                  color: '#ffffff',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                <DollarSign size={15} /> Calculate & Process Payroll
+              </button>
+            )}
           </div>
 
           {/* Payroll Filter Bar */}
@@ -2822,7 +2841,7 @@ export const HRPage = () => {
                                 <Printer size={13} /> Payslip
                               </button>
 
-                              {pay.status !== 'paid' ? (
+                              {pay.status !== 'paid' && canManagePayroll ? (
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2858,11 +2877,11 @@ export const HRPage = () => {
                                 >
                                   <DollarSign size={13} /> Disburse
                                 </button>
-                              ) : (
+                              ) : pay.status === 'paid' ? (
                                 <span style={{ color: '#1a73e8', fontWeight: '700', fontSize: '0.74rem' }}>
                                   Disbursed
                                 </span>
-                              )}
+                              ) : null}
                             </div>
 
                             {pay.status === 'paid' && (

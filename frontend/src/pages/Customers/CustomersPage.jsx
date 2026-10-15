@@ -39,7 +39,12 @@ import {
 } from 'lucide-react';
 
 export const CustomersPage = () => {
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
+
+  const canCreateCustomer = isSuperAdmin || hasAnyPermission(['customers:manage', 'sales:create']);
+  const canManageCustomer = isSuperAdmin || hasPermission('customers:manage');
+  const canExportCustomers = isSuperAdmin || hasAnyPermission(['customers:view', 'reports:view']);
+  const canDeleteCustomer = isSuperAdmin || hasPermission('customers:manage');
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -316,34 +321,40 @@ export const CustomersPage = () => {
             </button>
           )}
 
-          <button
-            onClick={handleExportCSV}
-            className="btn-secondary"
-            style={{ padding: '9px 16px', fontSize: '0.84rem' }}
-            title="Export Customers to CSV Spreadsheet"
-          >
-            <Download size={15} /> Export CSV
-          </button>
+          {canExportCustomers && (
+            <button
+              onClick={handleExportCSV}
+              className="btn-secondary"
+              style={{ padding: '9px 16px', fontSize: '0.84rem' }}
+              title="Export Customers to CSV Spreadsheet"
+            >
+              <Download size={15} /> Export CSV
+            </button>
+          )}
 
-          <button
-            onClick={() => {
-              setEditingCustomer(null);
-              setIsCreateModalOpen(true);
-            }}
-            className="btn-primary"
-            style={{ padding: '10px 20px', fontSize: '0.88rem' }}
-          >
-            <UserPlus size={16} /> Register New Customer
-          </button>
+          {canCreateCustomer && (
+            <button
+              onClick={() => {
+                setEditingCustomer(null);
+                setIsCreateModalOpen(true);
+              }}
+              className="btn-primary"
+              style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+            >
+              <UserPlus size={16} /> Register New Customer
+            </button>
+          )}
         </div>
       </div>
 
       {/* Sub-Tab Navigation Header */}
-      <div className="g-card" style={{
+      <div className="g-card no-scrollbar" style={{
         display: 'flex',
         padding: '6px',
         gap: '6px',
-        overflowX: 'auto'
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        whiteSpace: 'nowrap'
       }}>
         {[
           { id: 'directory', label: `Customer Directory (${customers.length})`, icon: Users },
@@ -533,7 +544,8 @@ export const CustomersPage = () => {
         />
       ) : (
         <div className="g-card animate-fade-in" style={{ padding: '0', borderRadius: '12px', overflow: 'hidden', width: '100%', boxSizing: 'border-box' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', textAlign: 'left' }}>
+          <div className="table-responsive">
+            <table style={{ width: '100%', minWidth: '880px', borderCollapse: 'collapse', tableLayout: 'fixed', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0' }}>
                 <th style={{ padding: '14px 18px', width: '28%' }}>CUSTOMER / ENTITY</th>
@@ -805,44 +817,48 @@ export const CustomersPage = () => {
                             Passbook <ArrowRight size={12} />
                           </button>
 
-                          <button
-                            onClick={() => {
-                              setEditingCustomer(cust);
-                              setIsCreateModalOpen(true);
-                            }}
-                            title="Edit Profile"
-                            style={{
-                              padding: '5px 7px',
-                              background: '#f8f9fa',
-                              border: '1px solid #dadce0',
-                              borderRadius: '5px',
-                              color: '#414754',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                          >
-                            <Edit size={12} />
-                          </button>
+                          {canManageCustomer && (
+                            <button
+                              onClick={() => {
+                                setEditingCustomer(cust);
+                                setIsCreateModalOpen(true);
+                              }}
+                              title="Edit Profile"
+                              style={{
+                                padding: '5px 7px',
+                                background: '#f8f9fa',
+                                border: '1px solid #dadce0',
+                                borderRadius: '5px',
+                                color: '#414754',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              <Edit size={12} />
+                            </button>
+                          )}
 
-                          <button
-                            onClick={() => handleDeleteCustomer(cust)}
-                            title="Delete Customer Profile"
-                            style={{
-                              padding: '5px 7px',
-                              background: '#f1f5f9',
-                              border: '1px solid #f1f5f9',
-                              borderRadius: '5px',
-                              color: '#0f172a',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                          >
-                            <Trash2 size={12} />
-                          </button>
+                          {canDeleteCustomer && (
+                            <button
+                              onClick={() => handleDeleteCustomer(cust)}
+                              title="Delete Customer Profile"
+                              style={{
+                                padding: '5px 7px',
+                                background: '#f1f5f9',
+                                border: '1px solid #f1f5f9',
+                                borderRadius: '5px',
+                                color: '#0f172a',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -889,29 +905,31 @@ export const CustomersPage = () => {
                                     <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                       <CreditCard size={14} color="#1a73e8" /> Bank Payout Account
                                     </div>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setEditingCustomer(cust);
-                                        setIsCreateModalOpen(true);
-                                      }}
-                                      style={{
-                                        fontSize: '0.7rem',
-                                        background: '#1a73e8',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        padding: '3px 8px',
-                                        borderRadius: '4px',
-                                        fontWeight: '700',
-                                        cursor: 'pointer',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '3px'
-                                      }}
-                                      title="Edit Account Details"
-                                    >
-                                      <Edit size={10} /> Edit Account
-                                    </button>
+                                    {canManageCustomer && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setEditingCustomer(cust);
+                                          setIsCreateModalOpen(true);
+                                        }}
+                                        style={{
+                                          fontSize: '0.7rem',
+                                          background: '#1a73e8',
+                                          color: '#ffffff',
+                                          border: 'none',
+                                          padding: '3px 8px',
+                                          borderRadius: '4px',
+                                          fontWeight: '700',
+                                          cursor: 'pointer',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '3px'
+                                        }}
+                                        title="Edit Account Details"
+                                      >
+                                        <Edit size={10} /> Edit Account
+                                      </button>
+                                    )}
                                   </div>
 
                                   {bank.accountNumber || bank.bankName ? (
@@ -950,25 +968,27 @@ export const CustomersPage = () => {
                                   ) : (
                                     <div style={{ fontSize: '0.78rem', color: '#0f172a', fontStyle: 'italic', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                       <span>No bank account registered for rental payouts.</span>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          setEditingCustomer(cust);
-                                          setIsCreateModalOpen(true);
-                                        }}
-                                        style={{
-                                          padding: '5px 10px',
-                                          background: '#ffffff',
-                                          border: '1px solid #1a73e8',
-                                          color: '#1a73e8',
-                                          borderRadius: '4px',
-                                          fontWeight: '700',
-                                          cursor: 'pointer',
-                                          width: 'fit-content'
-                                        }}
-                                      >
-                                        + Add Bank Details
-                                      </button>
+                                      {canManageCustomer && (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setEditingCustomer(cust);
+                                            setIsCreateModalOpen(true);
+                                          }}
+                                          style={{
+                                            padding: '5px 10px',
+                                            background: '#ffffff',
+                                            border: '1px solid #1a73e8',
+                                            color: '#1a73e8',
+                                            borderRadius: '4px',
+                                            fontWeight: '700',
+                                            cursor: 'pointer',
+                                            width: 'fit-content'
+                                          }}
+                                        >
+                                          + Add Bank Details
+                                        </button>
+                                      )}
                                     </div>
                                   )}
                                 </div>
@@ -1040,6 +1060,7 @@ export const CustomersPage = () => {
               })}
             </tbody>
           </table>
+          </div>
 
           {/* Table Summary Footer */}
           <div style={{
@@ -1150,8 +1171,8 @@ export const CustomersPage = () => {
               </button>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive">
+              <table style={{ minWidth: '840px' }}>
                 <thead>
                   <tr>
                     <th>Owner Name & Contact</th>

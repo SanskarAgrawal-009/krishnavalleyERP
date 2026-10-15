@@ -100,9 +100,9 @@ export const NAV_CATEGORIES = [
         highlight: true,
         permission: ['tasks:manage', 'tasks:view'],
         subItems: [
-          { path: '/taskforce-manager?tab=team', label: 'Departments & Hierarchy', icon: Building2 },
-          { path: '/taskforce-manager?tab=workforce', label: 'Team & Workload', icon: Users },
-          { path: '/taskforce-manager?tab=delegation', label: 'Delegation Hub', icon: Target },
+          { path: '/taskforce-manager?tab=team', label: 'Departments & Hierarchy', icon: Building2, permission: 'tasks:manage' },
+          { path: '/taskforce-manager?tab=workforce', label: 'Team & Workload', icon: Users, permission: 'tasks:view' },
+          { path: '/taskforce-manager?tab=delegation', label: 'Delegation Hub', icon: Target, permission: 'tasks:manage' },
         ],
       },
       {
@@ -113,14 +113,14 @@ export const NAV_CATEGORIES = [
         badge: 'BI',
         permission: 'reports:view',
         subItems: [
-          { path: '/reports/sales', label: 'Sales Report' },
-          { path: '/reports/rental', label: 'Rental Report' },
-          { path: '/reports/collection', label: 'Collection & Aging' },
-          { path: '/reports/maintenance', label: 'Maintenance Report' },
-          { path: '/reports/inventory', label: 'Inventory Report' },
-          { path: '/reports/finance', label: 'Finance & P&L' },
-          { path: '/reports/crm', label: 'CRM Funnel' },
-          { path: '/reports/hr', label: 'HR & Payroll' }
+          { path: '/reports/sales', label: 'Sales Report', permission: 'sales:view' },
+          { path: '/reports/rental', label: 'Rental Report', permission: 'rentals:view' },
+          { path: '/reports/collection', label: 'Collection & Aging', permission: 'reports:financial' },
+          { path: '/reports/maintenance', label: 'Maintenance Report', permission: 'maintenance:view' },
+          { path: '/reports/inventory', label: 'Inventory Report', permission: 'inventory:view' },
+          { path: '/reports/finance', label: 'Finance & P&L', permission: 'reports:financial' },
+          { path: '/reports/crm', label: 'CRM Funnel', permission: 'crm:view' },
+          { path: '/reports/hr', label: 'HR & Payroll', permission: 'hr:view' }
         ]
       }
     ]
@@ -151,10 +151,10 @@ export const NAV_CATEGORIES = [
           { path: '/materials?tab=materials', label: 'Materials Catalog', icon: Package },
           { path: '/materials?tab=stores', label: 'Stores & Warehouses', icon: Building2 },
           { path: '/materials?tab=vendors', label: 'Vendors Register', icon: Truck },
-          { path: '/materials?tab=pos', label: 'Purchase Orders (POs)', icon: ShoppingCart },
-          { path: '/materials?tab=grns', label: 'Goods Receipts (GRN)', icon: CheckCircle },
-          { path: '/materials?tab=issues', label: 'Material Issues', icon: ArrowUpRight },
-          { path: '/materials?tab=transfers', label: 'Site Transfers', icon: Repeat }
+          { path: '/materials?tab=pos', label: 'Purchase Orders (POs)', icon: ShoppingCart, permission: 'materials:create' },
+          { path: '/materials?tab=grns', label: 'Goods Receipts (GRN)', icon: CheckCircle, permission: 'materials:create' },
+          { path: '/materials?tab=issues', label: 'Material Issues', icon: ArrowUpRight, permission: 'materials:issue' },
+          { path: '/materials?tab=transfers', label: 'Site Transfers', icon: Repeat, permission: 'materials:issue' }
         ]
       },
       {
@@ -163,7 +163,7 @@ export const NAV_CATEGORIES = [
         icon: Wrench,
         permission: 'maintenance:view',
         subItems: [
-          { path: '/maintenance?tab=bills', label: 'Maintenance Bills', icon: DollarSign },
+          { path: '/maintenance?tab=bills', label: 'Maintenance Bills', icon: DollarSign, permission: 'maintenance:create' },
           { path: '/maintenance?tab=tickets', label: 'Service Tickets & SLA', icon: Wrench },
           { path: '/maintenance?tab=penalties', label: 'Rule Infractions & Penalties', icon: AlertTriangle }
         ]
@@ -216,7 +216,7 @@ export const NAV_CATEGORIES = [
         subItems: [
           { path: '/rentals?tab=active', label: 'Active Rental Register', icon: Building2 },
           { path: '/rentals?tab=history', label: 'Previous Owners Trail', icon: History },
-          { path: '/rentals/ledgers', label: 'Rental Passbooks & Ledgers', icon: BookOpen }
+          { path: '/rentals/ledgers', label: 'Rental Passbooks & Ledgers', icon: BookOpen, permission: 'rentals:manage' }
         ]
       }
     ]
@@ -244,7 +244,7 @@ export const NAV_CATEGORIES = [
         permission: ['agent:view', 'agent:manage', 'crm:view', 'sales:view', 'crm:manage'],
         subItems: [
           { path: '/agent-network', label: 'Channel Partner Directory', icon: Users },
-          { path: '/site-visits', label: 'Site Visit Approvals', icon: ShieldCheck },
+          { path: '/site-visits', label: 'Site Visit Approvals', icon: ShieldCheck, permission: 'agent:verify' },
         ]
       }
     ]
@@ -263,7 +263,7 @@ export const NAV_CATEGORIES = [
           { path: '/hr?tab=id_cards', label: 'Staff ID Badges & Identity', icon: ShieldCheck },
           { path: '/hr?tab=leaves', label: 'Leave Quotas & Approvals', icon: Clock },
           { path: '/hr?tab=attendance', label: 'Daily Shift Attendance', icon: Calendar },
-          { path: '/hr?tab=payroll', label: 'Monthly Payroll Register', icon: DollarSign },
+          { path: '/hr?tab=payroll', label: 'Monthly Payroll Register', icon: DollarSign, permission: 'hr:payroll' },
           { path: '/hr?tab=dept_roles', label: 'Departments & Roles', icon: Building2 }
         ]
       },
@@ -310,7 +310,7 @@ export const NAV_CATEGORIES = [
         permission: ['users:view', 'roles:view', 'users:manage', 'roles:manage'],
         subItems: [
           { path: '/access-control?tab=users', label: 'User Directory', icon: Users },
-          { path: '/access-control?tab=roles', label: 'Role Permissions Matrix', icon: ShieldCheck },
+          { path: '/access-control?tab=roles', label: 'Role Permissions Matrix', icon: ShieldCheck, permission: 'roles:view' },
           { path: '/access-control?tab=branches', label: 'Branch Locations', icon: Building2 }
         ]
       },
@@ -415,6 +415,9 @@ export const AppLayout = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMobile, mobileMenuOpen]);
 
+  // Mobile Omnisearch overlay state
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
   // Filter items based on user permissions, role, and search
   const userRole = extractRoleCode(user, authRole);
   const isAgentUser = userRole === 'agent';
@@ -434,6 +437,94 @@ export const AppLayout = () => {
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1'
   );
+
+  // Dynamic quick action configuration matching user role and permissions
+  const getQuickActionConfig = () => {
+    if (isAgentUser) {
+      return {
+        label: 'Submit Prospective Lead',
+        shortLabel: 'New Lead',
+        path: '/agent-portal?tab=leads',
+        icon: Plus,
+      };
+    }
+    if (userRole === 'taskforce_manager' || isTaskforceUser) {
+      return {
+        label: 'New Task Directive',
+        shortLabel: 'Task',
+        path: '/taskforce',
+        icon: Target,
+      };
+    }
+    if (hasPermission('sales:create') || isSuperAdmin) {
+      return {
+        label: 'New Project / Deal',
+        shortLabel: 'New Deal',
+        path: '/sales',
+        icon: Plus,
+      };
+    }
+    if (hasPermission('crm:create')) {
+      return {
+        label: 'Capture New Lead',
+        shortLabel: 'New Lead',
+        path: '/crm',
+        icon: Plus,
+      };
+    }
+    if (hasPermission('materials:create')) {
+      return {
+        label: 'New Material PO/GRN',
+        shortLabel: 'New PO',
+        path: '/materials',
+        icon: Package,
+      };
+    }
+    if (hasPermission('inventory:create')) {
+      return {
+        label: 'Add Flat / Unit',
+        shortLabel: 'New Flat',
+        path: '/inventory',
+        icon: Building2,
+      };
+    }
+    if (hasPermission('hr:manage')) {
+      return {
+        label: 'Add Staff Member',
+        shortLabel: 'Add Staff',
+        path: '/hr',
+        icon: Users,
+      };
+    }
+    if (hasPermission('maintenance:create')) {
+      return {
+        label: 'New Service Ticket',
+        shortLabel: 'Ticket',
+        path: '/maintenance',
+        icon: Wrench,
+      };
+    }
+    return {
+      label: 'New Directive',
+      shortLabel: 'Add',
+      path: '/dashboard',
+      icon: Plus,
+    };
+  };
+
+  const quickActionConfig = getQuickActionConfig();
+  const QuickActionIcon = quickActionConfig.icon;
+
+  // Sub-item permission & financial restriction validator
+  const isSubItemPermitted = (sub) => {
+    if (isFinancialRestricted && FINANCIAL_PATHS.includes(sub.path)) return false;
+    if (!isTaskforceUser && sub.path === '/taskforce-dashboard') return false;
+    if (!sub.permission) return true;
+    if (Array.isArray(sub.permission)) {
+      return sub.permission.some((p) => hasPermission(p));
+    }
+    return hasPermission(sub.permission);
+  };
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     // 1. Agent Portal is exclusively for logged-in Agents
@@ -468,13 +559,10 @@ export const AppLayout = () => {
     return hasPermission(item.permission);
   }).map((item) => {
     if (!item.subItems) return item;
-    if (isFinancialRestricted) {
-      return {
-        ...item,
-        subItems: item.subItems.filter((sub) => !FINANCIAL_PATHS.includes(sub.path))
-      };
-    }
-    return item;
+    return {
+      ...item,
+      subItems: item.subItems.filter(isSubItemPermitted)
+    };
   });
 
   // Helper to check if a navigation module or one of its child sub-items matches current location
@@ -596,16 +684,9 @@ export const AppLayout = () => {
       return hasPermission(item.permission);
     }).map((item) => {
       if (!item.subItems) return item;
-      let subs = item.subItems;
-      if (isFinancialRestricted) {
-        subs = subs.filter((sub) => !FINANCIAL_PATHS.includes(sub.path));
-      }
-      if (!isTaskforceUser) {
-        subs = subs.filter((sub) => sub.path !== '/taskforce-dashboard');
-      }
       return {
         ...item,
-        subItems: subs
+        subItems: item.subItems.filter(isSubItemPermitted)
       };
     });
 
@@ -855,11 +936,54 @@ export const AppLayout = () => {
             </button>
           )}
 
+          {/* Mobile User Identity Pill */}
+          {isMobile && user && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '8px 10px',
+                backgroundColor: '#ffffff',
+                borderRadius: '8px',
+                border: '1px solid #dadce0',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
+              }}
+            >
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: '#e8f0fe',
+                  color: '#1a73e8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '700',
+                  fontSize: '0.82rem',
+                  flexShrink: 0
+                }}
+              >
+                {user?.firstName?.[0] || 'U'}
+              </div>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1f2937', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {user?.firstName} {user?.lastName}
+                </div>
+                <div style={{ fontSize: '0.7rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <ShieldCheck size={11} color="#1a73e8" />
+                  <span>{user?.role?.roleName || userRole || 'User'}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Quick Action CTA Button */}
           {(!isCollapsed || isMobile) ? (
             <button
               onClick={() => {
-                navigate('/sales');
+                navigate(quickActionConfig.path);
                 if (isMobile) setMobileMenuOpen(false);
               }}
               style={{
@@ -882,13 +1006,13 @@ export const AppLayout = () => {
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#1557d0'; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#1a73e8'; }}
             >
-              <Plus size={16} strokeWidth={2.5} />
-              New Project / Deal
+              <QuickActionIcon size={16} strokeWidth={2.5} />
+              {quickActionConfig.label}
             </button>
           ) : (
             <button
-              onClick={() => navigate('/sales')}
-              title="New Project / Deal"
+              onClick={() => navigate(quickActionConfig.path)}
+              title={quickActionConfig.label}
               style={{
                 width: '40px',
                 height: '40px',
@@ -904,7 +1028,7 @@ export const AppLayout = () => {
                 boxShadow: '0 1px 3px rgba(26,115,232,0.3)'
               }}
             >
-              <Plus size={20} strokeWidth={2.5} />
+              <QuickActionIcon size={20} strokeWidth={2.5} />
             </button>
           )}
 
@@ -1763,6 +1887,83 @@ export const AppLayout = () => {
           </div>
         </header>
 
+        {/* Mobile Search Overlay Input */}
+        {isMobile && mobileSearchOpen && (
+          <div
+            style={{
+              padding: '10px 16px',
+              backgroundColor: '#ffffff',
+              borderBottom: '1px solid #dadce0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+              zIndex: 25
+            }}
+          >
+            <form onSubmit={handleGlobalSearch} style={{ flex: 1, position: 'relative' }}>
+              <Search
+                size={16}
+                color="var(--outline)"
+                style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}
+              />
+              <input
+                type="text"
+                placeholder="Search projects, leads, documents..."
+                autoFocus
+                value={globalSearch}
+                onChange={(e) => setGlobalSearch(e.target.value)}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#f3f4f5',
+                  border: '1px solid #dadce0',
+                  borderRadius: '8px',
+                  paddingLeft: '38px',
+                  paddingRight: '32px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  fontSize: '16px',
+                  color: 'var(--on-surface)'
+                }}
+              />
+              {globalSearch && (
+                <button
+                  type="button"
+                  onClick={() => setGlobalSearch('')}
+                  style={{
+                    position: 'absolute',
+                    right: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--outline)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </form>
+            <button
+              type="button"
+              onClick={() => setMobileSearchOpen(false)}
+              style={{
+                padding: '8px 12px',
+                background: '#f1f5f9',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.82rem',
+                fontWeight: '600',
+                color: '#475569',
+                cursor: 'pointer'
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
         {/* Scrollable Middle Canvas for Route Content */}
         <main
           className="app-main"
@@ -1770,7 +1971,7 @@ export const AppLayout = () => {
             flex: 1,
             overflowY: 'auto',
             overflowX: 'hidden',
-            padding: isMobile ? '24px 16px 48px' : '32px 40px 64px',
+            padding: isMobile ? '16px 12px 82px' : '32px 40px 64px',
             boxSizing: 'border-box',
             width: '100%'
           }}
@@ -1782,36 +1983,187 @@ export const AppLayout = () => {
           </div>
         </main>
 
-        {/* Sticky Bottom Footer */}
-        <footer
-          className="app-footer"
-          style={{
-            backgroundColor: '#f8f9fa',
-            borderTop: '1px solid #dadce0',
-            padding: '14px 28px',
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '12px',
-            position: 'sticky',
-            bottom: 0,
-            zIndex: 30,
-            flexShrink: 0,
-            boxShadow: '0 -2px 8px rgba(0,0,0,0.03)'
-          }}
-        >
-          <div style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--secondary)' }}>
-            System Status: All Systems Operational • Vrindavan Projects Online
-          </div>
-          <div style={{ display: 'flex', gap: '16px', fontSize: '0.8rem', color: 'var(--on-surface-variant)' }}>
-            <span style={{ cursor: 'pointer' }}>Privacy Policy</span>
-            <span>•</span>
-            <span style={{ cursor: 'pointer' }}>Terms of Service</span>
-            <span>•</span>
-            <span style={{ cursor: 'pointer' }}>Support</span>
-          </div>
-        </footer>
+        {/* Sticky Bottom Footer (Desktop & Tablet only) */}
+        {!isMobile && (
+          <footer
+            className="app-footer"
+            style={{
+              backgroundColor: '#f8f9fa',
+              borderTop: '1px solid #dadce0',
+              padding: '14px 28px',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '12px',
+              position: 'sticky',
+              bottom: 0,
+              zIndex: 30,
+              flexShrink: 0,
+              boxShadow: '0 -2px 8px rgba(0,0,0,0.03)'
+            }}
+          >
+            <div style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--secondary)' }}>
+              System Status: All Systems Operational • Vrindavan Projects Online
+            </div>
+            <div style={{ display: 'flex', gap: '16px', fontSize: '0.8rem', color: 'var(--on-surface-variant)' }}>
+              <span style={{ cursor: 'pointer' }}>Privacy Policy</span>
+              <span>•</span>
+              <span style={{ cursor: 'pointer' }}>Terms of Service</span>
+              <span>•</span>
+              <span style={{ cursor: 'pointer' }}>Support</span>
+            </div>
+          </footer>
+        )}
+
+        {/* ======================================================== */}
+        {/* Mobile Bottom Navigation Bar (Tailored to Role & Permissions) */}
+        {/* ======================================================== */}
+        {isMobile && (
+          <nav className="mobile-bottom-nav" aria-label="Quick Mobile Navigation">
+            {/* Tab 1: Dashboard */}
+            <button
+              type="button"
+              className={`mobile-nav-btn ${location.pathname === '/' || location.pathname === '/dashboard' || location.pathname === '/taskforce-dashboard' ? 'active' : ''}`}
+              onClick={() => navigate(userRole === 'taskforce_manager' ? '/taskforce-dashboard' : '/dashboard')}
+            >
+              <LayoutDashboard size={20} />
+              <span>Dashboard</span>
+            </button>
+
+            {/* Tab 2: Primary Operational Hub */}
+            {isAgentUser ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/agent-portal' ? 'active' : ''}`}
+                onClick={() => navigate('/agent-portal?tab=leads')}
+              >
+                <Users size={20} />
+                <span>My Leads</span>
+              </button>
+            ) : isTaskforceUser ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/taskforce' ? 'active' : ''}`}
+                onClick={() => navigate('/taskforce')}
+              >
+                <Layers size={20} />
+                <span>Tasks</span>
+              </button>
+            ) : hasPermission('crm:view') ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/crm' ? 'active' : ''}`}
+                onClick={() => navigate('/crm')}
+              >
+                <Users size={20} />
+                <span>CRM Leads</span>
+              </button>
+            ) : hasPermission('materials:view') ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/materials' ? 'active' : ''}`}
+                onClick={() => navigate('/materials')}
+              >
+                <Package size={20} />
+                <span>Stores</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/inventory' ? 'active' : ''}`}
+                onClick={() => navigate('/inventory')}
+              >
+                <Building2 size={20} />
+                <span>Inventory</span>
+              </button>
+            )}
+
+            {/* Center Action FAB */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <button
+                type="button"
+                className="mobile-action-fab"
+                onClick={() => navigate(quickActionConfig.path)}
+                title={quickActionConfig.label}
+                aria-label={quickActionConfig.label}
+              >
+                <QuickActionIcon size={22} strokeWidth={2.5} />
+              </button>
+              <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#1a73e8', marginTop: '2px' }}>
+                {quickActionConfig.shortLabel || 'Add'}
+              </span>
+            </div>
+
+            {/* Tab 3: Secondary Module */}
+            {isAgentUser ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/site-visits' ? 'active' : ''}`}
+                onClick={() => navigate('/site-visits')}
+              >
+                <ShieldCheck size={20} />
+                <span>Visits</span>
+              </button>
+            ) : isTaskforceUser ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname.startsWith('/taskforce-manager') ? 'active' : ''}`}
+                onClick={() => navigate('/taskforce-manager')}
+              >
+                <Shield size={20} />
+                <span>Manager</span>
+              </button>
+            ) : hasPermission('sales:view') ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/sales' ? 'active' : ''}`}
+                onClick={() => navigate('/sales')}
+              >
+                <ShoppingBag size={20} />
+                <span>Sales</span>
+              </button>
+            ) : hasPermission('inventory:view') ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/inventory' ? 'active' : ''}`}
+                onClick={() => navigate('/inventory')}
+              >
+                <Building2 size={20} />
+                <span>Inventory</span>
+              </button>
+            ) : hasPermission('reports:view') ? (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname.startsWith('/reports') ? 'active' : ''}`}
+                onClick={() => navigate('/reports')}
+              >
+                <BarChart3 size={20} />
+                <span>Reports</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={`mobile-nav-btn ${location.pathname === '/documents' ? 'active' : ''}`}
+                onClick={() => navigate('/documents')}
+              >
+                <Folder size={20} />
+                <span>Vault</span>
+              </button>
+            )}
+
+            {/* Tab 4: Menu Drawer Trigger */}
+            <button
+              type="button"
+              className="mobile-nav-btn"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open Navigation Menu"
+            >
+              <Menu size={20} />
+              <span>Menu</span>
+            </button>
+          </nav>
+        )}
 
         {/* Floating 10-Minute Reminder Alert Banner with Chime & Actions */}
         <InAppReminderBanner

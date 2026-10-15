@@ -143,8 +143,12 @@ export const syncAllTaskforceMembersToUsers = async () => {
  * Helper: Resolve caller's hierarchy scope and allowed IDs
  */
 export const getScopedTaskforceContext = async (user) => {
-  const roleCode = user?.role || user?.roleCode || '';
-  const isManagerOrAdmin = ['admin', 'super_admin', 'taskforce_manager'].includes(roleCode);
+  const roleCode = (user?.role || user?.roleCode || '').toLowerCase();
+  const perms = user?.permissions || [];
+  const hasManagePerm = perms.includes('tasks:manage') || perms.includes('tasks:admin');
+  const userDept = (user?.department || '').toLowerCase();
+  const isVP = userDept.includes('vp') || userDept.includes('vice president') || roleCode.includes('vp');
+  const isManagerOrAdmin = ['admin', 'super_admin', 'taskforce_manager', 'taskforce_mgr'].includes(roleCode) || hasManagePerm || isVP;
 
   if (isManagerOrAdmin) {
     return {
@@ -170,6 +174,7 @@ export const getScopedTaskforceContext = async (user) => {
       member: null,
       allowedMemberIds: [],
       allowedUserIds: [user.id],
+      userDepartment: user.department || null,
     };
   }
 
@@ -186,17 +191,20 @@ export const getScopedTaskforceContext = async (user) => {
   }
 
   if (level === 'supervisor') {
-    // Supervisor sees self + all helpers reporting to this supervisor
+    // Supervisor sees self + all helpers reporting to this supervisor or in same department
+    const deptRegex = member.department ? new RegExp(`^${member.department.trim().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') : null;
+    const deptFilter = deptRegex ? [{ department: deptRegex, hierarchyLevel: 'helper' }, { trade: deptRegex, hierarchyLevel: 'helper' }] : [];
+
     const helpers = await TaskforceMember.find({
-      $or: [{ supervisorId: member._id }, { headId: member._id, hierarchyLevel: 'helper' }],
+      $or: [{ supervisorId: member._id }, { headId: member._id, hierarchyLevel: 'helper' }, ...deptFilter],
       status: 'active',
     }).lean();
 
-    const allowedMemberIds = [member._id.toString(), ...helpers.map((h) => h._id.toString())];
-    const allowedUserIds = [
+    const allowedMemberIds = Array.from(new Set([member._id.toString(), ...helpers.map((h) => h._id.toString())]));
+    const allowedUserIds = Array.from(new Set([
       user.id,
       ...helpers.filter((h) => h.userId).map((h) => h.userId.toString()),
-    ];
+    ]));
 
     return {
       isManagerOrAdmin: false,
@@ -208,9 +216,12 @@ export const getScopedTaskforceContext = async (user) => {
   }
 
   if (level === 'head') {
-    // Head sees self + all supervisors + all helpers under them
+    // Head sees self + all supervisors + all helpers under them (by headId or by matching department)
+    const deptRegex = member.department ? new RegExp(`^${member.department.trim().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') : null;
+    const deptFilter = deptRegex ? [{ department: deptRegex }, { trade: deptRegex }] : [];
+
     const supervisors = await TaskforceMember.find({
-      headId: member._id,
+      $or: [{ headId: member._id }, ...deptFilter],
       hierarchyLevel: 'supervisor',
       status: 'active',
     }).lean();
@@ -218,16 +229,17 @@ export const getScopedTaskforceContext = async (user) => {
     const supIds = supervisors.map((s) => s._id);
 
     const helpers = await TaskforceMember.find({
-      $or: [{ headId: member._id }, { supervisorId: { $in: supIds } }],
+      $or: [{ headId: member._id }, { supervisorId: { $in: supIds } }, ...deptFilter],
+      hierarchyLevel: 'helper',
       status: 'active',
     }).lean();
 
     const allSubs = [...supervisors, ...helpers];
-    const allowedMemberIds = [member._id.toString(), ...allSubs.map((s) => s._id.toString())];
-    const allowedUserIds = [
+    const allowedMemberIds = Array.from(new Set([member._id.toString(), ...allSubs.map((s) => s._id.toString())]));
+    const allowedUserIds = Array.from(new Set([
       user.id,
       ...allSubs.filter((s) => s.userId).map((s) => s.userId.toString()),
-    ];
+    ]));
 
     return {
       isManagerOrAdmin: false,
@@ -829,8 +841,10 @@ export const getMemberDashboard = async (req, res) => {
       if (targetMember.userId?._id) allowedUserIds.push(targetMember.userId._id.toString());
 
       if (targetMember.hierarchyLevel === 'supervisor') {
+        const deptRegex = targetMember.department ? new RegExp(`^${targetMember.department.trim().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') : null;
+        const deptFilter = deptRegex ? [{ department: deptRegex, hierarchyLevel: 'helper' }, { trade: deptRegex, hierarchyLevel: 'helper' }] : [];
         const helpers = await TaskforceMember.find({
-          supervisorId: targetMember._id,
+          $or: [{ supervisorId: targetMember._id }, { headId: targetMember._id, hierarchyLevel: 'helper' }, ...deptFilter],
           status: 'active',
         }).lean();
         helpers.forEach((h) => {
@@ -838,14 +852,18 @@ export const getMemberDashboard = async (req, res) => {
           if (h.userId) allowedUserIds.push(h.userId.toString());
         });
       } else if (targetMember.hierarchyLevel === 'head') {
+        const deptRegex = targetMember.department ? new RegExp(`^${targetMember.department.trim().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') : null;
+        const deptFilter = deptRegex ? [{ department: deptRegex }, { trade: deptRegex }] : [];
+
         const supervisors = await TaskforceMember.find({
-          headId: targetMember._id,
+          $or: [{ headId: targetMember._id }, ...deptFilter],
           hierarchyLevel: 'supervisor',
           status: 'active',
         }).lean();
         const supIds = supervisors.map((s) => s._id);
         const helpers = await TaskforceMember.find({
-          $or: [{ headId: targetMember._id }, { supervisorId: { $in: supIds } }],
+          $or: [{ headId: targetMember._id }, { supervisorId: { $in: supIds } }, ...deptFilter],
+          hierarchyLevel: 'helper',
           status: 'active',
         }).lean();
 
@@ -854,6 +872,8 @@ export const getMemberDashboard = async (req, res) => {
           if (m.userId) allowedUserIds.push(m.userId.toString());
         });
       }
+      allowedMemberIds = Array.from(new Set(allowedMemberIds));
+      allowedUserIds = Array.from(new Set(allowedUserIds));
     } else {
       // General manager/admin personal view
       dashboardLevel = 'taskforce_manager';
@@ -1061,7 +1081,7 @@ export const uploadTaskProof = async (req, res) => {
     task.auditTrail.push({
       action: 'Proof Uploaded',
       performedBy: req.user.id,
-      details: `${uploaderRole.toUpperCase()} uploaded "${req.file.originalname}" (${stage})`,
+      details: `${uploaderRole.toUpperCase()} uploaded "${uploadedFile.originalname || 'evidence'}" (${stage})`,
       timestamp: new Date(),
     });
 
@@ -1098,7 +1118,9 @@ export const deleteTaskUpload = async (req, res) => {
 
     // Only uploader or admin/manager can delete
     const isOwner = uploadItem.uploadedBy?.toString() === req.user.id;
-    const isAdmin = ['admin', 'super_admin', 'taskforce_manager'].includes(req.user.role);
+    const isAdmin =
+      ['admin', 'super_admin', 'taskforce_manager'].includes(req.user.role) ||
+      (req.user.permissions || []).includes('tasks:manage');
     if (!isOwner && !isAdmin) {
       return res.status(403).json({ success: false, message: 'Unauthorized to delete this upload' });
     }

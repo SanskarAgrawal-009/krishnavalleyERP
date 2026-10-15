@@ -33,7 +33,8 @@ import {
 } from 'lucide-react';
 
 export const SettingsPage = () => {
-  const { user: currentUser, isSuperAdmin } = useAuth();
+  const { user: currentUser, isSuperAdmin, hasPermission } = useAuth();
+  const canManageSettings = isSuperAdmin || hasPermission('settings:manage');
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -299,16 +300,10 @@ export const SettingsPage = () => {
       </div>
 
       {/* Main Settings Grid: Navigation Left + Form Panel Right */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '280px 1fr',
-          gap: '24px',
-          alignItems: 'start',
-        }}
-      >
+      <div className="split-grid-sidebar">
         {/* Navigation Sidebar */}
         <div
+          className="no-scrollbar"
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '18px',

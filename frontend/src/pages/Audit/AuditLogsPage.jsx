@@ -31,7 +31,8 @@ import {
 } from 'lucide-react';
 
 export const AuditLogsPage = () => {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isSuperAdmin, hasPermission } = useAuth();
+  const canExportAudit = isSuperAdmin || hasPermission('audit:export') || hasPermission('audit:view');
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -187,27 +188,29 @@ export const AuditLogsPage = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
-          <a
-            href={auditService.getExportUrl('csv', activeTab)}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              padding: '10px 18px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.15)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '0.88rem',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            <Download size={16} />
-            <span>Export CSV</span>
-          </a>
+          {canExportAudit && (
+            <a
+              href={auditService.getExportUrl('csv', activeTab)}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                padding: '10px 18px',
+                borderRadius: '12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: '#ffffff',
+                fontWeight: '700',
+                fontSize: '0.88rem',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <Download size={16} />
+              <span>Export CSV</span>
+            </a>
+          )}
 
           <button
             onClick={() => fetchLogs(pagination.page)}
@@ -290,7 +293,7 @@ export const AuditLogsPage = () => {
       {/* Main Container */}
       <div style={{ backgroundColor: '#ffffff', borderRadius: '18px', border: '1px solid #e2e8f0', padding: '24px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
         {/* Navigation Tabs */}
-        <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '20px', overflowX: 'auto' }}>
+        <div className="no-scrollbar" style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '20px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -404,8 +407,8 @@ export const AuditLogsPage = () => {
           /* ========================================================= */
           /* DEDICATED DELETED RECORDS VAULT TABLE                     */
           /* ========================================================= */
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+          <div className="table-responsive">
+            <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ backgroundColor: '#fff1f2', borderBottom: '1px solid #e2e8f0', color: '#0f172a', fontWeight: '700' }}>
                   <th style={{ padding: '12px 14px' }}>Deletion Time</th>
@@ -546,8 +549,8 @@ export const AuditLogsPage = () => {
           /* ========================================================= */
           /* GENERAL ACTIVITY & CRUD LOGS TABLE                        */
           /* ========================================================= */
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+          <div className="table-responsive">
+            <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
                   <th style={{ padding: '12px 14px' }}>Timestamp</th>

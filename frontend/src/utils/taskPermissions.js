@@ -85,44 +85,49 @@ export const canUserAssignTasks = (user, userRole = '') => {
     designation.includes('vp') ||
     designation.includes('vice president');
 
-  return isAdmin || isTaskforceManager || isVPDept;
+  // 4. Check explicit permissions
+  const perms = (user.permissionCodes || (user.permissions || []).map((p) => (typeof p === 'string' ? p : p.permissionCode))).filter(Boolean);
+  const hasTaskCreatePerm = perms.includes('tasks:create') || perms.includes('tasks:manage');
+
+  // 5. Department Head / Taskforce Lead
+  const isHead = role === 'taskforce_lead' || role === 'head' || user?.taskforceHierarchyLevel === 'head';
+
+  return isAdmin || isTaskforceManager || isVPDept || hasTaskCreatePerm || isHead;
 };
 
 /**
- * Check if a user belongs to the Taskforce Team.
- * Super Admin and General Managers have nothing to do with the Taskforce Dashboard.
+ * Check if a user belongs to the Taskforce Team or has administrative task visibility.
  */
 export const isTaskforceTeamMember = (user, userRole = '') => {
   if (!user) return false;
 
   const role = extractRoleCode(user, userRole);
 
-  // Super Admin has nothing to do with the Taskforce Dashboard
-  if (role === 'super_admin') return false;
+  // Administrators and Taskforce Managers always have full access
+  if (role === 'super_admin' || role === 'admin' || role === 'taskforce_manager' || role === 'taskforce_mgr') {
+    return true;
+  }
 
-  // General Managers (sales, rental, hr, accounts, etc.) have nothing to do with the Taskforce Dashboard
-  if (
-    role === 'sales_head' ||
-    role === 'sales_manager' ||
-    role === 'rental_manager' ||
-    role === 'hr_manager' ||
-    role === 'accounts_manager' ||
-    role === 'accountant' ||
-    role === 'agent'
-  ) {
+  // External Channel Partners (Agents) do not have access to internal taskforce ops
+  if (role === 'agent') {
     return false;
   }
 
+  // Check explicit permissions
+  const perms = (user.permissionCodes || (user.permissions || []).map((p) => (typeof p === 'string' ? p : p.permissionCode))).filter(Boolean);
+  if (perms.includes('tasks:manage') || perms.includes('tasks:view')) {
+    return true;
+  }
+
   // Taskforce Team Members:
-  // - Taskforce Manager
   // - Taskforce Leads / Supervisors / Field Helpers
   // - Members in VP's Department
   // - Explicit isTaskforceMember flag
+  // - taskforceHierarchyLevel set
   const isExplicitTaskforceRole = [
-    'taskforce_manager',
-    'taskforce_mgr',
     'taskforce_lead',
     'taskforce_supervisor',
+    'taskforce_member',
     'head',
     'supervisor',
     'helper',
@@ -131,5 +136,5 @@ export const isTaskforceTeamMember = (user, userRole = '') => {
   const dept = extractDepartment(user);
   const isTaskforceDept = dept.includes('taskforce') || dept === "vp's" || dept === 'vp';
 
-  return isExplicitTaskforceRole || Boolean(user?.isTaskforceMember) || isTaskforceDept;
+  return isExplicitTaskforceRole || Boolean(user?.isTaskforceMember) || Boolean(user?.taskforceHierarchyLevel) || isTaskforceDept;
 };

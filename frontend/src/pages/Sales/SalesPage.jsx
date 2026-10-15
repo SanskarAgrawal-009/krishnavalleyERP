@@ -8,6 +8,7 @@ import { StatusBadge } from '../../components/common/StatusBadge.jsx';
 import { ModuleMessagingCenter } from '../../components/notifications/ModuleMessagingCenter.jsx';
 import { QuickMessageModal } from '../../components/notifications/QuickMessageModal.jsx';
 import { ConvertLeadModal } from '../../components/sales/ConvertLeadModal.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 import {
   ShoppingBag,
@@ -40,6 +41,13 @@ import {
 } from 'lucide-react';
 
 export const SalesPage = () => {
+  const { user, isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
+  const canCreateBooking = isSuperAdmin || hasPermission('sales:create') || hasPermission('sales:manage');
+  const canEditDeal = isSuperAdmin || hasPermission('sales:edit') || hasPermission('sales:manage');
+  const canApprove = isSuperAdmin || hasPermission('sales:approve') || hasPermission('sales:manage');
+  const canDeleteBooking = isSuperAdmin || hasPermission('sales:manage');
+  const canManageResale = isSuperAdmin || hasPermission('sales:manage') || hasPermission('inventory:manage');
+
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -349,31 +357,44 @@ export const SalesPage = () => {
         </div>
 
         {/* Right Action & View Switcher Ribbon */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', width: '100%', justifyContent: 'space-between' }}>
 
-          <button
-            type="button"
-            onClick={() => setIsBookingModalOpen(true)}
-            style={{
-              padding: '9px 18px',
-              borderRadius: '8px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
-              color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              boxShadow: '0 2px 4px rgba(16, 185, 129, 0.25)',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <Plus size={16} /> + New Booking / Convert Lead
-          </button>
+          {canCreateBooking && (
+            <button
+              type="button"
+              onClick={() => setIsBookingModalOpen(true)}
+              style={{
+                padding: '9px 18px',
+                borderRadius: '8px',
+                border: 'none',
+                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
+                color: '#ffffff',
+                fontWeight: '700',
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 2px 4px rgba(26, 115, 232, 0.25)',
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <Plus size={16} /> + New Booking / Convert Lead
+            </button>
+          )}
 
-          <div style={{ display: 'flex', background: '#f3f4f5', padding: '4px', borderRadius: '8px', border: '1px solid #dadce0', gap: '6px' }}>
+          <div style={{
+            display: 'flex',
+            background: '#f3f4f5',
+            padding: '4px',
+            borderRadius: '8px',
+            border: '1px solid #dadce0',
+            gap: '6px',
+            overflowX: 'auto',
+            maxWidth: '100%',
+            WebkitOverflowScrolling: 'touch'
+          }}>
             <button
               type="button"
               onClick={() => {
@@ -392,7 +413,8 @@ export const SalesPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                transition: 'all 0.15s ease'
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap'
               }}
             >
               <ShoppingBag size={14} /> Deals Pipeline ({salesLeads.length})
@@ -416,7 +438,8 @@ export const SalesPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                transition: 'all 0.15s ease'
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap'
               }}
             >
               <DollarSign size={14} /> Milestone Demands ({salesLeads.length})
@@ -440,7 +463,8 @@ export const SalesPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                transition: 'all 0.15s ease'
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap'
               }}
             >
               <History size={14} /> Resale &amp; History
@@ -464,7 +488,8 @@ export const SalesPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                transition: 'all 0.15s ease'
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap'
               }}
             >
               <MessageSquare size={14} /> Buyer Messaging Hub
@@ -825,23 +850,25 @@ export const SalesPage = () => {
                       </button>
 
                       <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSalesLead(sl)}
-                          title="Delete Sales Allotment"
-                          style={{
-                            padding: '6px 8px',
-                            background: '#f1f5f9',
-                            border: '1px solid #e2e8f0',
-                            color: '#0f172a',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center'
-                          }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
+                        {canDeleteBooking && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteSalesLead(sl)}
+                            title="Delete Sales Allotment"
+                            style={{
+                              padding: '6px 8px',
+                              background: '#f1f5f9',
+                              border: '1px solid #e2e8f0',
+                              color: '#0f172a',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
 
                         <button
                           type="button"
@@ -954,8 +981,8 @@ export const SalesPage = () => {
               </button>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-              <table>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ minWidth: '720px' }}>
                 <thead>
                   <tr>
                     <th>Buyer & Allotment</th>
@@ -1091,29 +1118,31 @@ export const SalesPage = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setBuybackTargetFlat(null);
-                  setIsBuybackModalOpen(true);
-                }}
-                style={{
-                  padding: '9px 18px',
-                  borderRadius: '8px',
-                  background: '#2563eb',
-                  color: '#ffffff',
-                  border: 'none',
-                  fontSize: '0.84rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 2px 6px rgba(37, 99, 235, 0.3)'
-                }}
-              >
-                <RotateCcw size={16} /> + Record Buyback / Resale
-              </button>
+              {canManageResale && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBuybackTargetFlat(null);
+                    setIsBuybackModalOpen(true);
+                  }}
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: '8px',
+                    background: '#2563eb',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontSize: '0.84rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 6px rgba(37, 99, 235, 0.3)'
+                  }}
+                >
+                  <RotateCcw size={16} /> + Record Buyback / Resale
+                </button>
+              )}
 
               <button
                 type="button"
@@ -1372,28 +1401,31 @@ export const SalesPage = () => {
                           </td>
 
                           <td style={{ padding: '12px 16px' }}>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setBuybackTargetFlat(f);
-                                setIsBuybackModalOpen(true);
-                              }}
-                              style={{
-                                padding: '6px 12px',
-                                background: '#f8fafc',
-                                border: '1px solid #cbd5e1',
-                                borderRadius: '6px',
-                                color: '#0f172a',
-                                fontSize: '0.76rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                              }}
-                            >
-                              <RotateCcw size={12} color="#2563eb" /> Record Transfer
-                            </button>
+                            {canManageResale && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setBuybackTargetFlat(f);
+                                  setIsBuybackModalOpen(true);
+                                }}
+                                style={{
+                                  padding: '6px 12px',
+                                  background: '#f8fafc',
+                                  border: '1px solid #cbd5e1',
+                                  borderRadius: '6px',
+                                  color: '#0f172a',
+                                  fontSize: '0.76rem',
+                                  fontWeight: '700',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                <RotateCcw size={12} color="#2563eb" /> Record Transfer
+                              </button>
+                            )}
                           </td>
                         </tr>
                       );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { agentService } from '../../services/agentService.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { AddAgentModal } from '../../components/agents/AddAgentModal.jsx';
 import {
   Users, Search, Filter, RefreshCw, ChevronLeft, ChevronRight,
@@ -10,6 +11,8 @@ import {
 } from 'lucide-react';
 
 export const AgentNetworkPage = () => {
+  const { isSuperAdmin, hasPermission, hasAnyPermission } = useAuth();
+  const canCreateAgent = isSuperAdmin || hasAnyPermission(['agent:create', 'agent:manage', 'crm:create', 'crm:manage', 'users:manage']);
   const navigate = useNavigate();
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,18 +111,20 @@ export const AgentNetworkPage = () => {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={() => setShowAddAgent(true)}
-            style={{
-              padding: '10px 20px', borderRadius: '10px', border: 'none',
-              background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
-              color: '#fff', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '6px',
-              boxShadow: '0 4px 12px rgba(22,163,74,0.3)',
-            }}
-          >
-            <UserPlus size={14} /> Add Agent
-          </button>
+          {canCreateAgent && (
+            <button
+              onClick={() => setShowAddAgent(true)}
+              style={{
+                padding: '10px 20px', borderRadius: '10px', border: 'none',
+                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
+                color: '#fff', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: '6px',
+                boxShadow: '0 4px 12px rgba(22,163,74,0.3)',
+              }}
+            >
+              <UserPlus size={14} /> Add Agent
+            </button>
+          )}
           <button
             onClick={() => { setPage(1); fetchAgents(); }}
             style={{
@@ -235,8 +240,8 @@ export const AgentNetworkPage = () => {
             <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>Try adjusting your search or filters.</p>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+          <div className="table-responsive">
+            <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#64748b', textAlign: 'left' }}>
                   <th style={{ padding: '13px 16px', fontWeight: '700', cursor: 'pointer' }} onClick={() => handleSort('name')}>
