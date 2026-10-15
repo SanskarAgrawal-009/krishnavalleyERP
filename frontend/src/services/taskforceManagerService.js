@@ -67,6 +67,21 @@ export const taskforceManagerService = {
       method: 'DELETE',
     }),
 
+  // Manage user credentials (User ID & Password) for taskforce member or user
+  getAllCredentials: () => request('/taskforce-manager/credentials'),
+
+  updateMemberCredentials: (id, data) =>
+    request(`/taskforce-manager/team/${id}/credentials`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  updateUserCredentials: (id, data) =>
+    request(`/taskforce-manager/user/${id}/credentials`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
   // Taskforce Departments Management
   getDepartments: () => request('/taskforce-manager/departments'),
 

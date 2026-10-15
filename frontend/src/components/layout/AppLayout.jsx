@@ -5,6 +5,7 @@ import { ErrorBoundary } from '../common/ErrorBoundary.jsx';
 import { NotificationAlertBox } from './NotificationAlertBox.jsx';
 import { useReminderAlerts } from '../../hooks/useReminderAlerts.js';
 import { InAppReminderBanner } from '../common/InAppReminderBanner.jsx';
+import { TaskChatNotifier } from '../taskforce/TaskChatNotifier.jsx';
 import { isTaskforceTeamMember, extractRoleCode } from '../../utils/taskPermissions.js';
 import {
   LayoutDashboard,
@@ -90,6 +91,7 @@ export const NAV_CATEGORIES = [
           { path: '/taskforce?view=radar', label: 'Follow-up Radar', icon: Clock },
           { path: '/taskforce?view=list', label: 'Directives Register', icon: FileText },
           { path: '/taskforce?view=team', label: 'Team Hierarchy', icon: Users },
+          { path: '/taskforce?view=meetings', label: 'Meetings & MoM', icon: Calendar },
         ]
       },
       {
@@ -2171,6 +2173,9 @@ export const AppLayout = () => {
           onDismiss={dismissReminder}
           onSnooze={snoozeReminder}
         />
+
+        {/* Global Live Task Chat & Message Pop-up Notifier */}
+        <TaskChatNotifier />
       </div>
     </div>
   );

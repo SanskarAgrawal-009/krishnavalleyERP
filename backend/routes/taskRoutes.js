@@ -12,6 +12,7 @@ import {
   deleteTask,
   getTaskAssigneesMeta,
   toggleCheckpoint,
+  getRecentTaskChats,
 } from '../controllers/taskController.js';
 import {
   uploadTaskProof,
@@ -38,6 +39,7 @@ router.get('/meta/assignees', authorizePermission('tasks:view', 'tasks:manage', 
 router.get('/stats', authorizePermission('tasks:view', 'tasks:manage'), getTaskStats);
 
 // Task operations
+router.get('/chats/recent', authorizePermission('tasks:view', 'tasks:manage'), getRecentTaskChats);
 router.get('/', authorizePermission('tasks:view', 'tasks:manage'), getTasks);
 router.get('/:id', authorizePermission('tasks:view', 'tasks:manage'), getTaskById);
 router.post('/', authorizePermission('tasks:create', 'tasks:manage'), createTask);

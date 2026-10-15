@@ -524,6 +524,186 @@ export const updateTeamMember = async (req, res) => {
 };
 
 /**
+ * @desc   Fetch all user & taskforce team credentials for Taskforce Manager
+ * @route  GET /api/taskforce-manager/credentials
+ * @access Authenticated (tasks:view / tasks:manage)
+ */
+export const getAllCredentials = async (req, res) => {
+  try {
+    // 1. Fetch all Taskforce members
+    const members = await TaskforceMember.find({ status: { $ne: 'archived' } })
+      .populate('userId', 'firstName lastName username email mobileNo status initialPassword department roleId')
+      .populate('supervisorId', 'name')
+      .populate('headId', 'name')
+      .sort({ department: 1, hierarchyLevel: 1, name: 1 })
+      .lean();
+
+    // 2. Fetch all system users marked as taskforce member or with initialPassword or active staff
+    const linkedUserIds = members.map((m) => m.userId?._id?.toString()).filter(Boolean);
+    const systemUsers = await User.find({
+      $or: [
+        { isTaskforceMember: true },
+        { department: { $in: members.map((m) => m.department).filter(Boolean) } },
+        { _id: { $nin: linkedUserIds }, initialPassword: { $exists: true, $ne: '' } },
+      ],
+      status: { $ne: 'deleted' },
+    })
+      .populate('roleId', 'name roleCode')
+      .select('firstName lastName username email mobileNo status initialPassword department isTaskforceMember taskforceHierarchyLevel roleId')
+      .lean();
+
+    // 3. Format members list
+    const credentialsList = [];
+    const seenUserIds = new Set();
+
+    for (const m of members) {
+      const u = m.userId;
+      if (u?._id) seenUserIds.add(u._id.toString());
+
+      credentialsList.push({
+        id: m._id,
+        memberId: m._id,
+        userId: u?._id || null,
+        name: m.name,
+        department: m.department || m.trade || 'General Operations',
+        hierarchyLevel: m.hierarchyLevel || 'helper',
+        mobileNo: m.mobileNo || u?.mobileNo || '',
+        email: m.email || u?.email || '',
+        username: u?.username || '',
+        initialPassword: u?.initialPassword || m.mobileNo || '',
+        hasUserAccount: Boolean(u && u.username),
+        status: m.status || 'active',
+        source: 'taskforce_member',
+      });
+    }
+
+    // 4. Add system users who aren't in members yet
+    for (const u of systemUsers) {
+      if (seenUserIds.has(u._id.toString())) continue;
+      seenUserIds.add(u._id.toString());
+
+      const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.username;
+      credentialsList.push({
+        id: u._id,
+        memberId: null,
+        userId: u._id,
+        name: fullName,
+        department: u.department || 'General',
+        hierarchyLevel: u.taskforceHierarchyLevel || 'helper',
+        mobileNo: u.mobileNo || '',
+        email: u.email || '',
+        username: u.username || '',
+        initialPassword: u.initialPassword || u.mobileNo || '',
+        hasUserAccount: true,
+        status: u.status || 'active',
+        roleName: u.roleId?.name || u.roleId?.roleCode || 'Staff',
+        source: 'system_user',
+      });
+    }
+
+    return res.json({
+      success: true,
+      count: credentialsList.length,
+      data: credentialsList,
+    });
+  } catch (error) {
+    console.error('Error fetching all credentials:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * @desc   Manage / update member or user login ID & password
+ * @route  PUT /api/taskforce-manager/team/:id/credentials
+ * @route  PUT /api/taskforce-manager/user/:id/credentials
+ * @access Authenticated (tasks:manage)
+ */
+export const updateMemberCredentials = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, password } = req.body;
+
+    if (!username && !password) {
+      return res.status(400).json({ success: false, message: 'Please provide username or password to update' });
+    }
+
+    let member = await TaskforceMember.findById(id);
+    let user = null;
+
+    if (member) {
+      if (member.userId) {
+        user = await User.findById(member.userId);
+      }
+      if (!user) {
+        user = await ensureUserForTaskforceMember(member, password, username);
+      }
+    } else {
+      // Check if id is a User._id
+      user = await User.findById(id);
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User or team member not found' });
+      }
+      // Check if there is a linked TaskforceMember
+      member = await TaskforceMember.findOne({ userId: user._id });
+    }
+
+    if (!user) {
+      return res.status(500).json({ success: false, message: 'Failed to locate user account for member' });
+    }
+
+    let changed = false;
+
+    // Update username if requested
+    if (username && username.trim()) {
+      const cleanUsername = username.toLowerCase().trim().replace(/[^a-z0-9_]/g, '_');
+      const conflict = await User.findOne({ username: cleanUsername, _id: { $ne: user._id } });
+      if (conflict) {
+        return res.status(400).json({
+          success: false,
+          message: `Username "${cleanUsername}" is already in use by another user account.`,
+        });
+      }
+      user.username = cleanUsername;
+      changed = true;
+    }
+
+    // Update password if requested
+    if (password && password.trim()) {
+      const salt = await bcrypt.genSalt(10);
+      user.passwordHash = await bcrypt.hash(password.trim(), salt);
+      user.initialPassword = password.trim();
+      changed = true;
+    }
+
+    if (changed) {
+      await user.save();
+    }
+
+    if (member && (!member.userId || member.userId.toString() !== user._id.toString())) {
+      member.userId = user._id;
+      await member.save();
+    }
+
+    const displayName = member?.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+
+    return res.json({
+      success: true,
+      message: `Credentials updated for ${displayName}!`,
+      credentials: {
+        userId: user._id,
+        memberId: member?._id || null,
+        username: user.username,
+        initialPassword: user.initialPassword || password || '',
+        name: displayName,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating member credentials:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
  * @desc   Delete / remove team member
  * @route  DELETE /api/taskforce-manager/team/:id
  */

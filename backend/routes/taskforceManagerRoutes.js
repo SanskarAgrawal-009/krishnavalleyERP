@@ -17,6 +17,8 @@ import {
   updateTaskforceDepartment,
   deleteDepartment,
   getMemberDashboard,
+  updateMemberCredentials,
+  getAllCredentials,
 } from '../controllers/taskforceTeamController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
@@ -27,11 +29,14 @@ const router = express.Router();
 router.use(authenticateToken);
 
 // ==========================================
-// TASKFORCE TEAM HIERARCHY & DEPARTMENTS
+// TASKFORCE TEAM HIERARCHY, USERS & CREDENTIALS
 // ==========================================
+router.get('/credentials', authorizePermission('tasks:view', 'tasks:manage'), getAllCredentials);
 router.get('/team', authorizePermission('tasks:view', 'tasks:manage'), getTeamMembers);
 router.post('/team', authorizePermission('tasks:create', 'tasks:manage'), addTeamMember);
 router.put('/team/:id', authorizePermission('tasks:edit', 'tasks:manage'), updateTeamMember);
+router.put('/team/:id/credentials', authorizePermission('tasks:manage', 'tasks:create', 'tasks:edit'), updateMemberCredentials);
+router.put('/user/:id/credentials', authorizePermission('tasks:manage', 'tasks:create', 'tasks:edit'), updateMemberCredentials);
 router.delete('/team/:id', authorizePermission('tasks:manage'), deleteTeamMember);
 
 // Managed Departments CRUD

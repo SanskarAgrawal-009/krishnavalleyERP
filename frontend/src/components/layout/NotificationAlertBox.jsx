@@ -16,8 +16,10 @@ import {
   Trash2,
   X,
   Car,
-  Phone
+  Phone,
+  MessageSquare,
 } from 'lucide-react';
+import { taskService } from '../../services/taskService.js';
 
 const DEFAULT_NOTIFICATIONS = [
   {
@@ -106,14 +108,27 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
     }
   });
 
-  const [dismissedIds, setDismissedIds] = useState(() => {
-    try {
-      const stored = localStorage.getItem('kv_dismissed_notifications');
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
+  const [taskChats, setTaskChats] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadTaskChats = async () => {
+      try {
+        const res = await taskService.getRecentChats(Date.now() - 24 * 60 * 60 * 1000);
+        if (res && res.success && Array.isArray(res.data) && isMounted) {
+          setTaskChats(res.data.slice(0, 10));
+        }
+      } catch (e) {
+        // quiet error handle
+      }
+    };
+    if (isOpen) {
+      loadTaskChats();
     }
-  });
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen]);
 
   // Map real-time 30-minute reminders into notifications
   const reminderItems = activeReminders.map(r => {
@@ -132,7 +147,28 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
     };
   });
 
-  const allDisplayNotifications = [...reminderItems, ...DEFAULT_NOTIFICATIONS];
+  const chatNotifItems = taskChats.map((c) => {
+    const senderName = c.sender
+      ? `${c.sender.firstName || ''} ${c.sender.lastName || ''}`.trim() || c.sender.username
+      : 'Team Member';
+    const isMD = c.isMDNote || c.messageType === 'md_note';
+
+    return {
+      id: `chat-${c.commentId || `${c.taskId}-${c.createdAt}`}`,
+      taskId: c.taskId,
+      category: 'alerts',
+      severity: isMD ? 'urgent' : 'info',
+      title: `${isMD ? '👑 MD Note' : '💬 Chat'}: ${c.taskCode || 'Task'}`,
+      message: `${senderName}: "${c.message}"`,
+      time: 'Recent',
+      route: `/taskforce?openTaskId=${c.taskId}&tab=chat`,
+      icon: MessageSquare,
+      color: isMD ? '#ca8a04' : '#0284c7',
+      bgColor: isMD ? '#fffbeb' : '#f0f9ff',
+    };
+  });
+
+  const allDisplayNotifications = [...chatNotifItems, ...reminderItems, ...DEFAULT_NOTIFICATIONS];
 
   // Calculate unread count
   const activeNotifications = allDisplayNotifications.filter((n) => !dismissedIds.includes(n.id));
@@ -173,6 +209,15 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
 
   const handleItemClick = (notification) => {
     handleMarkAsRead(notification.id);
+    if (notification.taskId) {
+      window.dispatchEvent(
+        new CustomEvent('taskforceOpenTaskChat', {
+          detail: { taskId: notification.taskId },
+        })
+      );
+      onClose();
+      return;
+    }
     if (notification.route) {
       navigate(notification.route);
       onClose();

@@ -81,5 +81,9 @@ export const taskService = {
 
   // Metadata: active users, departments, projects, and flats
   getAssigneesMeta: () => request('/tasks/meta/assignees'),
+
+  // Get recent task chat messages & comments for live notifications
+  getRecentChats: (since) =>
+    request(`/tasks/chats/recent${since ? `?since=${encodeURIComponent(since)}` : ''}`),
 };
 

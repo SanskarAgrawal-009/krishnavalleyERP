@@ -8,6 +8,7 @@ import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
 import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx';
 import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.jsx';
 import { TaskforceMemberDrawer } from '../../components/taskforce/TaskforceMemberDrawer.jsx';
+import { TaskforceMeetingsTab } from '../../components/taskforce/TaskforceMeetingsTab.jsx';
 
 import {
   Sparkles,
@@ -164,6 +165,23 @@ export const TaskforcePage = () => {
     setSelectedTaskId(taskId);
     setIsDetailModalOpen(true);
   };
+
+  useEffect(() => {
+    const openTaskId = searchParams.get('openTaskId');
+    const tab = searchParams.get('tab') || 'chat';
+    if (openTaskId) {
+      handleOpenDetail(openTaskId, tab);
+    }
+
+    const handleOpenChatEvent = (e) => {
+      const taskId = e.detail?.taskId;
+      if (taskId) {
+        handleOpenDetail(taskId, 'chat');
+      }
+    };
+    window.addEventListener('taskforceOpenTaskChat', handleOpenChatEvent);
+    return () => window.removeEventListener('taskforceOpenTaskChat', handleOpenChatEvent);
+  }, [searchParams]);
 
   const handleOpenEdit = (task) => {
     setEditingTask(task);
@@ -915,6 +933,30 @@ export const TaskforcePage = () => {
           >
             <Users size={14} /> Team Hierarchy
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setViewMode('meetings');
+              setSearchParams({ view: 'meetings' });
+            }}
+            style={{
+              padding: '7px 14px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: viewMode === 'meetings' ? '#ffffff' : 'transparent',
+              color: viewMode === 'meetings' ? '#b45309' : '#64748b',
+              boxShadow: viewMode === 'meetings' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              cursor: 'pointer',
+              border: 'none',
+            }}
+          >
+            <Calendar size={14} /> Meetings &amp; MoM
+          </button>
         </div>
 
         {/* Right: Inline Search & Filter Controls (Fixed widths to prevent expanding) */}
@@ -1540,6 +1582,15 @@ export const TaskforcePage = () => {
               assignedMembers: [member._id],
             });
             setIsNewTaskModalOpen(true);
+          }}
+        />
+      )}
+
+      {/* 8. VIEW 5: MEETINGS & MOM */}
+      {viewMode === 'meetings' && (
+        <TaskforceMeetingsTab
+          onOpenTaskDetail={(taskId) => {
+            handleOpenDetail(taskId);
           }}
         />
       )}

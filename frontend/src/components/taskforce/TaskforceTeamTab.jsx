@@ -32,6 +32,8 @@ import {
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { useToast } from '../../context/ToastContext.jsx';
 import { AddTeamMemberModal } from './AddTeamMemberModal.jsx';
+import { ManageCredentialsModal } from './ManageCredentialsModal.jsx';
+import { CredentialsManagerModal } from './CredentialsManagerModal.jsx';
 import {
   getDepartmentTheme,
   getDepartmentIcon,
@@ -54,6 +56,8 @@ export const TaskforceTeamTab = ({
 
   // Modals state
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const [isCredentialsModalOpen, setIsCredentialsModalOpen] = useState(false);
+  const [selectedMemberForCredentials, setSelectedMemberForCredentials] = useState(null);
   const [isAddDeptModalOpen, setIsAddDeptModalOpen] = useState(false);
   const [deptToDelete, setDeptToDelete] = useState(null);
   const [isDeletingDept, setIsDeletingDept] = useState(false);
@@ -347,6 +351,35 @@ export const TaskforceTeamTab = ({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setIsCredentialsModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 16px',
+                borderRadius: '10px',
+                background: '#fef3c7',
+                color: '#92400e',
+                border: '1.5px solid #fde68a',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(180, 83, 9, 0.1)',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#fde68a';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#fef3c7';
+              }}
+              title="Manage User IDs & Passwords for all personnel & team members"
+            >
+              <i className="fa-solid fa-key" style={{ fontSize: '13px', color: '#b45309' }} />
+              <span>🔑 User &amp; Team ID/Pass</span>
+            </button>
+
             <button
               onClick={() => setIsAddDeptModalOpen(true)}
               style={{
@@ -1493,6 +1526,27 @@ export const TaskforceTeamTab = ({
         initialDepartment={selectedDept !== 'all' ? selectedDept : null}
         onMemberAdded={() => fetchData()}
       />
+
+      {/* =========================================================================
+          MANAGE ALL USER & TEAM CREDENTIALS (ID & PASS HUB)
+      ========================================================================= */}
+      <CredentialsManagerModal
+        isOpen={isCredentialsModalOpen}
+        onClose={() => setIsCredentialsModalOpen(false)}
+        onOpenAddMember={() => setIsAddMemberModalOpen(true)}
+      />
+
+      {/* =========================================================================
+          MANAGE INDIVIDUAL USER ID & PASSWORD MODAL
+      ========================================================================= */}
+      {selectedMemberForCredentials && (
+        <ManageCredentialsModal
+          isOpen={Boolean(selectedMemberForCredentials)}
+          onClose={() => setSelectedMemberForCredentials(null)}
+          member={selectedMemberForCredentials}
+          onCredentialsUpdated={() => fetchData()}
+        />
+      )}
     </div>
   );
 
@@ -1647,9 +1701,14 @@ export const TaskforceTeamTab = ({
             <span>No Phone</span>
           )}
           {m.userId ? (
-            <span style={{ color: '#16a34a', fontWeight: '700' }}>• Login Linked</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ color: '#16a34a', fontWeight: '700' }}>• Login:</span>
+              <code style={{ background: '#f1f5f9', padding: '1px 5px', borderRadius: '4px', color: '#0f172a', fontWeight: '700', fontSize: '0.68rem' }}>
+                @{typeof m.userId === 'object' ? m.userId.username : 'active'}
+              </code>
+            </div>
           ) : (
-            <span style={{ color: '#94a3b8' }}>• Field Personnel</span>
+            <span style={{ color: '#d97706', fontWeight: '600' }}>• No Account Yet</span>
           )}
         </div>
 
@@ -1685,6 +1744,27 @@ export const TaskforceTeamTab = ({
           </button>
 
           <div style={{ display: 'flex', gap: '6px' }}>
+            <button
+              type="button"
+              onClick={() => setSelectedMemberForCredentials(m)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '6px 10px',
+                borderRadius: '7px',
+                background: '#fef3c7',
+                color: '#92400e',
+                border: '1px solid #fde68a',
+                fontSize: '0.74rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+              }}
+              title="Manage member login User ID and password"
+            >
+              <i className="fa-solid fa-key" /> ID &amp; Pass
+            </button>
+
             <button
               type="button"
               onClick={() => {

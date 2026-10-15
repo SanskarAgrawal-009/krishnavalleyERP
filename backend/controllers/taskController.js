@@ -1085,3 +1085,60 @@ export const toggleCheckpoint = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/**
+ * @desc   Get recent task chat messages & comments across active tasks
+ * @route  GET /api/tasks/chats/recent
+ * @access Authenticated (tasks:view, tasks:manage)
+ */
+export const getRecentTaskChats = async (req, res) => {
+  try {
+    const { since, limit = 40 } = req.query;
+    const sinceDate = since
+      ? new Date(isNaN(Number(since)) ? since : Number(since))
+      : new Date(Date.now() - 48 * 60 * 60 * 1000);
+
+    const tasks = await Task.find({
+      'comments.createdAt': { $gt: sinceDate },
+    })
+      .select('taskCode title department priority assignedTo assignedBy comments')
+      .populate('comments.sender', 'firstName lastName username role department')
+      .lean();
+
+    const recentChats = [];
+    tasks.forEach((t) => {
+      (t.comments || []).forEach((c) => {
+        if (new Date(c.createdAt) > sinceDate) {
+          recentChats.push({
+            commentId: c._id,
+            taskId: t._id,
+            taskCode: t.taskCode,
+            taskTitle: t.title,
+            department: t.department,
+            priority: t.priority,
+            message: c.message,
+            messageType: c.messageType || 'chat',
+            isMDNote: Boolean(c.isMDNote),
+            sender: c.sender,
+            createdAt: c.createdAt,
+          });
+        }
+      });
+    });
+
+    recentChats.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    return res.json({
+      success: true,
+      data: recentChats.slice(0, parseInt(limit, 10) || 40),
+    });
+  } catch (error) {
+    console.error('Error fetching recent task chats:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch recent chats',
+      error: error.message,
+    });
+  }
+};
+
