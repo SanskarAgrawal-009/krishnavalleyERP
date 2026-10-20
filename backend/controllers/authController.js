@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
 import { Role } from '../models/Role.js';
 import { Permission } from '../models/Permission.js';
@@ -25,11 +26,18 @@ export const login = async (req, res) => {
       });
     }
 
-    const cleanIdentifier = identifier.trim().toLowerCase();
+    const cleanIdentifier = identifier.trim();
+    const cleanLower = cleanIdentifier.toLowerCase();
+    const escapedIdentifier = cleanIdentifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-    // Query user by username OR email
+    // Query user by username OR email (case-insensitive)
     const user = await User.findOne({
-      $or: [{ username: cleanIdentifier }, { email: cleanIdentifier }],
+      $or: [
+        { username: cleanLower },
+        { email: cleanLower },
+        { username: { $regex: new RegExp(`^${escapedIdentifier}$`, 'i') } },
+        { email: { $regex: new RegExp(`^${escapedIdentifier}$`, 'i') } },
+      ],
     }).populate({
       path: 'roleId',
       model: 'Role',
@@ -46,12 +54,30 @@ export const login = async (req, res) => {
       });
     }
 
-    // Check if account is locked
+    // Auto-heal if temporary lockout duration has elapsed
+    if (user.accountLockedUntil && user.accountLockedUntil <= Date.now()) {
+      user.accountLockedUntil = null;
+      user.failedLoginAttempts = 0;
+      if (user.status === 'locked') {
+        user.status = 'active';
+      }
+      await user.save();
+    }
+
+    // Check if account is still temporarily locked
     if (user.isLocked()) {
-      const remainingMinutes = Math.ceil((user.accountLockedUntil - Date.now()) / (60 * 1000));
+      const remainingMinutes = Math.max(1, Math.ceil((user.accountLockedUntil - Date.now()) / (60 * 1000)));
       return res.status(423).json({
         success: false,
         message: `Account is temporarily locked due to excessive failed attempts. Please try again in ${remainingMinutes} minute(s).`,
+      });
+    }
+
+    // Check if account was locked by administrator
+    if (user.status === 'locked') {
+      return res.status(423).json({
+        success: false,
+        message: 'Account has been locked by a system administrator. Please contact IT / Admin to reactivate.',
       });
     }
 
@@ -102,15 +128,17 @@ export const login = async (req, res) => {
     user.lastLoginAt = new Date();
     await user.save();
 
-    // Prepare role and permissions
+    // Prepare role and permissions safely
     const roleDoc = user.roleId || {};
-    const permissions = (roleDoc.permissions || []).map((p) => ({
-      _id: p._id,
-      permissionName: p.permissionName,
-      permissionCode: p.permissionCode,
-      module: p.module,
-      action: p.action,
-    }));
+    const permissions = (roleDoc.permissions || [])
+      .filter(Boolean)
+      .map((p) => ({
+        _id: p._id,
+        permissionName: p.permissionName,
+        permissionCode: p.permissionCode,
+        module: p.module,
+        action: p.action,
+      }));
     const permissionCodes = permissions.map((p) => p.permissionCode);
 
     // Primary branch
@@ -201,13 +229,15 @@ export const getMe = async (req, res) => {
     }
 
     const roleDoc = user.roleId || {};
-    const permissions = (roleDoc.permissions || []).map((p) => ({
-      _id: p._id,
-      permissionName: p.permissionName,
-      permissionCode: p.permissionCode,
-      module: p.module,
-      action: p.action,
-    }));
+    const permissions = (roleDoc.permissions || [])
+      .filter(Boolean)
+      .map((p) => ({
+        _id: p._id,
+        permissionName: p.permissionName,
+        permissionCode: p.permissionCode,
+        module: p.module,
+        action: p.action,
+      }));
     const permissionCodes = permissions.map((p) => p.permissionCode);
 
     const primaryBranchObj = (user.branchAccess || []).find((b) => b.isPrimary) || user.branchAccess?.[0];
@@ -290,8 +320,12 @@ export const changePassword = async (req, res) => {
       });
     }
 
-    user.passwordHash = newPassword;
+    const salt = await bcrypt.genSalt(10);
+    user.passwordHash = await bcrypt.hash(newPassword, salt);
+    user.initialPassword = newPassword;
     user.passwordChangedAt = new Date();
+    user.failedLoginAttempts = 0;
+    user.accountLockedUntil = null;
     await user.save();
 
     return res.status(200).json({

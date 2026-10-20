@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useToast } from '../../context/ToastContext.jsx';
 import { authService } from '../../services/authService.js';
 import {
   Users,
@@ -52,6 +53,7 @@ import {
 
 export const UserManagementPage = () => {
   const { user: currentUser, isSuperAdmin } = useAuth();
+  const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -134,12 +136,33 @@ export const UserManagementPage = () => {
   });
 
   const [actionLoading, setActionLoading] = useState(false);
+  const [matrixUpdating, setMatrixUpdating] = useState(false);
+  const [matrixUpdatingId, setMatrixUpdatingId] = useState(null);
+  const [updatingUserStatusId, setUpdatingUserStatusId] = useState(null);
+  const [copiedUserId, setCopiedUserId] = useState(null);
+  const [lastResetCredentials, setLastResetCredentials] = useState(null);
   const [feedback, setFeedback] = useState({ message: '', type: '' });
 
   const showFeedback = (message, type = 'success') => {
     setFeedback({ message, type });
-    setTimeout(() => setFeedback({ message: '', type: '' }), 4000);
+    if (type === 'error') {
+      toast.error(message);
+    } else if (type === 'warning') {
+      toast.warning(message);
+    } else {
+      toast.success(message);
+    }
+    setTimeout(() => setFeedback({ message: '', type: '' }), 4500);
   };
+
+  // High performance O(1) set lookup for role permissions
+  const rolePermSet = useMemo(() => {
+    if (!selectedRoleForMatrix?.permissions) return new Set();
+    const ids = selectedRoleForMatrix.permissions.map((p) =>
+      typeof p === 'object' && p !== null ? p._id : p
+    );
+    return new Set(ids);
+  }, [selectedRoleForMatrix]);
 
   // Load Data
   const loadData = async () => {
@@ -332,7 +355,9 @@ export const UserManagementPage = () => {
 
   // Save User
   const handleSaveUser = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (actionLoading) return; // Prevent double submit
+
     setActionLoading(true);
     try {
       if (editingUser) {
@@ -345,22 +370,25 @@ export const UserManagementPage = () => {
           status: userFormData.status,
           branchAccess: userFormData.branchAccess,
           agentProfile: userFormData.agentProfile,
+          ...(userFormData.password && userFormData.password.trim().length >= 6
+            ? { password: userFormData.password.trim() }
+            : {}),
         };
         const res = await authService.updateUser(editingUser._id, updatePayload);
         if (res.success) {
-          showFeedback('User account updated successfully!');
+          showFeedback('User account updated successfully!', 'success');
           setUserModalOpen(false);
           loadData();
         }
       } else {
-        if (!userFormData.password) {
-          showFeedback('Password is required for new users', 'error');
+        if (!userFormData.password || userFormData.password.length < 6) {
+          showFeedback('Password must be at least 6 characters for new users', 'error');
           setActionLoading(false);
           return;
         }
         const res = await authService.createUser(userFormData);
         if (res.success) {
-          showFeedback('New user created successfully!');
+          showFeedback('New user created successfully!', 'success');
           setUserModalOpen(false);
           loadData();
         }
@@ -374,22 +402,27 @@ export const UserManagementPage = () => {
 
   // Quick Status Toggle
   const handleToggleStatus = async (userId, newStatus) => {
+    if (updatingUserStatusId) return; // Prevent concurrent toggles
+    setUpdatingUserStatusId(userId);
     try {
       const res = await authService.updateUserStatus(userId, newStatus);
       if (res.success) {
-        showFeedback(`User status changed to ${newStatus}`);
+        showFeedback(`User account status changed to ${newStatus}`, 'success');
         setUsers((prev) =>
           prev.map((u) => (u._id === userId ? { ...u, status: newStatus } : u))
         );
       }
     } catch (err) {
       showFeedback(err.message || 'Failed to update status', 'error');
+    } finally {
+      setUpdatingUserStatusId(null);
     }
   };
 
   // Reset Password
   const handleResetPassword = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (actionLoading) return; // Prevent double submit
     if (!newPasswordValue || newPasswordValue.length < 6) {
       showFeedback('Password must be at least 6 characters', 'error');
       return;
@@ -398,9 +431,16 @@ export const UserManagementPage = () => {
     try {
       const res = await authService.resetUserPassword(targetUserForPassword._id, newPasswordValue);
       if (res.success) {
-        showFeedback(`Password updated for @${targetUserForPassword.username}!`);
+        setLastResetCredentials({
+          username: targetUserForPassword.username,
+          password: newPasswordValue,
+          name: `${targetUserForPassword.firstName} ${targetUserForPassword.lastName || ''}`.trim(),
+          mobile: targetUserForPassword.mobileNo,
+        });
+        showFeedback(`Password updated for @${targetUserForPassword.username}!`, 'success');
         setPasswordModalOpen(false);
         setNewPasswordValue('');
+        loadData();
       }
     } catch (err) {
       showFeedback(err.message || 'Failed to reset password', 'error');
@@ -474,6 +514,7 @@ export const UserManagementPage = () => {
     if (!selectedRoleForMatrix || (selectedRoleForMatrix.isSystemRole && selectedRoleForMatrix.roleCode === 'super_admin')) {
       return;
     }
+    if (matrixUpdating) return;
 
     const currentPermIds = (selectedRoleForMatrix.permissions || []).map((p) =>
       typeof p === 'object' && p !== null ? p._id : p
@@ -486,6 +527,8 @@ export const UserManagementPage = () => {
       updatedPermIds = [...currentPermIds, permissionId];
     }
 
+    setMatrixUpdating(true);
+    setMatrixUpdatingId(permissionId);
     try {
       const res = await authService.updateRole(selectedRoleForMatrix._id, {
         permissions: updatedPermIds,
@@ -495,10 +538,13 @@ export const UserManagementPage = () => {
         setRoles((prev) =>
           prev.map((r) => (r._id === selectedRoleForMatrix._id ? res.data : r))
         );
-        showFeedback(`Permission updated for ${selectedRoleForMatrix.roleName}`);
+        showFeedback(`Permission updated for ${selectedRoleForMatrix.roleName}`, 'success');
       }
     } catch (err) {
       showFeedback(err.message || 'Failed to update permission', 'error');
+    } finally {
+      setMatrixUpdating(false);
+      setMatrixUpdatingId(null);
     }
   };
 
@@ -507,6 +553,7 @@ export const UserManagementPage = () => {
     if (!selectedRoleForMatrix || (selectedRoleForMatrix.isSystemRole && selectedRoleForMatrix.roleCode === 'super_admin')) {
       return;
     }
+    if (matrixUpdating) return;
 
     const modPerms = permissionGroups[moduleName] || [];
     const modPermIds = modPerms.map((p) => p._id);
@@ -525,6 +572,7 @@ export const UserManagementPage = () => {
       updatedPermIds = currentPermIds.filter((id) => !modPermIds.includes(id));
     }
 
+    setMatrixUpdating(true);
     try {
       const res = await authService.updateRole(selectedRoleForMatrix._id, {
         permissions: updatedPermIds,
@@ -537,11 +585,14 @@ export const UserManagementPage = () => {
         showFeedback(
           grantAll
             ? `Granted all ${moduleName} permissions to ${selectedRoleForMatrix.roleName}`
-            : `Revoked all ${moduleName} permissions from ${selectedRoleForMatrix.roleName}`
+            : `Revoked all ${moduleName} permissions from ${selectedRoleForMatrix.roleName}`,
+          'success'
         );
       }
     } catch (err) {
       showFeedback(err.message || 'Failed to update module permissions', 'error');
+    } finally {
+      setMatrixUpdating(false);
     }
   };
 
@@ -550,12 +601,14 @@ export const UserManagementPage = () => {
     if (!selectedRoleForMatrix || (selectedRoleForMatrix.isSystemRole && selectedRoleForMatrix.roleCode === 'super_admin')) {
       return;
     }
+    if (matrixUpdating) return;
 
     if (!window.confirm(`Grant ALL ${permissions.length} permissions to role "${selectedRoleForMatrix.roleName}"?`)) {
       return;
     }
 
     const allPermIds = permissions.map((p) => p._id);
+    setMatrixUpdating(true);
     try {
       const res = await authService.updateRole(selectedRoleForMatrix._id, {
         permissions: allPermIds,
@@ -565,10 +618,12 @@ export const UserManagementPage = () => {
         setRoles((prev) =>
           prev.map((r) => (r._id === selectedRoleForMatrix._id ? res.data : r))
         );
-        showFeedback(`All ${permissions.length} permissions granted to ${selectedRoleForMatrix.roleName}`);
+        showFeedback(`All ${permissions.length} permissions granted to ${selectedRoleForMatrix.roleName}`, 'success');
       }
     } catch (err) {
       showFeedback(err.message || 'Failed to grant permissions', 'error');
+    } finally {
+      setMatrixUpdating(false);
     }
   };
 
@@ -577,11 +632,13 @@ export const UserManagementPage = () => {
     if (!selectedRoleForMatrix || (selectedRoleForMatrix.isSystemRole && selectedRoleForMatrix.roleCode === 'super_admin')) {
       return;
     }
+    if (matrixUpdating) return;
 
     if (!window.confirm(`Revoke ALL permissions from role "${selectedRoleForMatrix.roleName}"? Users with this role will have zero module access.`)) {
       return;
     }
 
+    setMatrixUpdating(true);
     try {
       const res = await authService.updateRole(selectedRoleForMatrix._id, {
         permissions: [],
@@ -591,10 +648,12 @@ export const UserManagementPage = () => {
         setRoles((prev) =>
           prev.map((r) => (r._id === selectedRoleForMatrix._id ? res.data : r))
         );
-        showFeedback(`All permissions revoked from ${selectedRoleForMatrix.roleName}`);
+        showFeedback(`All permissions revoked from ${selectedRoleForMatrix.roleName}`, 'success');
       }
     } catch (err) {
       showFeedback(err.message || 'Failed to revoke permissions', 'error');
+    } finally {
+      setMatrixUpdating(false);
     }
   };
 
@@ -624,7 +683,9 @@ export const UserManagementPage = () => {
 
   // Save Role
   const handleSaveRole = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (actionLoading) return; // Prevent double submit
+
     setActionLoading(true);
     try {
       if (editingRole) {
@@ -635,7 +696,7 @@ export const UserManagementPage = () => {
         };
         const res = await authService.updateRole(editingRole._id, payload);
         if (res.success) {
-          showFeedback('Role updated successfully!');
+          showFeedback('Role updated successfully!', 'success');
           setRoleModalOpen(false);
           loadData();
         }
@@ -658,7 +719,7 @@ export const UserManagementPage = () => {
 
         const res = await authService.createRole(payload);
         if (res.success) {
-          showFeedback('New custom role created successfully!');
+          showFeedback('New custom role created successfully!', 'success');
           setRoleModalOpen(false);
           loadData();
           if (res.data) setSelectedRoleForMatrix(res.data);
@@ -739,17 +800,28 @@ export const UserManagementPage = () => {
             zIndex: 9999,
             padding: '14px 20px',
             borderRadius: '10px',
-            backgroundColor: feedback.type === 'error' ? '#0f172a' : '#1a73e8',
+            backgroundColor:
+              feedback.type === 'error'
+                ? '#dc2626'
+                : feedback.type === 'warning'
+                ? '#d97706'
+                : '#16a34a',
             color: '#ffffff',
-            fontWeight: '500',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+            fontWeight: '600',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.22)',
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
             animation: 'fadeIn 0.2s ease',
           }}
         >
-          {feedback.type === 'error' ? <AlertTriangle size={18} /> : <CheckCircle2 size={18} />}
+          {feedback.type === 'error' ? (
+            <AlertTriangle size={18} />
+          ) : feedback.type === 'warning' ? (
+            <AlertTriangle size={18} />
+          ) : (
+            <CheckCircle2 size={18} />
+          )}
           <span>{feedback.message}</span>
         </div>
       )}
@@ -1662,12 +1734,30 @@ export const UserManagementPage = () => {
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         navigator.clipboard.writeText(`Username: ${u.username}\nPassword: ${u.initialPassword}`);
-                                        showFeedback(`Credentials for @${u.username} copied!`);
+                                        setCopiedUserId(u._id);
+                                        setTimeout(() => setCopiedUserId(null), 2000);
+                                        showFeedback(`Credentials for @${u.username} copied to clipboard!`, 'success');
                                       }}
                                       title="Copy ID & Password"
-                                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '1px 3px', color: '#64748b' }}
+                                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '1px 3px', color: copiedUserId === u._id ? '#16a34a' : '#64748b' }}
                                     >
-                                      <Copy size={11} />
+                                      {copiedUserId === u._id ? <Check size={11} /> : <Copy size={11} />}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const loginUrl = window.location.origin + '/login';
+                                        const msg = `*Krishna Valley ERP Login Credentials*\n👤 Name: ${u.firstName} ${u.lastName || ''}\n🆔 Username: ${u.username}\n🔑 Password: ${u.initialPassword}\n🌐 Portal: ${loginUrl}\n\n_Please log in and update your password if desired._`;
+                                        const cleanPhone = (u.mobileNo || '').replace(/[^0-9]/g, '');
+                                        const url = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+                                        window.open(url, '_blank');
+                                        showFeedback(`Opening WhatsApp to share credentials for @${u.username}`, 'success');
+                                      }}
+                                      title="Share credentials on WhatsApp"
+                                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '1px 3px', color: '#16a34a', display: 'flex', alignItems: 'center' }}
+                                    >
+                                      <ExternalLink size={11} />
                                     </button>
                                   </div>
                                 )}
@@ -1871,7 +1961,22 @@ export const UserManagementPage = () => {
                                 <KeyRound size={14} />
                               </button>
 
-                              {u.status === 'locked' ? (
+                              {updatingUserStatusId === u._id ? (
+                                <button
+                                  disabled
+                                  title="Updating status..."
+                                  style={{
+                                    padding: '6px 9px',
+                                    borderRadius: '7px',
+                                    border: '1px solid #bfdbfe',
+                                    backgroundColor: '#eff6ff',
+                                    color: '#1a73e8',
+                                    cursor: 'not-allowed',
+                                  }}
+                                >
+                                  <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                                </button>
+                              ) : u.status === 'locked' ? (
                                 <button
                                   onClick={() => handleToggleStatus(u._id, 'active')}
                                   title="Unlock user account"
@@ -2066,21 +2171,42 @@ export const UserManagementPage = () => {
                           {u.initialPassword && (
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '5px 8px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
                               <div>
-                                <span style={{ color: '#64748b', fontSize: '0.72rem' }}>Login Pass: </span>
+                                <span style={{ color: '#64748b', fontSize: '0.72rem' }}>Pass: </span>
                                 <code style={{ color: '#2563eb', fontWeight: '800', fontSize: '0.8rem' }}>{u.initialPassword}</code>
                               </div>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigator.clipboard.writeText(`Username: ${u.username}\nPassword: ${u.initialPassword}`);
-                                  showFeedback(`Credentials for @${u.username} copied!`);
-                                }}
-                                title="Copy ID & Password"
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2563eb', display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.72rem', fontWeight: '700' }}
-                              >
-                                <Copy size={11} /> Copy
-                              </button>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigator.clipboard.writeText(`Username: ${u.username}\nPassword: ${u.initialPassword}`);
+                                    setCopiedUserId(u._id);
+                                    setTimeout(() => setCopiedUserId(null), 2000);
+                                    showFeedback(`Credentials for @${u.username} copied!`, 'success');
+                                  }}
+                                  title="Copy ID & Password"
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedUserId === u._id ? '#16a34a' : '#2563eb', display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.72rem', fontWeight: '700' }}
+                                >
+                                  {copiedUserId === u._id ? <Check size={11} /> : <Copy size={11} />}
+                                  <span>{copiedUserId === u._id ? 'Copied' : 'Copy'}</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const loginUrl = window.location.origin + '/login';
+                                    const msg = `*Krishna Valley ERP Login Credentials*\n👤 Name: ${u.firstName} ${u.lastName || ''}\n🆔 Username: ${u.username}\n🔑 Password: ${u.initialPassword}\n🌐 Portal: ${loginUrl}\n\n_Please log in and update your password if desired._`;
+                                    const cleanPhone = (u.mobileNo || '').replace(/[^0-9]/g, '');
+                                    const url = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+                                    window.open(url, '_blank');
+                                    showFeedback(`Opening WhatsApp to share credentials for @${u.username}`, 'success');
+                                  }}
+                                  title="Share credentials on WhatsApp"
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '1px 3px', color: '#16a34a', display: 'flex', alignItems: 'center' }}
+                                >
+                                  <ExternalLink size={12} />
+                                </button>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -2402,6 +2528,7 @@ export const UserManagementPage = () => {
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                       <button
                         onClick={handleGrantAllSystemPermissions}
+                        disabled={matrixUpdating}
                         title="Enable all permissions for this role across all modules"
                         style={{
                           display: 'flex',
@@ -2414,7 +2541,8 @@ export const UserManagementPage = () => {
                           color: '#1a73e8',
                           fontSize: '0.8rem',
                           fontWeight: '700',
-                          cursor: 'pointer',
+                          cursor: matrixUpdating ? 'not-allowed' : 'pointer',
+                          opacity: matrixUpdating ? 0.6 : 1,
                         }}
                       >
                         <CheckSquare size={14} />
@@ -2423,6 +2551,7 @@ export const UserManagementPage = () => {
 
                       <button
                         onClick={handleRevokeAllSystemPermissions}
+                        disabled={matrixUpdating}
                         title="Clear all permissions for this role"
                         style={{
                           display: 'flex',
@@ -2435,7 +2564,8 @@ export const UserManagementPage = () => {
                           color: '#475569',
                           fontSize: '0.8rem',
                           fontWeight: '700',
-                          cursor: 'pointer',
+                          cursor: matrixUpdating ? 'not-allowed' : 'pointer',
+                          opacity: matrixUpdating ? 0.6 : 1,
                         }}
                       >
                         <Square size={14} />
@@ -2445,6 +2575,7 @@ export const UserManagementPage = () => {
                       {!selectedRoleForMatrix.isSystemRole && (
                         <button
                           onClick={() => handleOpenRoleModal(selectedRoleForMatrix)}
+                          disabled={matrixUpdating}
                           title="Edit role title and description"
                           style={{
                             display: 'flex',
@@ -2457,7 +2588,8 @@ export const UserManagementPage = () => {
                             color: '#334155',
                             fontSize: '0.8rem',
                             fontWeight: '600',
-                            cursor: 'pointer',
+                            cursor: matrixUpdating ? 'not-allowed' : 'pointer',
+                            opacity: matrixUpdating ? 0.6 : 1,
                           }}
                         >
                           <Edit2 size={13} />
@@ -2468,6 +2600,7 @@ export const UserManagementPage = () => {
                       {!selectedRoleForMatrix.isSystemRole && (
                         <button
                           onClick={() => handleDeleteRole(selectedRoleForMatrix._id, selectedRoleForMatrix.roleName)}
+                          disabled={matrixUpdating}
                           title="Delete this custom role"
                           style={{
                             display: 'flex',
@@ -2480,7 +2613,8 @@ export const UserManagementPage = () => {
                             color: '#e11d48',
                             fontSize: '0.8rem',
                             fontWeight: '600',
-                            cursor: 'pointer',
+                            cursor: matrixUpdating ? 'not-allowed' : 'pointer',
+                            opacity: matrixUpdating ? 0.6 : 1,
                           }}
                         >
                           <Trash2 size={13} />
@@ -2489,6 +2623,28 @@ export const UserManagementPage = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Real-time Matrix Syncing Progress Notification */}
+                {matrixUpdating && (
+                  <div
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '10px',
+                      backgroundColor: '#eff6ff',
+                      border: '1.5px solid #bfdbfe',
+                      color: '#1a73e8',
+                      fontSize: '0.85rem',
+                      fontWeight: '700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      boxShadow: '0 2px 10px rgba(26, 115, 232, 0.15)',
+                    }}
+                  >
+                    <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>Updating and enforcing role permissions in real-time... Please wait</span>
+                  </div>
+                )}
 
                 {/* Coverage Gauge Bar */}
                 {(() => {
@@ -2616,13 +2772,10 @@ export const UserManagementPage = () => {
                   </div>
                 ) : (
                   Object.entries(filteredPermissionGroups).map(([moduleName, perms]) => {
-                    const rolePermIds = (selectedRoleForMatrix.permissions || []).map((p) =>
-                      typeof p === 'object' && p !== null ? p._id : p
-                    );
                     const isSuper = selectedRoleForMatrix.roleCode === 'super_admin';
                     const activePermsCount = isSuper
                       ? perms.length
-                      : perms.filter((p) => rolePermIds.includes(p._id)).length;
+                      : perms.filter((p) => rolePermSet.has(p._id)).length;
                     const allActive = activePermsCount === perms.length && perms.length > 0;
                     const isCollapsed = collapsedModules[moduleName];
 
@@ -2713,18 +2866,19 @@ export const UserManagementPage = () => {
                                     e.stopPropagation();
                                     handleToggleModulePermissions(moduleName, true);
                                   }}
-                                  disabled={allActive}
+                                  disabled={allActive || matrixUpdating}
                                   title={`Enable all permissions in ${formatModuleName(moduleName)}`}
                                   style={{
                                     padding: '5px 10px',
                                     borderRadius: '6px',
                                     border: '1px solid #bfdbfe',
-                                    backgroundColor: allActive ? '#f8fafc' : '#eff6ff',
-                                    color: allActive ? '#94a3b8' : '#1a73e8',
+                                    backgroundColor: (allActive || matrixUpdating) ? '#f8fafc' : '#eff6ff',
+                                    color: (allActive || matrixUpdating) ? '#94a3b8' : '#1a73e8',
                                     fontSize: '0.74rem',
                                     fontWeight: '700',
-                                    cursor: allActive ? 'default' : 'pointer',
+                                    cursor: (allActive || matrixUpdating) ? 'not-allowed' : 'pointer',
                                     transition: 'all 0.15s ease',
+                                    opacity: matrixUpdating ? 0.6 : 1,
                                   }}
                                 >
                                   Enable All
@@ -2735,18 +2889,19 @@ export const UserManagementPage = () => {
                                     e.stopPropagation();
                                     handleToggleModulePermissions(moduleName, false);
                                   }}
-                                  disabled={activePermsCount === 0}
+                                  disabled={activePermsCount === 0 || matrixUpdating}
                                   title={`Disable all permissions in ${formatModuleName(moduleName)}`}
                                   style={{
                                     padding: '5px 10px',
                                     borderRadius: '6px',
                                     border: '1px solid #cbd5e1',
-                                    backgroundColor: activePermsCount === 0 ? '#f8fafc' : '#ffffff',
-                                    color: activePermsCount === 0 ? '#94a3b8' : '#64748b',
+                                    backgroundColor: (activePermsCount === 0 || matrixUpdating) ? '#f8fafc' : '#ffffff',
+                                    color: (activePermsCount === 0 || matrixUpdating) ? '#94a3b8' : '#64748b',
                                     fontSize: '0.74rem',
                                     fontWeight: '700',
-                                    cursor: activePermsCount === 0 ? 'default' : 'pointer',
+                                    cursor: (activePermsCount === 0 || matrixUpdating) ? 'not-allowed' : 'pointer',
                                     transition: 'all 0.15s ease',
+                                    opacity: matrixUpdating ? 0.6 : 1,
                                   }}
                                 >
                                   Clear
@@ -2767,18 +2922,19 @@ export const UserManagementPage = () => {
                             }}
                           >
                             {perms.map((p) => {
-                              const isChecked = isSuper || rolePermIds.includes(p._id);
+                              const isChecked = isSuper || rolePermSet.has(p._id);
+                              const isSwitchUpdating = matrixUpdatingId === p._id;
 
                               return (
                                 <div
                                   key={p._id}
-                                  onClick={() => !isSuper && handleTogglePermissionForRole(p._id)}
+                                  onClick={() => !isSuper && !matrixUpdating && handleTogglePermissionForRole(p._id)}
                                   style={{
                                     padding: '14px 16px',
                                     borderRadius: '12px',
                                     border: isChecked ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
                                     backgroundColor: isChecked ? '#f0f7ff' : '#ffffff',
-                                    cursor: isSuper ? 'default' : 'pointer',
+                                    cursor: isSuper ? 'default' : matrixUpdating ? 'wait' : 'pointer',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'space-between',
@@ -2789,6 +2945,7 @@ export const UserManagementPage = () => {
                                       ? '0 2px 8px rgba(37, 99, 235, 0.08)'
                                       : '0 1px 2px rgba(0,0,0,0.02)',
                                     position: 'relative',
+                                    opacity: matrixUpdating && !isSwitchUpdating ? 0.8 : 1,
                                   }}
                                   className="perm-item-card"
                                 >
@@ -2853,7 +3010,7 @@ export const UserManagementPage = () => {
                                             backgroundColor: isChecked ? '#1a73e8' : '#cbd5e1',
                                             transition: 'background-color 0.2s ease',
                                             position: 'relative',
-                                            cursor: 'pointer',
+                                            cursor: matrixUpdating ? 'wait' : 'pointer',
                                             flexShrink: 0,
                                           }}
                                         >
@@ -2868,8 +3025,15 @@ export const UserManagementPage = () => {
                                               left: isChecked ? '19px' : '3px',
                                               transition: 'left 0.2s ease',
                                               boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
                                             }}
-                                          />
+                                          >
+                                            {isSwitchUpdating && (
+                                              <Loader2 size={10} style={{ animation: 'spin 1s linear infinite', color: '#1a73e8' }} />
+                                            )}
+                                          </div>
                                         </div>
                                       )}
                                     </div>
@@ -3275,21 +3439,40 @@ export const UserManagementPage = () => {
                     />
                   </div>
 
-                  {!editingUser && (
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '4px' }}>
-                        Initial Password * (min 6 chars)
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: '600', color: '#334155' }}>
+                        {editingUser ? 'Change Password (Optional)' : 'Initial Password * (min 6 chars)'}
                       </label>
-                      <input
-                        type="password"
-                        required
-                        placeholder="••••••••"
-                        value={userFormData.password}
-                        onChange={(e) => setUserFormData({ ...userFormData, password: e.target.value })}
-                        style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.88rem', boxSizing: 'border-box' }}
-                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const rand = `KV@${Math.floor(100000 + Math.random() * 900000)}`;
+                          setUserFormData({ ...userFormData, password: rand });
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#1a73e8',
+                          fontSize: '0.72rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          padding: 0,
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        Auto-Generate
+                      </button>
                     </div>
-                  )}
+                    <input
+                      type="text"
+                      required={!editingUser}
+                      placeholder={editingUser ? 'Leave blank to preserve current' : 'e.g. KV@482910'}
+                      value={userFormData.password}
+                      onChange={(e) => setUserFormData({ ...userFormData, password: e.target.value })}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.88rem', boxSizing: 'border-box' }}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -3518,23 +3701,43 @@ export const UserManagementPage = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  style={{
-                    padding: '9px 22px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    backgroundColor: '#1a73e8',
-                    color: '#ffffff',
-                    fontSize: '0.88rem',
-                    fontWeight: '700',
-                    cursor: actionLoading ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
-                  }}
-                >
-                  {actionLoading ? 'Saving...' : editingUser ? 'Update Operator' : 'Create Operator'}
-                </button>
+                {actionLoading ? (
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '9px 20px',
+                      borderRadius: '8px',
+                      backgroundColor: '#eff6ff',
+                      color: '#1a73e8',
+                      border: '1.5px solid #bfdbfe',
+                      fontSize: '0.88rem',
+                      fontWeight: '700',
+                      boxShadow: '0 2px 8px rgba(26,115,232,0.15)',
+                    }}
+                  >
+                    <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>Processing & Saving Operator Data...</span>
+                  </div>
+                ) : (
+                  <button
+                    type="submit"
+                    style={{
+                      padding: '9px 22px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: '#1a73e8',
+                      color: '#ffffff',
+                      fontSize: '0.88rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
+                    }}
+                  >
+                    {editingUser ? 'Update Operator' : 'Create Operator'}
+                  </button>
+                )}
               </div>
             </form>
           </div>
@@ -3590,13 +3793,34 @@ export const UserManagementPage = () => {
 
             <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '4px' }}>
-                  New Secure Password *
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '600', color: '#334155' }}>
+                    New Secure Password *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const rand = `KV@${Math.floor(100000 + Math.random() * 900000)}`;
+                      setNewPasswordValue(rand);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#1a73e8',
+                      fontSize: '0.72rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      padding: 0,
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Auto-Generate
+                  </button>
+                </div>
                 <input
-                  type="password"
+                  type="text"
                   required
-                  placeholder="Minimum 6 characters..."
+                  placeholder="e.g. KV@729410"
                   value={newPasswordValue}
                   onChange={(e) => setNewPasswordValue(e.target.value)}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.88rem', boxSizing: 'border-box' }}
@@ -3611,22 +3835,42 @@ export const UserManagementPage = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  style={{
-                    padding: '8px 18px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    backgroundColor: '#1a73e8',
-                    color: '#ffffff',
-                    fontSize: '0.84rem',
-                    fontWeight: '700',
-                    cursor: actionLoading ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {actionLoading ? 'Updating...' : 'Set Password'}
-                </button>
+                {actionLoading ? (
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 18px',
+                      borderRadius: '8px',
+                      backgroundColor: '#eff6ff',
+                      color: '#1a73e8',
+                      border: '1.5px solid #bfdbfe',
+                      fontSize: '0.84rem',
+                      fontWeight: '700',
+                      boxShadow: '0 2px 8px rgba(26,115,232,0.15)',
+                    }}
+                  >
+                    <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>Encrypting & Updating Credentials...</span>
+                  </div>
+                ) : (
+                  <button
+                    type="submit"
+                    style={{
+                      padding: '8px 18px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: '#1a73e8',
+                      color: '#ffffff',
+                      fontSize: '0.84rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Set Password
+                  </button>
+                )}
               </div>
             </form>
           </div>
@@ -3761,22 +4005,42 @@ export const UserManagementPage = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  style={{
-                    padding: '8px 18px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    backgroundColor: '#1a73e8',
-                    color: '#ffffff',
-                    fontSize: '0.84rem',
-                    fontWeight: '700',
-                    cursor: actionLoading ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {actionLoading ? 'Saving...' : editingRole ? 'Update Role' : 'Create Role'}
-                </button>
+                {actionLoading ? (
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 18px',
+                      borderRadius: '8px',
+                      backgroundColor: '#eff6ff',
+                      color: '#1a73e8',
+                      border: '1.5px solid #bfdbfe',
+                      fontSize: '0.84rem',
+                      fontWeight: '700',
+                      boxShadow: '0 2px 8px rgba(26,115,232,0.15)',
+                    }}
+                  >
+                    <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>Configuring Role Permissions...</span>
+                  </div>
+                ) : (
+                  <button
+                    type="submit"
+                    style={{
+                      padding: '8px 18px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: '#1a73e8',
+                      color: '#ffffff',
+                      fontSize: '0.84rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {editingRole ? 'Update Role' : 'Create Role'}
+                  </button>
+                )}
               </div>
             </form>
           </div>

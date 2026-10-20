@@ -33,12 +33,14 @@ export const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [activeDemoRole, setActiveDemoRole] = useState(null);
 
   const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
+    if (loading) return; // Prevent double submit
     if (!identifier.trim() || !password) {
       setErrorMessage('Please enter your username/email and password.');
       return;
@@ -46,9 +48,11 @@ export const LoginPage = () => {
 
     setLoading(true);
     setErrorMessage('');
+    setSuccessMessage('');
 
     try {
       const userRes = await login(identifier.trim(), password);
+      setSuccessMessage('Authentication successful! Access granted, preparing workspace...');
       const roleCode = userRes?.role?.roleCode || userRes?.user?.role?.roleCode;
       const targetPath = roleCode === 'agent'
         ? '/agent-portal'
@@ -57,23 +61,27 @@ export const LoginPage = () => {
             : (roleCode === 'taskforce_manager' && from === '/dashboard'
                 ? '/taskforce-dashboard'
                 : from));
-      navigate(targetPath, { replace: true });
+      setTimeout(() => {
+        navigate(targetPath, { replace: true });
+      }, 400);
     } catch (err) {
       setErrorMessage(err.message || 'Authentication failed. Please verify credentials.');
-    } finally {
       setLoading(false);
     }
   };
 
   const handleQuickDemoLogin = async (username, pass, roleLabel) => {
+    if (loading) return; // Prevent duplicate requests
     setActiveDemoRole(roleLabel);
     setIdentifier(username);
     setPassword(pass);
     setErrorMessage('');
+    setSuccessMessage('');
     setLoading(true);
 
     try {
       const userRes = await login(username, pass);
+      setSuccessMessage(`Signed in as ${roleLabel}! Redirecting to dashboard...`);
       const roleCode = userRes?.role?.roleCode || userRes?.user?.role?.roleCode;
       const targetPath = roleCode === 'agent'
         ? '/agent-portal'
@@ -82,10 +90,11 @@ export const LoginPage = () => {
             : (roleCode === 'taskforce_manager' && from === '/dashboard'
                 ? '/taskforce-dashboard'
                 : from));
-      navigate(targetPath, { replace: true });
+      setTimeout(() => {
+        navigate(targetPath, { replace: true });
+      }, 400);
     } catch (err) {
       setErrorMessage(err.message || 'Demo login failed. Ensure the server is running.');
-    } finally {
       setLoading(false);
       setActiveDemoRole(null);
     }
@@ -295,24 +304,48 @@ export const LoginPage = () => {
               </p>
             </div>
 
+            {/* Success Notification Alert */}
+            {successMessage && (
+              <div
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: '#f0fdf4',
+                  border: '1px solid #86efac',
+                  color: '#166534',
+                  fontSize: '0.86rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  marginBottom: '20px',
+                  lineHeight: 1.4,
+                  fontWeight: '600',
+                }}
+              >
+                <CheckCircle2 size={18} style={{ flexShrink: 0, color: '#16a34a' }} />
+                <span>{successMessage}</span>
+              </div>
+            )}
+
             {/* Error Notification Alert */}
             {errorMessage && (
               <div
                 style={{
                   padding: '12px 14px',
                   borderRadius: '10px',
-                  backgroundColor: '#f1f5f9',
-                  border: '1px solid #e2e8f0',
-                  color: '#0f172a',
-                  fontSize: '0.85rem',
+                  backgroundColor: '#fef2f2',
+                  border: '1px solid #fca5a5',
+                  color: '#991b1b',
+                  fontSize: '0.86rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
                   marginBottom: '20px',
                   lineHeight: 1.4,
+                  fontWeight: '500',
                 }}
               >
-                <AlertCircle size={18} style={{ flexShrink: 0 }} />
+                <AlertCircle size={18} style={{ flexShrink: 0, color: '#dc2626' }} />
                 <span>{errorMessage}</span>
               </div>
             )}
@@ -454,47 +487,60 @@ export const LoginPage = () => {
                 </label>
               </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  padding: '13px 20px',
-                  backgroundColor: '#1a73e8',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '0.95rem',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 12px rgba(26, 115, 232, 0.3)',
-                  transition: 'all 0.2s ease',
-                  opacity: loading ? 0.75 : 1,
-                  marginTop: '6px',
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) e.currentTarget.style.backgroundColor = '#1557b0';
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) e.currentTarget.style.backgroundColor = '#1a73e8';
-                }}
-              >
-                {loading && !activeDemoRole ? (
-                  <>
-                    <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
-                    <span>Signing in...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Authenticate & Access ERP</span>
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
+              {/* Submit Button or Loading Processing Indicator */}
+              {loading ? (
+                <div
+                  style={{
+                    padding: '13px 20px',
+                    backgroundColor: '#eff6ff',
+                    border: '1.5px solid #bfdbfe',
+                    color: '#1a73e8',
+                    borderRadius: '10px',
+                    fontSize: '0.92rem',
+                    fontWeight: '700',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    marginTop: '6px',
+                    boxShadow: '0 2px 8px rgba(26, 115, 232, 0.12)',
+                    userSelect: 'none',
+                  }}
+                >
+                  <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                  <span>Processing & Verifying Credentials...</span>
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  style={{
+                    padding: '13px 20px',
+                    backgroundColor: '#1a73e8',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '0.95rem',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(26, 115, 232, 0.3)',
+                    transition: 'all 0.2s ease',
+                    marginTop: '6px',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#1557b0';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#1a73e8';
+                  }}
+                >
+                  <span>Authenticate & Access ERP</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
             </form>
           </div>
 
@@ -541,7 +587,11 @@ export const LoginPage = () => {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%', marginBottom: '2px' }}>
-                      <IconComponent size={14} style={{ color: account.color }} />
+                      {isSelected ? (
+                        <Loader2 size={14} style={{ color: account.color, animation: 'spin 1s linear infinite' }} />
+                      ) : (
+                        <IconComponent size={14} style={{ color: account.color }} />
+                      )}
                       <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#1e293b' }}>
                         {account.label}
                       </span>

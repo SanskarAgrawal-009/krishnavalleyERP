@@ -221,6 +221,7 @@ export const createUser = async (req, res) => {
       email: cleanEmail,
       mobileNo: mobileNo ? mobileNo.trim() : '',
       passwordHash,
+      initialPassword: password.trim(),
       roleId: targetRoleId,
       branchAccess: formattedBranchAccess,
       employeeId: employeeId || null,
@@ -290,6 +291,7 @@ export const updateUser = async (req, res) => {
       lastName,
       email,
       mobileNo,
+      password,
       roleId,
       branchAccess,
       employeeId,
@@ -316,6 +318,15 @@ export const updateUser = async (req, res) => {
     if (employeeId !== undefined) user.employeeId = employeeId || null;
     if (branchAccess) user.branchAccess = branchAccess;
     if (agentProfile) user.agentProfile = { ...user.agentProfile, ...agentProfile };
+
+    if (password && password.trim().length >= 6) {
+      const salt = await bcrypt.genSalt(10);
+      user.passwordHash = await bcrypt.hash(password.trim(), salt);
+      user.initialPassword = password.trim();
+      user.passwordChangedAt = new Date();
+      user.failedLoginAttempts = 0;
+      user.accountLockedUntil = null;
+    }
 
     // Handle role change
     if (roleId && roleId.toString() !== user.roleId.toString()) {
@@ -446,6 +457,7 @@ export const resetUserPassword = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     user.passwordHash = await bcrypt.hash(newPassword, salt);
+    user.initialPassword = newPassword;
     user.passwordChangedAt = new Date();
     user.failedLoginAttempts = 0;
     user.accountLockedUntil = null;

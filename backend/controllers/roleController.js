@@ -145,7 +145,12 @@ export const updateRole = async (req, res) => {
 
     if (roleName) role.roleName = roleName.trim();
     if (description !== undefined) role.description = description.trim();
-    if (permissions !== undefined) role.permissions = permissions;
+    if (permissions !== undefined) {
+      const cleanPerms = Array.isArray(permissions)
+        ? Array.from(new Set(permissions.map((p) => (typeof p === 'object' && p?._id ? p._id.toString() : p?.toString())).filter(Boolean)))
+        : [];
+      role.permissions = cleanPerms;
+    }
     if (isActive !== undefined) role.isActive = isActive;
 
     role.updatedBy = req.user?.id;
