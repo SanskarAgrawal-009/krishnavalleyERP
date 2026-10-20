@@ -10,6 +10,7 @@ import { EmptyState } from '../../components/common/EmptyState.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 
 import {
+  User,
   Users,
   UserPlus,
   Phone,

@@ -839,7 +839,7 @@ export const bulkDeleteLeadsAction = async (req, res) => {
 export const addFollowUp = async (req, res) => {
   try {
     const { id } = req.params;
-    const { date, mode, notes, nextFollowUpDate, status } = req.body;
+    const { date, mode, notes, nextFollowUpDate, status, completePendingScheduled } = req.body;
 
     const lead = await Lead.findById(id);
     if (!lead) return res.status(404).json({ success: false, message: 'Lead not found' });

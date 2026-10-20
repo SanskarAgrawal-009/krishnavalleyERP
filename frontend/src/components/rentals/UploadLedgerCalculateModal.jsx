@@ -218,7 +218,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
             flatNumber,
             ownerName,
             tenure,
-            netRent: monthlyUnit,
+            netRent,
             grossRent,
             applyTds,
             tdsMode,
@@ -231,7 +231,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
             totalCommitment,
             outstanding: finalOutstanding,
             startDateStr,
-            isValid: Boolean(flatNumber && monthlyUnit > 0)
+            isValid: Boolean(flatNumber && (netRent > 0 || grossRent > 0))
           };
         });
 

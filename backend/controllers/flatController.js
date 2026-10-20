@@ -1502,7 +1502,8 @@ export const recordFlatBuybackOrResale = async (req, res) => {
         prePossessionTotalPaid: rentPaidToArchivedOwner > 0 ? rentPaidToArchivedOwner : undefined
       };
 
-      const building = await Building.findById(flat.buildingId);
+      const project = flat.projectId ? await Project.findById(flat.projectId).lean() : null;
+      const building = project?.buildings?.find(b => b._id.toString() === flat.buildingId?.toString());
       const newContract = new RentalManagement({
         flatId: flat._id,
         ownerId: newCustomer._id,

@@ -3,7 +3,7 @@ import { Modal } from '../common/Modal.jsx';
 import { projectService } from '../../services/projectService.js';
 import { customerService } from '../../services/customerService.js';
 import { sanitizeDigitsOnly } from '../../utils/inputValidators.js';
-import { AlertTriangle, Upload, DollarSign, FileText } from 'lucide-react';
+import { AlertTriangle, Upload, DollarSign, FileText, Loader2 } from 'lucide-react';
 
 export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
   const [flats, setFlats] = useState([]);
@@ -39,6 +39,7 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
     const matchedFlat = flats.find((f) => f._id === selectedFlatId);
     if (!matchedFlat || !selectedCustomerId) {
       alert('Please choose a flat and the occupant/tenant.');
@@ -47,6 +48,7 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
 
     setSubmitting(true);
     const reasonText = description.trim() || `${violationType.replace(/_/g, ' ')} infraction`;
+    const formData = new FormData();
     formData.append('projectId', matchedFlat.projectId?._id || matchedFlat.projectId);
     formData.append('buildingId', matchedFlat.buildingId);
     formData.append('flatId', selectedFlatId);
@@ -201,20 +203,40 @@ export const NewPenaltyModal = ({ isOpen, onClose, onSubmit }) => {
           <button type="button" onClick={onClose} style={{ padding: '7px 14px', background: '#f8f9fa', color: '#374151', borderRadius: '4px' }}>
             Cancel
           </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            style={{
-              padding: '7px 18px',
-              background: 'linear-gradient(135deg, #0f172a, #0f172a)',
-              color: '#111827',
-              fontWeight: '700',
-              borderRadius: '4px',
-              cursor: submitting ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {submitting ? 'Levying Fine...' : 'Levy Penalty Notice'}
-          </button>
+          {submitting ? (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 16px',
+                borderRadius: '4px',
+                backgroundColor: '#eff6ff',
+                color: '#1a73e8',
+                border: '1px solid #bfdbfe',
+                fontSize: '0.85rem',
+                fontWeight: '700',
+              }}
+            >
+              <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+              <span>Levying Fine & Enforcing Notice...</span>
+            </div>
+          ) : (
+            <button
+              type="submit"
+              style={{
+                padding: '7px 18px',
+                background: '#0f172a',
+                color: '#ffffff',
+                fontWeight: '700',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              Levy Penalty Notice
+            </button>
+          )}
         </div>
       </form>
     </Modal>

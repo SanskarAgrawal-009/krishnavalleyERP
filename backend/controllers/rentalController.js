@@ -2156,7 +2156,7 @@ export const uploadLedgerExcelAndGenerate = async (req, res) => {
         flatNumber: flat.flatNumber,
         ownerName: flat.currentOwner?.name || ownerName,
         tenureMonths,
-        monthlyNetRent: monthlyUnit,
+        monthlyNetRent: netRent,
         totalPaid,
         paidMonthsCount,
         remainderPaid,

@@ -44,6 +44,18 @@ const PRIORITY_OPTIONS = [
   { value: 'urgent', label: 'Urgent Directive', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
 ];
 
+const COMMON_TOWERS = [
+  'Tower A',
+  'Tower B',
+  'Tower C',
+  'Tower D',
+  'Tower E',
+  'Clubhouse',
+  'Commercial Block',
+  'Villas',
+  'Common Areas',
+];
+
 export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = null }) => {
   const { showToast } = useToast();
 

@@ -108,6 +108,15 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
     }
   });
 
+  const [dismissedIds, setDismissedIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem('kv_dismissed_notifications');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [taskChats, setTaskChats] = useState([]);
 
   useEffect(() => {

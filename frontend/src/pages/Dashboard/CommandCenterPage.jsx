@@ -21,6 +21,7 @@ import { leadService } from '../../services/leadService.js';
 import { inventoryService } from '../../services/inventoryService.js';
 import { maintenanceService } from '../../services/maintenanceService.js';
 import { rentalService } from '../../services/rentalService.js';
+import { taskService } from '../../services/taskService.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { extractRoleCode } from '../../utils/taskPermissions.js';
 import {
