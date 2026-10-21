@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { taskService } from '../../services/taskService.js';
+import { UpcomingMeetingsWidget } from './UpcomingMeetingsWidget.jsx';
 import { getFileUrl } from '../../services/api.js';
 import { useToast } from '../../context/ToastContext.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -610,6 +611,11 @@ export const TaskforceMemberDashboard = ({
           ))}
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* 2.2 UPCOMING SCHEDULED MEETINGS FOR THIS ACCOUNT */}
+      {/* ========================================================================= */}
+      <UpcomingMeetingsWidget />
 
       {/* ========================================================================= */}
       {/* 2.5 LIVE TASK NOTIFICATIONS & DIRECTIVES BANNER */}

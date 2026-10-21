@@ -117,6 +117,8 @@ export const UserManagementPage = () => {
     password: '',
     roleId: '',
     status: 'active',
+    department: '',
+    taskforceHierarchyLevel: '',
     agentProfile: {
       agencyName: '',
       reraNumber: '',
@@ -136,6 +138,7 @@ export const UserManagementPage = () => {
   });
 
   const [actionLoading, setActionLoading] = useState(false);
+  const [updatingRoleId, setUpdatingRoleId] = useState(null);
   const [matrixUpdating, setMatrixUpdating] = useState(false);
   const [matrixUpdatingId, setMatrixUpdatingId] = useState(null);
   const [updatingUserStatusId, setUpdatingUserStatusId] = useState(null);
@@ -305,6 +308,18 @@ export const UserManagementPage = () => {
   const handleOpenUserModal = (user = null) => {
     if (user) {
       setEditingUser(user);
+
+      // Robustly resolve roleId matching roles array
+      let resolvedRoleId = '';
+      if (user.roleId) {
+        if (typeof user.roleId === 'object' && user.roleId._id) {
+          resolvedRoleId = user.roleId._id.toString();
+        } else if (typeof user.roleId === 'string') {
+          const matched = roles.find((r) => r._id === user.roleId || r.roleCode === user.roleId);
+          resolvedRoleId = matched ? matched._id.toString() : user.roleId;
+        }
+      }
+
       setUserFormData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
@@ -312,8 +327,10 @@ export const UserManagementPage = () => {
         email: user.email || '',
         mobileNo: user.mobileNo || '',
         password: '',
-        roleId: user.roleId?._id || user.roleId || '',
+        roleId: resolvedRoleId,
         status: user.status || 'active',
+        department: user.department || '',
+        taskforceHierarchyLevel: user.taskforceHierarchyLevel || '',
         agentProfile: {
           agencyName: user.agentProfile?.agencyName || '',
           reraNumber: user.agentProfile?.reraNumber || '',
@@ -339,6 +356,8 @@ export const UserManagementPage = () => {
         password: '',
         roleId: defaultRole?._id || '',
         status: 'active',
+        department: '',
+        taskforceHierarchyLevel: '',
         agentProfile: {
           agencyName: '',
           reraNumber: '',
@@ -353,22 +372,63 @@ export const UserManagementPage = () => {
     setUserModalOpen(true);
   };
 
+  // Quick 1-Click Role Changer for instant role updating
+  const handleQuickRoleChange = async (targetUser, newRoleId) => {
+    const currentId = targetUser.roleId?._id || targetUser.roleId;
+    if (!newRoleId || newRoleId === currentId) return;
+    const targetRole = roles.find((r) => r._id === newRoleId);
+    if (!targetRole) return;
+
+    setUpdatingRoleId(targetUser._id);
+    try {
+      const res = await authService.updateUser(targetUser._id, { roleId: newRoleId });
+      if (res.success) {
+        showFeedback(`Role for ${targetUser.firstName} changed to "${targetRole.roleName}"!`, 'success');
+        setUsers((prev) =>
+          prev.map((u) => (u._id === targetUser._id ? { ...u, roleId: targetRole } : u))
+        );
+        loadData();
+      } else {
+        showFeedback(res.message || 'Failed to change user role', 'error');
+      }
+    } catch (err) {
+      showFeedback(err.message || 'Failed to change user role', 'error');
+    } finally {
+      setUpdatingRoleId(null);
+    }
+  };
+
   // Save User
   const handleSaveUser = async (e) => {
     if (e) e.preventDefault();
     if (actionLoading) return; // Prevent double submit
 
+    if (!userFormData.firstName?.trim()) {
+      showFeedback('First name is required', 'error');
+      return;
+    }
+    if (!userFormData.email?.trim()) {
+      showFeedback('Email address is required', 'error');
+      return;
+    }
+    if (!userFormData.roleId) {
+      showFeedback('Please assign a system role', 'error');
+      return;
+    }
+
     setActionLoading(true);
     try {
       if (editingUser) {
         const updatePayload = {
-          firstName: userFormData.firstName,
-          lastName: userFormData.lastName,
-          email: userFormData.email,
-          mobileNo: userFormData.mobileNo,
+          firstName: userFormData.firstName.trim(),
+          lastName: (userFormData.lastName || '').trim(),
+          email: userFormData.email.trim().toLowerCase(),
+          mobileNo: (userFormData.mobileNo || '').trim(),
           roleId: userFormData.roleId,
           status: userFormData.status,
-          branchAccess: userFormData.branchAccess,
+          department: (userFormData.department || '').trim(),
+          taskforceHierarchyLevel: userFormData.taskforceHierarchyLevel || '',
+          branchAccess: (userFormData.branchAccess || []).filter((b) => b && (b.branchId?._id || b.branchId)),
           agentProfile: userFormData.agentProfile,
           ...(userFormData.password && userFormData.password.trim().length >= 6
             ? { password: userFormData.password.trim() }
@@ -378,7 +438,9 @@ export const UserManagementPage = () => {
         if (res.success) {
           showFeedback('User account updated successfully!', 'success');
           setUserModalOpen(false);
-          loadData();
+          await loadData();
+        } else {
+          showFeedback(res.message || 'Failed to update user', 'error');
         }
       } else {
         if (!userFormData.password || userFormData.password.length < 6) {
@@ -390,7 +452,9 @@ export const UserManagementPage = () => {
         if (res.success) {
           showFeedback('New user created successfully!', 'success');
           setUserModalOpen(false);
-          loadData();
+          await loadData();
+        } else {
+          showFeedback(res.message || 'Failed to create user', 'error');
         }
       }
     } catch (err) {
@@ -1765,40 +1829,77 @@ export const UserManagementPage = () => {
                             </div>
                           </td>
 
-                          {/* Role */}
+                          {/* Role & Quick Switcher */}
                           <td style={{ padding: '14px 20px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-                              <span
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '5px',
-                                  padding: '3px 9px',
-                                  borderRadius: '6px',
-                                  backgroundColor: isSuper
-                                    ? '#fef3c7'
-                                    : isAgent
-                                    ? '#e0f2fe'
-                                    : '#f0f9ff',
-                                  color: isSuper
-                                    ? '#b45309'
-                                    : isAgent
-                                    ? '#0369a1'
-                                    : '#0284c7',
-                                  fontWeight: '700',
-                                  fontSize: '0.78rem',
-                                  border: `1px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#bae6fd'}`,
-                                }}
-                              >
-                                {isSuper ? (
-                                  <ShieldCheck size={13} style={{ color: '#d97706' }} />
-                                ) : isAgent ? (
-                                  <Award size={13} style={{ color: '#0284c7' }} />
-                                ) : (
-                                  <Shield size={13} />
-                                )}
-                                {u.roleId?.roleName || 'Unassigned Role'}
-                              </span>
+                              <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                                <select
+                                  disabled={updatingRoleId === u._id}
+                                  value={u.roleId?._id || u.roleId || ''}
+                                  onChange={(e) => handleQuickRoleChange(u, e.target.value)}
+                                  title="Click to instantly change user role anytime"
+                                  style={{
+                                    appearance: 'none',
+                                    WebkitAppearance: 'none',
+                                    padding: '4px 26px 4px 28px',
+                                    borderRadius: '6px',
+                                    backgroundColor: isSuper
+                                      ? '#fef3c7'
+                                      : isAgent
+                                      ? '#e0f2fe'
+                                      : '#f0f9ff',
+                                    color: isSuper
+                                      ? '#b45309'
+                                      : isAgent
+                                      ? '#0369a1'
+                                      : '#0284c7',
+                                    fontWeight: '700',
+                                    fontSize: '0.78rem',
+                                    border: `1px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#bae6fd'}`,
+                                    cursor: 'pointer',
+                                    outline: 'none',
+                                    maxWidth: '220px',
+                                  }}
+                                >
+                                  {roles.map((r) => (
+                                    <option key={r._id} value={r._id}>
+                                      {r.roleName}
+                                    </option>
+                                  ))}
+                                </select>
+                                <div
+                                  style={{
+                                    position: 'absolute',
+                                    left: '8px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                  }}
+                                >
+                                  {updatingRoleId === u._id ? (
+                                    <Loader2 size={12} style={{ animation: 'spin 1s linear infinite', color: '#1a73e8' }} />
+                                  ) : isSuper ? (
+                                    <ShieldCheck size={13} style={{ color: '#d97706' }} />
+                                  ) : isAgent ? (
+                                    <Award size={13} style={{ color: '#0284c7' }} />
+                                  ) : (
+                                    <Shield size={13} style={{ color: '#0284c7' }} />
+                                  )}
+                                </div>
+                                <ChevronDown
+                                  size={12}
+                                  style={{
+                                    position: 'absolute',
+                                    right: '8px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none',
+                                    color: isSuper ? '#b45309' : isAgent ? '#0369a1' : '#0284c7',
+                                  }}
+                                />
+                              </div>
                               {(u.isTaskforceMember || u.department) && (
                                 <span
                                   style={{
@@ -2123,25 +2224,68 @@ export const UserManagementPage = () => {
                         </span>
                       </div>
 
-                      {/* Role Pill */}
+                      {/* Role Pill & Quick Switcher */}
                       <div style={{ marginBottom: '10px' }}>
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                            padding: '4px 10px',
-                            borderRadius: '6px',
-                            backgroundColor: isSuper ? '#fef3c7' : isAgent ? '#e0f2fe' : '#f0f9ff',
-                            color: isSuper ? '#b45309' : isAgent ? '#0369a1' : '#0284c7',
-                            fontWeight: '700',
-                            fontSize: '0.8rem',
-                            border: `1px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#bae6fd'}`,
-                          }}
-                        >
-                          {isSuper ? <ShieldCheck size={14} style={{ color: '#d97706' }} /> : isAgent ? <Award size={14} /> : <Shield size={14} />}
-                          {u.roleId?.roleName || 'Unassigned Role'}
-                        </span>
+                        <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                          <select
+                            disabled={updatingRoleId === u._id}
+                            value={u.roleId?._id || u.roleId || ''}
+                            onChange={(e) => handleQuickRoleChange(u, e.target.value)}
+                            title="Click to instantly change user role anytime"
+                            style={{
+                              appearance: 'none',
+                              WebkitAppearance: 'none',
+                              padding: '5px 28px 5px 30px',
+                              borderRadius: '7px',
+                              backgroundColor: isSuper ? '#fef3c7' : isAgent ? '#e0f2fe' : '#f0f9ff',
+                              color: isSuper ? '#b45309' : isAgent ? '#0369a1' : '#0284c7',
+                              fontWeight: '700',
+                              fontSize: '0.8rem',
+                              border: `1px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#bae6fd'}`,
+                              cursor: 'pointer',
+                              outline: 'none',
+                              maxWidth: '220px',
+                            }}
+                          >
+                            {roles.map((r) => (
+                              <option key={r._id} value={r._id}>
+                                {r.roleName}
+                              </option>
+                            ))}
+                          </select>
+                          <div
+                            style={{
+                              position: 'absolute',
+                              left: '9px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              pointerEvents: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                            }}
+                          >
+                            {updatingRoleId === u._id ? (
+                              <Loader2 size={13} style={{ animation: 'spin 1s linear infinite', color: '#1a73e8' }} />
+                            ) : isSuper ? (
+                              <ShieldCheck size={14} style={{ color: '#d97706' }} />
+                            ) : isAgent ? (
+                              <Award size={14} style={{ color: '#0284c7' }} />
+                            ) : (
+                              <Shield size={14} style={{ color: '#0284c7' }} />
+                            )}
+                          </div>
+                          <ChevronDown
+                            size={12}
+                            style={{
+                              position: 'absolute',
+                              right: '9px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              pointerEvents: 'none',
+                              color: isSuper ? '#b45309' : isAgent ? '#0369a1' : '#0284c7',
+                            }}
+                          />
+                        </div>
                       </div>
 
                       {/* Taskforce Badge & Credentials */}
@@ -3518,6 +3662,83 @@ export const UserManagementPage = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Taskforce Operational Configuration */}
+              {(['taskforce_head', 'taskforce_manager', 'taskforce_member'].includes(
+                roles.find((r) => r._id === userFormData.roleId)?.roleCode
+              ) || userFormData.department || editingUser?.isTaskforceMember) && (
+                <div
+                  style={{
+                    backgroundColor: '#f0fdf4',
+                    border: '1.5px solid #bbf7d0',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-hard-hat" style={{ color: '#16a34a' }} />
+                    <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#166534' }}>
+                      Taskforce Operational Configuration
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#166534', marginBottom: '4px' }}>
+                        Operational Department
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Field Operations, Maintenance, Security"
+                        value={userFormData.department || ''}
+                        onChange={(e) =>
+                          setUserFormData({ ...userFormData, department: e.target.value })
+                        }
+                        style={{
+                          width: '100%',
+                          padding: '8px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #86efac',
+                          fontSize: '0.85rem',
+                          boxSizing: 'border-box',
+                          backgroundColor: '#ffffff',
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '600', color: '#166534', marginBottom: '4px' }}>
+                        Taskforce Hierarchy Level
+                      </label>
+                      <select
+                        value={userFormData.taskforceHierarchyLevel || ''}
+                        onChange={(e) =>
+                          setUserFormData({ ...userFormData, taskforceHierarchyLevel: e.target.value })
+                        }
+                        style={{
+                          width: '100%',
+                          padding: '8px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #86efac',
+                          fontSize: '0.85rem',
+                          boxSizing: 'border-box',
+                          backgroundColor: '#ffffff',
+                        }}
+                      >
+                        <option value="">Default (Based on Role)</option>
+                        <option value="head">Head of Taskforce</option>
+                        <option value="manager">Taskforce Manager</option>
+                        <option value="supervisor">Supervisor / Lead</option>
+                        <option value="coordinator">Coordinator</option>
+                        <option value="member">Field Member / Operator</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* SECTION 3: Agent Configuration (if role is agent) */}
               {roles.find((r) => r._id === userFormData.roleId)?.roleCode === 'agent' && (

@@ -58,19 +58,24 @@ export const ReportsPage = () => {
   const navigate = useNavigate();
 
   const userRole = extractRoleCode(user, authRole);
+  const isTaskforceManager = userRole === 'taskforce_manager' || userRole === 'taskforce_mgr';
   const isAdminOrSuper = isSuperAdmin || userRole === 'super_admin' || userRole === 'admin';
   const hasFinancePermission = isAdminOrSuper || hasPermission('reports:financial');
   const canExport = isAdminOrSuper || hasPermission('reports:export');
-  const isFinancialRestricted = userRole === 'taskforce_manager' || (!isAdminOrSuper && !hasFinancePermission && userRole !== 'accounts_manager');
+  const isFinancialRestricted = isTaskforceManager || (!isAdminOrSuper && !hasFinancePermission && userRole !== 'accounts_manager');
 
   const visibleReportTabs = useMemo(() => {
+    if (isTaskforceManager) {
+      // In the task force manager account: remove all sales, rental, collection, finance, and CRM reports
+      return REPORT_TABS.filter((t) => !['sales', 'rental', 'collection', 'finance', 'crm'].includes(t.id));
+    }
     if (isFinancialRestricted) {
       return REPORT_TABS.filter((t) => !['finance', 'collection'].includes(t.id));
     }
     return REPORT_TABS;
-  }, [isFinancialRestricted]);
+  }, [isTaskforceManager, isFinancialRestricted]);
 
-  const defaultInitialTab = isFinancialRestricted ? 'inventory' : 'sales';
+  const defaultInitialTab = (isTaskforceManager || isFinancialRestricted) ? 'inventory' : 'sales';
   const initialTab = (reportType && visibleReportTabs.some((t) => t.id === reportType))
     ? reportType
     : (searchParams.get('tab') && visibleReportTabs.some((t) => t.id === searchParams.get('tab')))
@@ -84,20 +89,33 @@ export const ReportsPage = () => {
 
   // Sync state if URL param or searchParam changes
   useEffect(() => {
-    if (isFinancialRestricted && ['finance', 'collection'].includes(activeReportTab)) {
+    const isRestrictedForMe = (tab) => {
+      if (isTaskforceManager) {
+        return ['sales', 'rental', 'collection', 'finance', 'crm'].includes(tab);
+      }
+      if (isFinancialRestricted) {
+        return ['finance', 'collection'].includes(tab);
+      }
+      return false;
+    };
+
+    if (isRestrictedForMe(activeReportTab)) {
       setActiveReportTab('inventory');
       navigate('/reports/inventory', { replace: true });
       return;
     }
     if (reportType && visibleReportTabs.some((t) => t.id === reportType)) {
       setActiveReportTab(reportType);
+    } else if (reportType && isRestrictedForMe(reportType)) {
+      setActiveReportTab('inventory');
+      navigate('/reports/inventory', { replace: true });
     } else {
       const tab = searchParams.get('tab');
       if (tab && visibleReportTabs.some((t) => t.id === tab)) {
         setActiveReportTab(tab);
       }
     }
-  }, [reportType, searchParams, isFinancialRestricted, visibleReportTabs]);
+  }, [reportType, searchParams, isTaskforceManager, isFinancialRestricted, visibleReportTabs]);
 
   const handleTabChange = (tabId) => {
     setActiveReportTab(tabId);

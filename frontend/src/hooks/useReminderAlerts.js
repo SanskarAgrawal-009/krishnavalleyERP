@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { leadService } from '../services/leadService.js';
+import { taskforceMeetingService } from '../services/taskforceMeetingService.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
 /**
@@ -74,22 +75,80 @@ export const useReminderAlerts = () => {
     isFetchingRef.current = true;
     try {
       setLoading(true);
-      const res = await leadService.getDueReminders();
-      if (res && res.success && res.data) {
-        const { upcoming30Min = [], upcoming10Min = [], overdue = [] } = res.data;
-        const upcoming = upcoming30Min.length > 0 ? upcoming30Min : upcoming10Min;
-        // Prioritize upcoming 30-min alerts, then overdue
-        const combined = [...upcoming, ...overdue];
-        setActiveReminders(combined);
+      const [leadRes, meetingRes] = await Promise.allSettled([
+        leadService.getDueReminders(),
+        taskforceMeetingService.getMyUpcomingMeetings(),
+      ]);
 
-        // Check if there is a fresh reminder that needs sound alert
-        const newest30Min = upcoming.find(r => (r.isDueIn30Min || r.isDueIn10Min) && !dismissedIds.has(r.id));
-        if (newest30Min && newest30Min.id !== lastChimedId) {
-          setLastChimedId(newest30Min.id);
-          playChimeSound();
+      let combined = [];
+      let upcomingList = [];
+
+      // 1. Process CRM / Site Visit / Follow-Up Reminders
+      if (leadRes.status === 'fulfilled' && leadRes.value?.success && leadRes.value.data) {
+        const { upcoming30Min = [], upcoming10Min = [], overdue = [] } = leadRes.value.data;
+        const upcoming = upcoming30Min.length > 0 ? upcoming30Min : upcoming10Min;
+        upcomingList.push(...upcoming);
+        combined.push(...upcoming, ...overdue);
+      }
+
+      // 2. Process Taskforce Meeting Alarms (for meetings where user is attendee or organizer)
+      if (meetingRes.status === 'fulfilled' && meetingRes.value?.success && Array.isArray(meetingRes.value.data)) {
+        const meetings = meetingRes.value.data;
+        meetings.forEach((m) => {
+          const mins = m.minutesRemaining;
+          // Filter to meetings happening today or starting soon (within next 60 mins or overdue up to 30 mins)
+          if (m.isToday || (mins !== null && mins <= 60 && mins >= -30)) {
+            const isDueIn30 = mins !== null && mins >= 0 && mins <= 30;
+            const isDueIn10 = mins !== null && mins >= 0 && mins <= 10;
+            const isOverdue = mins !== null && mins < 0;
+
+            const mtgItem = {
+              id: `meeting-${m._id}`,
+              meetingId: m._id,
+              type: 'meeting',
+              mode: 'meeting',
+              isMeeting: true,
+              leadName: m.title,
+              leadPhone: m.locationType === 'virtual' ? 'Virtual Link' : 'Site Office',
+              unit: m.venue || m.locationDetails || 'Site Operations Room',
+              venue: m.venue || m.locationDetails || 'Site Operations Room',
+              handlingMemberName: m.organizerName || 'Organizer',
+              scheduledTime: m.scheduledDate,
+              startTime: m.startTime,
+              minutesRemaining: mins ?? 0,
+              isDueIn30Min: isDueIn30,
+              isDueIn10Min: isDueIn10,
+              isOverdue,
+              notes: m.agenda || `Meeting Code: ${m.meetingCode || 'MTG'} • ${m.attendeesCount || 0} attendees`,
+            };
+
+            combined.push(mtgItem);
+            if (isDueIn30 || isDueIn10 || m.isDueSoon) {
+              upcomingList.push(mtgItem);
+            }
+          }
+        });
+      }
+
+      setActiveReminders(combined);
+
+      // Check if there is a fresh reminder (lead or meeting) that needs sound alert
+      const freshAlert = upcomingList.find(
+        (r) => (r.isDueIn30Min || r.isDueIn10Min || r.isMeeting) && !dismissedIds.has(r.id)
+      );
+
+      if (freshAlert && freshAlert.id !== lastChimedId) {
+        setLastChimedId(freshAlert.id);
+        playChimeSound();
+        if (freshAlert.isMeeting) {
           triggerDesktopNotification(
-            `30-Min Reminder: ${newest30Min.leadName}`,
-            `Upcoming ${newest30Min.mode?.toUpperCase()} scheduled in ${newest30Min.minutesRemaining} mins.`
+            `Meeting Reminder: ${freshAlert.leadName}`,
+            `Scheduled at ${freshAlert.startTime || '10:30'} • Venue: ${freshAlert.venue || 'Site Office'}`
+          );
+        } else {
+          triggerDesktopNotification(
+            `30-Min Reminder: ${freshAlert.leadName}`,
+            `Upcoming ${freshAlert.mode?.toUpperCase()} scheduled in ${freshAlert.minutesRemaining} mins.`
           );
         }
       }

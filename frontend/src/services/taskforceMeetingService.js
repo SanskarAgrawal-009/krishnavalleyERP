@@ -16,6 +16,9 @@ export const taskforceMeetingService = {
   // Meeting KPI metrics
   getMeetingStats: () => request('/taskforce-meetings/stats'),
 
+  // Get current user's upcoming scheduled meetings (where user is attendee or organizer)
+  getMyUpcomingMeetings: () => request('/taskforce-meetings/my-upcoming'),
+
   // Get single meeting details
   getMeetingById: (id) => request(`/taskforce-meetings/${id}`),
 

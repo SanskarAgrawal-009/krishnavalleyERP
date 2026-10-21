@@ -8,6 +8,8 @@ import { getFileUrl } from '../../services/api.js';
 import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
 import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx';
 import { TaskforceMemberDrawer } from '../../components/taskforce/TaskforceMemberDrawer.jsx';
+import { AddTeamMemberModal } from '../../components/taskforce/AddTeamMemberModal.jsx';
+import { UpcomingMeetingsWidget } from '../../components/taskforce/UpcomingMeetingsWidget.jsx';
 import {
   getDepartmentTheme,
   getDepartmentIcon,
@@ -83,6 +85,7 @@ export const TaskforceDashboardPage = () => {
 
   // Modals & Drawers
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [detailModalInitialTab, setDetailModalInitialTab] = useState('overview');
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -737,6 +740,33 @@ export const TaskforceDashboardPage = () => {
 
           {/* Quick Command Buttons */}
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
+            {(userRole === 'taskforce_manager' || canAssign) && (
+              <button
+                onClick={() => setIsAddMemberModalOpen(true)}
+                style={{
+                  background: '#059669',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '10px 18px',
+                  borderRadius: '10px',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 14px rgba(5, 150, 105, 0.4)',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#047857')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#059669')}
+                title="Directly add and register a new member into the Taskforce Team"
+              >
+                <i className="fa-solid fa-user-plus"></i>
+                + Add Team Member
+              </button>
+            )}
+
             {canAssign && (
               <button
                 onClick={() => setIsNewTaskModalOpen(true)}
@@ -1030,6 +1060,11 @@ export const TaskforceDashboardPage = () => {
           </div>
         </div>
       </div>
+
+      {/* ======================================================== */}
+      {/* 2.5 UPCOMING SCHEDULED MEETINGS & MOM WIDGET             */}
+      {/* ======================================================== */}
+      <UpcomingMeetingsWidget style={{ marginBottom: '24px' }} />
 
       {/* ======================================================== */}
       {/* 3. LIVE TASK NOTIFICATIONS & DIRECTIVES ALERT CENTER      */}
@@ -3163,6 +3198,21 @@ export const TaskforceDashboardPage = () => {
           </div>
         );
       })()}
+
+      {/* Add Team Member Modal */}
+      {isAddMemberModalOpen && (
+        <AddTeamMemberModal
+          isOpen={isAddMemberModalOpen}
+          onClose={() => setIsAddMemberModalOpen(false)}
+          existingMembers={workforceData?.workforce?.map((w) => w.user).filter(Boolean) || []}
+          systemUsers={[]}
+          onMemberAdded={() => {
+            fetchDashboardData(true);
+            window.dispatchEvent(new CustomEvent('taskforceTeamUpdated'));
+            showToast('Team member added successfully to Taskforce', 'success');
+          }}
+        />
+      )}
     </div>
   );
 };

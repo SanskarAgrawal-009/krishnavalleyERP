@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   getMeetings,
+  getMyUpcomingMeetings,
   getMeetingStats,
   getMeetingById,
   createMeeting,
@@ -17,6 +18,9 @@ const router = express.Router();
 
 // All meeting routes require authentication
 router.use(authenticateToken);
+
+// Current user's upcoming scheduled meetings (accessible to any authenticated attendee)
+router.get('/my-upcoming', getMyUpcomingMeetings);
 
 // Meeting listing & statistics
 router.get('/', authorizePermission('tasks:view', 'tasks:manage'), getMeetings);

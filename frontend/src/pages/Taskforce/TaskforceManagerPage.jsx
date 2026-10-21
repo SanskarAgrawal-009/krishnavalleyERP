@@ -8,6 +8,7 @@ import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.js
 import { TaskforceMemberDrawer } from '../../components/taskforce/TaskforceMemberDrawer.jsx';
 import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx';
 import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
+import { AddTeamMemberModal } from '../../components/taskforce/AddTeamMemberModal.jsx';
 
 import {
   Users,
@@ -95,6 +96,7 @@ export const TaskforceManagerPage = () => {
   const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
   const [newTaskInitialData, setNewTaskInitialData] = useState(null);
+  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
   const tabs = [
     { key: 'team', label: 'Departments & Hierarchy', icon: Building2, color: '#059669' },
@@ -1415,16 +1417,39 @@ export const TaskforceManagerPage = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={() => loadTabData(activeTab)}
-          style={{
-            padding: '9px 16px', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px', borderRadius: '8px',
-          }}
-        >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            type="button"
+            onClick={() => setIsAddMemberModalOpen(true)}
+            style={{
+              padding: '9px 16px',
+              fontSize: '13px',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              borderRadius: '8px',
+              backgroundColor: '#059669',
+              color: '#ffffff',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(5, 150, 105, 0.3)',
+            }}
+          >
+            <Plus size={15} /> Add Team Member
+          </button>
+
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => loadTabData(activeTab)}
+            style={{
+              padding: '9px 16px', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px', borderRadius: '8px',
+            }}
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
+          </button>
+        </div>
       </div>
 
       {/* Tab Navigation */}
@@ -1584,6 +1609,21 @@ export const TaskforceManagerPage = () => {
             loadTabData(activeTab);
           }}
           initialData={newTaskInitialData}
+        />
+      )}
+
+      {/* Add Team Member Modal */}
+      {isAddMemberModalOpen && (
+        <AddTeamMemberModal
+          isOpen={isAddMemberModalOpen}
+          onClose={() => setIsAddMemberModalOpen(false)}
+          existingMembers={workforceData?.workforce?.map((w) => w.user).filter(Boolean) || []}
+          systemUsers={[]}
+          onMemberAdded={() => {
+            loadTabData(activeTab);
+            window.dispatchEvent(new CustomEvent('taskforceTeamUpdated'));
+            showToast('Team member added successfully', 'success');
+          }}
         />
       )}
     </div>

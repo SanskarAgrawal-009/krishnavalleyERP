@@ -423,16 +423,22 @@ export const AppLayout = () => {
   // Filter items based on user permissions, role, and search
   const userRole = extractRoleCode(user, authRole);
   const isAgentUser = userRole === 'agent';
+  const isTaskforceManager = userRole === 'taskforce_manager' || userRole === 'taskforce_mgr';
   const isTaskforceUser = isTaskforceTeamMember(user, userRole);
-  const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
+  const isFinancialRestricted = isTaskforceManager || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
 
   const FINANCIAL_PATHS = [
     '/reports/finance',
     '/reports/collection',
+    '/reports/sales',
+    '/reports/rental',
+    '/reports/crm',
     '/maintenance?tab=bills',
     '/rentals/ledgers',
     '/hr?tab=payroll',
-    '/customers?tab=passbook'
+    '/customers?tab=passbook',
+    '/documents?tab=sales',
+    '/documents?tab=rental'
   ];
 
   const isOfflineDev = typeof window !== 'undefined' && (
@@ -520,6 +526,17 @@ export const AppLayout = () => {
   // Sub-item permission & financial restriction validator
   const isSubItemPermitted = (sub) => {
     if (isFinancialRestricted && FINANCIAL_PATHS.includes(sub.path)) return false;
+    if (isTaskforceManager && (
+      sub.path.startsWith('/reports/sales') ||
+      sub.path.startsWith('/reports/rental') ||
+      sub.path.startsWith('/reports/crm') ||
+      sub.path.startsWith('/reports/finance') ||
+      sub.path.startsWith('/reports/collection') ||
+      sub.path.startsWith('/documents?tab=sales') ||
+      sub.path.startsWith('/documents?tab=rental')
+    )) {
+      return false;
+    }
     if (!isTaskforceUser && sub.path === '/taskforce-dashboard') return false;
     if (!sub.permission) return true;
     if (Array.isArray(sub.permission)) {
@@ -534,22 +551,27 @@ export const AppLayout = () => {
       return isAgentUser;
     }
 
-    // 2. Agent Network Directory is exclusively for inhouse staff & management
+    // 2. Agent Network Directory is exclusively for inhouse staff & management (not agents, and not taskforce manager)
     if (item.path === '/agent-network') {
-      return !isAgentUser;
+      return !isAgentUser && !isTaskforceManager;
     }
 
-    // 3. Hide financial routes from taskforce manager
+    // 3. Hide sales, CRM, customers, and rentals from taskforce manager
+    if (isTaskforceManager && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals' || item.path === '/crm')) {
+      return false;
+    }
+
+    // 4. Hide financial routes from general financial-restricted users
     if (isFinancialRestricted && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals')) {
       return false;
     }
 
-    // 4. Hide Executive Dashboard for taskforce manager (dedicated Taskforce Dashboard is used)
-    if (userRole === 'taskforce_manager' && item.path === '/dashboard') {
+    // 5. Hide Executive Dashboard for taskforce manager (dedicated Taskforce Dashboard is used)
+    if (isTaskforceManager && item.path === '/dashboard') {
       return false;
     }
 
-    // 5. Taskforce Dashboard is exclusively for Taskforce team members & Admin
+    // 6. Taskforce Dashboard is exclusively for Taskforce team members & Admin
     if (item.path === '/taskforce-dashboard') {
       return isTaskforceUser;
     }
@@ -662,18 +684,30 @@ export const AppLayout = () => {
   const handleGlobalSearch = (e) => {
     e.preventDefault();
     if (globalSearch.trim()) {
-      navigate(`/crm?search=${encodeURIComponent(globalSearch.trim())}`);
+      if (isTaskforceManager) {
+        navigate(`/taskforce?search=${encodeURIComponent(globalSearch.trim())}`);
+      } else {
+        navigate(`/crm?search=${encodeURIComponent(globalSearch.trim())}`);
+      }
     }
   };
 
-  const filteredCategories = NAV_CATEGORIES.map((category) => {
+  const filteredCategories = NAV_CATEGORIES.filter((category) => {
+    if (isTaskforceManager && (category.categoryKey === 'sales' || category.categoryKey === 'partners')) {
+      return false;
+    }
+    return true;
+  }).map((category) => {
     const visibleCategoryItems = category.items.filter((item) => {
       if (item.path === '/agent-portal') return isAgentUser;
-      if (item.path === '/agent-network') return !isAgentUser;
+      if (item.path === '/agent-network') return !isAgentUser && !isTaskforceManager;
+      if (isTaskforceManager && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals' || item.path === '/crm')) {
+        return false;
+      }
       if (isFinancialRestricted && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals')) {
         return false;
       }
-      if (userRole === 'taskforce_manager' && item.path === '/dashboard') {
+      if (isTaskforceManager && item.path === '/dashboard') {
         return false;
       }
       if (item.path === '/taskforce-dashboard') {
@@ -819,7 +853,7 @@ export const AppLayout = () => {
                 gap: '12px',
                 cursor: 'pointer'
               }}
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate(isTaskforceManager ? '/taskforce-dashboard' : '/dashboard')}
               title="Krishna Valley ERP"
             >
               <div

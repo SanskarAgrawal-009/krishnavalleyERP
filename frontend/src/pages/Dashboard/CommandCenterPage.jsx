@@ -22,6 +22,7 @@ import { inventoryService } from '../../services/inventoryService.js';
 import { maintenanceService } from '../../services/maintenanceService.js';
 import { rentalService } from '../../services/rentalService.js';
 import { taskService } from '../../services/taskService.js';
+import { UpcomingMeetingsWidget } from '../../components/taskforce/UpcomingMeetingsWidget.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { extractRoleCode } from '../../utils/taskPermissions.js';
 import {
@@ -940,6 +941,9 @@ export const CommandCenterPage = () => {
         </div>
 
       </div>
+
+      {/* 2.5 Scheduled Meetings & MoM Overview */}
+      <UpcomingMeetingsWidget />
 
       {/* 3. Executive Operations & Health Vital Signs Strip */}
       <div style={{

@@ -1,9 +1,11 @@
+import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
 import { Role } from '../models/Role.js';
 import { Branch } from '../models/Branch.js';
 import { SalesTeamMember } from '../models/SalesTeamMember.js';
 import { escapeRegex } from '../utils/regexUtil.js';
+import { arePhoneNumbersSame } from '../utils/phoneValidator.js';
 import { recordAuditEvent } from '../middleware/auditMiddleware.js';
 import { syncAllTaskforceMembersToUsers } from './taskforceTeamController.js';
 
@@ -297,6 +299,8 @@ export const updateUser = async (req, res) => {
       employeeId,
       agentProfile,
       status,
+      department,
+      taskforceHierarchyLevel,
     } = req.body;
 
     if (email && email.trim().toLowerCase() !== user.email) {
@@ -311,15 +315,51 @@ export const updateUser = async (req, res) => {
       user.email = cleanEmail;
     }
 
-    if (firstName) user.firstName = firstName.trim();
-    if (lastName !== undefined) user.lastName = lastName.trim();
-    if (mobileNo !== undefined) user.mobileNo = mobileNo.trim();
+    if (firstName !== undefined && firstName !== null) user.firstName = firstName.trim();
+    if (lastName !== undefined && lastName !== null) user.lastName = lastName.trim();
+    if (mobileNo !== undefined && mobileNo !== null) user.mobileNo = mobileNo.trim();
     if (status) user.status = status;
     if (employeeId !== undefined) user.employeeId = employeeId || null;
-    if (branchAccess) user.branchAccess = branchAccess;
-    if (agentProfile) user.agentProfile = { ...user.agentProfile, ...agentProfile };
+    if (department !== undefined && department !== null) user.department = department.trim();
+    if (taskforceHierarchyLevel !== undefined && taskforceHierarchyLevel !== null) {
+      user.taskforceHierarchyLevel = taskforceHierarchyLevel.trim();
+    }
 
-    if (password && password.trim().length >= 6) {
+    // Prevent phone validator collision if primary and alternate mobile numbers match
+    if (user.mobileNo && user.alternateMobileNo && arePhoneNumbersSame(user.mobileNo, user.alternateMobileNo)) {
+      user.alternateMobileNo = undefined;
+    }
+
+    // Branch access sanitization (ensures required branchId is a valid ObjectId)
+    if (branchAccess && Array.isArray(branchAccess)) {
+      const sanitizedBranches = branchAccess
+        .filter((b) => b && (b.branchId || (typeof b === 'string' && mongoose.Types.ObjectId.isValid(b))))
+        .map((b) => {
+          const rawId = typeof b === 'string' ? b : (b.branchId?._id || b.branchId);
+          return {
+            branchId: rawId,
+            accessLevel: b.accessLevel || 'view',
+            isPrimary: !!b.isPrimary,
+          };
+        })
+        .filter((b) => mongoose.Types.ObjectId.isValid(b.branchId));
+
+      if (sanitizedBranches.length > 0) {
+        if (!sanitizedBranches.some((b) => b.isPrimary)) {
+          sanitizedBranches[0].isPrimary = true;
+        }
+        user.branchAccess = sanitizedBranches;
+      }
+    }
+
+    if (agentProfile && typeof agentProfile === 'object') {
+      user.agentProfile = {
+        ...(user.agentProfile?.toObject ? user.agentProfile.toObject() : user.agentProfile),
+        ...agentProfile,
+      };
+    }
+
+    if (password && typeof password === 'string' && password.trim().length >= 6) {
       const salt = await bcrypt.genSalt(10);
       user.passwordHash = await bcrypt.hash(password.trim(), salt);
       user.initialPassword = password.trim();
@@ -328,22 +368,66 @@ export const updateUser = async (req, res) => {
       user.accountLockedUntil = null;
     }
 
-    // Handle role change
-    if (roleId && roleId.toString() !== user.roleId.toString()) {
-      const oldRole = await Role.findById(user.roleId);
-      if (oldRole) {
-        oldRole.users = oldRole.users.filter((id) => id.toString() !== user._id.toString());
-        await oldRole.save();
+    // Handle role change safely (supports ObjectId, roleCode, or roleName)
+    if (roleId) {
+      let targetRole = null;
+      if (mongoose.Types.ObjectId.isValid(roleId)) {
+        targetRole = await Role.findById(roleId);
+      }
+      if (!targetRole && typeof roleId === 'string') {
+        const cleanRole = roleId.trim();
+        targetRole = await Role.findOne({
+          $or: [
+            { roleCode: cleanRole },
+            { roleCode: cleanRole.toLowerCase() },
+            { roleName: new RegExp(`^${escapeRegex(cleanRole)}$`, 'i') },
+          ],
+        });
       }
 
-      const newRole = await Role.findById(roleId);
-      if (newRole) {
-        if (!newRole.users.includes(user._id)) {
-          newRole.users.push(user._id);
-          await newRole.save();
+      if (targetRole) {
+        const oldRoleIdStr = user.roleId ? user.roleId.toString() : null;
+        const newRoleIdStr = targetRole._id.toString();
+
+        if (oldRoleIdStr !== newRoleIdStr) {
+          if (user.roleId) {
+            try {
+              await Role.findByIdAndUpdate(user.roleId, {
+                $pull: { users: user._id },
+              });
+            } catch (rolePullErr) {
+              console.error('Error removing user from previous role:', rolePullErr);
+            }
+          }
+
+          try {
+            await Role.findByIdAndUpdate(targetRole._id, {
+              $addToSet: { users: user._id },
+            });
+          } catch (roleAddErr) {
+            console.error('Error adding user to new role:', roleAddErr);
+          }
+
+          user.roleId = targetRole._id;
+
+          // Sync taskforce governance if assigned to a taskforce role
+          const isTaskforceRole = ['taskforce_head', 'taskforce_manager', 'taskforce_member'].includes(targetRole.roleCode);
+          if (isTaskforceRole) {
+            user.isTaskforceMember = true;
+            if (!user.department) {
+              user.department = targetRole.roleCode === 'taskforce_manager' ? 'Taskforce Management' : 'Field Operations';
+            }
+          }
+
+          // If role changed to agent, ensure agentProfile has an agentCode
+          if (targetRole.roleCode === 'agent') {
+            if (!user.agentProfile) user.agentProfile = {};
+            if (!user.agentProfile.agentCode) {
+              user.agentProfile.agentCode = `AGT-${Date.now().toString(36).toUpperCase()}`;
+            }
+          }
         }
       }
-      user.roleId = roleId;
     }
 
     user.updatedBy = req.user?.id;
@@ -354,22 +438,26 @@ export const updateUser = async (req, res) => {
       .populate('branchAccess.branchId', 'branchName branchCode')
       .select('-passwordHash');
 
-    const isAgent = updatedUser.roleId?.roleCode === 'agent';
-    await recordAuditEvent({
-      eventType: 'CRUD',
-      action: 'UPDATE',
-      module: isAgent ? 'agent' : 'users',
-      resourceType: 'User',
-      resourceId: updatedUser._id,
-      resourceName: `${updatedUser.firstName} ${updatedUser.lastName || ''} (@${updatedUser.username})`,
-      req,
-      summary: `Updated ${isAgent ? 'Channel Partner Agent' : 'User'} profile for "${updatedUser.firstName} ${updatedUser.lastName || ''}" (@${updatedUser.username})`,
-      changes: {
-        agentProfile: updatedUser.agentProfile,
-        status: updatedUser.status,
-        email: updatedUser.email,
-      },
-    });
+    try {
+      const isAgent = updatedUser.roleId?.roleCode === 'agent';
+      await recordAuditEvent({
+        eventType: 'CRUD',
+        action: 'UPDATE',
+        module: isAgent ? 'agent' : 'users',
+        resourceType: 'User',
+        resourceId: updatedUser._id,
+        resourceName: `${updatedUser.firstName} ${updatedUser.lastName || ''} (@${updatedUser.username})`,
+        req,
+        summary: `Updated ${isAgent ? 'Channel Partner Agent' : 'User'} profile for "${updatedUser.firstName} ${updatedUser.lastName || ''}" (@${updatedUser.username})`,
+        changes: {
+          role: updatedUser.roleId?.roleName,
+          status: updatedUser.status,
+          email: updatedUser.email,
+        },
+      });
+    } catch (auditErr) {
+      console.error('Non-blocking user audit error:', auditErr);
+    }
 
     return res.status(200).json({
       success: true,

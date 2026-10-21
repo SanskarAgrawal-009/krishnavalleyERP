@@ -20,6 +20,9 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { taskService } from '../../services/taskService.js';
+import { taskforceMeetingService } from '../../services/taskforceMeetingService.js';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { extractRoleCode } from '../../utils/taskPermissions.js';
 
 const DEFAULT_NOTIFICATIONS = [
   {
@@ -98,6 +101,10 @@ const DEFAULT_NOTIFICATIONS = [
 
 export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeReminders = [] }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userRole = extractRoleCode(user?.role);
+  const isTaskforceManager = userRole === 'taskforce_manager' || userRole === 'taskforce_mgr';
+
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'alerts' | 'reminders'
   const [readIds, setReadIds] = useState(() => {
     try {
@@ -118,6 +125,7 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
   });
 
   const [taskChats, setTaskChats] = useState([]);
+  const [meetingAlerts, setMeetingAlerts] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -131,28 +139,62 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
         // quiet error handle
       }
     };
+
+    const loadMeetings = async () => {
+      try {
+        const res = await taskforceMeetingService.getMyUpcomingMeetings();
+        if (res && res.success && Array.isArray(res.data) && isMounted) {
+          setMeetingAlerts(res.data);
+        }
+      } catch (e) {
+        // quiet error handle
+      }
+    };
+
     if (isOpen) {
       loadTaskChats();
+      loadMeetings();
     }
     return () => {
       isMounted = false;
     };
   }, [isOpen]);
 
-  // Map real-time 30-minute reminders into notifications
-  const reminderItems = activeReminders.map(r => {
-    const isDueSoon = r.isDueIn30Min || r.isDueIn10Min;
+  // Map real-time 30-minute CRM reminders into notifications (excluded for taskforce manager)
+  const reminderItems = isTaskforceManager
+    ? []
+    : activeReminders.map(r => {
+        const isDueSoon = r.isDueIn30Min || r.isDueIn10Min;
+        return {
+          id: `rem-${r.id}`,
+          category: 'reminders',
+          severity: r.isOverdue ? 'urgent' : (isDueSoon ? 'warning' : 'info'),
+          title: r.type === 'site_visit' ? `Site Visit: ${r.leadName}` : `Follow-Up: ${r.leadName}`,
+          message: `${r.unit ? `${r.unit} • ` : ''}${isDueSoon ? `Due in ${r.minutesRemaining} mins` : (r.isOverdue ? `Overdue by ${Math.abs(r.minutesRemaining)} mins` : 'Scheduled today')}${r.notes ? ` • "${r.notes}"` : ''}`,
+          time: isDueSoon ? `In ${r.minutesRemaining}m` : (r.isOverdue ? `${Math.abs(r.minutesRemaining)}m ago` : 'Today'),
+          route: `/crm?search=${encodeURIComponent(r.leadPhone || r.leadName)}`,
+          icon: r.type === 'site_visit' ? Car : Phone,
+          color: r.isOverdue ? '#0f172a' : (r.type === 'site_visit' ? '#1d4ed8' : '#2563eb'),
+          bgColor: r.isOverdue ? '#f1f5f9' : '#eff6ff'
+        };
+      });
+
+  // Map scheduled meetings where user is an attendee
+  const meetingNotifItems = meetingAlerts.map(m => {
+    const isDueSoon = m.isDueSoon || (m.minutesRemaining !== null && m.minutesRemaining >= 0 && m.minutesRemaining <= 30);
+    const isToday = m.isToday;
     return {
-      id: `rem-${r.id}`,
+      id: `meet-${m._id || m.id}`,
+      meetingId: m._id || m.id,
       category: 'reminders',
-      severity: r.isOverdue ? 'urgent' : (isDueSoon ? 'warning' : 'info'),
-      title: r.type === 'site_visit' ? `Site Visit: ${r.leadName}` : `Follow-Up: ${r.leadName}`,
-      message: `${r.unit ? `${r.unit} • ` : ''}${isDueSoon ? `Due in ${r.minutesRemaining} mins` : (r.isOverdue ? `Overdue by ${Math.abs(r.minutesRemaining)} mins` : 'Scheduled today')}${r.notes ? ` • "${r.notes}"` : ''}`,
-      time: isDueSoon ? `In ${r.minutesRemaining}m` : (r.isOverdue ? `${Math.abs(r.minutesRemaining)}m ago` : 'Today'),
-      route: `/crm?search=${encodeURIComponent(r.leadPhone || r.leadName)}`,
-      icon: r.type === 'site_visit' ? Car : Phone,
-      color: r.isOverdue ? '#0f172a' : (r.type === 'site_visit' ? '#1d4ed8' : '#2563eb'),
-      bgColor: r.isOverdue ? '#f1f5f9' : '#eff6ff'
+      severity: isDueSoon ? 'warning' : 'info',
+      title: `📅 Meeting: ${m.title || 'Scheduled Meeting'}`,
+      message: `${m.venue ? `📍 ${m.venue} • ` : ''}${m.timeStr || m.scheduledTime || ''}${m.dateStr ? ` (${m.dateStr})` : ''} • ${m.attendeesCount || (m.attendees?.length || 0)} attendees`,
+      time: isDueSoon ? `In ${m.minutesRemaining}m` : (isToday ? 'Today' : 'Upcoming'),
+      route: '/taskforce-meetings',
+      icon: Calendar,
+      color: '#059669',
+      bgColor: '#ecfdf5'
     };
   });
 
@@ -177,7 +219,22 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
     };
   });
 
-  const allDisplayNotifications = [...chatNotifItems, ...reminderItems, ...DEFAULT_NOTIFICATIONS];
+  // Filter default mock notifications for taskforce manager
+  const sanitizedDefaultNotifications = DEFAULT_NOTIFICATIONS.filter(n => {
+    if (isTaskforceManager) {
+      if (n.route?.includes('/sales') || n.route?.includes('/rentals') || n.route?.includes('/crm')) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const allDisplayNotifications = [
+    ...meetingNotifItems,
+    ...chatNotifItems,
+    ...reminderItems,
+    ...sanitizedDefaultNotifications
+  ];
 
   // Calculate unread count
   const activeNotifications = allDisplayNotifications.filter((n) => !dismissedIds.includes(n.id));

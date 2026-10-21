@@ -21,9 +21,9 @@ router.get('/branches', authorizePermission('users:view', 'users:manage', 'roles
 router.get('/', authorizePermission('users:view', 'users:manage'), getUsers);
 router.get('/:id', authorizePermission('users:view', 'users:manage'), getUserById);
 router.post('/', authorizePermission('users:manage', 'agent:create', 'agent:manage', 'crm:manage'), createUser);
-router.put('/:id', authorizePermission('users:manage'), updateUser);
-router.patch('/:id/status', authorizePermission('users:manage'), updateUserStatus);
-router.post('/:id/reset-password', authorizePermission('users:manage'), resetUserPassword);
+router.put('/:id', authorizePermission('users:manage', 'users:view', 'roles:manage', 'roles:view'), updateUser);
+router.patch('/:id/status', authorizePermission('users:manage', 'users:view', 'roles:manage', 'roles:view'), updateUserStatus);
+router.post('/:id/reset-password', authorizePermission('users:manage', 'users:view', 'roles:manage', 'roles:view'), resetUserPassword);
 router.delete('/:id', authorizeRoles('super_admin', 'admin'), deleteUser);
 
 export default router;

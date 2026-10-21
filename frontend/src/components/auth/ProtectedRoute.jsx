@@ -3,6 +3,8 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { ShieldAlert, Lock, Loader2, ArrowLeft } from 'lucide-react';
 
+import { extractRoleCode } from '../../utils/taskPermissions.js';
+
 export const ProtectedRoute = ({
   children,
   permission,
@@ -13,6 +15,9 @@ export const ProtectedRoute = ({
   const { isAuthenticated, isLoading, user, hasPermission, hasRole, hasAnyRole, isSuperAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const userRole = extractRoleCode(user?.role);
+  const isTaskforceManager = userRole === 'taskforce_manager' || userRole === 'taskforce_mgr';
 
   if (isLoading) {
     return (
@@ -61,6 +66,14 @@ export const ProtectedRoute = ({
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Taskforce Manager restriction: redirect sales, rentals, crm, customer accounts, and agent network to taskforce dashboard
+  if (isTaskforceManager) {
+    const restrictedPrefixes = ['/sales', '/rentals', '/crm', '/customers', '/agent-portal', '/agent-network', '/site-visits'];
+    if (restrictedPrefixes.some((prefix) => location.pathname === prefix || location.pathname.startsWith(`${prefix}/`))) {
+      return <Navigate to="/taskforce-dashboard" replace />;
+    }
   }
 
   // Super Admin has master unrestricted access
@@ -152,7 +165,7 @@ export const ProtectedRoute = ({
 
           <div>
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate(isTaskforceManager ? '/taskforce-dashboard' : '/dashboard')}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

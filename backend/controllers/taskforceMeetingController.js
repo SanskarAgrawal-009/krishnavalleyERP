@@ -1,6 +1,7 @@
 import { TaskforceMeeting } from '../models/TaskforceMeeting.js';
 import { Task } from '../models/Task.js';
 import { User } from '../models/User.js';
+import NotificationLog from '../models/NotificationLog.js';
 
 /**
  * Helper to escape regex search queries
@@ -77,6 +78,21 @@ export const getMeetings = async (req, res) => {
       }
     }
 
+    // Filter to only meetings where logged-in user is attendee or organizer
+    if (req.query.myMeetings === 'true' && req.user) {
+      const currentUserId = req.user._id || req.user.id;
+      const userCondition = [
+        { organizer: currentUserId },
+        { 'attendees.user': currentUserId },
+      ];
+      if (query.$or) {
+        query.$and = [{ $or: query.$or }, { $or: userCondition }];
+        delete query.$or;
+      } else {
+        query.$or = userCondition;
+      }
+    }
+
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 25));
     const skip = (pageNum - 1) * limitNum;
@@ -112,6 +128,94 @@ export const getMeetings = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve taskforce meetings',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc   Get upcoming meetings for current logged-in account (as attendee or organizer)
+ * @route  GET /api/taskforce-meetings/my-upcoming
+ * @access Authenticated
+ */
+export const getMyUpcomingMeetings = async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.id;
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+    // Look for scheduled, in-progress, or rescheduled meetings today or later
+    const query = {
+      $or: [
+        { organizer: userId },
+        { 'attendees.user': userId },
+      ],
+      scheduledDate: { $gte: startOfToday },
+      status: { $in: ['scheduled', 'in_progress', 'rescheduled'] },
+    };
+
+    const meetings = await TaskforceMeeting.find(query)
+      .populate('organizer', 'firstName lastName username email department role')
+      .populate('attendees.user', 'firstName lastName username email department role')
+      .populate('projectId', 'name code')
+      .sort({ scheduledDate: 1, startTime: 1 })
+      .lean();
+
+    // Enrich with reminder & alarm calculation flags
+    const enriched = meetings.map((m) => {
+      const d = new Date(m.scheduledDate);
+      const isToday =
+        d.getFullYear() === now.getFullYear() &&
+        d.getMonth() === now.getMonth() &&
+        d.getDate() === now.getDate();
+
+      let minutesRemaining = null;
+      let isDueSoon = false;
+      let isPast = false;
+
+      if (m.startTime) {
+        // e.g. "10:30", "14:00", "02:30 PM"
+        const cleanTime = m.startTime.trim();
+        const parts = cleanTime.split(' ');
+        const [hStr, mStr] = parts[0].split(':');
+        let hours = parseInt(hStr, 10) || 0;
+        let mins = parseInt(mStr, 10) || 0;
+
+        if (parts[1]) {
+          const meridiem = parts[1].toUpperCase();
+          if (meridiem === 'PM' && hours < 12) hours += 12;
+          if (meridiem === 'AM' && hours === 12) hours = 0;
+        }
+
+        const meetingDateTime = new Date(d);
+        meetingDateTime.setHours(hours, mins, 0, 0);
+
+        const diffMs = meetingDateTime.getTime() - now.getTime();
+        minutesRemaining = Math.round(diffMs / (60 * 1000));
+        isDueSoon = isToday && minutesRemaining >= -20 && minutesRemaining <= 60;
+        isPast = isToday ? minutesRemaining < -20 : d < startOfToday;
+      }
+
+      return {
+        ...m,
+        isToday,
+        isDueSoon,
+        isPast,
+        minutesRemaining,
+        venue: m.locationDetails || (m.locationType === 'virtual' ? 'Virtual Conference Room' : 'Krishna Valley Site Operations Room'),
+        attendeesCount: Array.isArray(m.attendees) ? m.attendees.length : 0,
+      };
+    });
+
+    return res.json({
+      success: true,
+      data: enriched,
+    });
+  } catch (error) {
+    console.error('Error fetching user upcoming meetings:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve upcoming scheduled meetings',
       error: error.message,
     });
   }
@@ -354,6 +458,40 @@ export const createMeeting = async (req, res) => {
 
     await newMeeting.save();
 
+    // Send targeted in-app notifications strictly to attendees
+    try {
+      const dateStr = new Date(scheduledDate).toLocaleDateString('en-IN', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      });
+
+      for (const att of formattedAttendees) {
+        if (att.user && att.user.toString() !== req.user.id.toString()) {
+          await NotificationLog.create({
+            channel: 'push',
+            recipient: att.user.toString(),
+            recipientName: att.name || 'Team Member',
+            templateCode: 'TASKFORCE_MEETING_SCHEDULED',
+            subject: `Meeting Scheduled: ${newMeeting.title}`,
+            contentPreview: `Meeting "${newMeeting.title}" (${newMeeting.meetingCode}) scheduled on ${dateStr} at ${startTime}. Venue: ${locationDetails}`,
+            status: 'delivered',
+            metadata: {
+              meetingId: newMeeting._id,
+              meetingCode: newMeeting.meetingCode,
+              scheduledDate: newMeeting.scheduledDate,
+              startTime: newMeeting.startTime,
+              locationDetails: newMeeting.locationDetails,
+              organizerName,
+              type: 'meeting_invite',
+            },
+          });
+        }
+      }
+    } catch (notifErr) {
+      console.warn('Meeting invite notification log error (non-blocking):', notifErr);
+    }
+
     return res.status(201).json({
       success: true,
       message: 'Meeting scheduled successfully',
@@ -431,6 +569,44 @@ export const updateMeeting = async (req, res) => {
     });
 
     await meeting.save();
+
+    // Send update notification to attendees
+    try {
+      const dateStr = meeting.scheduledDate
+        ? new Date(meeting.scheduledDate).toLocaleDateString('en-IN', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          })
+        : '';
+
+      if (Array.isArray(meeting.attendees)) {
+        for (const att of meeting.attendees) {
+          const attUserId = att.user?._id || att.user;
+          if (attUserId && attUserId.toString() !== req.user.id.toString()) {
+            await NotificationLog.create({
+              channel: 'push',
+              recipient: attUserId.toString(),
+              recipientName: att.name || 'Team Member',
+              templateCode: 'TASKFORCE_MEETING_UPDATED',
+              subject: `Meeting Updated: ${meeting.title}`,
+              contentPreview: `Meeting "${meeting.title}" (${meeting.meetingCode}) has been updated. Date: ${dateStr} at ${meeting.startTime}. Venue: ${meeting.locationDetails || 'Site Office'}`,
+              status: 'delivered',
+              metadata: {
+                meetingId: meeting._id,
+                meetingCode: meeting.meetingCode,
+                scheduledDate: meeting.scheduledDate,
+                startTime: meeting.startTime,
+                locationDetails: meeting.locationDetails,
+                type: 'meeting_update',
+              },
+            });
+          }
+        }
+      }
+    } catch (notifErr) {
+      console.warn('Meeting update notification error (non-blocking):', notifErr);
+    }
 
     return res.json({
       success: true,

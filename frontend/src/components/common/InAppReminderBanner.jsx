@@ -25,20 +25,23 @@ export const InAppReminderBanner = ({
   if (!activeAlert) return null;
 
   const isSiteVisit = activeAlert.type === 'site_visit' || activeAlert.mode === 'site_visit';
+  const isMeeting = activeAlert.isMeeting || activeAlert.type === 'meeting';
   const minutes = activeAlert.minutesRemaining;
   const isPast = minutes < 0;
 
   const getModeIcon = () => {
+    if (isMeeting) return <Users size={16} color="#0d9488" />;
     switch (activeAlert.mode) {
       case 'site_visit': return <Car size={16} color="#1d4ed8" />;
       case 'call': return <Phone size={16} color="#2563eb" />;
       case 'whatsapp': return <MessageSquare size={16} color="#0f172a" />;
-      case 'meeting': return <Users size={16} color="#1e40af" />;
+      case 'meeting': return <Users size={16} color="#0d9488" />;
       default: return <Calendar size={16} color="#0284c7" />;
     }
   };
 
   const getModeLabel = () => {
+    if (isMeeting) return 'Scheduled Meeting';
     switch (activeAlert.mode) {
       case 'site_visit': return 'Property Site Visit';
       case 'call': return 'Phone Consultation';
@@ -60,7 +63,7 @@ export const InAppReminderBanner = ({
         backgroundColor: '#ffffff',
         borderRadius: '14px',
         boxShadow: '0 12px 36px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08)',
-        border: '2px solid #2563eb',
+        border: isMeeting ? '2px solid #0d9488' : '2px solid #2563eb',
         overflow: 'hidden',
         animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         fontFamily: 'inherit'
@@ -69,7 +72,9 @@ export const InAppReminderBanner = ({
       {/* Top Banner Header */}
       <div
         style={{
-          background: isSiteVisit
+          background: isMeeting
+            ? 'linear-gradient(135deg, #0f766e 0%, #0d9488 100%)'
+            : isSiteVisit
             ? 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)'
             : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
           color: '#ffffff',
@@ -94,7 +99,9 @@ export const InAppReminderBanner = ({
             <Bell size={13} color="#ffffff" />
           </div>
           <span style={{ fontSize: '0.82rem', fontWeight: '800', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-            {isPast ? 'Task Due Now!' : '30-Min Reminder'}
+            {isMeeting
+              ? (isPast ? 'Meeting in Progress!' : 'Meeting Scheduled Alert')
+              : (isPast ? 'Task Due Now!' : '30-Min Reminder')}
           </span>
         </div>
 
@@ -104,12 +111,12 @@ export const InAppReminderBanner = ({
               fontSize: '0.72rem',
               fontWeight: '800',
               backgroundColor: isPast ? '#f1f5f9' : '#ffffff',
-              color: isPast ? '#0f172a' : '#1e3a8a',
+              color: isPast ? '#0f172a' : isMeeting ? '#0f766e' : '#1e3a8a',
               padding: '2px 8px',
               borderRadius: '12px'
             }}
           >
-            {isPast ? `Overdue by ${Math.abs(minutes)}m` : `In ${minutes} mins`}
+            {isPast ? `Started ${Math.abs(minutes)}m ago` : `In ${minutes} mins`}
           </span>
           <button
             type="button"
@@ -137,7 +144,7 @@ export const InAppReminderBanner = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
               {getModeIcon()}
-              <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#475569', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.76rem', fontWeight: '800', color: isMeeting ? '#0f766e' : '#475569', textTransform: 'uppercase' }}>
                 {getModeLabel()}
               </span>
             </div>
@@ -146,121 +153,172 @@ export const InAppReminderBanner = ({
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b' }}>
-              {new Date(activeAlert.scheduledTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}
+            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#0f766e' }}>
+              {activeAlert.startTime || (activeAlert.scheduledTime ? new Date(activeAlert.scheduledTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }) : '')}
             </span>
           </div>
         </div>
 
-        {/* Contact & Unit Info */}
-        <div style={{ background: '#f8fafc', borderRadius: '8px', padding: '10px 12px', border: '1px solid #e2e8f0', marginBottom: '12px', fontSize: '0.8rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-            <span style={{ color: '#64748b' }}>Phone:</span>
-            <span style={{ fontWeight: '700', color: '#0f172a' }}>{activeAlert.leadPhone}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: '#64748b' }}>Unit / Need:</span>
-            <span style={{ fontWeight: '700', color: '#1e40af' }}>{activeAlert.unit}</span>
-          </div>
-          {/* Handling Member Context */}
-          <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #e2e8f0', color: '#0369a1', fontSize: '0.74rem', fontWeight: '700', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>Handling Advisor: {activeAlert.handlingMemberName || activeAlert.assignedToName || 'Assigned Rep'}</span>
-            {isSiteVisit && <span style={{ background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', fontSize: '0.68rem', border: '1px solid #bfdbfe' }}>Site Visit Tour</span>}
-          </div>
-          {activeAlert.notes && (
-            <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #f1f5f9', color: '#475569', fontStyle: 'italic', fontSize: '0.74rem' }}>
-              "{activeAlert.notes}"
-            </div>
-          )}
-          {/* Cab Logistics if site visit */}
-          {activeAlert.isCabProvided && activeAlert.cabDetails && (
-            <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #bfdbfe', color: '#0369a1', fontSize: '0.74rem', fontWeight: '700' }}>
-              Cab: {activeAlert.cabDetails.cabNumber || 'Confirmed'} • Driver: {activeAlert.cabDetails.driverName || 'Assigned'}
-            </div>
+        {/* Contact & Unit / Venue Info */}
+        <div style={{ background: isMeeting ? '#f0fdfa' : '#f8fafc', borderRadius: '8px', padding: '10px 12px', border: isMeeting ? '1px solid #ccfbf1' : '1px solid #e2e8f0', marginBottom: '12px', fontSize: '0.8rem' }}>
+          {isMeeting ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '4px' }}>
+                <MapPin size={14} color="#0d9488" style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  <span style={{ color: '#64748b', fontWeight: 600 }}>Venue: </span>
+                  <span style={{ fontWeight: '700', color: '#0f172a' }}>{activeAlert.venue || activeAlert.unit || 'Site Operations Room'}</span>
+                </div>
+              </div>
+              <div style={{ marginTop: '4px', color: '#64748b', fontSize: '0.75rem' }}>
+                {activeAlert.notes}
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                <span style={{ color: '#64748b' }}>Phone:</span>
+                <span style={{ fontWeight: '700', color: '#0f172a' }}>{activeAlert.leadPhone}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#64748b' }}>Unit / Need:</span>
+                <span style={{ fontWeight: '700', color: '#1e40af' }}>{activeAlert.unit}</span>
+              </div>
+              {/* Handling Member Context */}
+              <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #e2e8f0', color: '#0369a1', fontSize: '0.74rem', fontWeight: '700', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Handling Advisor: {activeAlert.handlingMemberName || activeAlert.assignedToName || 'Assigned Rep'}</span>
+                {isSiteVisit && <span style={{ background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', fontSize: '0.68rem', border: '1px solid #bfdbfe' }}>Site Visit Tour</span>}
+              </div>
+              {activeAlert.notes && (
+                <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #f1f5f9', color: '#475569', fontStyle: 'italic', fontSize: '0.74rem' }}>
+                  "{activeAlert.notes}"
+                </div>
+              )}
+              {/* Cab Logistics if site visit */}
+              {activeAlert.isCabProvided && activeAlert.cabDetails && (
+                <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #bfdbfe', color: '#0369a1', fontSize: '0.74rem', fontWeight: '700' }}>
+                  Cab: {activeAlert.cabDetails.cabNumber || 'Confirmed'} • Driver: {activeAlert.cabDetails.driverName || 'Assigned'}
+                </div>
+              )}
+            </>
           )}
         </div>
 
         {/* Action Buttons Row */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {/* For Site Visits: Prominent Client Reminder dispatch by Handling Member */}
-          {isSiteVisit && (
-            <a
-              href={activeAlert.clientWhatsAppUrl || `https://wa.me/${activeAlert.leadPhone}`}
-              target="_blank"
-              rel="noopener noreferrer"
+          {/* For Meetings: Dedicated Open MoM / Meeting CTA */}
+          {isMeeting ? (
+            <button
+              type="button"
+              onClick={() => {
+                onDismiss(activeAlert.id);
+                navigate('/taskforce?view=meetings');
+              }}
               style={{
-                width: '100%',
-                padding: '8px 12px',
+                flex: 2,
+                padding: '8px 14px',
                 borderRadius: '8px',
-                background: '#0f172a',
+                background: '#0d9488',
                 color: '#ffffff',
-                textDecoration: 'none',
+                border: 'none',
                 fontSize: '0.78rem',
                 fontWeight: '800',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '6px',
-                boxShadow: '0 2px 5px rgba(15,23,42,0.3)',
-                marginBottom: '2px'
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(13,148,136,0.35)',
               }}
-              title={`Send 30-min property tour reminder directly to client as ${activeAlert.handlingMemberName || 'Property Advisor'}`}
+              title="Open Taskforce Meeting and view Minutes of Meeting"
             >
-              <MessageSquare size={14} />
-              <span>Send Client 30-Min Reminder (WhatsApp)</span>
-            </a>
-          )}
+              <Users size={14} />
+              <span>Open Meeting & MoM</span>
+              <ArrowRight size={13} />
+            </button>
+          ) : (
+            <>
+              {/* For Site Visits: Prominent Client Reminder dispatch by Handling Member */}
+              {isSiteVisit && (
+                <a
+                  href={activeAlert.clientWhatsAppUrl || `https://wa.me/${activeAlert.leadPhone}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    background: '#0f172a',
+                    color: '#ffffff',
+                    textDecoration: 'none',
+                    fontSize: '0.78rem',
+                    fontWeight: '800',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 5px rgba(15,23,42,0.3)',
+                    marginBottom: '2px'
+                  }}
+                  title={`Send 30-min property tour reminder directly to client as ${activeAlert.handlingMemberName || 'Property Advisor'}`}
+                >
+                  <MessageSquare size={14} />
+                  <span>Send Client 30-Min Reminder (WhatsApp)</span>
+                </a>
+              )}
 
-          {/* Regular WhatsApp Action if not site visit */}
-          {!isSiteVisit && (
-            <a
-              href={activeAlert.whatsAppClickUrl || `https://wa.me/${activeAlert.leadPhone}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                flex: 1,
-                padding: '7px 10px',
-                borderRadius: '7px',
-                background: '#0f172a',
-                color: '#ffffff',
-                textDecoration: 'none',
-                fontSize: '0.76rem',
-                fontWeight: '800',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '4px',
-                boxShadow: '0 1px 3px rgba(15,23,42,0.3)'
-              }}
-              title="Send pre-filled WhatsApp follow-up reminder"
-            >
-              <MessageSquare size={13} />
-              <span>WhatsApp</span>
-            </a>
-          )}
+              {/* Regular WhatsApp Action if not site visit */}
+              {!isSiteVisit && (
+                <a
+                  href={activeAlert.whatsAppClickUrl || `https://wa.me/${activeAlert.leadPhone}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    flex: 1,
+                    padding: '7px 10px',
+                    borderRadius: '7px',
+                    background: '#0f172a',
+                    color: '#ffffff',
+                    textDecoration: 'none',
+                    fontSize: '0.76rem',
+                    fontWeight: '800',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
+                    boxShadow: '0 1px 3px rgba(15,23,42,0.3)'
+                  }}
+                  title="Send pre-filled WhatsApp follow-up reminder"
+                >
+                  <MessageSquare size={13} />
+                  <span>WhatsApp</span>
+                </a>
+              )}
 
-          {/* Call Action */}
-          <a
-            href={`tel:${activeAlert.leadPhone}`}
-            style={{
-              flex: 1,
-              padding: '7px 10px',
-              borderRadius: '7px',
-              background: '#2563eb',
-              color: '#ffffff',
-              textDecoration: 'none',
-              fontSize: '0.76rem',
-              fontWeight: '800',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-              boxShadow: '0 1px 3px rgba(37,99,235,0.3)'
-            }}
-          >
-            <Phone size={13} />
-            <span>Call Now</span>
-          </a>
+              {/* Call Action */}
+              <a
+                href={`tel:${activeAlert.leadPhone}`}
+                style={{
+                  flex: 1,
+                  padding: '7px 10px',
+                  borderRadius: '7px',
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  fontSize: '0.76rem',
+                  fontWeight: '800',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  boxShadow: '0 1px 3px rgba(37,99,235,0.3)'
+                }}
+              >
+                <Phone size={13} />
+                <span>Call Now</span>
+              </a>
+            </>
+          )}
 
           {/* Snooze 5 Min */}
           <button
@@ -285,35 +343,36 @@ export const InAppReminderBanner = ({
             <span>+5m</span>
           </button>
 
-          {/* View in CRM Workspace */}
-          <button
-            type="button"
-            onClick={() => {
-              onDismiss(activeAlert.id);
-              if (onOpenWorkspace) {
-                onOpenWorkspace(activeAlert);
-              } else {
-                navigate(`/crm?search=${encodeURIComponent(activeAlert.leadPhone || activeAlert.leadName)}`);
-              }
-            }}
-            style={{
-              padding: '7px 10px',
-              borderRadius: '7px',
-              background: '#eff6ff',
-              border: '1px solid #bfdbfe',
-              color: '#1d4ed8',
-              fontSize: '0.74rem',
-              fontWeight: '800',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '3px'
-            }}
-            title="Open Lead Workspace"
-          >
-            <span>Open</span>
-            <ArrowRight size={12} />
-          </button>
+          {!isMeeting && (
+            <button
+              type="button"
+              onClick={() => {
+                onDismiss(activeAlert.id);
+                if (onOpenWorkspace) {
+                  onOpenWorkspace(activeAlert);
+                } else {
+                  navigate(`/crm?search=${encodeURIComponent(activeAlert.leadPhone || activeAlert.leadName)}`);
+                }
+              }}
+              style={{
+                padding: '7px 10px',
+                borderRadius: '7px',
+                background: '#eff6ff',
+                border: '1px solid #bfdbfe',
+                color: '#1d4ed8',
+                fontSize: '0.74rem',
+                fontWeight: '800',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '3px'
+              }}
+              title="Open Lead Workspace"
+            >
+              <span>Open</span>
+              <ArrowRight size={12} />
+            </button>
+          )}
         </div>
       </div>
     </div>
