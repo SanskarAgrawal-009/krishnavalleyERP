@@ -20,6 +20,11 @@ import {
   updateMemberCredentials,
   getAllCredentials,
 } from '../controllers/taskforceTeamController.js';
+import {
+  getWeeklyReportAnalytics,
+  exportWeeklyReportExcel,
+  exportWeeklyReportWord,
+} from '../controllers/taskforceReportController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { authorizePermission } from '../middleware/roleMiddleware.js';
 
@@ -65,6 +70,13 @@ router.get('/department-stats', authorizePermission('tasks:view', 'tasks:manage'
 // Bulk Operations (Delegation / Approval Workflow)
 router.post('/bulk-reassign', authorizePermission('tasks:manage'), bulkReassignTasks);
 router.post('/bulk-action', authorizePermission('tasks:manage'), bulkTaskAction);
+
+// ==========================================
+// WEEKLY REPORTS & PERFORMANCE ANALYTICS
+// ==========================================
+router.get('/weekly-reports', authorizePermission('tasks:view', 'tasks:manage'), getWeeklyReportAnalytics);
+router.get('/weekly-reports/export-excel', authorizePermission('tasks:view', 'tasks:manage'), exportWeeklyReportExcel);
+router.get('/weekly-reports/export-word', authorizePermission('tasks:view', 'tasks:manage'), exportWeeklyReportWord);
 
 export default router;
 
