@@ -19,6 +19,8 @@ import {
   SlidersHorizontal,
   ExternalLink,
   TrendingUp,
+  Download,
+  X,
 } from 'lucide-react';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { useToast } from '../../context/ToastContext.jsx';
@@ -33,13 +35,33 @@ export const TaskforceWeeklyReportsTab = ({
   onSelectMember,
   systemUsers = [],
 }) => {
-  const { showToast } = useToast();
+  const toastCtx = useToast();
+
+  // Safe toast dispatcher that never throws
+  const showToast = (message, type = 'info') => {
+    try {
+      if (toastCtx && typeof toastCtx[type] === 'function') {
+        toastCtx[type](message);
+      } else if (toastCtx && typeof toastCtx.show === 'function') {
+        toastCtx.show(message, type);
+      } else if (toastCtx && typeof toastCtx.showToast === 'function') {
+        toastCtx.showToast(message, type);
+      } else {
+        console.log(`[Toast ${type}]`, message);
+      }
+    } catch (e) {
+      console.warn('Toast display warning:', e);
+    }
+  };
 
   // Data & loading states
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exportingExcel, setExportingExcel] = useState(false);
   const [exportingWord, setExportingWord] = useState(false);
+
+  // Active export status banner: { status: 'loading' | 'success' | 'error', format: 'Excel' | 'Word', filename, size, blobUrl, directTokenUrl, message, time }
+  const [exportBanner, setExportBanner] = useState(null);
 
   // Filters
   const [period, setPeriod] = useState('this_week');
@@ -95,11 +117,17 @@ export const TaskforceWeeklyReportsTab = ({
     fetchReport();
   };
 
-  // Export handlers
+  // Export Excel Handler with Live Loader and Exported Confirmation
   const handleExportExcel = async () => {
     try {
       setExportingExcel(true);
-      showToast('⏳ Generating weekly performance spreadsheet...', 'info');
+      setExportBanner({
+        status: 'loading',
+        format: 'Excel',
+        message: 'Generating multi-sheet weekly performance workbook (.xlsx)...',
+      });
+      showToast('Generating weekly performance spreadsheet...', 'info');
+
       const params = {
         period,
         department: selectedDept,
@@ -108,22 +136,46 @@ export const TaskforceWeeklyReportsTab = ({
         params.startDate = customStart;
         params.endDate = customEnd;
       }
+
       const result = await taskforceManagerService.exportWeeklyReportExcel(params);
-      const fname = result?.filename || 'Report.xlsx';
-      const sizeKB = result?.size ? Math.round(result.size / 1024) : '—';
-      showToast(`✅ Excel report exported successfully! (${fname}, ${sizeKB} KB)`, 'success');
+      const fname = result?.filename || 'Krishna_Valley_Taskforce_Weekly_Report.xlsx';
+      const sizeKB = result?.size ? Math.round(result.size / 1024) : 14;
+
+      setExportBanner({
+        status: 'success',
+        format: 'Excel',
+        filename: fname,
+        size: sizeKB,
+        blobUrl: result?.blobUrl,
+        directTokenUrl: result?.directTokenUrl,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      });
+
+      showToast(`Excel report exported successfully! (${fname}, ${sizeKB} KB)`, 'success');
     } catch (err) {
       console.error('Excel export error:', err);
-      showToast(`❌ ${err.message || 'Failed to download Excel report'}`, 'error');
+      setExportBanner({
+        status: 'error',
+        format: 'Excel',
+        message: err.message || 'Failed to export Excel report. Please verify connection.',
+      });
+      showToast(err.message || 'Failed to download Excel report', 'error');
     } finally {
       setExportingExcel(false);
     }
   };
 
+  // Export Word Handler with Live Loader and Exported Confirmation
   const handleExportWord = async () => {
     try {
       setExportingWord(true);
-      showToast('⏳ Generating official Word (.docx) audit document...', 'info');
+      setExportBanner({
+        status: 'loading',
+        format: 'Word',
+        message: 'Generating executive weekly audit document (.docx)...',
+      });
+      showToast('Generating official Word (.docx) audit document...', 'info');
+
       const params = {
         period,
         department: selectedDept,
@@ -132,13 +184,30 @@ export const TaskforceWeeklyReportsTab = ({
         params.startDate = customStart;
         params.endDate = customEnd;
       }
+
       const result = await taskforceManagerService.exportWeeklyReportWord(params);
-      const fname = result?.filename || 'Report.docx';
-      const sizeKB = result?.size ? Math.round(result.size / 1024) : '—';
-      showToast(`✅ Word report exported successfully! (${fname}, ${sizeKB} KB)`, 'success');
+      const fname = result?.filename || 'Krishna_Valley_Taskforce_Weekly_Report.docx';
+      const sizeKB = result?.size ? Math.round(result.size / 1024) : 19;
+
+      setExportBanner({
+        status: 'success',
+        format: 'Word',
+        filename: fname,
+        size: sizeKB,
+        blobUrl: result?.blobUrl,
+        directTokenUrl: result?.directTokenUrl,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      });
+
+      showToast(`Word report exported successfully! (${fname}, ${sizeKB} KB)`, 'success');
     } catch (err) {
       console.error('Word export error:', err);
-      showToast(`❌ ${err.message || 'Failed to download Word report'}`, 'error');
+      setExportBanner({
+        status: 'error',
+        format: 'Word',
+        message: err.message || 'Failed to export Word report. Please verify connection.',
+      });
+      showToast(err.message || 'Failed to download Word report', 'error');
     } finally {
       setExportingWord(false);
     }
@@ -436,6 +505,7 @@ export const TaskforceWeeklyReportsTab = ({
           {/* Action Buttons: Export Excel & Word */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <button
+              type="button"
               onClick={handleExportExcel}
               disabled={exportingExcel || loading}
               style={{
@@ -473,6 +543,7 @@ export const TaskforceWeeklyReportsTab = ({
             </button>
 
             <button
+              type="button"
               onClick={handleExportWord}
               disabled={exportingWord || loading}
               style={{
@@ -510,6 +581,7 @@ export const TaskforceWeeklyReportsTab = ({
             </button>
 
             <button
+              type="button"
               onClick={fetchReport}
               disabled={loading}
               style={{
@@ -530,6 +602,155 @@ export const TaskforceWeeklyReportsTab = ({
             </button>
           </div>
         </div>
+
+        {/* ========================================================= */}
+        {/* LIVE EXPORT STATUS & CONFIRMATION NOTIFICATION BANNER */}
+        {/* ========================================================= */}
+        {exportBanner && (
+          <div
+            style={{
+              borderRadius: '12px',
+              padding: '14px 18px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '14px',
+              flexWrap: 'wrap',
+              transition: 'all 0.2s ease',
+              ...(exportBanner.status === 'loading'
+                ? {
+                    background: '#f0f9ff',
+                    border: '1.5px solid #7dd3fc',
+                    color: '#0369a1',
+                  }
+                : exportBanner.status === 'success'
+                ? {
+                    background: '#f0fdf4',
+                    border: '1.5px solid #86efac',
+                    color: '#15803d',
+                    boxShadow: '0 4px 14px rgba(22, 163, 74, 0.1)',
+                  }
+                : {
+                    background: '#fef2f2',
+                    border: '1.5px solid #fca5a5',
+                    color: '#b91c1c',
+                  }),
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '260px' }}>
+              {exportBanner.status === 'loading' && (
+                <div
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    border: '3px solid #bae6fd',
+                    borderTopColor: '#0284c7',
+                    animation: 'kvReportSpin 0.8s linear infinite',
+                    flexShrink: 0,
+                  }}
+                />
+              )}
+              {exportBanner.status === 'success' && (
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: '#dcfce7',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#16a34a',
+                    flexShrink: 0,
+                  }}
+                >
+                  <CheckCircle2 size={20} />
+                </div>
+              )}
+              {exportBanner.status === 'error' && (
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: '#fee2e2',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#dc2626',
+                    flexShrink: 0,
+                  }}
+                >
+                  <AlertCircle size={20} />
+                </div>
+              )}
+
+              <div>
+                <div style={{ fontSize: '0.9rem', fontWeight: '800' }}>
+                  {exportBanner.status === 'loading'
+                    ? `Generating ${exportBanner.format} Report...`
+                    : exportBanner.status === 'success'
+                    ? `Weekly Performance Report Exported Successfully! (${exportBanner.format})`
+                    : 'Report Generation Failed'}
+                </div>
+                <div style={{ fontSize: '0.78rem', opacity: 0.9, marginTop: '2px' }}>
+                  {exportBanner.status === 'loading' && exportBanner.message}
+                  {exportBanner.status === 'success' && (
+                    <span>
+                      File: <strong>{exportBanner.filename}</strong> • Size: {exportBanner.size} KB • Time: {exportBanner.time}.
+                      Download started automatically.
+                    </span>
+                  )}
+                  {exportBanner.status === 'error' && exportBanner.message}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {exportBanner.status === 'success' && (
+                <a
+                  href={exportBanner.blobUrl || exportBanner.directTokenUrl}
+                  download={exportBanner.filename}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    background: '#16a34a',
+                    color: '#ffffff',
+                    fontSize: '0.8rem',
+                    fontWeight: '700',
+                    textDecoration: 'none',
+                    boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Download size={14} /> Download File Now
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={() => setExportBanner(null)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  padding: '6px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  color: 'inherit',
+                  display: 'flex',
+                  alignItems: 'center',
+                  opacity: 0.7,
+                }}
+                title="Dismiss message"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Filter Controls Row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>

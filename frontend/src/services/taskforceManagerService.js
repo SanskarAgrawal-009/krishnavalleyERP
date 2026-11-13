@@ -3,27 +3,32 @@ import { request, BASE_URL } from './api.js';
 const downloadFileBlob = async (endpoint, defaultFilename) => {
   const token = localStorage.getItem('kv_token');
   
-  // In dev, use relative path through Vite proxy (/api/...) to avoid CORS.
-  // In production, use the full BASE_URL.
-  const isLocalDev = typeof window !== 'undefined' &&
+  // Build direct API URL and fallback proxy URL
+  const directUrl = `${BASE_URL}${endpoint}`;
+  const isLocal = typeof window !== 'undefined' &&
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  const fullUrl = isLocalDev ? `/api${endpoint}` : `${BASE_URL}${endpoint}`;
-  console.log('[Report Export] Fetching:', fullUrl);
+  const targetUrl = isLocal ? `/api${endpoint}` : directUrl;
+  
+  console.log('[Report Export] Initiating download from:', targetUrl);
 
   let res;
   try {
-    res = await fetch(fullUrl, {
+    res = await fetch(targetUrl, {
       method: 'GET',
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
-  } catch (networkErr) {
-    console.error('[Report Export] Network error:', networkErr);
-    throw new Error('Network error — please check your connection and try again.');
+  } catch (firstErr) {
+    console.warn('[Report Export] First attempt failed, trying direct URL:', directUrl, firstErr);
+    // Fallback directly to backend port
+    res = await fetch(directUrl, {
+      method: 'GET',
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
   }
-
-  console.log('[Report Export] Status:', res.status, 'content-type:', res.headers.get('content-type'));
 
   if (!res.ok) {
     let msg = `Download failed (${res.status})`;
@@ -38,18 +43,22 @@ const downloadFileBlob = async (endpoint, defaultFilename) => {
 
   const contentType = res.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
-    let msg = 'Server returned JSON instead of a file';
-    try { const p = await res.json(); if (p.message) msg = p.message; } catch { /* ignore */ }
+    let msg = 'Server returned an error response instead of file';
+    try {
+      const parsed = await res.json();
+      if (parsed.message) msg = parsed.message;
+    } catch { /* ignore */ }
     throw new Error(msg);
   }
 
-  const blob = await res.blob();
-  console.log('[Report Export] Blob received — size:', blob.size, 'type:', blob.type);
+  const arrayBuffer = await res.arrayBuffer();
+  console.log('[Report Export] Received binary buffer, bytes:', arrayBuffer.byteLength);
 
-  if (!blob || blob.size === 0) {
-    throw new Error('Server returned an empty file. Please try again.');
+  if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+    throw new Error('Server returned an empty file');
   }
 
+  // Extract filename from header
   const disposition = res.headers.get('content-disposition');
   let filename = defaultFilename;
   if (disposition && disposition.includes('filename=')) {
@@ -57,21 +66,47 @@ const downloadFileBlob = async (endpoint, defaultFilename) => {
     if (match && match[1]) filename = match[1];
   }
 
+  // Create real binary Blob with explicit MIME type
+  const mime = filename.endsWith('.xlsx')
+    ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    : filename.endsWith('.docx')
+    ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    : 'application/octet-stream';
+
+  const blob = new Blob([arrayBuffer], { type: mime });
   const blobUrl = window.URL.createObjectURL(blob);
+
+  // Trigger download via off-screen anchor (NOT display:none to avoid Chromium/IDM block)
   const anchor = document.createElement('a');
   anchor.href = blobUrl;
-  anchor.download = filename;
-  anchor.style.display = 'none';
+  anchor.setAttribute('download', filename);
+  anchor.style.position = 'fixed';
+  anchor.style.top = '-9999px';
+  anchor.style.left = '-9999px';
+  anchor.style.opacity = '0';
+  anchor.style.pointerEvents = 'none';
   document.body.appendChild(anchor);
+  
+  // Programmatic click
   anchor.click();
 
+  // Also construct direct server URL with token parameter for 1-click fallback
+  const directTokenUrl = `${BASE_URL}${endpoint}${endpoint.includes('?') ? '&' : '?'}token=${encodeURIComponent(token || '')}`;
+
+  // Keep blob URL active for 30 seconds so fallback buttons can use it
   setTimeout(() => {
     if (anchor.parentNode) anchor.parentNode.removeChild(anchor);
     window.URL.revokeObjectURL(blobUrl);
-  }, 5000);
+  }, 30000);
 
-  console.log('[Report Export] ✅ Download triggered:', filename, `(${Math.round(blob.size / 1024)} KB)`);
-  return { success: true, filename, size: blob.size };
+  console.log('[Report Export] ✅ File download triggered successfully:', filename, `(${Math.round(arrayBuffer.byteLength / 1024)} KB)`);
+  return {
+    success: true,
+    filename,
+    size: arrayBuffer.byteLength,
+    blobUrl,
+    directTokenUrl,
+  };
 };
 
 export const taskforceManagerService = {
