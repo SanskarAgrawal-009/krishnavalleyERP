@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../../context/ThemeContext.jsx';
 import { 
   Building2, 
   LayoutDashboard, 
@@ -11,6 +12,8 @@ import {
 } from 'lucide-react';
 
 export const Sidebar = ({ activeTab, setActiveTab }) => {
+  const { isDark, brandHeaderUrl } = useTheme();
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'inventory', label: 'Unit Matrix & Inventory', icon: Building2 },
@@ -24,7 +27,7 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
   return (
     <aside style={{
       width: '260px',
-      background: '#ffffff',
+      background: 'var(--bg-surface)',
       borderRight: '1px solid var(--border-subtle)',
       display: 'flex',
       flexDirection: 'column',
@@ -32,33 +35,24 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
     }}>
       {/* Brand Header */}
       <div style={{
-        padding: '24px 20px',
+        padding: '18px 16px',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px',
+        justifyContent: 'center',
         borderBottom: '1px solid var(--border-subtle)'
       }}>
-        <div style={{
-          width: '38px',
-          height: '38px',
-          borderRadius: '10px',
-          background: 'linear-gradient(135deg, var(--primary-600), var(--accent-gold-500))',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#111827',
-          boxShadow: 'var(--shadow-glow)'
-        }}>
-          <Building2 size={22} />
-        </div>
-        <div>
-          <div style={{ fontSize: '1rem', fontWeight: '800', letterSpacing: '-0.02em', color: '#111827' }}>
-            KRISHNA VALLEY
-          </div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--primary-500)', fontWeight: '600', textTransform: 'uppercase' }}>
-            Enterprise ERP
-          </div>
-        </div>
+        <img
+          src={brandHeaderUrl}
+          alt="Krishna Valley Enterprise Platform"
+          style={{
+            width: '100%',
+            maxWidth: '215px',
+            height: 'auto',
+            maxHeight: '74px',
+            objectFit: 'contain',
+            display: 'block'
+          }}
+        />
       </div>
 
       {/* Navigation Links */}

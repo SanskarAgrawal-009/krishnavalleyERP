@@ -188,21 +188,29 @@ export const LoginPage = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px' }}>
               <div
                 style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  backgroundColor: '#1a73e8',
-                  color: '#ffffff',
+                  width: '54px',
+                  height: '54px',
+                  borderRadius: '14px',
+                  overflow: 'hidden',
+                  backgroundColor: '#000000',
+                  border: '1.5px solid rgba(255, 255, 255, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontWeight: '800',
-                  fontSize: '1.4rem',
-                  boxShadow: '0 8px 20px rgba(26, 115, 232, 0.4)',
-                  letterSpacing: '1px',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+                  flexShrink: 0
                 }}
               >
-                KV
+                <img
+                  src="/assets/logo-dark.jpg"
+                  alt="Krishna Valley Logo"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    padding: '2px'
+                  }}
+                />
               </div>
               <div>
                 <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: '700', color: '#ffffff', letterSpacing: '-0.02em' }}>
@@ -295,6 +303,30 @@ export const LoginPage = () => {
           }}
         >
           <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <img
+                src="/assets/logo-light.jpg"
+                alt="Krishna Valley"
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  objectFit: 'contain',
+                  borderRadius: '10px',
+                  border: '1px solid #e2e8f0',
+                  padding: '2px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                }}
+              />
+              <div>
+                <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#005bbf' }}>
+                  Krishna Valley
+                </h4>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>
+                  Enterprise Portal
+                </span>
+              </div>
+            </div>
+
             <div style={{ marginBottom: '24px' }}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
                 Sign in to your account

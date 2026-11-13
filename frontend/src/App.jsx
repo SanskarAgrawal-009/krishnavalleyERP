@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 import { TopLoadingBar } from './components/common/TopLoadingBar.jsx';
 import { ProtectedRoute } from './components/auth/ProtectedRoute.jsx';
 import { AppLayout } from './components/layout/AppLayout.jsx';
@@ -41,10 +42,11 @@ import './styles/layout.css';
 export const App = () => {
   return (
     <ErrorBoundary>
-      <ToastProvider>
-        <TopLoadingBar />
-        <AuthProvider>
-        <BrowserRouter>
+      <ThemeProvider>
+        <ToastProvider>
+          <TopLoadingBar />
+          <AuthProvider>
+          <BrowserRouter>
         <Routes>
           {/* Public Authentication Route */}
           <Route path="/login" element={<LoginPage />} />
@@ -349,6 +351,7 @@ export const App = () => {
       </BrowserRouter>
       </AuthProvider>
     </ToastProvider>
+    </ThemeProvider>
   </ErrorBoundary>
   );
 };

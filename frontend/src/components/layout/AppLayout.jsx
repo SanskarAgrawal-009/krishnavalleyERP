@@ -7,8 +7,10 @@ import { useReminderAlerts } from '../../hooks/useReminderAlerts.js';
 import { InAppReminderBanner } from '../common/InAppReminderBanner.jsx';
 import { TaskChatNotifier } from '../taskforce/TaskChatNotifier.jsx';
 import { isTaskforceTeamMember, extractRoleCode } from '../../utils/taskPermissions.js';
+import { useTheme } from '../../context/ThemeContext.jsx';
 import {
   LayoutDashboard,
+  Home,
   Building2,
   Package,
   Users,
@@ -56,7 +58,9 @@ import {
   BookOpen,
   History,
   Target,
-  Shield
+  Shield,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export const NAV_CATEGORIES = [
@@ -67,7 +71,7 @@ export const NAV_CATEGORIES = [
       {
         path: '/dashboard',
         label: 'Executive Dashboard',
-        icon: LayoutDashboard,
+        icon: Home,
         badge: 'Live',
         permission: 'dashboard:view'
       },
@@ -341,6 +345,7 @@ export const AppLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, userRole: authRole, logout, hasPermission, isSuperAdmin, login } = useAuth();
+  const { theme, isDark, toggleTheme, logoUrl, logoPngUrl, brandHeaderUrl } = useTheme();
 
   // Profile dropdown state
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -377,6 +382,59 @@ export const AppLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [navSearch, setNavSearch] = useState('');
   const [hoveredFlyout, setHoveredFlyout] = useState(null);
+
+  // Resizable draggable sidebar width state (persisted)
+  const [customSidebarWidth, setCustomSidebarWidth] = useState(() => {
+    try {
+      const saved = localStorage.getItem('kv_sidebar_width');
+      const parsed = parseInt(saved, 10);
+      return !isNaN(parsed) && parsed >= 160 && parsed <= 500 ? parsed : 260;
+    } catch {
+      return 260;
+    }
+  });
+  const [isResizing, setIsResizing] = useState(false);
+
+  // Mouse drag-to-resize listener for sidebar edge
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e) => {
+      const clientX = e.clientX;
+      if (clientX < 110) {
+        setIsCollapsed(true);
+        try {
+          localStorage.setItem('kv_sidebar_collapsed', 'true');
+        } catch { /* ignore */ }
+      } else {
+        setIsCollapsed(false);
+        try {
+          localStorage.setItem('kv_sidebar_collapsed', 'false');
+        } catch { /* ignore */ }
+        const clamped = Math.max(160, Math.min(clientX, 500));
+        setCustomSidebarWidth(clamped);
+        try {
+          localStorage.setItem('kv_sidebar_width', String(clamped));
+        } catch { /* ignore */ }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing]);
 
   // Accordion state for expandable parent modules
   const [expanded, setExpanded] = useState({});
@@ -777,8 +835,8 @@ export const AppLayout = () => {
     return null;
   }).filter(Boolean);
 
-  // Sidebar width configuration
-  const sidebarWidth = isMobile ? 288 : isCollapsed ? 76 : 280;
+  // Sidebar width configuration (Dynamic & Resizable)
+  const sidebarWidth = isMobile ? 288 : isCollapsed ? 72 : customSidebarWidth;
 
   return (
     <div
@@ -821,8 +879,8 @@ export const AppLayout = () => {
           left: 0,
           top: 0,
           zIndex: 50,
-          backgroundColor: '#f8f9fa',
-          borderRight: '1px solid #dadce0',
+          backgroundColor: isDark ? '#0b1120' : '#faf8f5',
+          borderRight: isDark ? '1px solid #1e293b' : '1px solid #ede8df',
           display: 'flex',
           flexDirection: 'column',
           boxShadow: isMobile && mobileMenuOpen ? '0 12px 40px rgba(0,0,0,0.25)' : 'none',
@@ -831,79 +889,74 @@ export const AppLayout = () => {
               ? 'translateX(0)'
               : 'translateX(-100%)'
             : 'translateX(0)',
-          transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+          transition: isResizing
+            ? 'none'
+            : 'width 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
         }}
         aria-label="Main Navigation"
       >
         {/* Brand Header */}
         <div
           style={{
-            padding: isCollapsed && !isMobile ? '16px 12px' : '18px 18px 14px',
-            borderBottom: '1px solid #edeef0',
-            backgroundColor: '#f8f9fa',
+            padding: isCollapsed && !isMobile ? '16px 8px' : '20px 18px 8px',
+            backgroundColor: 'transparent',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px'
+            gap: '8px'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed && !isMobile ? 'center' : 'space-between' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                cursor: 'pointer'
-              }}
-              onClick={() => navigate(isTaskforceManager ? '/taskforce-dashboard' : '/dashboard')}
-              title="Krishna Valley ERP"
-            >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed && !isMobile ? 'center' : 'space-between', width: '100%' }}>
+            {(!isCollapsed || isMobile) ? (
               <div
                 style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '8px',
-                  backgroundColor: '#1a73e8',
-                  color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontWeight: '700',
-                  fontSize: '1.05rem',
-                  boxShadow: '0 2px 6px rgba(26,115,232,0.25)',
-                  flexShrink: 0
+                  cursor: 'pointer',
+                  width: '100%',
+                  padding: '4px 0'
                 }}
+                onClick={() => navigate(isTaskforceManager ? '/taskforce-dashboard' : '/dashboard')}
+                title="Krishna Valley Enterprise Platform"
               >
-                KV
+                <img
+                  src={brandHeaderUrl}
+                  alt="Krishna Valley Enterprise Platform"
+                  style={{
+                    width: '100%',
+                    maxWidth: '215px',
+                    height: 'auto',
+                    maxHeight: '76px',
+                    objectFit: 'contain',
+                    display: 'block'
+                  }}
+                />
               </div>
-
-              {(!isCollapsed || isMobile) && (
-                <div style={{ minWidth: 0 }}>
-                  <h1
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: 'var(--on-surface)',
-                      lineHeight: 1.2,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}
-                  >
-                    Krishna Valley
-                  </h1>
-                  <p
-                    style={{
-                      fontSize: '0.74rem',
-                      color: 'var(--on-surface-variant)',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    Enterprise Platform
-                  </p>
-                </div>
-              )}
-            </div>
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  width: '100%',
+                  padding: '4px 0'
+                }}
+                onClick={() => navigate(isTaskforceManager ? '/taskforce-dashboard' : '/dashboard')}
+                title="Krishna Valley ERP"
+              >
+                <img
+                  src={logoPngUrl}
+                  alt="Krishna Valley Logo"
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    objectFit: 'contain',
+                    display: 'block'
+                  }}
+                />
+              </div>
+            )}
 
             {/* Mobile close button */}
             {isMobile && (
@@ -912,66 +965,21 @@ export const AppLayout = () => {
                 style={{
                   padding: '6px',
                   color: 'var(--on-surface-variant)',
-                  background: '#f3f4f5',
+                  background: isDark ? '#1e293b' : '#f3f4f5',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '1px solid #dadce0',
-                  cursor: 'pointer'
+                  border: isDark ? '1px solid #334155' : '1px solid #dadce0',
+                  cursor: 'pointer',
+                  flexShrink: 0
                 }}
                 aria-label="Close sidebar menu"
               >
                 <X size={18} />
               </button>
             )}
-
-            {/* Desktop collapse toggle */}
-            {!isMobile && !isCollapsed && (
-              <button
-                onClick={toggleCollapse}
-                title="Collapse sidebar (Ctrl+B)"
-                style={{
-                  padding: '6px',
-                  color: 'var(--on-surface-variant)',
-                  background: 'transparent',
-                  borderRadius: '6px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.15s ease'
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#edeeef'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-              >
-                <PanelLeftClose size={18} />
-              </button>
-            )}
           </div>
-
-          {/* Desktop expand button when in collapsed mode */}
-          {!isMobile && isCollapsed && (
-            <button
-              onClick={toggleCollapse}
-              title="Expand sidebar (Ctrl+B)"
-              style={{
-                width: '100%',
-                padding: '6px 0',
-                color: 'var(--on-surface-variant)',
-                background: '#edeeef',
-                borderRadius: '6px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              <PanelLeftOpen size={16} />
-            </button>
-          )}
 
           {/* Mobile User Identity Pill */}
           {isMobile && user && (
@@ -981,9 +989,9 @@ export const AppLayout = () => {
                 alignItems: 'center',
                 gap: '10px',
                 padding: '8px 10px',
-                backgroundColor: '#ffffff',
+                backgroundColor: isDark ? '#1e293b' : '#ffffff',
                 borderRadius: '8px',
-                border: '1px solid #dadce0',
+                border: isDark ? '1px solid #334155' : '1px solid #dadce0',
                 boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
               }}
             >
@@ -992,8 +1000,8 @@ export const AppLayout = () => {
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: '#e8f0fe',
-                  color: '#1a73e8',
+                  backgroundColor: isDark ? '#1e3a8a' : '#e8f0fe',
+                  color: isDark ? '#60a5fa' : '#1a73e8',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1005,118 +1013,14 @@ export const AppLayout = () => {
                 {user?.firstName?.[0] || 'U'}
               </div>
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1f2937', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--on-surface)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {user?.firstName} {user?.lastName}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--on-surface-variant)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <ShieldCheck size={11} color="#1a73e8" />
                   <span>{user?.role?.roleName || userRole || 'User'}</span>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Quick Action CTA Button */}
-          {(!isCollapsed || isMobile) ? (
-            <button
-              onClick={() => {
-                navigate(quickActionConfig.path);
-                if (isMobile) setMobileMenuOpen(false);
-              }}
-              style={{
-                width: '100%',
-                backgroundColor: '#1a73e8',
-                color: '#ffffff',
-                padding: '9px 14px',
-                borderRadius: '8px',
-                fontWeight: '600',
-                fontSize: '0.85rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 1px 3px rgba(26,115,232,0.3)',
-                transition: 'background-color 0.15s ease'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#1557d0'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#1a73e8'; }}
-            >
-              <QuickActionIcon size={16} strokeWidth={2.5} />
-              {quickActionConfig.label}
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate(quickActionConfig.path)}
-              title={quickActionConfig.label}
-              style={{
-                width: '40px',
-                height: '40px',
-                margin: '0 auto',
-                backgroundColor: '#1a73e8',
-                color: '#ffffff',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 1px 3px rgba(26,115,232,0.3)'
-              }}
-            >
-              <QuickActionIcon size={20} strokeWidth={2.5} />
-            </button>
-          )}
-
-          {/* Menu Search Filter */}
-          {(!isCollapsed || isMobile) && (
-            <div style={{ position: 'relative' }}>
-              <Search
-                size={14}
-                color="var(--outline)"
-                style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}
-              />
-              <input
-                type="text"
-                placeholder="Filter menu..."
-                value={navSearch}
-                onChange={(e) => setNavSearch(e.target.value)}
-                style={{
-                  width: '100%',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #dadce0',
-                  borderRadius: '8px',
-                  paddingLeft: '32px',
-                  paddingRight: navSearch ? '28px' : '10px',
-                  paddingTop: '6px',
-                  paddingBottom: '6px',
-                  fontSize: '0.8rem',
-                  color: 'var(--on-surface)',
-                  fontWeight: '500'
-                }}
-              />
-              {navSearch && (
-                <button
-                  onClick={() => setNavSearch('')}
-                  style={{
-                    position: 'absolute',
-                    right: '6px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--outline)',
-                    cursor: 'pointer',
-                    padding: '2px',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                  title="Clear search"
-                >
-                  <X size={13} />
-                </button>
-              )}
             </div>
           )}
         </div>
@@ -1133,10 +1037,10 @@ export const AppLayout = () => {
           {filteredCategories.map((category, catIdx) => (
             <div key={category.categoryKey} style={{ marginBottom: isCollapsed && !isMobile ? '4px' : '10px' }}>
               {/* Category Header (when expanded) */}
-              {(!isCollapsed || isMobile) && (
+              {(!isCollapsed || isMobile) && catIdx > 0 && (
                 <div
                   style={{
-                    padding: catIdx === 0 ? '4px 18px 6px' : '14px 18px 6px',
+                    padding: '14px 18px 6px',
                     fontSize: '0.67rem',
                     fontWeight: '800',
                     color: '#94a3b8',
@@ -1154,7 +1058,7 @@ export const AppLayout = () => {
                       fontSize: '0.62rem',
                       fontWeight: '700',
                       color: '#94a3b8',
-                      backgroundColor: '#e2e8f0',
+                      backgroundColor: isDark ? '#1e293b' : '#e2e8f0',
                       padding: '1px 5px',
                       borderRadius: '10px',
                     }}
@@ -1169,7 +1073,7 @@ export const AppLayout = () => {
                 <div
                   style={{
                     margin: '8px 10px',
-                    borderTop: '1px solid #e2e8f0',
+                    borderTop: isDark ? '1px solid #1e293b' : '1px solid #e2e8f0',
                   }}
                 />
               )}
@@ -1197,32 +1101,33 @@ export const AppLayout = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: isCollapsed && !isMobile ? 'center' : 'space-between',
-                        padding: isCollapsed && !isMobile ? '10px 0' : '10px 14px 10px 18px',
-                        marginRight: isCollapsed && !isMobile ? '0' : '12px',
-                        borderRadius: isCollapsed && !isMobile ? '8px' : '0 9999px 9999px 0',
+                        padding: isCollapsed && !isMobile ? '10px 0' : '10px 14px',
+                        margin: isCollapsed && !isMobile ? '2px 8px' : '2px 10px',
+                        borderRadius: '10px',
                         backgroundColor: isSelected
-                          ? (item.highlight ? '#d8e2ff' : '#4d8efe')
+                          ? (isDark ? '#2e633a' : '#386e38')
                           : 'transparent',
                         color: isSelected
-                          ? (item.highlight ? '#00285c' : '#00285c')
-                          : 'var(--on-surface-variant)',
-                        fontWeight: isSelected ? '700' : '500',
-                        fontSize: '0.86rem',
+                          ? '#ffffff'
+                          : (isDark ? '#cbd5e1' : '#2d3748'),
+                        fontWeight: isSelected ? '600' : '500',
+                        fontSize: '0.88rem',
                         cursor: 'pointer',
                         userSelect: 'none',
                         transition: 'all 0.15s ease',
-                        minHeight: '42px'
+                        minHeight: '42px',
+                        boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) {
-                          e.currentTarget.style.backgroundColor = '#edeeef';
-                          e.currentTarget.style.color = 'var(--on-surface)';
+                          e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+                          e.currentTarget.style.color = isDark ? '#ffffff' : '#111827';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isSelected) {
                           e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = 'var(--on-surface-variant)';
+                          e.currentTarget.style.color = isDark ? '#cbd5e1' : '#2d3748';
                         }
                       }}
                     >
@@ -1232,10 +1137,10 @@ export const AppLayout = () => {
                           size={19}
                           color={
                             isSelected
-                              ? '#00285c'
-                              : 'var(--on-surface-variant)'
+                              ? '#ffffff'
+                              : (isDark ? '#94a3b8' : '#4a5568')
                           }
-                          strokeWidth={isSelected ? 2.5 : 2}
+                          strokeWidth={isSelected ? 2.4 : 2}
                           style={{ flexShrink: 0 }}
                         />
 
@@ -1262,7 +1167,7 @@ export const AppLayout = () => {
                                 fontSize: '0.65rem',
                                 fontWeight: '700',
                                 backgroundColor: isSelected
-                                  ? '#00285c'
+                                  ? 'rgba(255, 255, 255, 0.25)'
                                   : (item.highlight ? '#005bbf' : '#1a73e8'),
                                 color: '#ffffff',
                                 padding: '1px 6px',
@@ -1280,8 +1185,8 @@ export const AppLayout = () => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 color: isSelected
-                                  ? (item.highlight ? '#00285c' : '#00285c')
-                                  : 'var(--on-surface-variant)',
+                                  ? '#ffffff'
+                                  : (isDark ? '#94a3b8' : '#718096'),
                                 transition: 'transform 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
                                 transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
                               }}
@@ -1304,7 +1209,7 @@ export const AppLayout = () => {
                           display: 'flex',
                           flexDirection: 'column',
                           gap: '2px',
-                          borderLeft: '2px solid #dadce0',
+                          borderLeft: isDark ? '2px solid #1e293b' : '2px solid #e2e8df',
                           marginLeft: '26px'
                         }}
                       >
@@ -1329,20 +1234,20 @@ export const AppLayout = () => {
                                 fontSize: '0.8rem',
                                 fontWeight: isSubActive ? '700' : '500',
                                 textDecoration: 'none',
-                                color: isSubActive ? '#1a73e8' : 'var(--on-surface-variant)',
-                                backgroundColor: isSubActive ? '#e8f0fe' : 'transparent',
+                                color: isSubActive ? (isDark ? '#86efac' : '#2e633a') : (isDark ? '#94a3b8' : 'var(--on-surface-variant)'),
+                                backgroundColor: isSubActive ? (isDark ? 'rgba(46, 99, 58, 0.25)' : '#e8f2e8') : 'transparent',
                                 transition: 'all 0.12s ease'
                               }}
                               onMouseEnter={(e) => {
                                 if (!isSubActive) {
-                                  e.currentTarget.style.backgroundColor = '#edeeef';
-                                  e.currentTarget.style.color = 'var(--on-surface)';
+                                  e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
+                                  e.currentTarget.style.color = isDark ? '#ffffff' : 'var(--on-surface)';
                                 }
                               }}
                               onMouseLeave={(e) => {
                                 if (!isSubActive) {
                                   e.currentTarget.style.backgroundColor = 'transparent';
-                                  e.currentTarget.style.color = 'var(--on-surface-variant)';
+                                  e.currentTarget.style.color = isDark ? '#94a3b8' : 'var(--on-surface-variant)';
                                 }
                               }}
                             >
@@ -1351,7 +1256,7 @@ export const AppLayout = () => {
                                   width: '5px',
                                   height: '5px',
                                   borderRadius: '50%',
-                                  backgroundColor: isSubActive ? '#1a73e8' : '#727785',
+                                  backgroundColor: isSubActive ? '#386e38' : '#94a3b8',
                                   flexShrink: 0
                                 }}
                               />
@@ -1516,6 +1421,62 @@ export const AppLayout = () => {
             )}
           </div>
         )}
+
+        {/* Resizable Draggable Right-Edge Handle */}
+        {!isMobile && (
+          <div
+            onMouseDown={(e) => {
+              e.preventDefault();
+              setIsResizing(true);
+            }}
+            onDoubleClick={() => {
+              setIsCollapsed((prev) => {
+                const next = !prev;
+                try {
+                  localStorage.setItem('kv_sidebar_collapsed', String(next));
+                } catch { /* ignore */ }
+                return next;
+              });
+            }}
+            title="Click and drag left or right to resize or collapse sidebar. Double-click to toggle collapse."
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: '-4px',
+              width: '8px',
+              height: '100%',
+              cursor: 'col-resize',
+              zIndex: 60,
+              backgroundColor: isResizing ? '#1a73e8' : 'transparent',
+              transition: isResizing ? 'none' : 'background-color 0.15s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              userSelect: 'none'
+            }}
+            onMouseEnter={(e) => {
+              if (!isResizing) {
+                e.currentTarget.style.backgroundColor = isDark ? 'rgba(96, 165, 250, 0.45)' : 'rgba(26, 115, 232, 0.35)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isResizing) {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            {/* Visual Grip Indicator */}
+            <div
+              style={{
+                width: '2px',
+                height: '42px',
+                borderRadius: '2px',
+                backgroundColor: isResizing ? '#ffffff' : (isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'),
+                pointerEvents: 'none',
+              }}
+            />
+          </div>
+        )}
       </nav>
 
       {/* ======================================================== */}
@@ -1531,7 +1492,7 @@ export const AppLayout = () => {
           maxHeight: '100vh',
           minWidth: 0,
           marginLeft: isMobile ? '0' : `${sidebarWidth}px`,
-          transition: 'margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: isResizing ? 'none' : 'margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
           position: 'relative',
           overflow: 'hidden'
         }}
@@ -1581,15 +1542,37 @@ export const AppLayout = () => {
 
             <div
               style={{
-                fontSize: isMobile ? '1rem' : '1.2rem',
-                fontWeight: '700',
-                color: '#1a73e8',
-                letterSpacing: '-0.01em',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
                 cursor: 'pointer'
               }}
               onClick={() => navigate('/dashboard')}
+              title="Go to Dashboard"
             >
-              Krishna Valley ERP
+              <img
+                src={logoUrl}
+                alt="Krishna Valley"
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  objectFit: 'contain',
+                  borderRadius: '6px',
+                  backgroundColor: isDark ? '#000000' : '#ffffff',
+                  border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid #e2e8f0',
+                  flexShrink: 0
+                }}
+              />
+              <div
+                style={{
+                  fontSize: isMobile ? '1rem' : '1.15rem',
+                  fontWeight: '700',
+                  color: isDark ? '#60a5fa' : '#1a73e8',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                Krishna Valley ERP
+              </div>
             </div>
           </div>
 
@@ -1709,12 +1692,37 @@ export const AppLayout = () => {
                   border: 'none',
                   transition: 'background-color 0.15s ease'
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f5'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = isDark ? '#334155' : '#f3f4f5'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
                 <BarChart3 size={19} />
               </button>
             )}
+
+            {/* Theme Mode Toggle (Light / Dark) */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                backgroundColor: isDark ? '#1e293b' : 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: isDark ? '#facc15' : 'var(--on-surface-variant)',
+                cursor: 'pointer',
+                border: isDark ? '1px solid #334155' : 'none',
+                transition: 'all 0.2s ease',
+                boxShadow: isDark ? '0 2px 6px rgba(0,0,0,0.3)' : 'none'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = isDark ? '#334155' : '#f3f4f5'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isDark ? '#1e293b' : 'transparent'; }}
+            >
+              {isDark ? <Sun size={19} /> : <Moon size={19} />}
+            </button>
 
             {/* User Identity & Profile Menu Dropdown */}
             <div ref={profileDropdownRef} style={{ position: 'relative', marginLeft: '6px' }}>
@@ -1890,6 +1898,46 @@ export const AppLayout = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Theme Mode Toggle Row */}
+                  <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        toggleTheme();
+                      }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border-subtle)',
+                        backgroundColor: isDark ? '#1e293b' : '#f8fafc',
+                        color: 'var(--on-surface)',
+                        fontSize: '0.82rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {isDark ? <Sun size={15} color="#facc15" /> : <Moon size={15} color="#64748b" />}
+                        <span>Appearance Theme</span>
+                      </span>
+                      <span style={{
+                        fontSize: '0.72rem',
+                        fontWeight: '700',
+                        padding: '2px 8px',
+                        borderRadius: '10px',
+                        backgroundColor: isDark ? '#334155' : '#e2e8f0',
+                        color: isDark ? '#f8fafc' : '#334155'
+                      }}>
+                        {isDark ? '🌙 Dark' : '☀️ Light'}
+                      </span>
+                    </button>
+                  </div>
 
                   {/* Logout Action */}
                   <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '8px' }}>
