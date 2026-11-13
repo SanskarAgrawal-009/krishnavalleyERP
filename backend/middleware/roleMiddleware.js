@@ -40,8 +40,16 @@ export const authorizePermission = (...requiredPermissions) => {
     }
 
     const userRole = (req.user.role || '').toLowerCase();
-    // Super admin bypass
+    // Super admin and admin bypass
     if (userRole === 'super_admin' || userRole === 'admin') {
+      return next();
+    }
+
+    // Taskforce Manager role has full operational access to all taskforce and report operations
+    const isTaskforceOp = requiredPermissions.some(
+      (perm) => perm.startsWith('tasks:') || perm.startsWith('reports:')
+    );
+    if ((userRole === 'taskforce_manager' || userRole === 'taskforce_mgr') && isTaskforceOp) {
       return next();
     }
 

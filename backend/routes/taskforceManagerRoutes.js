@@ -74,9 +74,9 @@ router.post('/bulk-action', authorizePermission('tasks:manage'), bulkTaskAction)
 // ==========================================
 // WEEKLY REPORTS & PERFORMANCE ANALYTICS
 // ==========================================
-router.get('/weekly-reports', authorizePermission('tasks:view', 'tasks:manage'), getWeeklyReportAnalytics);
-router.get('/weekly-reports/export-excel', authorizePermission('tasks:view', 'tasks:manage'), exportWeeklyReportExcel);
-router.get('/weekly-reports/export-word', authorizePermission('tasks:view', 'tasks:manage'), exportWeeklyReportWord);
+router.get('/weekly-reports', authorizePermission('tasks:view', 'tasks:manage', 'reports:view'), getWeeklyReportAnalytics);
+router.get('/weekly-reports/export-excel', authorizePermission('tasks:view', 'tasks:manage', 'reports:export', 'reports:view'), exportWeeklyReportExcel);
+router.get('/weekly-reports/export-word', authorizePermission('tasks:view', 'tasks:manage', 'reports:export', 'reports:view'), exportWeeklyReportWord);
 
 export default router;
 
