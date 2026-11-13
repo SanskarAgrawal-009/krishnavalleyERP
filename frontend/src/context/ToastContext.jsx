@@ -33,6 +33,7 @@ export const ToastProvider = ({ children }) => {
     showWarning: (msg, dur) => addToast(msg, 'warning', dur),
     showInfo: (msg, dur) => addToast(msg, 'info', dur),
     show: (msg, type = 'info', dur) => addToast(msg, type, dur),
+    showToast: (msg, type = 'info', dur) => addToast(msg, type, dur),
     remove: removeToast
   };
 
@@ -58,6 +59,7 @@ export const useToast = () => {
       showWarning: (msg) => console.warn('[Toast Warning]', msg),
       showInfo: (msg) => console.info('[Toast Info]', msg),
       show: (msg) => console.log('[Toast]', msg),
+      showToast: (msg, type = 'info') => console.log(`[Toast ${type}]`, msg),
       remove: () => {}
     };
   }

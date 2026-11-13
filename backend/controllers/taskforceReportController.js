@@ -879,7 +879,8 @@ export const exportWeeklyReportExcel = async (req, res) => {
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    return res.send(buffer);
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+    return res.end(Buffer.from(buffer));
   } catch (error) {
     console.error('Error exporting Excel report:', error);
     return res.status(500).json({
@@ -1440,7 +1441,8 @@ export const exportWeeklyReportWord = async (req, res) => {
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    return res.send(buffer);
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+    return res.end(Buffer.from(buffer));
   } catch (error) {
     console.error('Error exporting Word report:', error);
     return res.status(500).json({

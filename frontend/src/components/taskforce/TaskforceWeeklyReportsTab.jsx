@@ -2,9 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   FileSpreadsheet,
   FileText,
-  Download,
   Calendar,
-  Filter,
   Search,
   RefreshCw,
   CheckCircle2,
@@ -12,19 +10,15 @@ import {
   Clock,
   Users,
   Building2,
-  Target,
-  TrendingUp,
   Layers,
   AlertCircle,
   ArrowRight,
   RotateCcw,
-  Sparkles,
   Shield,
   Eye,
-  Award,
-  ChevronRight,
   SlidersHorizontal,
   ExternalLink,
+  TrendingUp,
 } from 'lucide-react';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { useToast } from '../../context/ToastContext.jsx';
@@ -56,7 +50,7 @@ export const TaskforceWeeklyReportsTab = ({
   const [subView, setSubView] = useState('departments'); // 'departments' | 'members' | 'tasks' | 'carried_forward'
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [carriedFilter, setCarriedFilter] = useState('all'); // 'all' | 'carried_only' | 'new_only'
+  const [carriedFilter, setCarriedFilter] = useState('all');
 
   // Fetch report data
   const fetchReport = async () => {
@@ -105,7 +99,7 @@ export const TaskforceWeeklyReportsTab = ({
   const handleExportExcel = async () => {
     try {
       setExportingExcel(true);
-      showToast('Generating weekly performance spreadsheet...', 'info');
+      showToast('⏳ Generating weekly performance spreadsheet...', 'info');
       const params = {
         period,
         department: selectedDept,
@@ -114,11 +108,13 @@ export const TaskforceWeeklyReportsTab = ({
         params.startDate = customStart;
         params.endDate = customEnd;
       }
-      await taskforceManagerService.exportWeeklyReportExcel(params);
-      showToast('Weekly Excel Report downloaded successfully!', 'success');
+      const result = await taskforceManagerService.exportWeeklyReportExcel(params);
+      const fname = result?.filename || 'Report.xlsx';
+      const sizeKB = result?.size ? Math.round(result.size / 1024) : '—';
+      showToast(`✅ Excel report exported successfully! (${fname}, ${sizeKB} KB)`, 'success');
     } catch (err) {
       console.error('Excel export error:', err);
-      showToast(err.message || 'Failed to download Excel report', 'error');
+      showToast(`❌ ${err.message || 'Failed to download Excel report'}`, 'error');
     } finally {
       setExportingExcel(false);
     }
@@ -127,7 +123,7 @@ export const TaskforceWeeklyReportsTab = ({
   const handleExportWord = async () => {
     try {
       setExportingWord(true);
-      showToast('Generating official Word (.docx) audit document...', 'info');
+      showToast('⏳ Generating official Word (.docx) audit document...', 'info');
       const params = {
         period,
         department: selectedDept,
@@ -136,27 +132,27 @@ export const TaskforceWeeklyReportsTab = ({
         params.startDate = customStart;
         params.endDate = customEnd;
       }
-      await taskforceManagerService.exportWeeklyReportWord(params);
-      showToast('Weekly Word Report downloaded successfully!', 'success');
+      const result = await taskforceManagerService.exportWeeklyReportWord(params);
+      const fname = result?.filename || 'Report.docx';
+      const sizeKB = result?.size ? Math.round(result.size / 1024) : '—';
+      showToast(`✅ Word report exported successfully! (${fname}, ${sizeKB} KB)`, 'success');
     } catch (err) {
       console.error('Word export error:', err);
-      showToast(err.message || 'Failed to download Word report', 'error');
+      showToast(`❌ ${err.message || 'Failed to download Word report'}`, 'error');
     } finally {
       setExportingWord(false);
     }
   };
 
-  // Quick department filter helper
   const handleFilterByDepartment = (deptName) => {
     setSelectedDept(deptName);
     setSubView('tasks');
   };
 
-  // Filtered task list for the ledger tab
+  // Filtered task list
   const filteredTasks = useMemo(() => {
     if (!reportData?.tasks) return [];
     return reportData.tasks.filter((t) => {
-      // Search
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         const matchesCode = (t.taskCode || '').toLowerCase().includes(q);
@@ -168,12 +164,10 @@ export const TaskforceWeeklyReportsTab = ({
         }
       }
 
-      // Priority
       if (priorityFilter !== 'all' && t.priority !== priorityFilter) {
         return false;
       }
 
-      // Status
       if (statusFilter !== 'all') {
         if (statusFilter === 'completed' && !t.isCompletedInPeriod) return false;
         if (statusFilter === 'in_progress' && !['in_progress', 'under_review'].includes(t.status)) return false;
@@ -181,11 +175,9 @@ export const TaskforceWeeklyReportsTab = ({
         if (statusFilter === 'overdue' && !t.isOverdue) return false;
       }
 
-      // Carried forward
       if (carriedFilter === 'carried_only' && !t.isCarriedForward) return false;
       if (carriedFilter === 'new_only' && t.isCarriedForward) return false;
 
-      // Sub-view: carried forward focus
       if (subView === 'carried_forward' && !t.isCarriedForward && !t.isOverdue) {
         return false;
       }
@@ -229,116 +221,320 @@ export const TaskforceWeeklyReportsTab = ({
     year: '—',
   };
 
-  const getPriorityBadgeClass = (priority) => {
+  const getPriorityBadgeStyle = (priority) => {
     switch (priority) {
       case 'urgent':
-        return 'bg-red-100 text-red-800 border-red-300 font-bold';
+        return { background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5', fontWeight: '800' };
       case 'high':
-        return 'bg-amber-100 text-amber-800 border-amber-300 font-semibold';
+        return { background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a', fontWeight: '700' };
       case 'medium':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return { background: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd', fontWeight: '600' };
       default:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
+        return { background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', fontWeight: '500' };
     }
   };
 
-  const getStatusBadge = (task) => {
+  const renderStatusBadge = (task) => {
     if (task.status === 'completed') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            padding: '3px 8px',
+            borderRadius: '12px',
+            fontSize: '11px',
+            fontWeight: 700,
+            background: '#dcfce7',
+            color: '#15803d',
+            border: '1px solid #bbf7d0',
+          }}
+        >
           <CheckCircle2 size={12} /> Completed
         </span>
       );
     }
     if (['in_progress', 'under_review'].includes(task.status)) {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            padding: '3px 8px',
+            borderRadius: '12px',
+            fontSize: '11px',
+            fontWeight: 700,
+            background: '#e0f2fe',
+            color: '#0369a1',
+            border: '1px solid #bae6fd',
+          }}
+        >
           <Clock size={12} /> In Progress
         </span>
       );
     }
     if (task.status === 'pending') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            padding: '3px 8px',
+            borderRadius: '12px',
+            fontSize: '11px',
+            fontWeight: 700,
+            background: '#fef3c7',
+            color: '#92400e',
+            border: '1px solid #fde68a',
+          }}
+        >
           <AlertCircle size={12} /> Pending
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          padding: '3px 8px',
+          borderRadius: '12px',
+          fontSize: '11px',
+          fontWeight: 600,
+          background: '#f1f5f9',
+          color: '#475569',
+          border: '1px solid #e2e8f0',
+        }}
+      >
         {task.status}
       </span>
     );
   };
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative' }}>
+      {/* Inject spinner keyframes for export buttons */}
+      <style>{`
+        @keyframes kvReportSpin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes kvReportPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+      `}</style>
+
+      {/* Export Processing Overlay */}
+      {(exportingExcel || exportingWord) && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(15, 23, 42, 0.45)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '20px',
+            padding: '36px 48px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.25)',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px',
+            maxWidth: '380px',
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              border: `4px solid ${exportingExcel ? '#d1fae5' : '#e0e7ff'}`,
+              borderTopColor: exportingExcel ? '#059669' : '#4f46e5',
+              borderRadius: '50%',
+              animation: 'kvReportSpin 0.8s linear infinite',
+            }} />
+            <div style={{
+              fontSize: '1.05rem',
+              fontWeight: '700',
+              color: '#0f172a',
+            }}>
+              {exportingExcel ? '📊 Generating Excel Report...' : '📝 Generating Word Report...'}
+            </div>
+            <div style={{
+              fontSize: '0.82rem',
+              color: '#64748b',
+              animation: 'kvReportPulse 1.5s ease-in-out infinite',
+            }}>
+              Compiling department metrics, member performance & task ledger. This may take a few seconds...
+            </div>
+          </div>
+        </div>
+      )}
       {/* ========================================================= */}
       {/* 1. TOP HEADER & REPORT GENERATION TOOLBAR */}
       {/* ========================================================= */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
-                <TrendingUp size={20} />
+      <div
+        style={{
+          background: '#ffffff',
+          borderRadius: '16px',
+          border: '1px solid #e2e8f0',
+          padding: '20px 24px',
+          boxShadow: '0 4px 18px rgba(0, 0, 0, 0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '14px',
+            borderBottom: '1px solid #f1f5f9',
+            paddingBottom: '16px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #4f46e5, #4338ca)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 8px rgba(79, 70, 229, 0.25)',
+              }}
+            >
+              <TrendingUp size={22} />
+            </div>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>
+                Weekly Performance Reports &amp; Analytics
+              </h2>
+              <span style={{ fontSize: '0.76rem', color: '#64748b' }}>
+                Comprehensive breakdown of department responsibilities, member contributions, and carried-forward tasks.
               </span>
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                  Weekly Performance Reports & Analytics
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Comprehensive breakdown of department responsibilities, member contributions, and carried-forward tasks.
-                </p>
-              </div>
             </div>
           </div>
 
           {/* Action Buttons: Export Excel & Word */}
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <button
               onClick={handleExportExcel}
               disabled={exportingExcel || loading}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-sm disabled:opacity-50"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 16px',
+                borderRadius: '10px',
+                background: exportingExcel ? '#d1fae5' : '#ecfdf5',
+                color: '#065f46',
+                border: '1.5px solid #a7f3d0',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: exportingExcel || loading ? 'not-allowed' : 'pointer',
+                boxShadow: '0 2px 6px rgba(5, 150, 105, 0.1)',
+                transition: 'all 0.15s ease',
+                opacity: exportingExcel || loading ? 0.7 : 1,
+              }}
               title="Download formatted multi-sheet Excel spreadsheet (.xlsx)"
             >
               {exportingExcel ? (
-                <RefreshCw size={14} className="animate-spin text-emerald-600" />
+                <span style={{
+                  display: 'inline-block',
+                  width: '14px',
+                  height: '14px',
+                  border: '2.5px solid #a7f3d0',
+                  borderTopColor: '#059669',
+                  borderRadius: '50%',
+                  animation: 'kvReportSpin 0.8s linear infinite',
+                }} />
               ) : (
-                <FileSpreadsheet size={15} className="text-emerald-600" />
+                <FileSpreadsheet size={15} color="#059669" />
               )}
-              <span>{exportingExcel ? 'Exporting...' : 'Export Excel (.xlsx)'}</span>
+              <span>{exportingExcel ? 'Generating Report...' : 'Export Excel (.xlsx)'}</span>
             </button>
 
             <button
               onClick={handleExportWord}
               disabled={exportingWord || loading}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors shadow-sm disabled:opacity-50"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 16px',
+                borderRadius: '10px',
+                background: exportingWord ? '#e0e7ff' : '#eef2ff',
+                color: '#3730a3',
+                border: '1.5px solid #c7d2fe',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: exportingWord || loading ? 'not-allowed' : 'pointer',
+                boxShadow: '0 2px 6px rgba(79, 70, 229, 0.1)',
+                transition: 'all 0.15s ease',
+                opacity: exportingWord || loading ? 0.7 : 1,
+              }}
               title="Download comprehensive executive Word report document (.docx)"
             >
               {exportingWord ? (
-                <RefreshCw size={14} className="animate-spin text-indigo-600" />
+                <span style={{
+                  display: 'inline-block',
+                  width: '14px',
+                  height: '14px',
+                  border: '2.5px solid #c7d2fe',
+                  borderTopColor: '#4f46e5',
+                  borderRadius: '50%',
+                  animation: 'kvReportSpin 0.8s linear infinite',
+                }} />
               ) : (
-                <FileText size={15} className="text-indigo-600" />
+                <FileText size={15} color="#4f46e5" />
               )}
-              <span>{exportingWord ? 'Exporting...' : 'Export Word (.docx)'}</span>
+              <span>{exportingWord ? 'Generating Report...' : 'Export Word (.docx)'}</span>
             </button>
 
             <button
               onClick={fetchReport}
               disabled={loading}
-              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors"
+              style={{
+                padding: '9px 12px',
+                borderRadius: '10px',
+                background: '#f8fafc',
+                color: '#475569',
+                border: '1px solid #cbd5e1',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
               title="Refresh Report Data"
             >
-              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+              <RefreshCw size={15} style={loading ? { animation: 'kvReportSpin 0.8s linear infinite' } : {}} />
             </button>
           </div>
         </div>
 
         {/* Filter Controls Row */}
-        <div className="pt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
           {/* Preset Buttons */}
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
             {[
               { id: 'this_week', label: 'This Week' },
               { id: 'last_week', label: 'Last Week' },
@@ -349,11 +545,18 @@ export const TaskforceWeeklyReportsTab = ({
               <button
                 key={p.id}
                 onClick={() => setPeriod(p.id)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                  period === p.id
-                    ? 'bg-slate-900 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
+                style={{
+                  padding: '7px 14px',
+                  borderRadius: '8px',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: 'none',
+                  transition: 'all 0.15s ease',
+                  background: period === p.id ? '#0f172a' : '#f1f5f9',
+                  color: period === p.id ? '#ffffff' : '#475569',
+                  boxShadow: period === p.id ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
+                }}
               >
                 {p.label}
               </button>
@@ -361,12 +564,22 @@ export const TaskforceWeeklyReportsTab = ({
           </div>
 
           {/* Department Selector */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-slate-500">Department:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b' }}>Department:</span>
             <select
               value={selectedDept}
               onChange={(e) => setSelectedDept(e.target.value)}
-              className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              style={{
+                height: '34px',
+                padding: '0 12px',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                background: '#ffffff',
+                color: '#0f172a',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
             >
               <option value="all">All Departments</option>
               {(reportData?.departmentBreakdown || []).map((d) => (
@@ -378,42 +591,70 @@ export const TaskforceWeeklyReportsTab = ({
           </div>
         </div>
 
-        {/* Custom Date Range Picker Accordion */}
+        {/* Custom Date Range Picker */}
         {period === 'custom' && (
           <form
             onSubmit={handleApplyCustomRange}
-            className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-3 bg-slate-50/70 p-3 rounded-xl"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              flexWrap: 'wrap',
+              background: '#f8fafc',
+              padding: '12px 16px',
+              borderRadius: '12px',
+              border: '1px solid #e2e8f0',
+            }}
           >
-            <div className="flex items-center gap-2 text-xs">
-              <Calendar size={14} className="text-slate-400" />
-              <span className="font-medium text-slate-700">From:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem' }}>
+              <Calendar size={14} color="#64748b" />
+              <span style={{ fontWeight: 600, color: '#334155' }}>From:</span>
               <input
                 type="date"
                 value={customStart}
                 onChange={(e) => setCustomStart(e.target.value)}
-                className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.78rem',
+                }}
                 required
               />
             </div>
-            <div className="flex items-center gap-2 text-xs">
-              <span className="font-medium text-slate-700">To:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem' }}>
+              <span style={{ fontWeight: 600, color: '#334155' }}>To:</span>
               <input
                 type="date"
                 value={customEnd}
                 onChange={(e) => setCustomEnd(e.target.value)}
-                className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.78rem',
+                }}
                 required
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
+              style={{
+                padding: '6px 14px',
+                borderRadius: '8px',
+                background: '#4f46e5',
+                color: '#ffffff',
+                border: 'none',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
             >
               Apply Dates
             </button>
-            <span className="text-[11px] text-slate-400 italic">
-              Active: {dateRange.formattedStart} to {dateRange.formattedEnd}
+            <span style={{ fontSize: '0.74rem', color: '#64748b', fontStyle: 'italic' }}>
+              Active Window: {dateRange.formattedStart} to {dateRange.formattedEnd}
             </span>
           </form>
         )}
@@ -422,93 +663,199 @@ export const TaskforceWeeklyReportsTab = ({
       {/* ========================================================= */}
       {/* 2. EXECUTIVE KPI CARDS GRID */}
       {/* ========================================================= */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+          gap: '14px',
+        }}
+      >
         {/* Total Active Workload */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">Total Workload</span>
-            <Layers size={16} className="text-indigo-500" />
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '14px',
+            border: '1px solid #e2e8f0',
+            borderTop: '4px solid #4f46e5',
+            padding: '16px 18px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+              Total Workload
+            </span>
+            <Layers size={16} color="#4f46e5" />
           </div>
-          <div className="text-2xl font-black text-slate-900">{summary.totalWorkload}</div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-            <span className="text-indigo-600 font-semibold">+{summary.newlyAssigned} new</span>
-            <span>•</span>
-            <span className="text-amber-600 font-semibold">+{summary.carriedForward} carried</span>
+          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a' }}>
+            {summary.totalWorkload}
           </div>
-          <div className="absolute top-0 right-0 w-1 h-full bg-indigo-500" />
+          <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
+            <span style={{ color: '#4f46e5', fontWeight: 700 }}>+{summary.newlyAssigned} new</span>
+            <span> • </span>
+            <span style={{ color: '#d97706', fontWeight: 700 }}>+{summary.carriedForward} carried</span>
+          </div>
         </div>
 
         {/* Carried Forward Focus */}
-        <div className="bg-white p-4 rounded-xl border border-amber-200/80 bg-amber-50/20 shadow-sm relative overflow-hidden">
-          <div className="flex items-center justify-between text-amber-700 mb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-800">Carried Forward</span>
-            <RotateCcw size={16} className="text-amber-600" />
+        <div
+          style={{
+            background: '#fffbeb',
+            borderRadius: '14px',
+            border: '1px solid #fde68a',
+            borderTop: '4px solid #d97706',
+            padding: '16px 18px',
+            boxShadow: '0 2px 8px rgba(217, 119, 6, 0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#92400e' }}>
+              Carried Forward
+            </span>
+            <RotateCcw size={16} color="#d97706" />
           </div>
-          <div className="text-2xl font-black text-amber-900">{summary.carriedForward}</div>
-          <div className="text-[11px] text-amber-700 mt-1">
+          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#78350f' }}>
+            {summary.carriedForward}
+          </div>
+          <div style={{ fontSize: '0.72rem', color: '#b45309', fontWeight: 600, marginTop: '4px' }}>
             From prior weeks (no lapses)
           </div>
-          <div className="absolute top-0 right-0 w-1 h-full bg-amber-500" />
         </div>
 
         {/* Tasks Completed */}
-        <div className="bg-white p-4 rounded-xl border border-emerald-200/80 bg-emerald-50/20 shadow-sm relative overflow-hidden">
-          <div className="flex items-center justify-between text-emerald-700 mb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-800">Completed</span>
-            <CheckCircle2 size={16} className="text-emerald-600" />
+        <div
+          style={{
+            background: '#f0fdf4',
+            borderRadius: '14px',
+            border: '1px solid #bbf7d0',
+            borderTop: '4px solid #16a34a',
+            padding: '16px 18px',
+            boxShadow: '0 2px 8px rgba(22, 163, 74, 0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#166534' }}>
+              Completed
+            </span>
+            <CheckCircle2 size={16} color="#16a34a" />
           </div>
-          <div className="text-2xl font-black text-emerald-900">{summary.completed}</div>
-          <div className="text-[11px] text-emerald-700 mt-1 flex items-center gap-1 font-semibold">
-            <span>{summary.completionRate}% completion rate</span>
+          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#14532d' }}>
+            {summary.completed}
           </div>
-          <div className="absolute top-0 right-0 w-1 h-full bg-emerald-500" />
+          <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: 700, marginTop: '4px' }}>
+            {summary.completionRate}% completion rate
+          </div>
         </div>
 
         {/* In Progress */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">In Progress</span>
-            <Clock size={16} className="text-blue-500" />
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '14px',
+            border: '1px solid #e2e8f0',
+            borderTop: '4px solid #0284c7',
+            padding: '16px 18px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+              In Progress
+            </span>
+            <Clock size={16} color="#0284c7" />
           </div>
-          <div className="text-2xl font-black text-slate-900">{summary.inProgress}</div>
-          <div className="text-[11px] text-blue-600 mt-1 font-medium">
+          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a' }}>
+            {summary.inProgress}
+          </div>
+          <div style={{ fontSize: '0.72rem', color: '#0284c7', fontWeight: 600, marginTop: '4px' }}>
             Active on-site execution
           </div>
-          <div className="absolute top-0 right-0 w-1 h-full bg-blue-500" />
         </div>
 
         {/* Pending */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">Pending</span>
-            <AlertCircle size={16} className="text-slate-400" />
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '14px',
+            border: '1px solid #e2e8f0',
+            borderTop: '4px solid #94a3b8',
+            padding: '16px 18px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+              Pending
+            </span>
+            <AlertCircle size={16} color="#94a3b8" />
           </div>
-          <div className="text-2xl font-black text-slate-700">{summary.pending}</div>
-          <div className="text-[11px] text-slate-400 mt-1">
-            Unstarted / Awaiting queue
+          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#475569' }}>
+            {summary.pending}
           </div>
-          <div className="absolute top-0 right-0 w-1 h-full bg-slate-400" />
+          <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
+            Unstarted / In queue
+          </div>
         </div>
 
         {/* Overdue */}
-        <div className="bg-white p-4 rounded-xl border border-red-200/80 bg-red-50/20 shadow-sm relative overflow-hidden">
-          <div className="flex items-center justify-between text-red-700 mb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-red-800">Overdue Tasks</span>
-            <AlertTriangle size={16} className="text-red-600" />
+        <div
+          style={{
+            background: '#fef2f2',
+            borderRadius: '14px',
+            border: '1px solid #fecaca',
+            borderTop: '4px solid #dc2626',
+            padding: '16px 18px',
+            boxShadow: '0 2px 8px rgba(220, 38, 38, 0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#991b1b' }}>
+              Overdue Tasks
+            </span>
+            <AlertTriangle size={16} color="#dc2626" />
           </div>
-          <div className="text-2xl font-black text-red-900">{summary.overdue}</div>
-          <div className="text-[11px] text-red-700 mt-1">
+          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#7f1d1d' }}>
+            {summary.overdue}
+          </div>
+          <div style={{ fontSize: '0.72rem', color: '#b91c1c', fontWeight: 600, marginTop: '4px' }}>
             Target deadline passed
           </div>
-          <div className="absolute top-0 right-0 w-1 h-full bg-red-500" />
         </div>
       </div>
 
       {/* ========================================================= */}
       {/* 3. SUB-VIEW TABS NAVIGATION */}
       {/* ========================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-2">
-        <div className="flex items-center gap-2 overflow-x-auto">
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+          borderBottom: '1px solid #e2e8f0',
+          paddingBottom: '10px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto' }}>
           {[
             {
               id: 'departments',
@@ -542,22 +889,42 @@ export const TaskforceWeeklyReportsTab = ({
               <button
                 key={tab.id}
                 onClick={() => setSubView(tab.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${
-                  isActive
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 16px',
+                  borderRadius: '10px',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: isActive ? '1px solid #4f46e5' : '1px solid transparent',
+                  background: isActive ? '#4f46e5' : '#f8fafc',
+                  color: isActive ? '#ffffff' : '#475569',
+                  boxShadow: isActive ? '0 2px 8px rgba(79, 70, 229, 0.25)' : 'none',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
+                }}
               >
-                <Icon size={15} />
+                <Icon size={14} />
                 <span>{tab.label}</span>
                 <span
-                  className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${
-                    isActive
-                      ? 'bg-white/20 text-white'
+                  style={{
+                    padding: '2px 7px',
+                    borderRadius: '6px',
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    background: isActive
+                      ? 'rgba(255,255,255,0.25)'
                       : tab.highlight && tab.badge > 0
-                      ? 'bg-red-100 text-red-700 font-extrabold'
-                      : 'bg-slate-200 text-slate-700'
-                  }`}
+                      ? '#fee2e2'
+                      : '#e2e8f0',
+                    color: isActive
+                      ? '#ffffff'
+                      : tab.highlight && tab.badge > 0
+                      ? '#991b1b'
+                      : '#334155',
+                  }}
                 >
                   {tab.badge}
                 </span>
@@ -567,14 +934,21 @@ export const TaskforceWeeklyReportsTab = ({
         </div>
 
         {/* Search input in view header */}
-        <div className="relative w-full sm:w-64">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <div style={{ position: 'relative', minWidth: '220px' }}>
+          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
           <input
             type="text"
             placeholder="Search report..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400"
+            style={{
+              width: '100%',
+              padding: '7px 12px 7px 32px',
+              borderRadius: '8px',
+              border: '1px solid #cbd5e1',
+              fontSize: '0.78rem',
+              boxSizing: 'border-box',
+            }}
           />
         </div>
       </div>
@@ -583,58 +957,101 @@ export const TaskforceWeeklyReportsTab = ({
       {/* 4. SUB-VIEW 1: DEPARTMENT BREAKDOWN */}
       {/* ========================================================= */}
       {subView === 'departments' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 bg-slate-50/70 border-b border-slate-200 flex items-center justify-between">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              overflow: 'hidden',
+              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.04)',
+            }}
+          >
+            <div
+              style={{
+                padding: '16px 20px',
+                background: '#f8fafc',
+                borderBottom: '1px solid #e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <div>
-                <h3 className="text-sm font-bold text-slate-800">
-                  Departmental Assigned Responsibilities & Execution Matrix
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#0f172a' }}>
+                  Departmental Assigned Responsibilities &amp; Execution Matrix
                 </h3>
-                <p className="text-xs text-slate-500">
+                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
                   Detailed scope of duties, carried-forward commitments, and active workloads per functional unit.
-                </p>
+                </span>
               </div>
-              <span className="text-xs font-semibold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs">
+              <span
+                style={{
+                  fontSize: '0.74rem',
+                  fontWeight: '700',
+                  color: '#334155',
+                  background: '#ffffff',
+                  padding: '4px 10px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                }}
+              >
                 {reportData?.departmentBreakdown?.length || 0} Functional Units
               </span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
                 <thead>
-                  <tr className="bg-slate-100/75 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
-                    <th className="py-3 px-4">Department & Code</th>
-                    <th className="py-3 px-4 min-w-[280px]">Assigned Responsibilities & Scope</th>
-                    <th className="py-3 px-3">Head / Lead</th>
-                    <th className="py-3 px-3 text-center">Carried Fwd</th>
-                    <th className="py-3 px-3 text-center">New</th>
-                    <th className="py-3 px-3 text-center">Workload</th>
-                    <th className="py-3 px-3 text-center">Completed</th>
-                    <th className="py-3 px-3 text-center">In Progress</th>
-                    <th className="py-3 px-3 text-center">Overdue</th>
-                    <th className="py-3 px-4 text-center">Completion %</th>
-                    <th className="py-3 px-3 text-center">Actions</th>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 800 }}>
+                    <th style={{ padding: '12px 16px' }}>Department &amp; Code</th>
+                    <th style={{ padding: '12px 16px', minWidth: '260px' }}>Assigned Responsibilities &amp; Scope</th>
+                    <th style={{ padding: '12px 12px' }}>Head / Lead</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Carried Fwd</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>New</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Workload</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Completed</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>In Progress</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Overdue</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'center' }}>Completion %</th>
+                    <th style={{ padding: '12px 12px', textAlign: 'center' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody>
                   {(reportData?.departmentBreakdown || []).map((dept) => {
                     const theme = getDepartmentTheme(dept.name);
                     const iconClass = getDepartmentIcon(dept.name);
 
                     return (
-                      <tr key={dept.name} className="hover:bg-slate-50/80 transition-colors">
+                      <tr
+                        key={dept.name}
+                        style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s ease' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      >
                         {/* Dept Name */}
-                        <td className="py-3 px-4 font-semibold text-slate-900">
-                          <div className="flex items-center gap-2.5">
+                        <td style={{ padding: '12px 16px', fontWeight: 700, color: '#0f172a' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span
-                              className="w-7 h-7 rounded-lg flex items-center justify-center text-xs shrink-0"
-                              style={{ backgroundColor: theme.bg, color: theme.color, border: `1px solid ${theme.border}` }}
+                              style={{
+                                width: '30px',
+                                height: '30px',
+                                borderRadius: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '12px',
+                                flexShrink: 0,
+                                backgroundColor: theme.bg,
+                                color: theme.color,
+                                border: `1px solid ${theme.border}`,
+                              }}
                             >
                               <i className={iconClass} />
                             </span>
                             <div>
-                              <div className="font-bold text-slate-900">{dept.name}</div>
-                              <span className="text-[10px] font-semibold text-slate-400 tracking-wider">
+                              <div style={{ fontWeight: 800, color: '#0f172a' }}>{dept.name}</div>
+                              <span style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>
                                 {dept.code || 'KV-DEPT'}
                               </span>
                             </div>
@@ -642,98 +1059,106 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Responsibilities */}
-                        <td className="py-3 px-4 text-slate-600 leading-relaxed">
-                          <p className="line-clamp-2" title={dept.responsibilities}>
-                            {dept.responsibilities}
-                          </p>
+                        <td style={{ padding: '12px 16px', color: '#475569', lineHeight: 1.5 }}>
+                          <span title={dept.responsibilities}>{dept.responsibilities}</span>
                         </td>
 
                         {/* Head */}
-                        <td className="py-3 px-3 font-medium text-slate-700 whitespace-nowrap">
+                        <td style={{ padding: '12px 12px', whiteSpace: 'nowrap' }}>
                           {dept.headName !== 'Unassigned' ? (
-                            <span className="inline-flex items-center gap-1 font-semibold text-slate-800">
-                              <Shield size={12} className="text-indigo-600" />
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: '#1e293b' }}>
+                              <Shield size={12} color="#4f46e5" />
                               {dept.headName}
                             </span>
                           ) : (
-                            <span className="text-slate-400 italic">Unassigned</span>
+                            <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Unassigned</span>
                           )}
                         </td>
 
                         {/* Carried Forward */}
-                        <td className="py-3 px-3 text-center font-bold">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
                           {dept.carriedForward > 0 ? (
-                            <span className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[11px]">
+                            <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {dept.carriedForward}
                             </span>
                           ) : (
-                            <span className="text-slate-400">0</span>
+                            <span style={{ color: '#cbd5e1' }}>0</span>
                           )}
                         </td>
 
                         {/* Newly Assigned */}
-                        <td className="py-3 px-3 text-center font-medium text-slate-700">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600, color: '#334155' }}>
                           {dept.newlyAssigned}
                         </td>
 
                         {/* Total Workload */}
-                        <td className="py-3 px-3 text-center font-black text-slate-900">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 900, color: '#0f172a' }}>
                           {dept.totalWorkload}
                         </td>
 
                         {/* Completed */}
-                        <td className="py-3 px-3 text-center font-bold text-emerald-700">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
                           {dept.completed > 0 ? (
-                            <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[11px]">
+                            <span style={{ background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {dept.completed}
                             </span>
                           ) : (
-                            <span className="text-slate-400">0</span>
+                            <span style={{ color: '#cbd5e1' }}>0</span>
                           )}
                         </td>
 
                         {/* In Progress */}
-                        <td className="py-3 px-3 text-center font-medium text-blue-700">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600, color: '#0284c7' }}>
                           {dept.inProgress}
                         </td>
 
                         {/* Overdue */}
-                        <td className="py-3 px-3 text-center font-bold">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
                           {dept.overdue > 0 ? (
-                            <span className="inline-block px-2 py-0.5 rounded-md bg-red-100 text-red-800 text-[11px]">
+                            <span style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {dept.overdue}
                             </span>
                           ) : (
-                            <span className="text-slate-300">0</span>
+                            <span style={{ color: '#cbd5e1' }}>0</span>
                           )}
                         </td>
 
                         {/* Completion Rate */}
-                        <td className="py-3 px-4 text-center">
-                          <div className="flex items-center justify-center gap-2">
-                            <div className="w-16 bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                        <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            <div style={{ width: '60px', background: '#f1f5f9', borderRadius: '8px', height: '6px', overflow: 'hidden' }}>
                               <div
-                                className={`h-full rounded-full ${
-                                  dept.completionRate >= 80
-                                    ? 'bg-emerald-500'
-                                    : dept.completionRate >= 50
-                                    ? 'bg-blue-500'
-                                    : 'bg-amber-500'
-                                }`}
-                                style={{ width: `${Math.min(100, dept.completionRate)}%` }}
+                                style={{
+                                  height: '100%',
+                                  borderRadius: '8px',
+                                  width: `${Math.min(100, dept.completionRate)}%`,
+                                  background: dept.completionRate >= 80 ? '#16a34a' : dept.completionRate >= 40 ? '#0284c7' : '#d97706',
+                                }}
                               />
                             </div>
-                            <span className="font-bold text-slate-800 text-[11px] w-9 text-right">
+                            <span style={{ fontWeight: 800, fontSize: '11px', color: '#0f172a', width: '35px', textAlign: 'right' }}>
                               {dept.completionRate}%
                             </span>
                           </div>
                         </td>
 
                         {/* Action: Filter Tasks */}
-                        <td className="py-3 px-3 text-center whitespace-nowrap">
+                        <td style={{ padding: '12px 12px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                           <button
                             onClick={() => handleFilterByDepartment(dept.name)}
-                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-colors"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              color: '#4f46e5',
+                              background: '#eef2ff',
+                              border: '1px solid #c7d2fe',
+                              padding: '4px 10px',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                            }}
                           >
                             <span>Tasks</span>
                             <ArrowRight size={11} />
@@ -753,58 +1178,103 @@ export const TaskforceWeeklyReportsTab = ({
       {/* 5. SUB-VIEW 2: MEMBER PERFORMANCE & CONTRIBUTIONS */}
       {/* ========================================================= */}
       {subView === 'members' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 bg-slate-50/70 border-b border-slate-200 flex items-center justify-between">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              overflow: 'hidden',
+              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.04)',
+            }}
+          >
+            <div
+              style={{
+                padding: '16px 20px',
+                background: '#f8fafc',
+                borderBottom: '1px solid #e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <div>
-                <h3 className="text-sm font-bold text-slate-800">
-                  Task Force Personnel Contributions & Accountability
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#0f172a' }}>
+                  Task Force Personnel Contributions &amp; Accountability
                 </h3>
-                <p className="text-xs text-slate-500">
+                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
                   Tracking deliverables for Heads, Supervisors, and Helpers, including carried-over and overdue tasks.
-                </p>
+                </span>
               </div>
-              <span className="text-xs font-semibold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs">
+              <span
+                style={{
+                  fontSize: '0.74rem',
+                  fontWeight: '700',
+                  color: '#334155',
+                  background: '#ffffff',
+                  padding: '4px 10px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                }}
+              >
                 {filteredMembers.length} Members Listed
               </span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
                 <thead>
-                  <tr className="bg-slate-100/75 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
-                    <th className="py-3 px-4">Member Name</th>
-                    <th className="py-3 px-3">Hierarchy Tier</th>
-                    <th className="py-3 px-3">Department / Trade</th>
-                    <th className="py-3 px-3">Supervisor / Head</th>
-                    <th className="py-3 px-3 text-center">Carried Fwd</th>
-                    <th className="py-3 px-3 text-center">New</th>
-                    <th className="py-3 px-3 text-center">Total Workload</th>
-                    <th className="py-3 px-3 text-center">Completed</th>
-                    <th className="py-3 px-3 text-center">In Progress</th>
-                    <th className="py-3 px-3 text-center">Overdue</th>
-                    <th className="py-3 px-4 text-center">Completion %</th>
-                    <th className="py-3 px-3 text-center">Rating</th>
-                    <th className="py-3 px-3 text-center">Action</th>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 800 }}>
+                    <th style={{ padding: '12px 16px' }}>Member Name</th>
+                    <th style={{ padding: '12px 12px' }}>Hierarchy Tier</th>
+                    <th style={{ padding: '12px 12px' }}>Department / Trade</th>
+                    <th style={{ padding: '12px 12px' }}>Supervisor / Head</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Carried Fwd</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>New</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Workload</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Completed</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>In Progress</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Overdue</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'center' }}>Completion %</th>
+                    <th style={{ padding: '12px 12px', textAlign: 'center' }}>Rating</th>
+                    <th style={{ padding: '12px 12px', textAlign: 'center' }}>Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody>
                   {filteredMembers.map((m) => {
                     const tierTheme = getHierarchyTheme(m.hierarchyLevel);
 
                     return (
-                      <tr key={m.id || m.name} className="hover:bg-slate-50/80 transition-colors">
+                      <tr
+                        key={m.id || m.name}
+                        style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s ease' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      >
                         {/* Name */}
-                        <td className="py-3 px-4">
-                          <div className="font-bold text-slate-900">{m.name}</div>
-                          <div className="text-[10px] text-slate-400">{m.mobileNo !== '—' ? m.mobileNo : m.email}</div>
+                        <td style={{ padding: '12px 16px' }}>
+                          <div style={{ fontWeight: 800, color: '#0f172a' }}>{m.name}</div>
+                          <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                            {m.mobileNo !== '—' ? m.mobileNo : m.email}
+                          </div>
                         </td>
 
                         {/* Hierarchy Level */}
-                        <td className="py-3 px-3 whitespace-nowrap">
+                        <td style={{ padding: '12px 12px', whiteSpace: 'nowrap' }}>
                           <span
-                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider"
-                            style={{ backgroundColor: tierTheme.bg, color: tierTheme.color, border: `1px solid ${tierTheme.border}` }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '3px 8px',
+                              borderRadius: '12px',
+                              fontSize: '10px',
+                              fontWeight: 800,
+                              textTransform: 'uppercase',
+                              backgroundColor: tierTheme.bg,
+                              color: tierTheme.color,
+                              border: `1px solid ${tierTheme.border}`,
+                            }}
                           >
                             <i className={tierTheme.icon} />
                             {m.hierarchyLevel}
@@ -812,98 +1282,117 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Department / Trade */}
-                        <td className="py-3 px-3 font-medium text-slate-700 whitespace-nowrap">
+                        <td style={{ padding: '12px 12px', fontWeight: 600, color: '#334155', whiteSpace: 'nowrap' }}>
                           <div>{m.department}</div>
                           {m.trade && m.trade !== m.department && (
-                            <span className="text-[10px] text-slate-400 font-normal">({m.trade})</span>
+                            <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 400 }}>({m.trade})</span>
                           )}
                         </td>
 
                         {/* Supervisor */}
-                        <td className="py-3 px-3 text-slate-500 whitespace-nowrap">
+                        <td style={{ padding: '12px 12px', color: '#64748b', whiteSpace: 'nowrap' }}>
                           {m.head !== '—' ? m.head : m.supervisor}
                         </td>
 
                         {/* Carried Forward */}
-                        <td className="py-3 px-3 text-center font-bold">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
                           {m.carriedForward > 0 ? (
-                            <span className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[11px]">
+                            <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {m.carriedForward}
                             </span>
                           ) : (
-                            <span className="text-slate-300">0</span>
+                            <span style={{ color: '#cbd5e1' }}>0</span>
                           )}
                         </td>
 
                         {/* Newly Assigned */}
-                        <td className="py-3 px-3 text-center font-medium text-slate-700">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600, color: '#334155' }}>
                           {m.newlyAssigned}
                         </td>
 
                         {/* Total Workload */}
-                        <td className="py-3 px-3 text-center font-black text-slate-900">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 900, color: '#0f172a' }}>
                           {m.totalWorkload}
                         </td>
 
                         {/* Completed */}
-                        <td className="py-3 px-3 text-center font-bold text-emerald-700">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
                           {m.completed > 0 ? (
-                            <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[11px]">
+                            <span style={{ background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {m.completed}
                             </span>
                           ) : (
-                            <span className="text-slate-400">0</span>
+                            <span style={{ color: '#cbd5e1' }}>0</span>
                           )}
                         </td>
 
                         {/* In Progress */}
-                        <td className="py-3 px-3 text-center font-medium text-blue-700">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600, color: '#0284c7' }}>
                           {m.inProgress}
                         </td>
 
                         {/* Overdue */}
-                        <td className="py-3 px-3 text-center font-bold">
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
                           {m.overdue > 0 ? (
-                            <span className="inline-block px-2 py-0.5 rounded-md bg-red-100 text-red-800 text-[11px]">
+                            <span style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {m.overdue}
                             </span>
                           ) : (
-                            <span className="text-slate-300">0</span>
+                            <span style={{ color: '#cbd5e1' }}>0</span>
                           )}
                         </td>
 
                         {/* Completion Rate */}
-                        <td className="py-3 px-4 text-center">
-                          <div className="flex items-center justify-center gap-1.5 font-bold text-slate-800 text-[11px]">
-                            <span>{m.completionRate}%</span>
-                          </div>
+                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: 800, color: '#0f172a' }}>
+                          {m.completionRate}%
                         </td>
 
                         {/* Rating */}
-                        <td className="py-3 px-3 text-center whitespace-nowrap">
+                        <td style={{ padding: '12px 12px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                           <span
-                            className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              m.performanceRating === 'Excellent'
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : m.performanceRating === 'Good'
-                                ? 'bg-blue-100 text-blue-800'
-                                : m.performanceRating === 'Average'
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}
+                            style={{
+                              display: 'inline-block',
+                              padding: '2px 8px',
+                              borderRadius: '12px',
+                              fontSize: '10px',
+                              fontWeight: 800,
+                              background:
+                                m.performanceRating === 'Excellent'
+                                  ? '#dcfce7'
+                                  : m.performanceRating === 'Good'
+                                  ? '#e0f2fe'
+                                  : m.performanceRating === 'Average'
+                                  ? '#fef3c7'
+                                  : '#fee2e2',
+                              color:
+                                m.performanceRating === 'Excellent'
+                                  ? '#15803d'
+                                  : m.performanceRating === 'Good'
+                                  ? '#0369a1'
+                                  : m.performanceRating === 'Average'
+                                  ? '#92400e'
+                                  : '#991b1b',
+                            }}
                           >
                             {m.performanceRating}
                           </span>
                         </td>
 
                         {/* Action: Open Member Drawer */}
-                        <td className="py-3 px-3 text-center whitespace-nowrap">
+                        <td style={{ padding: '12px 12px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                           <button
                             onClick={() => onSelectMember && onSelectMember(m)}
-                            className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+                            style={{
+                              padding: '5px 8px',
+                              borderRadius: '6px',
+                              border: '1px solid #cbd5e1',
+                              background: '#ffffff',
+                              color: '#475569',
+                              cursor: 'pointer',
+                            }}
                             title="View Member Profile & Tasks"
                           >
-                            <Eye size={14} />
+                            <Eye size={13} />
                           </button>
                         </td>
                       </tr>
@@ -920,16 +1409,26 @@ export const TaskforceWeeklyReportsTab = ({
       {/* 6. SUB-VIEW 3 & 4: TASK AUDIT LEDGER & CARRIED FORWARD FOCUS */}
       {/* ========================================================= */}
       {(subView === 'tasks' || subView === 'carried_forward') && (
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {/* Carried Forward Focus Alert Banner */}
           {subView === 'carried_forward' && (
-            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3">
-              <AlertTriangle className="text-amber-600 shrink-0 mt-0.5" size={18} />
+            <div
+              style={{
+                padding: '16px 20px',
+                borderRadius: '14px',
+                background: '#fffbeb',
+                border: '1px solid #fde68a',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px',
+              }}
+            >
+              <AlertTriangle color="#d97706" size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
               <div>
-                <h4 className="text-xs font-bold text-amber-900">
+                <h4 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#92400e' }}>
                   Critical Focus: Incomplete Responsibilities Carried Forward
                 </h4>
-                <p className="text-xs text-amber-700 mt-0.5">
+                <p style={{ margin: '4px 0 0', fontSize: '0.76rem', color: '#b45309', lineHeight: 1.5 }}>
                   The tasks listed below were initiated in prior weeks or are past deadline. Review and allocate immediate field resources so no project milestone is delayed.
                 </p>
               </div>
@@ -937,9 +1436,22 @@ export const TaskforceWeeklyReportsTab = ({
           )}
 
           {/* Table Filters Toolbar */}
-          <div className="bg-white p-3.5 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-semibold text-slate-600 flex items-center gap-1">
+          <div
+            style={{
+              background: '#ffffff',
+              padding: '12px 18px',
+              borderRadius: '14px',
+              border: '1px solid #e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '10px',
+              fontSize: '0.78rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontWeight: 700, color: '#475569', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <SlidersHorizontal size={13} /> Filters:
               </span>
 
@@ -947,7 +1459,7 @@ export const TaskforceWeeklyReportsTab = ({
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-700"
+                style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.76rem' }}
               >
                 <option value="all">All Priorities</option>
                 <option value="urgent">Urgent</option>
@@ -960,7 +1472,7 @@ export const TaskforceWeeklyReportsTab = ({
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-700"
+                style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.76rem' }}
               >
                 <option value="all">All Statuses</option>
                 <option value="completed">Completed in Week</option>
@@ -974,7 +1486,7 @@ export const TaskforceWeeklyReportsTab = ({
                 <select
                   value={carriedFilter}
                   onChange={(e) => setCarriedFilter(e.target.value)}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-700"
+                  style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.76rem' }}
                 >
                   <option value="all">All Task Origins</option>
                   <option value="carried_only">Carried Forward Only</option>
@@ -983,34 +1495,42 @@ export const TaskforceWeeklyReportsTab = ({
               )}
             </div>
 
-            <div className="text-slate-500 font-medium">
-              Showing <span className="font-bold text-slate-900">{filteredTasks.length}</span> tasks
+            <div style={{ color: '#64748b', fontWeight: 600 }}>
+              Showing <span style={{ fontWeight: 800, color: '#0f172a' }}>{filteredTasks.length}</span> tasks
             </div>
           </div>
 
           {/* Master Task Table */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              border: '1px solid #e2e8f0',
+              overflow: 'hidden',
+              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.04)',
+            }}
+          >
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
                 <thead>
-                  <tr className="bg-slate-100/75 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
-                    <th className="py-3 px-4">Task Code</th>
-                    <th className="py-3 px-4 min-w-[240px]">Task Title & Scope</th>
-                    <th className="py-3 px-3">Department</th>
-                    <th className="py-3 px-3">Priority</th>
-                    <th className="py-3 px-3">Assigned Member(s)</th>
-                    <th className="py-3 px-3">Assignment Date</th>
-                    <th className="py-3 px-3">Deadline</th>
-                    <th className="py-3 px-3">Current Status</th>
-                    <th className="py-3 px-3">Completion Date</th>
-                    <th className="py-3 px-3 text-center">Origin</th>
-                    <th className="py-3 px-3 text-center">Action</th>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 800 }}>
+                    <th style={{ padding: '12px 16px' }}>Task Code</th>
+                    <th style={{ padding: '12px 16px', minWidth: '240px' }}>Task Title &amp; Scope</th>
+                    <th style={{ padding: '12px 10px' }}>Department</th>
+                    <th style={{ padding: '12px 10px' }}>Priority</th>
+                    <th style={{ padding: '12px 12px' }}>Assigned Member(s)</th>
+                    <th style={{ padding: '12px 10px' }}>Assignment Date</th>
+                    <th style={{ padding: '12px 10px' }}>Deadline</th>
+                    <th style={{ padding: '12px 10px' }}>Current Status</th>
+                    <th style={{ padding: '12px 10px' }}>Completion Date</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Origin</th>
+                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody>
                   {filteredTasks.length === 0 ? (
                     <tr>
-                      <td colSpan="11" className="py-12 text-center text-slate-400 font-medium">
+                      <td colSpan="11" style={{ padding: '36px', textAlign: 'center', color: '#94a3b8', fontWeight: 600 }}>
                         No tasks found matching the selected period and filters.
                       </td>
                     </tr>
@@ -1019,64 +1539,102 @@ export const TaskforceWeeklyReportsTab = ({
                       const deptTheme = getDepartmentTheme(t.department);
 
                       return (
-                        <tr key={t._id} className="hover:bg-slate-50/80 transition-colors">
+                        <tr
+                          key={t._id}
+                          style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s ease' }}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                        >
                           {/* Task Code */}
-                          <td className="py-3 px-4 whitespace-nowrap">
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                             <button
                               onClick={() => onSelectTask && onSelectTask(t._id)}
-                              className="font-mono font-bold text-indigo-600 hover:text-indigo-800 hover:underline"
+                              style={{
+                                fontFamily: 'monospace',
+                                fontWeight: 800,
+                                color: '#4f46e5',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: 0,
+                                textDecoration: 'underline',
+                              }}
                             >
                               {t.taskCode}
                             </button>
                             {t.isMDDirective && (
-                              <span className="ml-1.5 px-1 py-0.2 bg-purple-100 text-purple-800 text-[9px] font-black rounded uppercase">
+                              <span
+                                style={{
+                                  marginLeft: '6px',
+                                  padding: '1px 5px',
+                                  borderRadius: '4px',
+                                  fontSize: '9px',
+                                  fontWeight: 900,
+                                  background: '#f3e8ff',
+                                  color: '#7e22ce',
+                                }}
+                              >
                                 MD
                               </span>
                             )}
                           </td>
 
                           {/* Title */}
-                          <td className="py-3 px-4">
-                            <div className="font-semibold text-slate-900 leading-snug">{t.title}</div>
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: 700, color: '#0f172a', lineHeight: 1.4 }}>{t.title}</div>
                             {t.apartmentContext && (
-                              <div className="text-[10px] text-slate-400 mt-0.5">
+                              <div style={{ fontSize: '10px', color: '#64748b', marginTop: '2px' }}>
                                 Unit: {t.apartmentContext}
                               </div>
                             )}
                             {t.hasRoadblock && (
-                              <div className="text-[10px] text-red-600 font-semibold mt-0.5 flex items-center gap-1">
+                              <div style={{ fontSize: '10px', color: '#dc2626', fontWeight: 700, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                                 <AlertTriangle size={11} /> Roadblock: {t.roadblockReason || 'Active roadblock'}
                               </div>
                             )}
                           </td>
 
                           {/* Department */}
-                          <td className="py-3 px-3 whitespace-nowrap">
+                          <td style={{ padding: '12px 10px', whiteSpace: 'nowrap' }}>
                             <span
-                              className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase"
-                              style={{ backgroundColor: deptTheme.bg, color: deptTheme.color, border: `1px solid ${deptTheme.border}` }}
+                              style={{
+                                display: 'inline-block',
+                                padding: '2px 7px',
+                                borderRadius: '6px',
+                                fontSize: '10px',
+                                fontWeight: 800,
+                                textTransform: 'uppercase',
+                                backgroundColor: deptTheme.bg,
+                                color: deptTheme.color,
+                                border: `1px solid ${deptTheme.border}`,
+                              }}
                             >
                               {t.department}
                             </span>
                           </td>
 
                           {/* Priority */}
-                          <td className="py-3 px-3 whitespace-nowrap">
+                          <td style={{ padding: '12px 10px', whiteSpace: 'nowrap' }}>
                             <span
-                              className={`inline-block px-2 py-0.5 rounded-md text-[10px] uppercase border ${getPriorityBadgeClass(
-                                t.priority
-                              )}`}
+                              style={{
+                                display: 'inline-block',
+                                padding: '2px 7px',
+                                borderRadius: '6px',
+                                fontSize: '10px',
+                                textTransform: 'uppercase',
+                                ...getPriorityBadgeStyle(t.priority),
+                              }}
                             >
                               {t.priority}
                             </span>
                           </td>
 
                           {/* Assigned Members */}
-                          <td className="py-3 px-3 text-slate-700 whitespace-nowrap font-medium">
+                          <td style={{ padding: '12px 12px', color: '#334155', fontWeight: 600, whiteSpace: 'nowrap' }}>
                             <span title={t.assigneeText}>
                               {t.primaryAssignee}
                               {t.assignees.length > 1 && (
-                                <span className="ml-1 text-[10px] text-slate-400 font-normal">
+                                <span style={{ marginLeft: '4px', fontSize: '10px', color: '#94a3b8', fontWeight: 400 }}>
                                   +{t.assignees.length - 1} more
                                 </span>
                               )}
@@ -1084,50 +1642,83 @@ export const TaskforceWeeklyReportsTab = ({
                           </td>
 
                           {/* Assignment Date */}
-                          <td className="py-3 px-3 text-slate-600 whitespace-nowrap">
+                          <td style={{ padding: '12px 10px', color: '#64748b', whiteSpace: 'nowrap' }}>
                             {t.startDate ? new Date(t.startDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '—'}
                           </td>
 
                           {/* Deadline */}
-                          <td className="py-3 px-3 whitespace-nowrap">
-                            <span className={t.isOverdue ? 'font-bold text-red-600' : 'text-slate-600'}>
+                          <td style={{ padding: '12px 10px', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontWeight: t.isOverdue ? 800 : 500, color: t.isOverdue ? '#dc2626' : '#475569' }}>
                               {t.dueDate ? new Date(t.dueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '—'}
                             </span>
                           </td>
 
                           {/* Status */}
-                          <td className="py-3 px-3 whitespace-nowrap">
-                            {getStatusBadge(t)}
+                          <td style={{ padding: '12px 10px', whiteSpace: 'nowrap' }}>
+                            {renderStatusBadge(t)}
                           </td>
 
                           {/* Completion Date */}
-                          <td className="py-3 px-3 text-slate-600 whitespace-nowrap">
+                          <td style={{ padding: '12px 10px', color: '#64748b', whiteSpace: 'nowrap' }}>
                             {t.completedAt
                               ? new Date(t.completedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
                               : '—'}
                           </td>
 
                           {/* Carried Forward Origin */}
-                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                          <td style={{ padding: '12px 10px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                             {t.isCarriedForward ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
+                              <span
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '2px 8px',
+                                  borderRadius: '12px',
+                                  fontSize: '10px',
+                                  fontWeight: 800,
+                                  background: '#fef3c7',
+                                  color: '#92400e',
+                                  border: '1px solid #fde68a',
+                                }}
+                              >
                                 <RotateCcw size={10} /> Carried Over
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                              <span
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '2px 8px',
+                                  borderRadius: '12px',
+                                  fontSize: '10px',
+                                  fontWeight: 600,
+                                  background: '#f1f5f9',
+                                  color: '#475569',
+                                  border: '1px solid #e2e8f0',
+                                }}
+                              >
                                 New in Week
                               </span>
                             )}
                           </td>
 
                           {/* Action */}
-                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                          <td style={{ padding: '12px 10px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                             <button
                               onClick={() => onSelectTask && onSelectTask(t._id)}
-                              className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                              style={{
+                                padding: '5px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid #cbd5e1',
+                                background: '#ffffff',
+                                color: '#4f46e5',
+                                cursor: 'pointer',
+                              }}
                               title="Inspect Task Detail"
                             >
-                              <ExternalLink size={14} />
+                              <ExternalLink size={13} />
                             </button>
                           </td>
                         </tr>
@@ -1145,4 +1736,3 @@ export const TaskforceWeeklyReportsTab = ({
 };
 
 export default TaskforceWeeklyReportsTab;
-

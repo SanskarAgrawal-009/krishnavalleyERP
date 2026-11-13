@@ -5,7 +5,6 @@ import { useToast } from '../../context/ToastContext.jsx';
 import { taskforceManagerService } from '../../services/taskforceManagerService.js';
 import { taskService } from '../../services/taskService.js';
 import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.jsx';
-import { TaskforceWeeklyReportsTab } from '../../components/taskforce/TaskforceWeeklyReportsTab.jsx';
 import { TaskforceMemberDrawer } from '../../components/taskforce/TaskforceMemberDrawer.jsx';
 import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx';
 import { NewTaskModal } from '../../components/taskforce/NewTaskModal.jsx';
@@ -102,7 +101,6 @@ export const TaskforceManagerPage = () => {
   const tabs = [
     { key: 'team', label: 'Departments & Hierarchy', icon: Building2, color: '#059669' },
     { key: 'workforce', label: 'Team & Workload', icon: Users, color: '#1a73e8' },
-    { key: 'reports', label: 'Weekly Reports & Analytics', icon: BarChart3, color: '#4f46e5' },
     { key: 'delegation', label: 'Delegation Hub', icon: GitBranch, color: '#1e293b' },
   ];
 
@@ -135,7 +133,6 @@ export const TaskforceManagerPage = () => {
       setLoading(true);
       switch (tab) {
         case 'team':
-        case 'reports':
           setLoading(false);
           break;
         case 'workforce':
@@ -1560,18 +1557,6 @@ export const TaskforceManagerPage = () => {
         />
       )}
       {activeTab === 'workforce' && renderWorkforceTab()}
-      {activeTab === 'reports' && (
-        <TaskforceWeeklyReportsTab
-          onSelectTask={(taskId) => {
-            setSelectedTaskIdForModal(taskId);
-            setIsTaskDetailModalOpen(true);
-          }}
-          onSelectMember={(member) => {
-            setSelectedMemberForDrawer(member);
-            setIsMemberDrawerOpen(true);
-          }}
-        />
-      )}
       {activeTab === 'timeline' && renderTimelineTab()}
       {activeTab === 'performance' && renderPerformanceTab()}
       {activeTab === 'departments' && renderDepartmentTab()}

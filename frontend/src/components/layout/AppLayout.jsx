@@ -92,6 +92,7 @@ export const NAV_CATEGORIES = [
           { path: '/taskforce?view=list', label: 'Directives Register', icon: FileText },
           { path: '/taskforce?view=team', label: 'Team Hierarchy', icon: Users },
           { path: '/taskforce?view=meetings', label: 'Meetings & MoM', icon: Calendar },
+          { path: '/taskforce?view=reports', label: 'Weekly Reports & Analytics', icon: BarChart3 },
         ]
       },
       {

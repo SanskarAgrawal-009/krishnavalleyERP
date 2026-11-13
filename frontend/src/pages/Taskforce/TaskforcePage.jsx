@@ -9,6 +9,7 @@ import { TaskDetailModal } from '../../components/taskforce/TaskDetailModal.jsx'
 import { TaskforceTeamTab } from '../../components/taskforce/TaskforceTeamTab.jsx';
 import { TaskforceMemberDrawer } from '../../components/taskforce/TaskforceMemberDrawer.jsx';
 import { TaskforceMeetingsTab } from '../../components/taskforce/TaskforceMeetingsTab.jsx';
+import { TaskforceWeeklyReportsTab } from '../../components/taskforce/TaskforceWeeklyReportsTab.jsx';
 
 import {
   Sparkles,
@@ -39,7 +40,8 @@ import {
   ListTodo,
   CheckSquare,
   Flame,
-  RotateCcw
+  RotateCcw,
+  BarChart3,
 } from 'lucide-react';
 
 export const TaskforcePage = () => {
@@ -663,6 +665,7 @@ export const TaskforcePage = () => {
       </div>
 
       {/* 2. EXECUTIVE KPI CARDS */}
+      {viewMode !== 'reports' && (
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '14px' }}>
         {/* Total Tasks */}
         <div
@@ -806,6 +809,7 @@ export const TaskforcePage = () => {
           <div style={{ fontSize: '11px', color: '#64748b' }}>Successfully closed</div>
         </div>
       </div>
+      )}
 
       {/* 3. REDESIGNED TOOLBAR: CLEAN, HORIZONTAL & RESPONSIVE */}
       <div
@@ -957,9 +961,35 @@ export const TaskforcePage = () => {
           >
             <Calendar size={14} /> Meetings &amp; MoM
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setViewMode('reports');
+              setSearchParams({ view: 'reports' });
+            }}
+            style={{
+              padding: '7px 14px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: viewMode === 'reports' ? '#ffffff' : 'transparent',
+              color: viewMode === 'reports' ? '#4f46e5' : '#64748b',
+              boxShadow: viewMode === 'reports' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              cursor: 'pointer',
+              border: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <BarChart3 size={14} /> Weekly Reports &amp; Analytics
+          </button>
         </div>
 
         {/* Right: Inline Search & Filter Controls (Fixed widths to prevent expanding) */}
+        {['kanban', 'radar', 'list'].includes(viewMode) && (
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {/* Search Box */}
           <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -1120,6 +1150,7 @@ export const TaskforcePage = () => {
             </button>
           )}
         </div>
+        )}
       </div>
 
       {/* 4. VIEW 1: KANBAN BOARD */}
@@ -1591,6 +1622,19 @@ export const TaskforcePage = () => {
         <TaskforceMeetingsTab
           onOpenTaskDetail={(taskId) => {
             handleOpenDetail(taskId);
+          }}
+        />
+      )}
+
+      {/* 9. VIEW 6: WEEKLY REPORTS & ANALYTICS */}
+      {viewMode === 'reports' && (
+        <TaskforceWeeklyReportsTab
+          onSelectTask={(taskId) => {
+            handleOpenDetail(taskId);
+          }}
+          onSelectMember={(member) => {
+            setSelectedMemberForDrawer(member);
+            setIsMemberDrawerOpen(true);
           }}
         />
       )}
