@@ -34,56 +34,58 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = '650px' }) 
         className="g-card"
         style={{
           backgroundColor: '#ffffff',
-          border: '1px solid #dadce0',
-          borderRadius: '12px',
+          border: '1px solid #e8e6df',
+          borderRadius: '16px',
           width: '100%',
           maxWidth,
           maxHeight: '92vh',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.18)',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.12)',
           overflow: 'hidden'
         }}
       >
         {/* Header */}
         <div
           style={{
-            padding: '16px 20px',
-            borderBottom: '1px solid #edeef0',
+            padding: '18px 24px',
+            borderBottom: '1px solid #e8e6df',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: '#ffffff'
+            backgroundColor: '#faf9f6'
           }}
         >
           <h3
             className="font-title-lg"
-            style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--on-surface)' }}
+            style={{ fontSize: '1.15rem', fontWeight: '700', color: '#1f2937', letterSpacing: '-0.01em' }}
           >
             {title}
           </h3>
           <button
             onClick={onClose}
             style={{
-              background: '#f3f4f5',
-              color: 'var(--on-surface-variant)',
+              background: '#ffffff',
+              color: '#596372',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              border: 'none',
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              border: '1px solid #e8e6df',
               cursor: 'pointer',
               transition: 'all 0.15s ease'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#e1e3e4';
-              e.currentTarget.style.color = '#191c1d';
+              e.currentTarget.style.backgroundColor = '#e8f2e5';
+              e.currentTarget.style.color = '#17652f';
+              e.currentTarget.style.borderColor = '#cde4c9';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#f3f4f5';
-              e.currentTarget.style.color = 'var(--on-surface-variant)';
+              e.currentTarget.style.backgroundColor = '#ffffff';
+              e.currentTarget.style.color = '#596372';
+              e.currentTarget.style.borderColor = '#e8e6df';
             }}
           >
             <X size={16} />
@@ -91,7 +93,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = '650px' }) 
         </div>
 
         {/* Content Body */}
-        <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1, backgroundColor: '#ffffff' }}>
+        <div style={{ padding: '24px', overflowY: 'auto', flex: 1, backgroundColor: '#ffffff' }}>
           {children}
         </div>
       </div>

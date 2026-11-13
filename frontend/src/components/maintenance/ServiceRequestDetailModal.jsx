@@ -152,7 +152,7 @@ export const ServiceRequestDetailModal = ({
 
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: '700' }}>CATEGORY</span>
-            <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#1a73e8', textTransform: 'capitalize' }}>
+            <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#17652f', textTransform: 'capitalize' }}>
               {(reqData.category || 'General').replace('_', ' ')}
             </div>
           </div>
@@ -167,7 +167,7 @@ export const ServiceRequestDetailModal = ({
         {/* Work Order Update Form */}
         <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Wrench size={16} color="#1a73e8" /> Update Work Order & Technician Assignment
+            <Wrench size={16} color="#17652f" /> Update Work Order & Technician Assignment
           </h4>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
@@ -272,7 +272,7 @@ export const ServiceRequestDetailModal = ({
               disabled={submitting}
               style={{
                 padding: '8px 20px',
-                background: '#1a73e8',
+                background: '#17652f',
                 color: '#ffffff',
                 fontWeight: '700',
                 borderRadius: '6px',
@@ -312,7 +312,7 @@ export const ServiceRequestDetailModal = ({
                 disabled={!photoFile || uploadingPhoto}
                 style={{
                   padding: '6px 14px',
-                  background: '#1a73e8',
+                  background: '#17652f',
                   color: '#ffffff',
                   borderRadius: '6px',
                   fontSize: '0.76rem',
@@ -342,7 +342,7 @@ export const ServiceRequestDetailModal = ({
                   style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', background: '#f8f9fa', padding: '8px', borderRadius: '6px', border: '1px solid #dadce0' }}
                 >
                   <img src={p.fileUrl} alt="proof" style={{ width: '88px', height: '66px', objectFit: 'cover', borderRadius: '4px' }} />
-                  <span style={{ fontSize: '0.7rem', color: '#1a73e8', fontWeight: '600' }}>View Proof ↗</span>
+                  <span style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600' }}>View Proof ↗</span>
                 </a>
               ))}
             </div>

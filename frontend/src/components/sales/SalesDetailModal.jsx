@@ -255,14 +255,14 @@ export const SalesDetailModal = ({
             </div>
             <div style={{ display: 'flex', gap: '14px', fontSize: '0.8rem', color: '#374151', marginTop: '4px', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Phone size={13} color="#1a73e8" /> {salesLead.mobileNo}
+                <Phone size={13} color="#17652f" /> {salesLead.mobileNo}
               </span>
               {salesLead.email && (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Mail size={13} color="#60a5fa" /> {salesLead.email}
+                  <Mail size={13} color="#4a9e68" /> {salesLead.email}
                 </span>
               )}
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#c084fc', fontWeight: '600' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#86c8a0', fontWeight: '600' }}>
                 <Home size={13} /> Flat {salesLead.flatId?.flatNumber || 'N/A'} • {salesLead.projectId?.projectName || 'Project'}
               </span>
             </div>
@@ -276,14 +276,14 @@ export const SalesDetailModal = ({
               </div>
             </div>
             <div style={{ borderLeft: '1px solid #dadce0', paddingLeft: '14px' }}>
-              <div style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: '600' }}>PAID</div>
-              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1a73e8' }}>
+              <div style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600' }}>PAID</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f' }}>
                 {formatINR(totalPaidVal)}
               </div>
             </div>
             <div style={{ borderLeft: '1px solid #dadce0', paddingLeft: '14px' }}>
               <div style={{ fontSize: '0.7rem', color: '#0f172a', fontWeight: '600' }}>BALANCE</div>
-              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: balanceRemainingVal > 0 ? '#334155' : '#1a73e8' }}>
+              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: balanceRemainingVal > 0 ? '#334155' : '#17652f' }}>
                 {formatINR(balanceRemainingVal)}
               </div>
             </div>
@@ -342,7 +342,7 @@ export const SalesDetailModal = ({
         {activeTab === 'booking' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <CheckCircle size={16} color="#1a73e8" /> Unit Booking & Token Verification
+              <CheckCircle size={16} color="#17652f" /> Unit Booking & Token Verification
             </h4>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
@@ -389,18 +389,18 @@ export const SalesDetailModal = ({
 
             {/* Universal Sync Notice */}
             <div style={{
-              background: bookingForm.bookingStatus === 'confirmed' ? '#eff6ff' : (bookingForm.bookingStatus === 'cancelled' ? '#f1f5f9' : '#f8f9fa'),
-              border: `1px solid ${bookingForm.bookingStatus === 'confirmed' ? '#dbeafe' : (bookingForm.bookingStatus === 'cancelled' ? '#e2e8f0' : '#dadce0')}`,
+              background: bookingForm.bookingStatus === 'confirmed' ? '#e8f2e5' : (bookingForm.bookingStatus === 'cancelled' ? '#f1f5f9' : '#f8f9fa'),
+              border: `1px solid ${bookingForm.bookingStatus === 'confirmed' ? '#e8f2e5' : (bookingForm.bookingStatus === 'cancelled' ? '#e2e8f0' : '#dadce0')}`,
               borderRadius: '6px',
               padding: '10px 14px',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
               fontSize: '0.76rem',
-              color: bookingForm.bookingStatus === 'confirmed' ? '#1e40af' : (bookingForm.bookingStatus === 'cancelled' ? '#0f172a' : '#4b5563')
+              color: bookingForm.bookingStatus === 'confirmed' ? '#17652f' : (bookingForm.bookingStatus === 'cancelled' ? '#0f172a' : '#4b5563')
             }}>
               {bookingForm.bookingStatus === 'confirmed' ? (
-                <CheckCircle2 size={18} color="#1a73e8" />
+                <CheckCircle2 size={18} color="#17652f" />
               ) : bookingForm.bookingStatus === 'cancelled' ? (
                 <XCircle size={18} color="#0f172a" />
               ) : (
@@ -409,7 +409,7 @@ export const SalesDetailModal = ({
               <div>
                 {bookingForm.bookingStatus === 'confirmed' ? (
                   <>
-                    <strong>Universal Status Synchronization:</strong> Flat {salesLead.flatId?.flatNumber || 'Unit'} is automatically marked as <span style={{ background: '#eff6ff', padding: '1px 6px', borderRadius: '3px', fontWeight: '800' }}>SOLD</span> across Project Inventory, Floor Matrix, CommandCenter, Customer Registry, and Rental Pool.
+                    <strong>Universal Status Synchronization:</strong> Flat {salesLead.flatId?.flatNumber || 'Unit'} is automatically marked as <span style={{ background: '#e8f2e5', padding: '1px 6px', borderRadius: '3px', fontWeight: '800' }}>SOLD</span> across Project Inventory, Floor Matrix, CommandCenter, Customer Registry, and Rental Pool.
                   </>
                 ) : bookingForm.bookingStatus === 'cancelled' ? (
                   <>
@@ -429,7 +429,7 @@ export const SalesDetailModal = ({
                 onClick={() => onUpdateBooking(salesLead._id, bookingForm)}
                 style={{
                   padding: '8px 18px',
-                  background: '#1a73e8',
+                  background: '#17652f',
                   color: '#ffffff',
                   fontWeight: '700',
                   borderRadius: 'var(--radius-sm)',
@@ -447,7 +447,7 @@ export const SalesDetailModal = ({
         {activeTab === 'agreement' && (
           <form onSubmit={handleAgreementSubmit} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <FileText size={16} color="#60a5fa" /> Builder-Buyer Agreement (BBA) Upload to S3 & Verification
+              <FileText size={16} color="#4a9e68" /> Builder-Buyer Agreement (BBA) Upload to S3 & Verification
             </h4>
 
             {/* Current Uploaded Document Status */}
@@ -464,7 +464,7 @@ export const SalesDetailModal = ({
                 gap: '10px'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <FileCheck size={24} color="#60a5fa" />
+                  <FileCheck size={24} color="#4a9e68" />
                   <div>
                     <div style={{ fontWeight: '700', color: '#111827', fontSize: '0.85rem' }}>
                       {salesLead.agreement.documentName || 'Agreement Document'}
@@ -484,7 +484,7 @@ export const SalesDetailModal = ({
                     alignItems: 'center',
                     gap: '6px',
                     padding: '6px 14px',
-                    background: '#2563eb',
+                    background: '#17652f',
                     color: '#111827',
                     borderRadius: '4px',
                     textDecoration: 'none',
@@ -598,7 +598,7 @@ export const SalesDetailModal = ({
                 disabled={uploadingAgreement}
                 style={{
                   padding: '8px 20px',
-                  background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                  background: 'linear-gradient(135deg, #17652f, #17652f)',
                   color: '#111827',
                   fontWeight: '700',
                   borderRadius: 'var(--radius-sm)',
@@ -622,7 +622,7 @@ export const SalesDetailModal = ({
             <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CreditCard size={16} color="#c084fc" /> Decide Payment Plan & Milestones
+                  <CreditCard size={16} color="#86c8a0" /> Decide Payment Plan & Milestones
                 </h4>
 
                 <button
@@ -638,7 +638,7 @@ export const SalesDetailModal = ({
                   }}
                   style={{
                     padding: '6px 12px',
-                    background: 'linear-gradient(135deg, #1a73e8, var(--primary-700))',
+                    background: 'linear-gradient(135deg, #17652f, var(--primary-700))',
                     color: '#111827',
                     borderRadius: 'var(--radius-sm)',
                     fontSize: '0.78rem',
@@ -749,9 +749,9 @@ export const SalesDetailModal = ({
                         onClick={handleAutoBalanceLastMilestone}
                         style={{
                           padding: '4px 10px',
-                          background: '#eff6ff',
-                          border: '1px solid #dbeafe',
-                          color: '#1a73e8',
+                          background: '#e8f2e5',
+                          border: '1px solid #e8f2e5',
+                          color: '#17652f',
                           borderRadius: '4px',
                           fontSize: '0.75rem',
                           fontWeight: '700',
@@ -833,16 +833,16 @@ export const SalesDetailModal = ({
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        background: isBalanced ? '#eff6ff' : '#f8fafc',
-                        border: `1px solid ${isBalanced ? '#bfdbfe' : '#cbd5e1'}`,
+                        background: isBalanced ? '#e8f2e5' : '#f8fafc',
+                        border: `1px solid ${isBalanced ? '#cde4c9' : '#cbd5e1'}`,
                         padding: '8px 12px',
                         borderRadius: '6px',
                         fontSize: '0.78rem'
                       }}>
-                        <span style={{ color: isBalanced ? '#1e40af' : '#334155', fontWeight: '700' }}>
+                        <span style={{ color: isBalanced ? '#17652f' : '#334155', fontWeight: '700' }}>
                           Custom Milestones Sum: {formatINR(customTotal)} / Deal Value: {formatINR(totalCost)}
                         </span>
-                        <span style={{ color: isBalanced ? '#1a73e8' : '#334155', fontWeight: '800' }}>
+                        <span style={{ color: isBalanced ? '#17652f' : '#334155', fontWeight: '800' }}>
                           {isBalanced ? '100% Balanced & Verified' : `Difference: ${diff > 0 ? `₹${diff.toLocaleString('en-IN')} unallocated` : `₹${Math.abs(diff).toLocaleString('en-IN')} exceeded`}`}
                         </span>
                       </div>
@@ -863,7 +863,7 @@ export const SalesDetailModal = ({
                   }}
                   style={{
                     padding: '8px 18px',
-                    background: 'linear-gradient(135deg, #2563eb, #1e3a8a)',
+                    background: 'linear-gradient(135deg, #17652f, #17652f)',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.82rem',
@@ -909,8 +909,8 @@ export const SalesDetailModal = ({
                             {new Date(inst.dueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </td>
                           <td style={{ padding: '8px 12px', fontWeight: '700', color: '#111827' }}>{formatINR(inst.amount)}</td>
-                          <td style={{ padding: '8px 12px', color: '#1a73e8', fontWeight: '600' }}>{formatINR(inst.paidAmount || 0)}</td>
-                          <td style={{ padding: '8px 12px', color: inst.remainingAmount > 0 ? '#cbd5e1' : '#1a73e8', fontWeight: '600' }}>{formatINR(inst.remainingAmount)}</td>
+                          <td style={{ padding: '8px 12px', color: '#17652f', fontWeight: '600' }}>{formatINR(inst.paidAmount || 0)}</td>
+                          <td style={{ padding: '8px 12px', color: inst.remainingAmount > 0 ? '#cbd5e1' : '#17652f', fontWeight: '600' }}>{formatINR(inst.remainingAmount)}</td>
                           <td style={{ padding: '8px 12px' }}>
                             <span style={{
                               padding: '2px 8px',
@@ -919,7 +919,7 @@ export const SalesDetailModal = ({
                               fontWeight: '700',
                               textTransform: 'capitalize',
                               background: inst.status === 'paid' ? 'rgba(16, 185, 129, 0.15)' : (inst.status === 'partially_paid' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(251, 191, 36, 0.15)'),
-                              color: inst.status === 'paid' ? '#1a73e8' : (inst.status === 'partially_paid' ? '#60a5fa' : '#cbd5e1')
+                              color: inst.status === 'paid' ? '#17652f' : (inst.status === 'partially_paid' ? '#4a9e68' : '#cbd5e1')
                             }}>
                               {inst.status}
                             </span>
@@ -937,7 +937,7 @@ export const SalesDetailModal = ({
                                     });
                                     setPayModalOpen(true);
                                   }}
-                                  style={{ padding: '4px 8px', background: 'rgba(16, 185, 129, 0.15)', color: '#1a73e8', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
+                                  style={{ padding: '4px 8px', background: 'rgba(16, 185, 129, 0.15)', color: '#17652f', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
                                 >
                                   Pay
                                 </button>
@@ -975,7 +975,7 @@ export const SalesDetailModal = ({
             {/* Receipts */}
             <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Receipt size={15} color="#1a73e8" /> Payment Receipts ({receipts.length})
+                <Receipt size={15} color="#17652f" /> Payment Receipts ({receipts.length})
               </h4>
 
               {receipts.length === 0 ? (
@@ -998,14 +998,14 @@ export const SalesDetailModal = ({
                       }}
                     >
                       <div>
-                        <div style={{ fontWeight: '700', color: '#1a73e8', fontSize: '0.82rem' }}>{rcp.receiptNumber}</div>
+                        <div style={{ fontWeight: '700', color: '#17652f', fontSize: '0.82rem' }}>{rcp.receiptNumber}</div>
                         <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>
                           {new Date(rcp.generatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontWeight: '800', color: '#111827', fontSize: '0.9rem' }}>{formatINR(rcp.amount)}</div>
-                        <span style={{ fontSize: '0.68rem', color: '#60a5fa' }}>Paid & Verified</span>
+                        <span style={{ fontSize: '0.68rem', color: '#4a9e68' }}>Paid & Verified</span>
                       </div>
                     </div>
                   ))}
@@ -1079,7 +1079,7 @@ export const SalesDetailModal = ({
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={16} color="#60a5fa" /> Sales & Milestone Follow-ups
+                <Clock size={16} color="#4a9e68" /> Sales & Milestone Follow-ups
               </h4>
             </div>
 
@@ -1444,7 +1444,7 @@ export const SalesDetailModal = ({
               <button type="button" onClick={() => setPayModalOpen(false)} style={{ padding: '6px 14px', background: '#f8f9fa', color: '#374151', borderRadius: '4px' }}>
                 Cancel
               </button>
-              <button type="submit" style={{ padding: '6px 16px', background: '#1a73e8', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
+              <button type="submit" style={{ padding: '6px 16px', background: '#17652f', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
                 Save Payment & Generate Receipt
               </button>
             </div>

@@ -73,16 +73,16 @@ export const ManualFloorModal = ({
         
         {/* Info Banner */}
         <div style={{
-          background: '#e8f0fe',
-          border: '1px solid #bfdbfe',
+          background: '#e8f2e5',
+          border: '1px solid #cde4c9',
           borderRadius: '8px',
           padding: '12px 14px',
           display: 'flex',
           alignItems: 'center',
           gap: '10px'
         }}>
-          <Layers size={20} color="#1a73e8" />
-          <div style={{ fontSize: '0.82rem', color: '#1e3a8a' }}>
+          <Layers size={20} color="#17652f" />
+          <div style={{ fontSize: '0.82rem', color: '#17652f' }}>
             Current Building Height: <strong>{currentFloors} Floors</strong>. Adding floor will automatically update tower specs and configure unit inventory in MongoDB.
           </div>
         </div>
@@ -197,7 +197,7 @@ export const ManualFloorModal = ({
                 style={{
                   background: '#ffffff',
                   border: '1px solid #c7d2fe',
-                  color: '#1e40af',
+                  color: '#17652f',
                   padding: '4px 10px',
                   borderRadius: '4px',
                   fontSize: '0.78rem',

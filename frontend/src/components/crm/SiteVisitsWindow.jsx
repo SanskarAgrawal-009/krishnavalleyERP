@@ -63,7 +63,7 @@ export const SiteVisitsWindow = ({
                 transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#1e40af';
+                e.target.style.borderColor = '#17652f';
                 e.target.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.12)';
               }}
               onBlur={(e) => {
@@ -129,7 +129,7 @@ export const SiteVisitsWindow = ({
                 padding: '0 16px',
                 borderRadius: '8px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
                 fontWeight: '800',
                 fontSize: '0.82rem',
@@ -156,7 +156,7 @@ export const SiteVisitsWindow = ({
                 padding: '0 16px',
                 borderRadius: '8px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #1a73e8 0%, #1e40af 100%)',
+                background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
                 fontWeight: '800',
                 fontSize: '0.82rem',
@@ -191,9 +191,9 @@ export const SiteVisitsWindow = ({
           </span>
 
           {[
-            { id: 'all', label: 'All Site Visits', count: allSiteVisits.length, color: '#1e40af' },
-            { id: 'scheduled', label: 'Scheduled & Upcoming', count: scheduledVisitsCount, color: '#2563eb' },
-            { id: 'completed', label: 'Completed Tours', count: completedVisitsCount, color: '#1a73e8' },
+            { id: 'all', label: 'All Site Visits', count: allSiteVisits.length, color: '#17652f' },
+            { id: 'scheduled', label: 'Scheduled & Upcoming', count: scheduledVisitsCount, color: '#17652f' },
+            { id: 'completed', label: 'Completed Tours', count: completedVisitsCount, color: '#17652f' },
             { id: 'high_interest', label: ' High Interest (4-5)', count: highInterestVisitsCount, color: '#334155' },
             { id: 'cab', label: 'Cab Assisted', count: cabVisitsCount, color: '#0284c7' },
           ].map((tab) => {
@@ -209,7 +209,7 @@ export const SiteVisitsWindow = ({
                   fontSize: '0.76rem',
                   fontWeight: isActive ? '800' : '600',
                   border: isActive ? `1px solid ${tab.color}` : '1px solid #e2e8f0',
-                  background: isActive ? (tab.id === 'scheduled' ? '#eff6ff' : (tab.id === 'completed' ? '#eff6ff' : (tab.id === 'high_interest' ? '#f8fafc' : (tab.id === 'cab' ? '#f0f9ff' : '#eff6ff')))) : '#ffffff',
+                  background: isActive ? (tab.id === 'scheduled' ? '#e8f2e5' : (tab.id === 'completed' ? '#e8f2e5' : (tab.id === 'high_interest' ? '#f8fafc' : (tab.id === 'cab' ? '#f0f9ff' : '#e8f2e5')))) : '#ffffff',
                   color: isActive ? tab.color : '#475569',
                   cursor: 'pointer',
                   display: 'inline-flex',
@@ -267,7 +267,7 @@ export const SiteVisitsWindow = ({
       {/* ========================================================================= */}
       {displayedSiteVisits.length === 0 ? (
         <div className="g-card" style={{ textAlign: 'center', padding: '60px 24px', borderRadius: '12px' }}>
-          <Car size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#1e40af' }} />
+          <Car size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#17652f' }} />
           <h3 style={{ color: '#111827', marginBottom: '8px', fontWeight: '800', fontSize: '1.2rem' }}>
             No Site Visits Found
           </h3>
@@ -294,7 +294,7 @@ export const SiteVisitsWindow = ({
                 padding: '8px 18px',
                 borderRadius: '8px',
                 border: 'none',
-                background: '#2563eb',
+                background: '#17652f',
                 color: '#ffffff',
                 fontWeight: '800',
                 fontSize: '0.84rem',
@@ -363,8 +363,8 @@ export const SiteVisitsWindow = ({
                           fontWeight: '800',
                           padding: '1px 6px',
                           borderRadius: '4px',
-                          background: visit.source === 'Site Visit Log' ? '#eff6ff' : (visit.source === 'Scheduled Follow-Up' ? '#eff6ff' : '#f1f5f9'),
-                          color: visit.source === 'Site Visit Log' ? '#1e40af' : (visit.source === 'Scheduled Follow-Up' ? '#1d4ed8' : '#475569'),
+                          background: visit.source === 'Site Visit Log' ? '#e8f2e5' : (visit.source === 'Scheduled Follow-Up' ? '#e8f2e5' : '#f1f5f9'),
+                          color: visit.source === 'Site Visit Log' ? '#17652f' : (visit.source === 'Scheduled Follow-Up' ? '#17652f' : '#475569'),
                           border: '1px solid rgba(0,0,0,0.06)'
                         }}>
                           {visit.source}
@@ -405,12 +405,12 @@ export const SiteVisitsWindow = ({
                               Today's Visit
                             </span>
                           ) : (
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '2px 7px', borderRadius: '5px' }}>
+                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '2px 7px', borderRadius: '5px' }}>
                               Upcoming Visit
                             </span>
                           )
                         ) : (
-                          <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#eff6ff', color: '#1e40af', border: '1px solid #dbeafe', padding: '2px 7px', borderRadius: '5px' }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#e8f2e5', color: '#17652f', border: '1px solid #e8f2e5', padding: '2px 7px', borderRadius: '5px' }}>
                             Tour Completed
                           </span>
                         )}
@@ -449,7 +449,7 @@ export const SiteVisitsWindow = ({
                         </div>
                       )}
                       {visit.nextStep && (
-                        <div style={{ fontSize: '0.7rem', color: '#2563eb', fontWeight: '600', marginTop: '2px' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600', marginTop: '2px' }}>
                           Next: {visit.nextStep}
                         </div>
                       )}
@@ -459,7 +459,7 @@ export const SiteVisitsWindow = ({
                     <td style={{ padding: '14px 16px', verticalAlign: 'top' }}>
                       <div style={{
                         background: '#faf5ff',
-                        border: '1px solid #dbeafe',
+                        border: '1px solid #e8f2e5',
                         padding: '3px 8px',
                         borderRadius: '6px',
                         display: 'inline-flex',
@@ -467,8 +467,8 @@ export const SiteVisitsWindow = ({
                         gap: '5px',
                         marginBottom: '4px'
                       }}>
-                        <Home size={12} color="#1d4ed8" />
-                        <span style={{ fontWeight: '800', color: '#7e22ce', fontSize: '0.76rem' }}>
+                        <Home size={12} color="#17652f" />
+                        <span style={{ fontWeight: '800', color: '#17652f', fontSize: '0.76rem' }}>
                           {visit.flatNumber ? `Flat ${visit.flatNumber}` : (visit.flatLabel || 'Project Tour')}
                         </span>
                       </div>
@@ -483,7 +483,7 @@ export const SiteVisitsWindow = ({
                     {/* Column 4: EXECUTIVE & CAB LOGISTICS */}
                     <td style={{ padding: '14px 16px', verticalAlign: 'top' }}>
                       <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
-                        <UserCheck size={13} color="#1a73e8" />
+                        <UserCheck size={13} color="#17652f" />
                         <span>{visit.accompaniedBy || 'Sales Executive'}</span>
                       </div>
 
@@ -553,7 +553,7 @@ export const SiteVisitsWindow = ({
                                 padding: '5px 10px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                background: '#1a73e8',
+                                background: '#17652f',
                                 color: '#ffffff',
                                 fontSize: '0.72rem',
                                 fontWeight: '800',
@@ -582,9 +582,9 @@ export const SiteVisitsWindow = ({
                             style={{
                               padding: '5px 10px',
                               borderRadius: '6px',
-                              border: '1px solid #bfdbfe',
-                              background: '#eff6ff',
-                              color: '#1d4ed8',
+                              border: '1px solid #cde4c9',
+                              background: '#e8f2e5',
+                              color: '#17652f',
                               fontSize: '0.74rem',
                               fontWeight: '700',
                               cursor: 'pointer',
@@ -625,8 +625,8 @@ export const SiteVisitsWindow = ({
               Showing <span style={{ color: '#0f172a', fontWeight: '800' }}>{displayedSiteVisits.length}</span> of {allSiteVisits.length} Site Visits (Window 3: Site Visits)
             </div>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <span>Scheduled: <strong style={{ color: '#2563eb' }}>{scheduledVisitsCount}</strong></span>
-              <span>Completed: <strong style={{ color: '#1a73e8' }}>{completedVisitsCount}</strong></span>
+              <span>Scheduled: <strong style={{ color: '#17652f' }}>{scheduledVisitsCount}</strong></span>
+              <span>Completed: <strong style={{ color: '#17652f' }}>{completedVisitsCount}</strong></span>
               <span>High Interest: <strong style={{ color: '#334155' }}>{highInterestVisitsCount}</strong></span>
               <span>Cab Logistics: <strong style={{ color: '#0284c7' }}>{cabVisitsCount}</strong></span>
             </div>

@@ -120,7 +120,7 @@ export const SiteVisitVerificationPage = () => {
         <div>
           <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '12px' }}>
             Agent Site Visit Verification & Approvals Hub
-            <span style={{ fontSize: '0.74rem', background: '#e0e7ff', color: '#3730a3', padding: '3px 10px', borderRadius: '6px', fontWeight: '800' }}>
+            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', padding: '3px 10px', borderRadius: '6px', fontWeight: '800' }}>
               CHANNEL PARTNER ENGINE
             </span>
           </div>
@@ -145,7 +145,7 @@ export const SiteVisitVerificationPage = () => {
               type="button"
               onClick={() => setIsNewModalOpen(true)}
               style={{
-                background: '#1a73e8',
+                background: '#17652f',
                 color: '#ffffff',
                 padding: '9px 18px',
                 borderRadius: '6px',
@@ -169,11 +169,11 @@ export const SiteVisitVerificationPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL VISITS LOGGED</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <Calendar size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
             {totalVisits}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Channel partner site visits</span>
@@ -195,11 +195,11 @@ export const SiteVisitVerificationPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>APPROVED VISITS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <ShieldCheck size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
             {approvedVisits}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Eligible for auto-commission</span>
@@ -208,11 +208,11 @@ export const SiteVisitVerificationPage = () => {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>AUTOMATED COMMISSIONS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
             {formatINR(totalCommissionCredited)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Credited on booked deals</span>
@@ -318,7 +318,7 @@ export const SiteVisitVerificationPage = () => {
                     <tr key={visit._id || visit.id}>
                       {/* 1. Visit Code & Date */}
                       <td>
-                        <strong style={{ color: '#1a73e8' }}>{visit.visitCode}</strong>
+                        <strong style={{ color: '#17652f' }}>{visit.visitCode}</strong>
                         <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
                           {new Date(visit.visitDate).toLocaleDateString('en-IN', {
                             day: 'numeric',
@@ -333,7 +333,7 @@ export const SiteVisitVerificationPage = () => {
                       {/* 2. Agent Info */}
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ padding: '2px 6px', background: '#e0e7ff', color: '#3730a3', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '800', fontFamily: 'monospace' }}>
+                          <span style={{ padding: '2px 6px', background: '#e8f2e5', color: '#17652f', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '800', fontFamily: 'monospace' }}>
                             {visit.agentCode}
                           </span>
                           <strong style={{ color: '#1e293b', fontSize: '0.84rem' }}>{visit.agentName}</strong>
@@ -348,7 +348,7 @@ export const SiteVisitVerificationPage = () => {
                         <div style={{ fontWeight: '800', color: '#1e293b' }}>
                           {visit.partyName}
                         </div>
-                        <div style={{ fontSize: '0.74rem', color: '#1a73e8', fontWeight: '700' }}>
+                        <div style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '700' }}>
                           {visit.partyMobile}
                         </div>
                       </td>
@@ -378,7 +378,7 @@ export const SiteVisitVerificationPage = () => {
                             href={visit.partySelfieUrl}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#1a73e8', fontSize: '0.74rem', fontWeight: '700' }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#17652f', fontSize: '0.74rem', fontWeight: '700' }}
                           >
                             <img
                               src={visit.partySelfieUrl}
@@ -401,7 +401,7 @@ export const SiteVisitVerificationPage = () => {
                         )}
                         {isApproved && (
                           <div>
-                            <span style={{ padding: '4px 8px', borderRadius: '12px', background: '#eff6ff', color: '#1e40af', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ padding: '4px 8px', borderRadius: '12px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                               <CheckCircle2 size={11} /> Approved
                             </span>
                             {visit.verifiedBy && (
@@ -422,15 +422,15 @@ export const SiteVisitVerificationPage = () => {
                       <td>
                         {isBooked ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                            <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#eff6ff', color: '#7e22ce', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                               <Award size={12} /> Deal Booked
                             </span>
-                            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#1e40af' }}>
+                            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#17652f' }}>
                               {formatINR(visit.commissionAmount)} Credited
                             </span>
                           </div>
                         ) : isApproved ? (
-                          <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700' }}>
+                          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
                             Eligible for Auto-Credit upon Booking
                           </span>
                         ) : (
@@ -449,7 +449,7 @@ export const SiteVisitVerificationPage = () => {
                               onClick={() => handleOpenVerify(visit)}
                               style={{
                                 padding: '5px 12px',
-                                background: '#1a73e8',
+                                background: '#17652f',
                                 color: '#ffffff',
                                 borderRadius: '5px',
                                 fontSize: '0.74rem',

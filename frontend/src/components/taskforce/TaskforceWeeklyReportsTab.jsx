@@ -428,8 +428,8 @@ export const TaskforceWeeklyReportsTab = ({
             <div style={{
               width: '48px',
               height: '48px',
-              border: `4px solid ${exportingExcel ? '#d1fae5' : '#e0e7ff'}`,
-              borderTopColor: exportingExcel ? '#059669' : '#4f46e5',
+              border: `4px solid ${exportingExcel ? '#d1fae5' : '#e8f2e5'}`,
+              borderTopColor: exportingExcel ? '#059669' : '#17652f',
               borderRadius: '50%',
               animation: 'kvReportSpin 0.8s linear infinite',
             }} />
@@ -482,7 +482,7 @@ export const TaskforceWeeklyReportsTab = ({
                 width: '40px',
                 height: '40px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #4f46e5, #4338ca)',
+                background: 'linear-gradient(135deg, #17652f, #17652f)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
@@ -552,8 +552,8 @@ export const TaskforceWeeklyReportsTab = ({
                 gap: '8px',
                 padding: '9px 16px',
                 borderRadius: '10px',
-                background: exportingWord ? '#e0e7ff' : '#eef2ff',
-                color: '#3730a3',
+                background: exportingWord ? '#e8f2e5' : '#e8f2e5',
+                color: '#17652f',
                 border: '1.5px solid #c7d2fe',
                 fontSize: '0.82rem',
                 fontWeight: '700',
@@ -570,12 +570,12 @@ export const TaskforceWeeklyReportsTab = ({
                   width: '14px',
                   height: '14px',
                   border: '2.5px solid #c7d2fe',
-                  borderTopColor: '#4f46e5',
+                  borderTopColor: '#17652f',
                   borderRadius: '50%',
                   animation: 'kvReportSpin 0.8s linear infinite',
                 }} />
               ) : (
-                <FileText size={15} color="#4f46e5" />
+                <FileText size={15} color="#17652f" />
               )}
               <span>{exportingWord ? 'Generating Report...' : 'Export Word (.docx)'}</span>
             </button>
@@ -864,7 +864,7 @@ export const TaskforceWeeklyReportsTab = ({
               style={{
                 padding: '6px 14px',
                 borderRadius: '8px',
-                background: '#4f46e5',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.78rem',
@@ -897,7 +897,7 @@ export const TaskforceWeeklyReportsTab = ({
             background: '#ffffff',
             borderRadius: '14px',
             border: '1px solid #e2e8f0',
-            borderTop: '4px solid #4f46e5',
+            borderTop: '4px solid #17652f',
             padding: '16px 18px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
             display: 'flex',
@@ -909,13 +909,13 @@ export const TaskforceWeeklyReportsTab = ({
             <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
               Total Workload
             </span>
-            <Layers size={16} color="#4f46e5" />
+            <Layers size={16} color="#17652f" />
           </div>
           <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a' }}>
             {summary.totalWorkload}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
-            <span style={{ color: '#4f46e5', fontWeight: 700 }}>+{summary.newlyAssigned} new</span>
+            <span style={{ color: '#17652f', fontWeight: 700 }}>+{summary.newlyAssigned} new</span>
             <span> • </span>
             <span style={{ color: '#d97706', fontWeight: 700 }}>+{summary.carriedForward} carried</span>
           </div>
@@ -1119,8 +1119,8 @@ export const TaskforceWeeklyReportsTab = ({
                   fontSize: '0.8rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  border: isActive ? '1px solid #4f46e5' : '1px solid transparent',
-                  background: isActive ? '#4f46e5' : '#f8fafc',
+                  border: isActive ? '1px solid #17652f' : '1px solid transparent',
+                  background: isActive ? '#17652f' : '#f8fafc',
                   color: isActive ? '#ffffff' : '#475569',
                   boxShadow: isActive ? '0 2px 8px rgba(79, 70, 229, 0.25)' : 'none',
                   whiteSpace: 'nowrap',
@@ -1288,7 +1288,7 @@ export const TaskforceWeeklyReportsTab = ({
                         <td style={{ padding: '12px 12px', whiteSpace: 'nowrap' }}>
                           {dept.headName !== 'Unassigned' ? (
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: '#1e293b' }}>
-                              <Shield size={12} color="#4f46e5" />
+                              <Shield size={12} color="#17652f" />
                               {dept.headName}
                             </span>
                           ) : (
@@ -1373,8 +1373,8 @@ export const TaskforceWeeklyReportsTab = ({
                               gap: '4px',
                               fontSize: '11px',
                               fontWeight: 700,
-                              color: '#4f46e5',
-                              background: '#eef2ff',
+                              color: '#17652f',
+                              background: '#e8f2e5',
                               border: '1px solid #c7d2fe',
                               padding: '4px 10px',
                               borderRadius: '6px',
@@ -1773,7 +1773,7 @@ export const TaskforceWeeklyReportsTab = ({
                               style={{
                                 fontFamily: 'monospace',
                                 fontWeight: 800,
-                                color: '#4f46e5',
+                                color: '#17652f',
                                 background: 'none',
                                 border: 'none',
                                 cursor: 'pointer',
@@ -1792,7 +1792,7 @@ export const TaskforceWeeklyReportsTab = ({
                                   fontSize: '9px',
                                   fontWeight: 900,
                                   background: '#f3e8ff',
-                                  color: '#7e22ce',
+                                  color: '#17652f',
                                 }}
                               >
                                 MD
@@ -1934,7 +1934,7 @@ export const TaskforceWeeklyReportsTab = ({
                                 borderRadius: '6px',
                                 border: '1px solid #cbd5e1',
                                 background: '#ffffff',
-                                color: '#4f46e5',
+                                color: '#17652f',
                                 cursor: 'pointer',
                               }}
                               title="Inspect Task Detail"

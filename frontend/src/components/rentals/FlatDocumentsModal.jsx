@@ -188,7 +188,7 @@ export const FlatDocumentsModal = ({
         {/* MODAL HEADER */}
         <div style={{
           padding: '20px 24px',
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
           color: '#ffffff',
           display: 'flex',
           justifyContent: 'space-between',
@@ -199,7 +199,7 @@ export const FlatDocumentsModal = ({
               width: '44px',
               height: '44px',
               borderRadius: '12px',
-              background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+              background: 'linear-gradient(135deg, #17652f, #17652f)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -214,7 +214,7 @@ export const FlatDocumentsModal = ({
                 </h2>
                 <span style={{
                   background: 'rgba(59, 130, 246, 0.2)',
-                  color: '#93c5fd',
+                  color: '#86c8a0',
                   border: '1px solid rgba(147, 197, 253, 0.3)',
                   fontSize: '0.72rem',
                   fontWeight: '700',
@@ -285,10 +285,10 @@ export const FlatDocumentsModal = ({
           {/* DOCUMENT 1: OWNER REGISTRY DOCUMENT */}
           {/* ========================================================================= */}
           <div style={{
-            border: registryDoc ? '1.5px solid #bfdbfe' : '1.5px dashed #cbd5e1',
+            border: registryDoc ? '1.5px solid #cde4c9' : '1.5px dashed #cbd5e1',
             borderRadius: '14px',
             padding: '18px 20px',
-            background: registryDoc ? '#eff6ff' : '#fafafa',
+            background: registryDoc ? '#e8f2e5' : '#fafafa',
             transition: 'all 0.2s ease'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
@@ -297,7 +297,7 @@ export const FlatDocumentsModal = ({
                   width: '40px',
                   height: '40px',
                   borderRadius: '10px',
-                  background: registryDoc ? '#1a73e8' : '#94a3b8',
+                  background: registryDoc ? '#17652f' : '#94a3b8',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -316,9 +316,9 @@ export const FlatDocumentsModal = ({
                       fontWeight: '800',
                       padding: '2px 8px',
                       borderRadius: '10px',
-                      background: registryDoc ? '#eff6ff' : '#f1f5f9',
-                      color: registryDoc ? '#1e40af' : '#64748b',
-                      border: registryDoc ? '1px solid #dbeafe' : '1px solid #e2e8f0'
+                      background: registryDoc ? '#e8f2e5' : '#f1f5f9',
+                      color: registryDoc ? '#17652f' : '#64748b',
+                      border: registryDoc ? '1px solid #e8f2e5' : '1px solid #e2e8f0'
                     }}>
                       {registryDoc ? 'Verified on File' : 'Missing / Required'}
                     </span>
@@ -352,8 +352,8 @@ export const FlatDocumentsModal = ({
                         padding: '7px 12px',
                         borderRadius: '8px',
                         background: '#ffffff',
-                        border: '1px solid #dbeafe',
-                        color: '#1e40af',
+                        border: '1px solid #e8f2e5',
+                        color: '#17652f',
                         fontSize: '0.78rem',
                         fontWeight: '700',
                         textDecoration: 'none',
@@ -393,7 +393,7 @@ export const FlatDocumentsModal = ({
                     gap: '6px',
                     padding: '7px 14px',
                     borderRadius: '8px',
-                    background: registryDoc ? '#ffffff' : '#1a73e8',
+                    background: registryDoc ? '#ffffff' : '#17652f',
                     border: registryDoc ? '1px solid #cbd5e1' : 'none',
                     color: registryDoc ? '#334155' : '#ffffff',
                     fontSize: '0.78rem',
@@ -417,14 +417,14 @@ export const FlatDocumentsModal = ({
               <div style={{
                 marginTop: '12px',
                 paddingTop: '12px',
-                borderTop: '1px solid #eff6ff',
+                borderTop: '1px solid #e8f2e5',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
                 gap: '8px',
                 fontSize: '0.75rem',
-                color: '#1e40af'
+                color: '#17652f'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <FileText size={14} />
@@ -443,10 +443,10 @@ export const FlatDocumentsModal = ({
           {/* DOCUMENT 2: GUARANTEED RENTAL AGREEMENT */}
           {/* ========================================================================= */}
           <div style={{
-            border: agreementDoc ? '1.5px solid #bfdbfe' : '1.5px dashed #cbd5e1',
+            border: agreementDoc ? '1.5px solid #cde4c9' : '1.5px dashed #cbd5e1',
             borderRadius: '14px',
             padding: '18px 20px',
-            background: agreementDoc ? '#eff6ff' : '#fafafa',
+            background: agreementDoc ? '#e8f2e5' : '#fafafa',
             transition: 'all 0.2s ease'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
@@ -455,7 +455,7 @@ export const FlatDocumentsModal = ({
                   width: '40px',
                   height: '40px',
                   borderRadius: '10px',
-                  background: agreementDoc ? '#2563eb' : '#94a3b8',
+                  background: agreementDoc ? '#17652f' : '#94a3b8',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -474,9 +474,9 @@ export const FlatDocumentsModal = ({
                       fontWeight: '800',
                       padding: '2px 8px',
                       borderRadius: '10px',
-                      background: agreementDoc ? '#dbeafe' : '#f1f5f9',
-                      color: agreementDoc ? '#1d4ed8' : '#64748b',
-                      border: agreementDoc ? '1px solid #bfdbfe' : '1px solid #e2e8f0'
+                      background: agreementDoc ? '#e8f2e5' : '#f1f5f9',
+                      color: agreementDoc ? '#17652f' : '#64748b',
+                      border: agreementDoc ? '1px solid #cde4c9' : '1px solid #e2e8f0'
                     }}>
                       {agreementDoc ? 'Uploaded' : 'Not Uploaded'}
                     </span>
@@ -510,8 +510,8 @@ export const FlatDocumentsModal = ({
                         padding: '7px 12px',
                         borderRadius: '8px',
                         background: '#ffffff',
-                        border: '1px solid #bfdbfe',
-                        color: '#1d4ed8',
+                        border: '1px solid #cde4c9',
+                        color: '#17652f',
                         fontSize: '0.78rem',
                         fontWeight: '700',
                         textDecoration: 'none',
@@ -551,7 +551,7 @@ export const FlatDocumentsModal = ({
                     gap: '6px',
                     padding: '7px 14px',
                     borderRadius: '8px',
-                    background: agreementDoc ? '#ffffff' : '#2563eb',
+                    background: agreementDoc ? '#ffffff' : '#17652f',
                     border: agreementDoc ? '1px solid #cbd5e1' : 'none',
                     color: agreementDoc ? '#334155' : '#ffffff',
                     fontSize: '0.78rem',
@@ -575,14 +575,14 @@ export const FlatDocumentsModal = ({
               <div style={{
                 marginTop: '12px',
                 paddingTop: '12px',
-                borderTop: '1px solid #dbeafe',
+                borderTop: '1px solid #e8f2e5',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
                 gap: '8px',
                 fontSize: '0.75rem',
-                color: '#1e40af'
+                color: '#17652f'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <FileText size={14} />
@@ -603,12 +603,12 @@ export const FlatDocumentsModal = ({
           {Array.isArray(flat.ownershipHistory) && flat.ownershipHistory.length > 0 && (
             <div style={{
               background: '#faf5ff',
-              border: '1px solid #dbeafe',
+              border: '1px solid #e8f2e5',
               borderRadius: '14px',
               padding: '16px 18px'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <History size={16} color="#1e40af" />
+                <History size={16} color="#17652f" />
                 <h4 style={{ margin: 0, fontSize: '0.86rem', fontWeight: '800', color: '#581c87' }}>
                   Historical Ownership Documents Trail ({flat.ownershipHistory.length} previous owner{flat.ownershipHistory.length > 1 ? 's' : ''})
                 </h4>
@@ -622,7 +622,7 @@ export const FlatDocumentsModal = ({
                       padding: '10px 14px',
                       background: '#ffffff',
                       borderRadius: '8px',
-                      border: '1px solid #eff6ff',
+                      border: '1px solid #e8f2e5',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
@@ -647,7 +647,7 @@ export const FlatDocumentsModal = ({
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
-                          color: '#1e40af',
+                          color: '#17652f',
                           fontWeight: '700',
                           textDecoration: 'none'
                         }}
@@ -684,7 +684,7 @@ export const FlatDocumentsModal = ({
             style={{
               padding: '8px 18px',
               borderRadius: '8px',
-              background: '#0f172a',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
               fontSize: '0.82rem',

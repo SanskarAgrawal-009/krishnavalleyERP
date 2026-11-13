@@ -32,8 +32,8 @@ export const InAppReminderBanner = ({
   const getModeIcon = () => {
     if (isMeeting) return <Users size={16} color="#0d9488" />;
     switch (activeAlert.mode) {
-      case 'site_visit': return <Car size={16} color="#1d4ed8" />;
-      case 'call': return <Phone size={16} color="#2563eb" />;
+      case 'site_visit': return <Car size={16} color="#17652f" />;
+      case 'call': return <Phone size={16} color="#17652f" />;
       case 'whatsapp': return <MessageSquare size={16} color="#0f172a" />;
       case 'meeting': return <Users size={16} color="#0d9488" />;
       default: return <Calendar size={16} color="#0284c7" />;
@@ -63,7 +63,7 @@ export const InAppReminderBanner = ({
         backgroundColor: '#ffffff',
         borderRadius: '14px',
         boxShadow: '0 12px 36px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08)',
-        border: isMeeting ? '2px solid #0d9488' : '2px solid #2563eb',
+        border: isMeeting ? '2px solid #0d9488' : '2px solid #17652f',
         overflow: 'hidden',
         animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         fontFamily: 'inherit'
@@ -75,8 +75,8 @@ export const InAppReminderBanner = ({
           background: isMeeting
             ? 'linear-gradient(135deg, #0f766e 0%, #0d9488 100%)'
             : isSiteVisit
-            ? 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)'
-            : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+            ? 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)'
+            : 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
           color: '#ffffff',
           padding: '10px 14px',
           display: 'flex',
@@ -111,7 +111,7 @@ export const InAppReminderBanner = ({
               fontSize: '0.72rem',
               fontWeight: '800',
               backgroundColor: isPast ? '#f1f5f9' : '#ffffff',
-              color: isPast ? '#0f172a' : isMeeting ? '#0f766e' : '#1e3a8a',
+              color: isPast ? '#0f172a' : isMeeting ? '#0f766e' : '#17652f',
               padding: '2px 8px',
               borderRadius: '12px'
             }}
@@ -182,12 +182,12 @@ export const InAppReminderBanner = ({
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: '#64748b' }}>Unit / Need:</span>
-                <span style={{ fontWeight: '700', color: '#1e40af' }}>{activeAlert.unit}</span>
+                <span style={{ fontWeight: '700', color: '#17652f' }}>{activeAlert.unit}</span>
               </div>
               {/* Handling Member Context */}
               <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #e2e8f0', color: '#0369a1', fontSize: '0.74rem', fontWeight: '700', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>Handling Advisor: {activeAlert.handlingMemberName || activeAlert.assignedToName || 'Assigned Rep'}</span>
-                {isSiteVisit && <span style={{ background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', fontSize: '0.68rem', border: '1px solid #bfdbfe' }}>Site Visit Tour</span>}
+                {isSiteVisit && <span style={{ background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontSize: '0.68rem', border: '1px solid #cde4c9' }}>Site Visit Tour</span>}
               </div>
               {activeAlert.notes && (
                 <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #f1f5f9', color: '#475569', fontStyle: 'italic', fontSize: '0.74rem' }}>
@@ -196,7 +196,7 @@ export const InAppReminderBanner = ({
               )}
               {/* Cab Logistics if site visit */}
               {activeAlert.isCabProvided && activeAlert.cabDetails && (
-                <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #bfdbfe', color: '#0369a1', fontSize: '0.74rem', fontWeight: '700' }}>
+                <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #cde4c9', color: '#0369a1', fontSize: '0.74rem', fontWeight: '700' }}>
                   Cab: {activeAlert.cabDetails.cabNumber || 'Confirmed'} • Driver: {activeAlert.cabDetails.driverName || 'Assigned'}
                 </div>
               )}
@@ -248,7 +248,7 @@ export const InAppReminderBanner = ({
                     width: '100%',
                     padding: '8px 12px',
                     borderRadius: '8px',
-                    background: '#0f172a',
+                    background: '#17652f',
                     color: '#ffffff',
                     textDecoration: 'none',
                     fontSize: '0.78rem',
@@ -257,7 +257,7 @@ export const InAppReminderBanner = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '6px',
-                    boxShadow: '0 2px 5px rgba(15,23,42,0.3)',
+                    boxShadow: '0 2px 5px rgba(23,101,47,0.3)',
                     marginBottom: '2px'
                   }}
                   title={`Send 30-min property tour reminder directly to client as ${activeAlert.handlingMemberName || 'Property Advisor'}`}
@@ -277,7 +277,7 @@ export const InAppReminderBanner = ({
                     flex: 1,
                     padding: '7px 10px',
                     borderRadius: '7px',
-                    background: '#0f172a',
+                    background: '#17652f',
                     color: '#ffffff',
                     textDecoration: 'none',
                     fontSize: '0.76rem',
@@ -286,7 +286,7 @@ export const InAppReminderBanner = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '4px',
-                    boxShadow: '0 1px 3px rgba(15,23,42,0.3)'
+                    boxShadow: '0 1px 3px rgba(23,101,47,0.3)'
                   }}
                   title="Send pre-filled WhatsApp follow-up reminder"
                 >
@@ -302,7 +302,7 @@ export const InAppReminderBanner = ({
                   flex: 1,
                   padding: '7px 10px',
                   borderRadius: '7px',
-                  background: '#2563eb',
+                  background: '#17652f',
                   color: '#ffffff',
                   textDecoration: 'none',
                   fontSize: '0.76rem',
@@ -357,9 +357,9 @@ export const InAppReminderBanner = ({
               style={{
                 padding: '7px 10px',
                 borderRadius: '7px',
-                background: '#eff6ff',
-                border: '1px solid #bfdbfe',
-                color: '#1d4ed8',
+                background: '#e8f2e5',
+                border: '1px solid #cde4c9',
+                color: '#17652f',
                 fontSize: '0.74rem',
                 fontWeight: '800',
                 cursor: 'pointer',

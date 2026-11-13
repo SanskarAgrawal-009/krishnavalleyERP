@@ -64,7 +64,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
       onClose={onClose}
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <ShieldCheck size={20} color="#1a73e8" />
+          <ShieldCheck size={20} color="#17652f" />
           <span>Inhouse Site Visit Approval Desk</span>
         </div>
       }
@@ -83,7 +83,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
             alignItems: 'flex-start',
           }}
         >
-          <Sparkles size={20} color="#1a73e8" style={{ flexShrink: 0, marginTop: '2px' }} />
+          <Sparkles size={20} color="#17652f" style={{ flexShrink: 0, marginTop: '2px' }} />
           <div style={{ fontSize: '0.84rem', color: '#334155', lineHeight: 1.5 }}>
             <strong>Inhouse Maker-Checker Policy:</strong> Approving this site visit will officially mark the buyer lead as verified, credit <strong>₹{estimatedCommission.toLocaleString('en-IN')}</strong> ({commissionRate}%) commission to the agent's wallet, and start the <strong>5-Day exclusive conversion window</strong>.
           </div>
@@ -104,7 +104,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
           <div>
             <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Prospect Client</span>
             <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.92rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <User size={14} color="#1a73e8" /> {lead.name}
+              <User size={14} color="#17652f" /> {lead.name}
             </div>
             <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
               <Phone size={12} /> {lead.mobileNo}
@@ -116,7 +116,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
             <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.92rem', marginTop: '2px' }}>
               {agentName}
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#1a73e8', fontWeight: '600' }}>
+            <div style={{ fontSize: '0.78rem', color: '#17652f', fontWeight: '600' }}>
               Code: {agentCode} • {commissionRate}% Sla
             </div>
           </div>
@@ -130,7 +130,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
 
           <div>
             <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Commission Payable</span>
-            <div style={{ fontWeight: '800', color: '#1a73e8', fontSize: '1rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <div style={{ fontWeight: '800', color: '#17652f', fontSize: '1rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '2px' }}>
               ₹{estimatedCommission.toLocaleString('en-IN')}
             </div>
           </div>
@@ -161,9 +161,9 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
               style={{
                 padding: '10px',
                 borderRadius: '8px',
-                border: action === 'approve' ? '2px solid #1a73e8' : '1px solid #cbd5e1',
-                backgroundColor: action === 'approve' ? '#eff6ff' : '#ffffff',
-                color: action === 'approve' ? '#1a73e8' : '#64748b',
+                border: action === 'approve' ? '2px solid #17652f' : '1px solid #cbd5e1',
+                backgroundColor: action === 'approve' ? '#e8f2e5' : '#ffffff',
+                color: action === 'approve' ? '#17652f' : '#64748b',
                 fontWeight: '700',
                 fontSize: '0.86rem',
                 cursor: 'pointer',
@@ -274,7 +274,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
               padding: '9px 22px',
               borderRadius: '8px',
               border: 'none',
-              backgroundColor: action === 'approve' ? '#1a73e8' : '#0f172a',
+              backgroundColor: action === 'approve' ? '#17652f' : '#dc2626',
               color: '#ffffff',
               fontSize: '0.86rem',
               fontWeight: '700',

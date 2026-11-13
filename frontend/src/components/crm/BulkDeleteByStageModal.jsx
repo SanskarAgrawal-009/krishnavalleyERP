@@ -5,14 +5,14 @@ import { leadService } from '../../services/leadService.js';
 
 const ALL_STAGES = [
   { id: 'lost', label: 'Lost / Dropped', color: '#0f172a', bg: '#f1f5f9', border: '#e2e8f0', desc: 'Leads marked as uninterested, budget mismatch, or unresponsive' },
-  { id: 'new', label: 'New Prospect', color: '#1a73e8', bg: '#eff6ff', border: '#bfdbfe', desc: 'Freshly ingested leads awaiting first contact' },
+  { id: 'new', label: 'New Prospect', color: '#17652f', bg: '#e8f2e5', border: '#cde4c9', desc: 'Freshly ingested leads awaiting first contact' },
   { id: 'contacted', label: 'Contacted', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd', desc: 'Initial contact made, preliminary inquiry completed' },
-  { id: 'in_discussion', label: 'In Discussion', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe', desc: 'Active conversation regarding floor plans and quotations' },
+  { id: 'in_discussion', label: 'In Discussion', color: '#17652f', bg: '#e8f2e5', border: '#cde4c9', desc: 'Active conversation regarding floor plans and quotations' },
   { id: 'followup_scheduled', label: 'Follow-Up Scheduled', color: '#334155', bg: '#f1f5f9', border: '#cbd5e1', desc: 'Specific callback or meeting scheduled in calendar' },
   { id: 'site_visit_scheduled', label: 'Visit Scheduled', color: '#334155', bg: '#f8fafc', border: '#f1f5f9', desc: 'Prospect scheduled to visit site and inspect units' },
-  { id: 'site_visit_completed', label: 'Site Visit Done', color: '#1a73e8', bg: '#eff6ff', border: '#dbeafe', desc: 'Completed walkthrough on site with relationship manager' },
-  { id: 'negotiation', label: 'Negotiation', color: '#00285c', border: '#c7d2fe', bg: '#e0e7ff', desc: 'Price or payment plan discussions underway' },
-  { id: 'converted', label: 'Converted Deal', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe', desc: 'Booked / converted deals' },
+  { id: 'site_visit_completed', label: 'Site Visit Done', color: '#17652f', bg: '#e8f2e5', border: '#e8f2e5', desc: 'Completed walkthrough on site with relationship manager' },
+  { id: 'negotiation', label: 'Negotiation', color: '#17652f', border: '#c7d2fe', bg: '#e8f2e5', desc: 'Price or payment plan discussions underway' },
+  { id: 'converted', label: 'Converted Deal', color: '#17652f', bg: '#e8f2e5', border: '#cde4c9', desc: 'Booked / converted deals' },
 ];
 
 export const BulkDeleteByStageModal = ({
@@ -324,7 +324,7 @@ export const BulkDeleteByStageModal = ({
                 width: '100%',
                 padding: '8px 12px',
                 borderRadius: '6px',
-                border: isConfirmed ? '2px solid #1a73e8' : '1px solid #cbd5e1',
+                border: isConfirmed ? '2px solid #17652f' : '1px solid #cbd5e1',
                 fontSize: '0.86rem',
                 fontWeight: '700',
                 outline: 'none',
@@ -367,7 +367,7 @@ export const BulkDeleteByStageModal = ({
               padding: '9px 20px',
               background: (loading || selectedStages.length === 0 || totalLeadsToDelete === 0 || !isConfirmed)
                 ? '#9ca3af'
-                : 'linear-gradient(135deg, #0f172a 0%, #0f172a 100%)',
+                : 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

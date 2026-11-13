@@ -67,16 +67,16 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
           className="no-print"
           style={{
             padding: '14px 20px',
-            backgroundColor: '#0f172a',
+            backgroundColor: '#17652f',
             color: '#ffffff',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            borderBottom: '1px solid #1e293b'
+            borderBottom: '1px solid #1e7a3e'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ padding: '6px', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.2)', color: '#4a9e68' }}>
               <ShieldCheck size={18} />
             </div>
             <div>
@@ -91,7 +91,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {/* View Selector */}
-            <div style={{ display: 'flex', background: '#1e293b', padding: '3px', borderRadius: '6px' }}>
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.15)', padding: '3px', borderRadius: '6px' }}>
               {[
                 { id: 'both', label: 'Front & Back' },
                 { id: 'front', label: 'Front Only' },
@@ -106,7 +106,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                     fontSize: '0.72rem',
                     fontWeight: viewMode === m.id ? '700' : '500',
                     color: viewMode === m.id ? '#ffffff' : '#94a3b8',
-                    background: viewMode === m.id ? '#2563eb' : 'transparent',
+                    background: viewMode === m.id ? '#17652f' : 'transparent',
                     border: 'none',
                     borderRadius: '4px',
                     cursor: 'pointer'
@@ -125,7 +125,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                 alignItems: 'center',
                 gap: '6px',
                 padding: '6px 14px',
-                backgroundColor: '#1a73e8',
+                backgroundColor: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '6px',
@@ -216,7 +216,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                 {/* Card Header */}
                 <div
                   style={{
-                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #0369a1 100%)',
+                    background: 'linear-gradient(135deg, #17652f 0%, #17652f 50%, #0369a1 100%)',
                     color: '#ffffff',
                     padding: '24px 16px 14px',
                     textAlign: 'center',
@@ -230,7 +230,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                       KRISHNA VALLEY
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.62rem', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#93c5fd', fontWeight: '700' }}>
+                  <div style={{ fontSize: '0.62rem', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#86c8a0', fontWeight: '700' }}>
                     REAL ESTATE & INFRASTRUCTURE
                   </div>
                   <div style={{
@@ -257,7 +257,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                       height: '88px',
                       borderRadius: '50%',
                       padding: '3px',
-                      background: 'linear-gradient(135deg, #1e40af, #475569)',
+                      background: 'linear-gradient(135deg, #17652f, #475569)',
                       boxShadow: '0 4px 12px rgba(30, 64, 175, 0.25)',
                       marginBottom: '10px',
                       position: 'relative'
@@ -275,7 +275,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                           width: '100%',
                           height: '100%',
                           borderRadius: '50%',
-                          background: 'linear-gradient(135deg, #0284c7, #1e3a8a)',
+                          background: 'linear-gradient(135deg, #0284c7, #17652f)',
                           color: '#ffffff',
                           display: 'flex',
                           alignItems: 'center',
@@ -292,7 +292,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                         position: 'absolute',
                         bottom: '2px',
                         right: '2px',
-                        background: '#1a73e8',
+                        background: '#17652f',
                         borderRadius: '50%',
                         width: '18px',
                         height: '18px',
@@ -310,7 +310,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                   <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: '0 0 2px' }}>
                     {employee.firstName} {employee.lastName}
                   </h4>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#1d4ed8' }}>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#17652f' }}>
                     {roleName}
                   </div>
                   <div style={{ fontSize: '0.66rem', color: '#64748b', fontWeight: '600', marginTop: '1px' }}>
@@ -322,12 +322,12 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                     style={{
                       marginTop: '8px',
                       padding: '3px 12px',
-                      backgroundColor: '#eff6ff',
-                      border: '1px solid #bfdbfe',
+                      backgroundColor: '#e8f2e5',
+                      border: '1px solid #cde4c9',
                       borderRadius: '12px',
                       fontSize: '0.74rem',
                       fontWeight: '800',
-                      color: '#1e40af',
+                      color: '#17652f',
                       letterSpacing: '0.5px'
                     }}
                   >
@@ -368,7 +368,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
 
                   <div>
                     <span style={{ color: '#64748b', fontWeight: '600', display: 'block', fontSize: '0.62rem' }}>VALID TILL</span>
-                    <strong style={{ color: '#1e40af' }}>{validUntilStr}</strong>
+                    <strong style={{ color: '#17652f' }}>{validUntilStr}</strong>
                   </div>
                 </div>
 
@@ -393,7 +393,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
 
                   <div style={{ textAlign: 'right' }}>
                     <span style={{ fontSize: '0.58rem', color: '#94a3b8', display: 'block', fontWeight: '600' }}>AUTHORIZED</span>
-                    <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#1e3a8a', fontStyle: 'italic' }}>KV-HRD</span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#17652f', fontStyle: 'italic' }}>KV-HRD</span>
                   </div>
                 </div>
               </div>
@@ -439,7 +439,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                     color: '#ffffff',
                     padding: '24px 16px 12px',
                     textAlign: 'center',
-                    borderBottom: '2px solid #3b82f6'
+                    borderBottom: '2px solid #17652f'
                   }}
                 >
                   <div style={{ fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.5px' }}>

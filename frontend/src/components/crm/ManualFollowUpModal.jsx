@@ -50,11 +50,11 @@ export const ManualFollowUpModal = ({
   };
 
   const modes = [
-    { value: 'call', label: 'Call', icon: Phone, color: '#3b82f6' },
-    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#1a73e8' },
+    { value: 'call', label: 'Call', icon: Phone, color: '#17652f' },
+    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#17652f' },
     { value: 'site_visit', label: 'Site Visit', icon: Compass, color: '#475569' },
-    { value: 'meeting', label: 'Meeting', icon: Users, color: '#2563eb' },
-    { value: 'email', label: 'Email', icon: Mail, color: '#1e40af' },
+    { value: 'meeting', label: 'Meeting', icon: Users, color: '#17652f' },
+    { value: 'email', label: 'Email', icon: Mail, color: '#17652f' },
     { value: 'other', label: 'Other', icon: Tag, color: '#4b5563' }
   ];
 
@@ -168,8 +168,8 @@ export const ManualFollowUpModal = ({
           <div style={{
             padding: '10px 12px',
             borderRadius: '6px',
-            background: '#eff6ff',
-            border: '1px solid #bfdbfe',
+            background: '#e8f2e5',
+            border: '1px solid #cde4c9',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -177,8 +177,8 @@ export const ManualFollowUpModal = ({
             flexWrap: 'wrap'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Calendar size={15} color="#1d4ed8" />
-              <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#1e40af' }}>
+              <Calendar size={15} color="#17652f" />
+              <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#17652f' }}>
                 Google Calendar Auto-Sync Enabled
               </span>
             </div>
@@ -197,8 +197,8 @@ export const ManualFollowUpModal = ({
                 padding: '3px 8px',
                 borderRadius: '4px',
                 background: '#ffffff',
-                border: '1px solid #3b82f6',
-                color: '#1d4ed8',
+                border: '1px solid #17652f',
+                color: '#17652f',
                 fontSize: '0.7rem',
                 fontWeight: '700',
                 cursor: 'pointer'

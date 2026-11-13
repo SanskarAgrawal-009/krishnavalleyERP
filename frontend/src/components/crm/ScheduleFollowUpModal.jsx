@@ -73,9 +73,9 @@ export const ScheduleFollowUpModal = ({
   };
 
   const modeOptions = [
-    { value: 'call', label: 'Phone Call', icon: Phone, color: '#1a73e8' },
-    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#1a73e8' },
-    { value: 'meeting', label: 'In-Person Meeting', icon: Users, color: '#1d4ed8' },
+    { value: 'call', label: 'Phone Call', icon: Phone, color: '#17652f' },
+    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#17652f' },
+    { value: 'meeting', label: 'In-Person Meeting', icon: Users, color: '#17652f' },
     { value: 'site_visit', label: 'Site Visit Tour', icon: MapPin, color: '#334155' },
     { value: 'email', label: 'Email Follow-up', icon: Mail, color: '#475569' },
   ];
@@ -160,7 +160,7 @@ export const ScheduleFollowUpModal = ({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
           <div>
             <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Calendar size={14} color="#1a73e8" />
+              <Calendar size={14} color="#17652f" />
               Follow-Up Date *
             </label>
             <input
@@ -175,7 +175,7 @@ export const ScheduleFollowUpModal = ({
 
           <div>
             <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Clock size={14} color="#1a73e8" />
+              <Clock size={14} color="#17652f" />
               Preferred Time
             </label>
             <input
@@ -191,7 +191,7 @@ export const ScheduleFollowUpModal = ({
         {/* Assign Follow-Up to Sales Member */}
         <div>
           <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Users size={14} color="#1a73e8" />
+            <Users size={14} color="#17652f" />
             Assign Follow-Up To
           </label>
           <select
@@ -215,7 +215,7 @@ export const ScheduleFollowUpModal = ({
         {/* Agenda / Discussion Notes */}
         <div>
           <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <FileText size={14} color="#1a73e8" />
+            <FileText size={14} color="#17652f" />
             Discussion Agenda / Notes
           </label>
           <textarea
@@ -232,8 +232,8 @@ export const ScheduleFollowUpModal = ({
         <div style={{
           padding: '10px 14px',
           borderRadius: '8px',
-          background: '#eff6ff',
-          border: '1px solid #bfdbfe',
+          background: '#e8f2e5',
+          border: '1px solid #cde4c9',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -241,12 +241,12 @@ export const ScheduleFollowUpModal = ({
           flexWrap: 'wrap'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Calendar size={16} color="#1d4ed8" />
+            <Calendar size={16} color="#17652f" />
             <div>
-              <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#1e40af' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#17652f' }}>
                 Google Calendar Direct Sync
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#3b82f6' }}>
+              <div style={{ fontSize: '0.72rem', color: '#17652f' }}>
                 Will automatically map into your company Google Calendar.
               </div>
             </div>
@@ -269,8 +269,8 @@ export const ScheduleFollowUpModal = ({
               padding: '4px 10px',
               borderRadius: '4px',
               background: '#ffffff',
-              border: '1px solid #3b82f6',
-              color: '#1d4ed8',
+              border: '1px solid #17652f',
+              color: '#17652f',
               fontSize: '0.72rem',
               fontWeight: '700',
               cursor: 'pointer',

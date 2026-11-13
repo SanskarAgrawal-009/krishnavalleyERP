@@ -170,8 +170,8 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
               gap: '6px',
               padding: '7px 14px',
               borderRadius: 'var(--radius-sm)',
-              background: activePreview === 'whatsapp' ? '#0f172a' : 'transparent',
-              color: activePreview === 'whatsapp' ? '#000' : 'var(--text-secondary)',
+              background: activePreview === 'whatsapp' ? '#17652f' : 'transparent',
+              color: activePreview === 'whatsapp' ? '#ffffff' : 'var(--text-secondary)',
               fontWeight: '700',
               fontSize: '0.78rem',
               border: 'none',
@@ -189,7 +189,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
               gap: '6px',
               padding: '7px 14px',
               borderRadius: 'var(--radius-sm)',
-              background: activePreview === 'sms' ? '#3b82f6' : 'transparent',
+              background: activePreview === 'sms' ? '#17652f' : 'transparent',
               color: activePreview === 'sms' ? '#fff' : 'var(--text-secondary)',
               fontWeight: '700',
               fontSize: '0.78rem',
@@ -227,7 +227,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
               gap: '6px',
               padding: '7px 14px',
               borderRadius: 'var(--radius-sm)',
-              background: activePreview === 'push' ? '#1e40af' : 'transparent',
+              background: activePreview === 'push' ? '#17652f' : 'transparent',
               color: activePreview === 'push' ? '#fff' : 'var(--text-secondary)',
               fontWeight: '700',
               fontSize: '0.78rem',
@@ -278,7 +278,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
                     width: '34px',
                     height: '34px',
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #005bbf, #0f172a)',
+                    background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -373,7 +373,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
                 <div style={{ flex: 1, background: '#2a3942', borderRadius: '18px', padding: '6px 12px', fontSize: '0.76rem', color: '#8696a0' }}>
                   Message
                 </div>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Send size={13} color="#fff" />
                 </div>
               </div>
@@ -423,7 +423,7 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template }) => {
                 </div>
 
                 <div style={{
-                  background: '#2563eb',
+                  background: '#17652f',
                   color: '#111827',
                   borderRadius: '16px',
                   borderBottomLeftRadius: '4px',

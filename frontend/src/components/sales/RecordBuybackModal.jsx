@@ -227,9 +227,9 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
                 padding: '10px 14px',
                 borderRadius: '8px',
                 border: '2px solid',
-                borderColor: transferType === 'buyback' ? '#1a73e8' : '#cbd5e1',
-                background: transferType === 'buyback' ? '#eff6ff' : '#ffffff',
-                color: transferType === 'buyback' ? '#1e40af' : '#475569',
+                borderColor: transferType === 'buyback' ? '#17652f' : '#cbd5e1',
+                background: transferType === 'buyback' ? '#e8f2e5' : '#ffffff',
+                color: transferType === 'buyback' ? '#17652f' : '#475569',
                 cursor: 'pointer',
                 textAlign: 'left'
               }}
@@ -521,7 +521,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
             disabled={loading}
             style={{
               padding: '8px 20px',
-              background: transferType === 'buyback' ? '#1a73e8' : '#0284c7',
+              background: transferType === 'buyback' ? '#17652f' : '#0284c7',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

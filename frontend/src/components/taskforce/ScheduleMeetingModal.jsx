@@ -355,7 +355,7 @@ export const ScheduleMeetingModal = ({
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
             <label style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Users size={13} color="#005bbf" />
+              <Users size={13} color="#17652f" />
               Attendees ({selectedAttendees.length} selected)
             </label>
             <button
@@ -364,7 +364,7 @@ export const ScheduleMeetingModal = ({
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#005bbf',
+                color: '#17652f',
                 fontSize: '11px',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -402,8 +402,8 @@ export const ScheduleMeetingModal = ({
                   style={{
                     padding: '4px 10px',
                     borderRadius: '16px',
-                    border: isSelected ? '1px solid #005bbf' : '1px solid #cbd5e1',
-                    backgroundColor: isSelected ? '#005bbf' : '#ffffff',
+                    border: isSelected ? '1px solid #17652f' : '1px solid #cbd5e1',
+                    backgroundColor: isSelected ? '#17652f' : '#ffffff',
                     color: isSelected ? '#ffffff' : '#334155',
                     fontSize: '11px',
                     fontWeight: 600,

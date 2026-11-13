@@ -84,7 +84,7 @@ export const GeneratePayrollModal = ({ isOpen, onClose, onGenerate, onSubmit }) 
           />
         </div>
 
-        <div style={{ background: '#e8f0fe', padding: '10px 12px', borderRadius: '4px', fontSize: '0.75rem', color: '#414754', border: '1px solid #d2e3fc' }}>
+        <div style={{ background: '#e8f2e5', padding: '10px 12px', borderRadius: '4px', fontSize: '0.75rem', color: '#414754', border: '1px solid #d2e3fc' }}>
           <strong>Automated Calculations:</strong> Will scan all active staff, apply 25% HRA/allowances, deduct 12% PF/ESI, and deduct exact salary for any unapproved or unpaid leaves taken in the month.
         </div>
 
@@ -97,7 +97,7 @@ export const GeneratePayrollModal = ({ isOpen, onClose, onGenerate, onSubmit }) 
             disabled={isProcessing}
             style={{
               padding: '8px 18px',
-              background: isProcessing ? '#9ca3af' : '#1a73e8',
+              background: isProcessing ? '#9ca3af' : '#17652f',
               color: '#ffffff',
               fontWeight: '700',
               borderRadius: '4px',

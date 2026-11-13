@@ -100,7 +100,7 @@ export const TaskforceManagerPage = () => {
 
   const tabs = [
     { key: 'team', label: 'Departments & Hierarchy', icon: Building2, color: '#059669' },
-    { key: 'workforce', label: 'Team & Workload', icon: Users, color: '#1a73e8' },
+    { key: 'workforce', label: 'Team & Workload', icon: Users, color: '#17652f' },
     { key: 'delegation', label: 'Delegation Hub', icon: GitBranch, color: '#1e293b' },
   ];
 
@@ -185,14 +185,14 @@ export const TaskforceManagerPage = () => {
   // ==========================
 
   const getCapacityColor = (score) => {
-    if (score >= 70) return '#1d4ed8';
+    if (score >= 70) return '#17652f';
     if (score >= 40) return '#475569';
     return '#0f172a';
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return '#1d4ed8';
-    if (score >= 60) return '#2563eb';
+    if (score >= 80) return '#17652f';
+    if (score >= 60) return '#17652f';
     if (score >= 40) return '#475569';
     return '#0f172a';
   };
@@ -207,16 +207,16 @@ export const TaskforceManagerPage = () => {
   const getPriorityStyles = (priority) => {
     switch (priority) {
       case 'urgent': return { bg: '#0f172a', color: '#ffffff', border: '#1e293b' };
-      case 'high': return { bg: '#1e3a8a', color: '#eff6ff', border: '#1d4ed8' };
-      case 'medium': return { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
+      case 'high': return { bg: '#17652f', color: '#e8f2e5', border: '#17652f' };
+      case 'medium': return { bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
       default: return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' };
     }
   };
 
   const getStatusStyles = (status) => {
     switch (status) {
-      case 'completed': return { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
-      case 'in_progress': return { bg: '#f8fafc', color: '#1e40af', border: '#cbd5e1' };
+      case 'completed': return { bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
+      case 'in_progress': return { bg: '#f8fafc', color: '#17652f', border: '#cbd5e1' };
       case 'under_review': return { bg: '#f1f5f9', color: '#334155', border: '#cbd5e1' };
       case 'delayed': return { bg: '#0f172a', color: '#ffffff', border: '#1e293b' };
       case 'pending': return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' };
@@ -224,7 +224,7 @@ export const TaskforceManagerPage = () => {
     }
   };
 
-  const renderInitialsAvatar = (user, size = 32, color = '#1a73e8') => {
+  const renderInitialsAvatar = (user, size = 32, color = '#17652f') => {
     const fName = user?.firstName || '';
     const lName = user?.lastName || '';
     const initials = ((fName[0] || '') + (lName[0] || '')).toUpperCase() || '?';
@@ -250,13 +250,13 @@ export const TaskforceManagerPage = () => {
     );
   };
 
-  const renderProgressBar = (value, height = 6, color = '#1a73e8') => (
+  const renderProgressBar = (value, height = 6, color = '#17652f') => (
     <div style={{ height: `${height}px`, backgroundColor: '#e2e8f0', borderRadius: `${height / 2}px`, overflow: 'hidden', flex: 1 }}>
       <div
         style={{
           width: `${Math.min(100, value || 0)}%`,
           height: '100%',
-          backgroundColor: value >= 100 ? '#1e40af' : value >= 70 ? '#1a73e8' : color,
+          backgroundColor: value >= 100 ? '#17652f' : value >= 70 ? '#17652f' : color,
           transition: 'width 0.4s ease',
           borderRadius: `${height / 2}px`,
         }}
@@ -282,12 +282,12 @@ export const TaskforceManagerPage = () => {
         {/* Summary Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px' }}>
           {[
-            { label: 'Team Members', value: summary.totalMembers || 0, icon: Users, color: '#1a73e8', bg: '#eff6ff' },
-            { label: 'Active Tasks', value: summary.totalActiveTasks || 0, icon: Activity, color: '#1e40af', bg: '#eff6ff' },
-            { label: 'Avg Workload', value: `${summary.averageWorkload || 0} tasks`, icon: Gauge, color: '#2563eb', bg: '#eff6ff' },
+            { label: 'Team Members', value: summary.totalMembers || 0, icon: Users, color: '#17652f', bg: '#e8f2e5' },
+            { label: 'Active Tasks', value: summary.totalActiveTasks || 0, icon: Activity, color: '#17652f', bg: '#e8f2e5' },
+            { label: 'Avg Workload', value: `${summary.averageWorkload || 0} tasks`, icon: Gauge, color: '#17652f', bg: '#e8f2e5' },
             { label: 'Overloaded', value: summary.overloadedMembers || 0, icon: Flame, color: '#0f172a', bg: '#f1f5f9' },
-            { label: 'Available', value: summary.idleMembers || 0, icon: UserCheck, color: '#1d4ed8', bg: '#eff6ff' },
-            { label: 'Completed', value: summary.totalCompletedTasks || 0, icon: CheckCircle2, color: '#1e40af', bg: '#eff6ff' },
+            { label: 'Available', value: summary.idleMembers || 0, icon: UserCheck, color: '#17652f', bg: '#e8f2e5' },
+            { label: 'Completed', value: summary.totalCompletedTasks || 0, icon: CheckCircle2, color: '#17652f', bg: '#e8f2e5' },
           ].map((card, idx) => (
             <div
               key={idx}
@@ -389,7 +389,7 @@ export const TaskforceManagerPage = () => {
                                   transition: 'transform 0.2s ease',
                                 }}
                               />
-                              {renderInitialsAvatar(w.user, 30, w.active > 8 ? '#0f172a' : w.active === 0 ? '#1d4ed8' : '#1a73e8')}
+                              {renderInitialsAvatar(w.user, 30, w.active > 8 ? '#0f172a' : w.active === 0 ? '#17652f' : '#17652f')}
                               <div>
                                 <div style={{ fontWeight: 600, color: '#0f172a' }}>
                                   {w.user?.firstName} {w.user?.lastName || ''}
@@ -401,12 +401,12 @@ export const TaskforceManagerPage = () => {
                             </div>
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                            <span style={{ fontWeight: 700, color: w.active > 0 ? '#005bbf' : '#94a3b8', fontSize: '15px' }}>
+                            <span style={{ fontWeight: 700, color: w.active > 0 ? '#17652f' : '#94a3b8', fontSize: '15px' }}>
                               {w.active}
                             </span>
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                            <span style={{ fontWeight: 600, color: '#1d4ed8' }}>{w.completed}</span>
+                            <span style={{ fontWeight: 600, color: '#17652f' }}>{w.completed}</span>
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                             {w.overdue > 0 ? (
@@ -492,10 +492,10 @@ export const TaskforceManagerPage = () => {
                                 {[
                                   { label: 'Total Assigned', value: w.totalAssigned, color: '#0f172a' },
                                   { label: 'Urgent Tasks', value: w.urgent, color: '#0f172a' },
-                                  { label: 'High Priority', value: w.high, color: '#1e3a8a' },
-                                  { label: 'Medium Priority', value: w.medium, color: '#2563eb' },
-                                  { label: 'MD Directives', value: w.mdDirectives, color: '#00285c' },
-                                  { label: 'Completion Rate', value: `${w.completionRate}%`, color: '#1d4ed8' },
+                                  { label: 'High Priority', value: w.high, color: '#17652f' },
+                                  { label: 'Medium Priority', value: w.medium, color: '#17652f' },
+                                  { label: 'MD Directives', value: w.mdDirectives, color: '#17652f' },
+                                  { label: 'Completion Rate', value: `${w.completionRate}%`, color: '#17652f' },
                                 ].map((item, i) => (
                                   <div key={i} style={{ textAlign: 'center' }}>
                                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>{item.label}</div>
@@ -634,13 +634,13 @@ export const TaskforceManagerPage = () => {
                 left: todayPosition,
                 top: 0,
                 bottom: 0,
-                borderLeft: '2px solid #1a73e8',
+                borderLeft: '2px solid #17652f',
                 zIndex: 5,
               }}
             >
               <span style={{
                 position: 'absolute', top: '2px', left: '4px', fontSize: '9px',
-                fontWeight: 700, color: '#ffffff', backgroundColor: '#1a73e8', padding: '1px 5px',
+                fontWeight: 700, color: '#ffffff', backgroundColor: '#17652f', padding: '1px 5px',
                 borderRadius: '4px', whiteSpace: 'nowrap',
               }}>TODAY</span>
             </div>
@@ -720,8 +720,8 @@ export const TaskforceManagerPage = () => {
                           ...barPos,
                           top: '12px',
                           height: '24px',
-                          backgroundColor: isOverdue ? '#f1f5f9' : task.status === 'completed' ? '#eff6ff' : '#ffffff',
-                          border: `1px solid ${isOverdue ? '#0f172a' : task.status === 'completed' ? '#bfdbfe' : '#dadce0'}`,
+                          backgroundColor: isOverdue ? '#f1f5f9' : task.status === 'completed' ? '#e8f2e5' : '#ffffff',
+                          border: `1px solid ${isOverdue ? '#0f172a' : task.status === 'completed' ? '#cde4c9' : '#dadce0'}`,
                           borderRadius: '6px',
                           overflow: 'hidden',
                           display: 'flex',
@@ -737,10 +737,10 @@ export const TaskforceManagerPage = () => {
                             backgroundColor: isOverdue
                               ? '#0f172a'
                               : task.status === 'completed'
-                              ? '#1e40af'
+                              ? '#17652f'
                               : task.roadblockAlert?.hasRoadblock
                               ? '#1e293b'
-                              : '#1a73e8',
+                              : '#17652f',
                             transition: 'width 0.4s ease',
                           }}
                         />
@@ -771,8 +771,8 @@ export const TaskforceManagerPage = () => {
                               width: '8px',
                               height: '8px',
                               borderRadius: '50%',
-                              backgroundColor: ms.isCompleted ? '#1d4ed8' : '#ffffff',
-                              border: `2px solid ${ms.isCompleted ? '#1d4ed8' : '#94a3b8'}`,
+                              backgroundColor: ms.isCompleted ? '#17652f' : '#ffffff',
+                              border: `2px solid ${ms.isCompleted ? '#17652f' : '#94a3b8'}`,
                               zIndex: 4,
                             }}
                           />
@@ -807,9 +807,9 @@ export const TaskforceManagerPage = () => {
         {/* Team Average KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
           {[
-            { label: 'Team Avg Completion Rate', value: `${teamAvg.avgCompletionRate || 0}%`, icon: CheckCircle2, color: '#1d4ed8', bg: '#eff6ff' },
-            { label: 'Team Avg On-Time Rate', value: `${teamAvg.avgOnTimeRate || 0}%`, icon: Timer, color: '#1a73e8', bg: '#eff6ff' },
-            { label: 'Team Productivity Score', value: `${teamAvg.avgProductivityScore || 0}/100`, icon: Award, color: '#1e40af', bg: '#eff6ff' },
+            { label: 'Team Avg Completion Rate', value: `${teamAvg.avgCompletionRate || 0}%`, icon: CheckCircle2, color: '#17652f', bg: '#e8f2e5' },
+            { label: 'Team Avg On-Time Rate', value: `${teamAvg.avgOnTimeRate || 0}%`, icon: Timer, color: '#17652f', bg: '#e8f2e5' },
+            { label: 'Team Productivity Score', value: `${teamAvg.avgProductivityScore || 0}/100`, icon: Award, color: '#17652f', bg: '#e8f2e5' },
             {
               label: 'Top Performer',
               value: teamAvg.topPerformer?.user
@@ -892,7 +892,7 @@ export const TaskforceManagerPage = () => {
                   style={{
                     backgroundColor: '#ffffff',
                     borderRadius: '12px',
-                    border: rank <= 3 ? `1.5px solid ${rank === 1 ? '#1a73e8' : rank === 2 ? '#1e40af' : '#0f172a'}` : '1px solid #dadce0',
+                    border: rank <= 3 ? `1.5px solid ${rank === 1 ? '#17652f' : rank === 2 ? '#17652f' : '#0f172a'}` : '1px solid #dadce0',
                     padding: '18px',
                     boxShadow: rank <= 3 ? '0 3px 12px rgba(0,0,0,0.06)' : '0 1px 3px rgba(60, 64, 67, 0.06)',
                     transition: 'transform 0.15s ease, box-shadow 0.15s ease',
@@ -907,7 +907,7 @@ export const TaskforceManagerPage = () => {
                     <div style={{
                       position: 'absolute', top: '10px', right: '10px',
                       width: '28px', height: '28px', borderRadius: '50%',
-                      backgroundColor: rank === 1 ? '#1a73e8' : rank === 2 ? '#1e40af' : '#0f172a',
+                      backgroundColor: rank === 1 ? '#17652f' : rank === 2 ? '#17652f' : '#0f172a',
                       color: '#ffffff',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '12px', fontWeight: 800,
@@ -987,8 +987,8 @@ export const TaskforceManagerPage = () => {
             departments.map((dept, idx) => {
               const completionRate = dept.completionRate || 0;
               const deptColors = [
-                '#1a73e8', '#1e40af', '#00285c', '#2563eb', '#0f172a',
-                '#1d4ed8', '#1e293b', '#3b82f6', '#334155', '#475569',
+                '#17652f', '#17652f', '#17652f', '#17652f', '#0f172a',
+                '#17652f', '#1e293b', '#17652f', '#334155', '#475569',
               ];
               const color = deptColors[idx % deptColors.length];
 
@@ -1038,11 +1038,11 @@ export const TaskforceManagerPage = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                     {[
                       { label: 'Total', value: dept.totalTasks, color: '#0f172a' },
-                      { label: 'Active', value: dept.activeTasks, color: '#1a73e8' },
-                      { label: 'Completed', value: dept.completedTasks, color: '#1e40af' },
+                      { label: 'Active', value: dept.activeTasks, color: '#17652f' },
+                      { label: 'Completed', value: dept.completedTasks, color: '#17652f' },
                       { label: 'Delayed', value: dept.delayedTasks, color: '#0f172a' },
-                      { label: 'Urgent', value: dept.urgentTasks, color: '#00285c' },
-                      { label: 'MD Tasks', value: dept.mdDirectives, color: '#2563eb' },
+                      { label: 'Urgent', value: dept.urgentTasks, color: '#17652f' },
+                      { label: 'MD Tasks', value: dept.mdDirectives, color: '#17652f' },
                     ].map((stat, sIdx) => (
                       <div key={sIdx} style={{ textAlign: 'center', padding: '8px 4px', backgroundColor: '#f8fafc', borderRadius: '6px' }}>
                         <div style={{ fontSize: '10px', fontWeight: 600, color: '#64748b' }}>{stat.label}</div>
@@ -1116,20 +1116,20 @@ export const TaskforceManagerPage = () => {
             gap: '12px',
             padding: '12px 16px',
             borderBottom: '1px solid #f1f5f9',
-            backgroundColor: isSelected ? '#eff6ff' : 'transparent',
+            backgroundColor: isSelected ? '#e8f2e5' : 'transparent',
             transition: 'background-color 0.15s',
             cursor: 'pointer',
           }}
           onClick={() => toggleTaskSelection(task._id)}
           onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#fafbfc'; }}
-          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isSelected ? '#eff6ff' : 'transparent'; }}
+          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isSelected ? '#e8f2e5' : 'transparent'; }}
         >
           {/* Checkbox */}
           <div
             style={{
               width: '18px', height: '18px', borderRadius: '4px',
-              border: isSelected ? '2px solid #005bbf' : '2px solid #cbd5e1',
-              backgroundColor: isSelected ? '#005bbf' : '#ffffff',
+              border: isSelected ? '2px solid #17652f' : '2px solid #cbd5e1',
+              backgroundColor: isSelected ? '#17652f' : '#ffffff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}
@@ -1169,7 +1169,7 @@ export const TaskforceManagerPage = () => {
                 </span>
               )}
               {(task.uploads?.length || 0) > 0 && (
-                <span style={{ fontSize: '9px', fontWeight: 700, backgroundColor: '#f5f3ff', color: '#7c3aed', padding: '1px 5px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '9px', fontWeight: 700, backgroundColor: '#f5f3ff', color: '#17652f', padding: '1px 5px', borderRadius: '4px' }}>
                   📸 {task.uploads.length}
                 </span>
               )}
@@ -1186,7 +1186,7 @@ export const TaskforceManagerPage = () => {
 
           {/* Assignees */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            {(task.assignedTo || []).slice(0, 2).map((a, aIdx) => renderInitialsAvatar(a, 22, '#005bbf'))}
+            {(task.assignedTo || []).slice(0, 2).map((a, aIdx) => renderInitialsAvatar(a, 22, '#17652f'))}
             {(task.assignedTo || []).length > 2 && (
               <span style={{ fontSize: '10px', color: '#64748b', marginLeft: '4px' }}>+{(task.assignedTo || []).length - 2}</span>
             )}
@@ -1219,13 +1219,13 @@ export const TaskforceManagerPage = () => {
               alignItems: 'center',
               gap: '10px',
               padding: '12px 18px',
-              backgroundColor: '#eff6ff',
+              backgroundColor: '#e8f2e5',
               borderRadius: '10px',
-              border: '1px solid #bfdbfe',
+              border: '1px solid #cde4c9',
               flexWrap: 'wrap',
             }}
           >
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#005bbf' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#17652f' }}>
               {selectedTasks.length} task(s) selected
             </span>
             <div style={{ flex: 1 }} />
@@ -1234,7 +1234,7 @@ export const TaskforceManagerPage = () => {
               style={{
                 padding: '7px 14px', borderRadius: '8px', border: 'none', fontSize: '12px',
                 fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px',
-                backgroundColor: '#1a73e8', color: '#ffffff',
+                backgroundColor: '#17652f', color: '#ffffff',
               }}
             >
               <ThumbsUp size={13} /> Approve
@@ -1282,12 +1282,12 @@ export const TaskforceManagerPage = () => {
             boxShadow: '0 1px 3px rgba(60, 64, 67, 0.06)',
           }}
         >
-          <div style={{ padding: '14px 18px', borderBottom: '1px solid #dadce0', backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Shield size={16} color="#1a73e8" />
-            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#1e40af' }}>
+          <div style={{ padding: '14px 18px', borderBottom: '1px solid #dadce0', backgroundColor: '#e8f2e5', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Shield size={16} color="#17652f" />
+            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#17652f' }}>
               Awaiting Approval ({underReview.length})
             </h3>
-            <span style={{ fontSize: '11px', color: '#1e40af', marginLeft: 'auto' }}>Select tasks to approve or reject</span>
+            <span style={{ fontSize: '11px', color: '#17652f', marginLeft: 'auto' }}>Select tasks to approve or reject</span>
           </div>
           {underReview.length === 0 ? (
             <div style={{ padding: '30px', textAlign: 'center', color: '#94a3b8', fontSize: '12px' }}>No tasks pending approval.</div>
@@ -1328,7 +1328,7 @@ export const TaskforceManagerPage = () => {
           }}
         >
           <div style={{ padding: '14px 18px', borderBottom: '1px solid #dadce0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Users size={16} color="#005bbf" />
+            <Users size={16} color="#17652f" />
             <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
               Team Availability Overview
             </h3>
@@ -1354,7 +1354,7 @@ export const TaskforceManagerPage = () => {
                 <div
                   style={{
                     width: '24px', height: '24px', borderRadius: '50%',
-                    backgroundColor: w.capacityScore >= 70 ? '#eff6ff' : w.capacityScore >= 40 ? '#f1f5f9' : '#0f172a',
+                    backgroundColor: w.capacityScore >= 70 ? '#e8f2e5' : w.capacityScore >= 40 ? '#f1f5f9' : '#0f172a',
                     border: `2px solid ${getCapacityColor(w.capacityScore)}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '8px', fontWeight: 700, color: w.capacityScore < 40 ? '#ffffff' : getCapacityColor(w.capacityScore),
@@ -1385,14 +1385,14 @@ export const TaskforceManagerPage = () => {
           gap: '16px',
           backgroundColor: '#ffffff',
           borderRadius: '14px',
-          border: '1px solid #dadce0',
+          border: '1px solid #e8e6df',
           padding: '20px 24px',
-          boxShadow: '0 1px 3px rgba(60, 64, 67, 0.08)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
         }}
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1 className="font-headline-md" style={{ color: '#0f172a', margin: 0, fontSize: '24px' }}>
+            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', color: '#1f2937', margin: 0, fontSize: '26px', fontWeight: 700 }}>
               Taskforce Manager
             </h1>
             <span
@@ -1401,9 +1401,9 @@ export const TaskforceManagerPage = () => {
                 fontWeight: 700,
                 padding: '3px 10px',
                 borderRadius: '12px',
-                backgroundColor: '#eff6ff',
-                color: '#1a73e8',
-                border: '1px solid #bfdbfe',
+                backgroundColor: '#e8f2e5',
+                color: '#17652f',
+                border: '1px solid #cde4c9',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '5px',
@@ -1412,7 +1412,7 @@ export const TaskforceManagerPage = () => {
               <Shield size={13} /> Command & Control
             </span>
           </div>
-          <p style={{ fontSize: '13px', color: '#64748b', marginTop: '6px', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: '#596372', marginTop: '6px', margin: 0 }}>
             Team workload management, department hierarchy, and task delegation hub.
           </p>
         </div>
@@ -1424,16 +1424,16 @@ export const TaskforceManagerPage = () => {
             style={{
               padding: '9px 16px',
               fontSize: '13px',
-              fontWeight: 700,
+              fontWeight: 600,
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
               borderRadius: '8px',
-              backgroundColor: '#059669',
+              backgroundColor: '#17652f',
               color: '#ffffff',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(5, 150, 105, 0.3)',
+              boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
             }}
           >
             <Plus size={15} /> Add Team Member
@@ -1459,11 +1459,11 @@ export const TaskforceManagerPage = () => {
           display: 'flex',
           alignItems: 'center',
           gap: '4px',
-          backgroundColor: '#ffffff',
-          border: '1px solid #dadce0',
+          backgroundColor: '#faf9f6',
+          border: '1px solid #e8e6df',
           borderRadius: '12px',
           padding: '6px',
-          boxShadow: '0 1px 3px rgba(60, 64, 67, 0.06)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
           overflowX: 'auto',
           WebkitOverflowScrolling: 'touch',
           whiteSpace: 'nowrap',
@@ -1477,17 +1477,17 @@ export const TaskforceManagerPage = () => {
               type="button"
               onClick={() => handleTabChange(tab.key)}
               style={{
-                padding: '9px 16px',
+                padding: '8px 16px',
                 borderRadius: '8px',
                 fontSize: '12px',
                 fontWeight: 600,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                backgroundColor: isActive ? '#ffffff' : 'transparent',
-                color: isActive ? tab.color : '#64748b',
-                boxShadow: isActive ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
-                border: isActive ? `1px solid ${tab.color}20` : 'none',
+                backgroundColor: isActive ? '#17652f' : 'transparent',
+                color: isActive ? '#ffffff' : '#596372',
+                boxShadow: isActive ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+                border: 'none',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 transition: 'all 0.15s ease',
@@ -1507,10 +1507,10 @@ export const TaskforceManagerPage = () => {
             onChange={(e) => setSelectedDept(e.target.value)}
             style={{
               height: '36px', padding: '0 12px', borderRadius: '8px',
-              border: selectedDept !== 'all' ? '1.5px solid #005bbf' : '1px solid #dadce0',
+              border: selectedDept !== 'all' ? '1.5px solid #17652f' : '1px solid #e8e6df',
               fontSize: '12px', fontWeight: 500, cursor: 'pointer',
-              backgroundColor: selectedDept !== 'all' ? '#eff6ff' : '#ffffff',
-              color: selectedDept !== 'all' ? '#005bbf' : '#334155',
+              backgroundColor: selectedDept !== 'all' ? '#e8f2e5' : '#ffffff',
+              color: selectedDept !== 'all' ? '#17652f' : '#1f2937',
             }}
           >
             <option value="all">All Departments</option>

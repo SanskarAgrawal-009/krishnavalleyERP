@@ -234,48 +234,57 @@ export const RentalLedgersPage = () => {
       {/* 1. TOP EXECUTIVE HEADER */}
       <div
         style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '16px',
+          border: '1px solid #e8e6df',
+          padding: '24px 28px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '16px'
+          gap: '16px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div
             style={{
-              width: '44px',
-              height: '44px',
+              width: '46px',
+              height: '46px',
               borderRadius: '12px',
-              background: 'linear-gradient(135deg, #1e40af, #4f46e5)',
-              color: '#ffffff',
+              background: '#e8f2e5',
+              color: '#17652f',
+              border: '1px solid #cde4c9',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 14px rgba(124, 58, 237, 0.3)'
+              boxShadow: 'none'
             }}
           >
             <BookOpen size={22} />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-                Rental Passbooks & Customer Ledgers
-              </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
               <span
                 style={{
-                  padding: '2px 8px',
+                  padding: '3px 10px',
                   borderRadius: '6px',
-                  backgroundColor: '#eff6ff',
-                  color: '#1e40af',
-                  fontSize: '0.75rem',
-                  fontWeight: '800'
+                  backgroundColor: '#e8f2e5',
+                  color: '#17652f',
+                  border: '1px solid #cde4c9',
+                  fontSize: '0.74rem',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em'
                 }}
               >
                 Passbook Hub
               </span>
             </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.82rem', color: '#64748b', fontWeight: '500' }}>
+            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: '600', color: '#1f2937', margin: 0, letterSpacing: '-0.015em' }}>
+              Rental Passbooks & Customer Ledgers
+            </h1>
+            <p style={{ margin: '3px 0 0', fontSize: '0.88rem', color: '#596372', fontWeight: '500' }}>
               Owner-by-Owner Disbursal Passbooks • Tenure Schedule • Auto-Calculated Paid Month Entries
             </p>
           </div>
@@ -292,13 +301,13 @@ export const RentalLedgersPage = () => {
               gap: '6px',
               padding: '9px 16px',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
-              fontSize: '0.82rem',
-              fontWeight: '800',
+              fontSize: '0.84rem',
+              fontWeight: '600',
               cursor: 'pointer',
-              boxShadow: '0 3px 10px rgba(37, 99, 235, 0.3)'
+              boxShadow: '0 1px 3px rgba(23,101,47,0.2)'
             }}
           >
             <Calculator size={16} /> Upload Excel & Auto-Calculate
@@ -313,16 +322,16 @@ export const RentalLedgersPage = () => {
               gap: '6px',
               padding: '9px 16px',
               borderRadius: '8px',
-              background: '#1e40af',
-              color: '#ffffff',
-              border: 'none',
-              fontSize: '0.82rem',
-              fontWeight: '800',
+              background: '#faf9f6',
+              color: '#1f2937',
+              border: '1px solid #e8e6df',
+              fontSize: '0.84rem',
+              fontWeight: '600',
               cursor: autoGenerating ? 'not-allowed' : 'pointer',
-              boxShadow: '0 3px 10px rgba(124, 58, 237, 0.25)'
+              boxShadow: 'none'
             }}
           >
-            <Sparkles size={16} />
+            <Sparkles size={16} color="#17652f" />
             {autoGenerating ? 'Generating...' : 'Sync from Active Register'}
           </button>
 
@@ -335,14 +344,14 @@ export const RentalLedgersPage = () => {
               padding: '9px 14px',
               borderRadius: '8px',
               background: '#ffffff',
-              border: '1px solid #cbd5e1',
-              color: '#334155',
-              fontSize: '0.82rem',
-              fontWeight: '700',
+              border: '1px solid #e8e6df',
+              color: '#1f2937',
+              fontSize: '0.84rem',
+              fontWeight: '600',
               cursor: 'pointer'
             }}
           >
-            <FileSpreadsheet size={15} color="#1a73e8" /> Export Master CSV
+            <FileSpreadsheet size={15} color="#17652f" /> Export Master CSV
           </button>
 
           <button
@@ -407,7 +416,7 @@ export const RentalLedgersPage = () => {
             <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
               Enrolled Passbooks
             </span>
-            <Users size={16} color="#1e40af" />
+            <Users size={16} color="#17652f" />
           </div>
           <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a' }}>
             {kpis.totalAccounts} Flats
@@ -431,12 +440,12 @@ export const RentalLedgersPage = () => {
             <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
               Total Paid to Owners
             </span>
-            <CheckCircle2 size={16} color="#1a73e8" />
+            <CheckCircle2 size={16} color="#17652f" />
           </div>
-          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#1a73e8' }}>
+          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#17652f' }}>
             {formatINR(kpis.totalDisbursedAll)}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>
             {kpis.totalPaidMonthsAll} Total months settled
           </span>
         </div>
@@ -479,9 +488,9 @@ export const RentalLedgersPage = () => {
             <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
               Total Commitment (Tenure)
             </span>
-            <DollarSign size={16} color="#2563eb" />
+            <DollarSign size={16} color="#17652f" />
           </div>
-          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#2563eb' }}>
+          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#17652f' }}>
             {formatINR(kpis.totalCommitmentAll)}
           </div>
           <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -542,7 +551,7 @@ export const RentalLedgersPage = () => {
             style={{
               padding: '8px 14px',
               borderRadius: '8px',
-              backgroundColor: '#2563eb',
+              backgroundColor: '#17652f',
               color: '#ffffff',
               border: 'none',
               fontSize: '0.82rem',
@@ -649,8 +658,8 @@ export const RentalLedgersPage = () => {
                             width: '32px',
                             height: '32px',
                             borderRadius: '8px',
-                            backgroundColor: '#eff6ff',
-                            color: '#2563eb',
+                            backgroundColor: '#e8f2e5',
+                            color: '#17652f',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -702,7 +711,7 @@ export const RentalLedgersPage = () => {
 
                     {/* Monthly Net Rent */}
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                      <div style={{ fontWeight: '800', color: '#2563eb' }}>
+                      <div style={{ fontWeight: '800', color: '#17652f' }}>
                         {formatINR(item.netRent)}
                       </div>
                       <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
@@ -712,7 +721,7 @@ export const RentalLedgersPage = () => {
 
                     {/* Total Disbursed */}
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                      <div style={{ fontWeight: '800', color: '#1a73e8' }}>
+                      <div style={{ fontWeight: '800', color: '#17652f' }}>
                         {formatINR(item.totalPaid)}
                       </div>
                       <span
@@ -721,7 +730,7 @@ export const RentalLedgersPage = () => {
                           alignItems: 'center',
                           gap: '2px',
                           fontSize: '0.72rem',
-                          color: '#1e40af',
+                          color: '#17652f',
                           fontWeight: '700'
                         }}
                       >
@@ -754,7 +763,7 @@ export const RentalLedgersPage = () => {
                           style={{
                             width: `${item.completionPercentage}%`,
                             height: '100%',
-                            backgroundColor: item.completionPercentage === 100 ? '#1a73e8' : '#2563eb'
+                            backgroundColor: item.completionPercentage === 100 ? '#17652f' : '#17652f'
                           }}
                         />
                       </div>
@@ -784,9 +793,9 @@ export const RentalLedgersPage = () => {
                             gap: '4px',
                             padding: '6px 10px',
                             borderRadius: '6px',
-                            border: '1px solid #93c5fd',
-                            backgroundColor: '#eff6ff',
-                            color: '#1d4ed8',
+                            border: '1px solid #86c8a0',
+                            backgroundColor: '#e8f2e5',
+                            color: '#17652f',
                             fontSize: '0.78rem',
                             fontWeight: '700',
                             cursor: 'pointer'
@@ -803,7 +812,7 @@ export const RentalLedgersPage = () => {
                             gap: '6px',
                             padding: '6px 12px',
                             borderRadius: '6px',
-                            backgroundColor: '#1e40af',
+                            backgroundColor: '#17652f',
                             color: '#ffffff',
                             border: 'none',
                             fontSize: '0.78rem',

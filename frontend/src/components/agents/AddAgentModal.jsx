@@ -8,9 +8,9 @@ import { authService } from '../../services/authService.js';
 import { agentService } from '../../services/agentService.js';
 
 const STEPS = [
-  { id: 1, title: 'Basic Info', subtitle: 'Name & Login', icon: User, color: '#2563eb' },
-  { id: 2, title: 'Agent Profile', subtitle: 'Agency & Commission', icon: Briefcase, color: '#1e40af' },
-  { id: 3, title: 'Bank Details', subtitle: 'Payment Info', icon: CreditCard, color: '#1a73e8' },
+  { id: 1, title: 'Basic Info', subtitle: 'Name & Login', icon: User, color: '#17652f' },
+  { id: 2, title: 'Agent Profile', subtitle: 'Agency & Commission', icon: Briefcase, color: '#17652f' },
+  { id: 3, title: 'Bank Details', subtitle: 'Payment Info', icon: CreditCard, color: '#17652f' },
 ];
 
 const CITIES = [
@@ -103,7 +103,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
   };
 
   const inputFocusStyle = {
-    borderColor: '#3b82f6',
+    borderColor: '#17652f',
     boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
   };
 
@@ -208,7 +208,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+          background: 'linear-gradient(135deg, #17652f, #17652f)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <User size={16} color="#fff" />
@@ -322,7 +322,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #1e40af, #1e3a8a)',
+          background: 'linear-gradient(135deg, #17652f, #17652f)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Briefcase size={16} color="#fff" />
@@ -402,12 +402,12 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
 
       {/* Commission Setup */}
       <div style={{
-        padding: '16px', background: '#eff6ff', borderRadius: '12px',
-        border: '1.5px solid #bfdbfe',
+        padding: '16px', background: '#e8f2e5', borderRadius: '12px',
+        border: '1.5px solid #cde4c9',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-          <DollarSign size={15} color="#1a73e8" />
-          <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1e40af' }}>Commission Setup</span>
+          <DollarSign size={15} color="#17652f" />
+          <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#17652f' }}>Commission Setup</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
           <div>
@@ -419,7 +419,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
                 style={{
                   flex: 1, padding: '6px 12px', fontSize: '0.78rem', fontWeight: '700',
                   borderRadius: '6px', border: 'none', cursor: 'pointer',
-                  background: form.commissionType === 'percentage' ? '#1a73e8' : 'transparent',
+                  background: form.commissionType === 'percentage' ? '#17652f' : 'transparent',
                   color: form.commissionType === 'percentage' ? '#ffffff' : '#475569',
                   transition: 'all 0.2s',
                 }}
@@ -430,7 +430,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
                 style={{
                   flex: 1, padding: '6px 12px', fontSize: '0.78rem', fontWeight: '700',
                   borderRadius: '6px', border: 'none', cursor: 'pointer',
-                  background: form.commissionType === 'flat' ? '#1a73e8' : 'transparent',
+                  background: form.commissionType === 'flat' ? '#17652f' : 'transparent',
                   color: form.commissionType === 'flat' ? '#ffffff' : '#475569',
                   transition: 'all 0.2s',
                 }}
@@ -465,7 +465,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
+          background: 'linear-gradient(135deg, #17652f, #17652f)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <CreditCard size={16} color="#fff" />
@@ -607,7 +607,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
         {/* HEADER */}
         <div style={{
           padding: '18px 24px',
-          background: 'linear-gradient(135deg, #1e3a8a, #0f172a)',
+          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
           color: '#ffffff',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
@@ -616,7 +616,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
               <UserPlus size={20} />
               <span style={{ fontSize: '1.15rem', fontWeight: '800' }}>Add New Agent</span>
             </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: '#93c5fd' }}>
+            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: '#86c8a0' }}>
               Step {currentStep} of {STEPS.length} — {STEPS[currentStep - 1].subtitle}
             </p>
           </div>
@@ -661,7 +661,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
                   <div style={{
                     width: '30px', height: '30px', borderRadius: '8px',
                     background: isCompleted
-                      ? 'linear-gradient(135deg, #1a73e8, #1e40af)'
+                      ? 'linear-gradient(135deg, #17652f, #17652f)'
                       : isActive
                         ? `linear-gradient(135deg, ${step.color}, ${step.color}dd)`
                         : '#e2e8f0',
@@ -677,14 +677,14 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
                   <div style={{ textAlign: 'left' }}>
                     <div style={{
                       fontSize: '0.72rem', fontWeight: '800',
-                      color: isActive ? '#0f172a' : isCompleted ? '#1a73e8' : '#94a3b8',
+                      color: isActive ? '#0f172a' : isCompleted ? '#17652f' : '#94a3b8',
                     }}>{step.title}</div>
                   </div>
                 </button>
                 {idx < STEPS.length - 1 && (
                   <div style={{
                     width: '20px', height: '2px', flexShrink: 0,
-                    background: isCompleted ? '#1a73e8' : '#e2e8f0',
+                    background: isCompleted ? '#17652f' : '#e2e8f0',
                     borderRadius: '1px',
                   }} />
                 )}
@@ -736,7 +736,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
                   width: currentStep === step.id ? '24px' : '8px',
                   height: '8px', borderRadius: '4px',
                   background: currentStep >= step.id
-                    ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#e2e8f0',
+                    ? 'linear-gradient(135deg, #17652f, #17652f)' : '#e2e8f0',
                   transition: 'all 0.3s ease',
                 }}
               />
@@ -751,7 +751,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
               style={{
                 padding: '10px 24px', borderRadius: '10px', border: 'none',
                 background: validateStep(currentStep)
-                  ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#e2e8f0',
+                  ? 'linear-gradient(135deg, #17652f, #17652f)' : '#e2e8f0',
                 color: validateStep(currentStep) ? '#ffffff' : '#94a3b8',
                 fontSize: '0.84rem', fontWeight: '800',
                 cursor: validateStep(currentStep) ? 'pointer' : 'not-allowed',
@@ -768,7 +768,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
               disabled={saving || !validateStep(1)}
               style={{
                 padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
+                background: 'linear-gradient(135deg, #17652f, #17652f)',
                 color: '#ffffff', fontSize: '0.84rem', fontWeight: '800',
                 cursor: saving ? 'not-allowed' : 'pointer',
                 boxShadow: '0 4px 12px rgba(22,163,74,0.35)',

@@ -301,13 +301,13 @@ export const PropertyInventoryPage = () => {
         title={`Occupied: ${occupied} (${Math.round(occPct)}%) | Reserved: ${reserved} (${Math.round(resPct)}%) | Vacancies: ${available} (${Math.round(vacPct)}%)`}
       >
         {occPct > 0 && (
-          <div style={{ width: `${occPct}%`, background: '#2563eb', transition: 'width 0.3s' }} />
+          <div style={{ width: `${occPct}%`, background: '#17652f', transition: 'width 0.3s' }} />
         )}
         {resPct > 0 && (
           <div style={{ width: `${resPct}%`, background: '#475569', transition: 'width 0.3s' }} />
         )}
         {vacPct > 0 && (
-          <div style={{ width: `${vacPct}%`, background: '#1a73e8', transition: 'width 0.3s' }} />
+          <div style={{ width: `${vacPct}%`, background: '#17652f', transition: 'width 0.3s' }} />
         )}
       </div>
     );
@@ -469,8 +469,8 @@ export const PropertyInventoryPage = () => {
         gap: '12px'
       }}>
         <div>
-          <h2 className="font-headline-lg text-on-surface">Sites & Property Inventory</h2>
-          <p className="font-body-md" style={{ color: '#414754', marginTop: '2px' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: 700, color: '#1f2937' }}>Sites & Property Inventory</h2>
+          <p className="font-body-md" style={{ color: '#596372', marginTop: '2px' }}>
             Multi-project master structure, building towers, and unit-level availability management.
           </p>
         </div>
@@ -481,14 +481,14 @@ export const PropertyInventoryPage = () => {
               onClick={handleWipeAllFlats}
               title="Wipe all flats, sales, and rentals"
               style={{
-                background: '#f1f5f9',
-                border: '1px solid #e2e8f0',
-                color: '#0f172a',
+                background: '#ffffff',
+                border: '1px solid #fecaca',
+                color: '#b91c1c',
                 padding: '8px 14px',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.82rem',
-                fontWeight: '700',
+                fontWeight: '600',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px'
@@ -503,8 +503,8 @@ export const PropertyInventoryPage = () => {
             title="Refresh Inventory"
             style={{
               background: '#ffffff',
-              border: '1px solid #dadce0',
-              color: '#414754',
+              border: '1px solid #e8e6df',
+              color: '#596372',
               padding: '8px 14px',
               borderRadius: '8px',
               cursor: 'pointer',
@@ -536,8 +536,8 @@ export const PropertyInventoryPage = () => {
               setSelectedBuilding(null);
             }}
             style={{
-              background: !selectedProject ? '#d8e2ff' : 'transparent',
-              color: !selectedProject ? '#00285c' : '#414754',
+              background: !selectedProject ? '#e8f2e5' : 'transparent',
+              color: !selectedProject ? '#17652f' : '#596372',
               fontWeight: !selectedProject ? '700' : '500',
               display: 'flex',
               alignItems: 'center',
@@ -548,18 +548,18 @@ export const PropertyInventoryPage = () => {
               borderRadius: '6px'
             }}
           >
-            <Building2 size={16} color="#1a73e8" />
+            <Building2 size={16} color="#17652f" />
             All Projects ({projects.length})
           </button>
 
           {selectedProject && (
             <>
-              <ChevronRight size={14} color="#727785" />
+              <ChevronRight size={14} color="#8e95a0" />
               <button
                 onClick={() => setSelectedBuilding(null)}
                 style={{
-                  background: !selectedBuilding ? '#d8e2ff' : 'transparent',
-                  color: !selectedBuilding ? '#00285c' : '#414754',
+                  background: !selectedBuilding ? '#e8f2e5' : 'transparent',
+                  color: !selectedBuilding ? '#17652f' : '#596372',
                   fontWeight: !selectedBuilding ? '700' : '500',
                   display: 'flex',
                   alignItems: 'center',
@@ -570,7 +570,7 @@ export const PropertyInventoryPage = () => {
                   border: 'none'
                 }}
               >
-                <Layers size={15} color="#1a73e8" />
+                <Layers size={15} color="#17652f" />
                 {selectedProject.projectName} ({selectedProject.projectCode})
               </button>
             </>
@@ -578,11 +578,11 @@ export const PropertyInventoryPage = () => {
 
           {selectedBuilding && (
             <>
-              <ChevronRight size={14} color="#727785" />
+              <ChevronRight size={14} color="#8e95a0" />
               <span
                 style={{
-                  background: '#e8f0fe',
-                  color: '#1a73e8',
+                  background: '#e8f2e5',
+                  color: '#17652f',
                   fontWeight: '700',
                   display: 'flex',
                   alignItems: 'center',
@@ -604,7 +604,7 @@ export const PropertyInventoryPage = () => {
             <button
               onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
               style={{
-                background: '#1a73e8',
+                background: '#17652f',
                 color: '#ffffff',
                 padding: '8px 14px',
                 borderRadius: '6px',
@@ -615,7 +615,7 @@ export const PropertyInventoryPage = () => {
                 gap: '6px',
                 cursor: 'pointer',
                 border: 'none',
-                boxShadow: '0 1px 2px rgba(26,115,232,0.2)'
+                boxShadow: '0 1px 2px rgba(23,101,47,0.2)'
               }}
             >
               <Plus size={15} /> Add Project
@@ -627,8 +627,8 @@ export const PropertyInventoryPage = () => {
               onClick={() => setIsBuildingModalOpen(true)}
               style={{
                 background: '#ffffff',
-                border: '1px solid #dadce0',
-                color: '#1a73e8',
+                border: '1px solid #e8e6df',
+                color: '#17652f',
                 padding: '8px 14px',
                 borderRadius: '6px',
                 fontSize: '0.82rem',
@@ -648,8 +648,8 @@ export const PropertyInventoryPage = () => {
               onClick={() => setIsFloorModalOpen(true)}
               style={{
                 background: '#ffffff',
-                border: '1px solid #dadce0',
-                color: '#1a73e8',
+                border: '1px solid #e8e6df',
+                color: '#17652f',
                 padding: '8px 14px',
                 borderRadius: '6px',
                 fontSize: '0.82rem',
@@ -668,7 +668,7 @@ export const PropertyInventoryPage = () => {
             <button
               onClick={() => { setEditingFlat(null); setIsFlatModalOpen(true); }}
               style={{
-                background: '#1a73e8',
+                background: '#17652f',
                 color: '#ffffff',
                 padding: '8px 14px',
                 borderRadius: '6px',
@@ -689,7 +689,7 @@ export const PropertyInventoryPage = () => {
             <button
               onClick={() => setIsImportFlatsModalOpen(true)}
               style={{
-                background: '#1a73e8',
+                background: '#17652f',
                 color: '#ffffff',
                 padding: '8px 14px',
                 borderRadius: '6px',
@@ -722,7 +722,7 @@ export const PropertyInventoryPage = () => {
             {/* Card 1: Total Units */}
             <div className="g-card" style={{
               padding: '16px 20px',
-              borderLeft: '4px solid #1a73e8',
+              borderLeft: '4px solid #17652f',
               display: 'flex',
               flexDirection: 'column',
               gap: '6px'
@@ -731,7 +731,7 @@ export const PropertyInventoryPage = () => {
                 <span style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Total Inventory
                 </span>
-                <Building2 size={18} color="#1a73e8" />
+                <Building2 size={18} color="#17652f" />
               </div>
               <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0f172a' }}>
                 {portfolioStats.totalUnits}
@@ -744,20 +744,20 @@ export const PropertyInventoryPage = () => {
             {/* Card 2: Vacancies (Available) */}
             <div className="g-card" style={{
               padding: '16px 20px',
-              borderLeft: '4px solid #1a73e8',
+              borderLeft: '4px solid #17652f',
               display: 'flex',
               flexDirection: 'column',
               gap: '6px'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.76rem', color: '#1e40af', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '0.76rem', color: '#17652f', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Vacancies (Available)
                 </span>
-                <span style={{ background: '#eff6ff', color: '#1e40af', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
+                <span style={{ background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
                   {portfolioStats.vacancyRate}%
                 </span>
               </div>
-              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1e40af' }}>
+              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#17652f' }}>
                 {portfolioStats.totalVacancies}
               </div>
               <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
@@ -792,20 +792,20 @@ export const PropertyInventoryPage = () => {
             {/* Card 4: Occupied (Sold / Booked) */}
             <div className="g-card" style={{
               padding: '16px 20px',
-              borderLeft: '4px solid #2563eb',
+              borderLeft: '4px solid #17652f',
               display: 'flex',
               flexDirection: 'column',
               gap: '6px'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.76rem', color: '#1e40af', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '0.76rem', color: '#17652f', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Occupied (Sold / Booked)
                 </span>
-                <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
+                <span style={{ background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
                   {portfolioStats.occupancyRate}%
                 </span>
               </div>
-              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1d4ed8' }}>
+              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#17652f' }}>
                 {portfolioStats.totalOccupied}
               </div>
               <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
@@ -818,13 +818,13 @@ export const PropertyInventoryPage = () => {
           <div className="g-card" style={{ padding: '14px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', fontWeight: '800', color: '#0f172a' }}>
-                <BarChart3 size={16} color="#1a73e8" />
+                <BarChart3 size={16} color="#17652f" />
                 Portfolio Occupancy & Vacancy Distribution
               </div>
               {/* Legend */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', fontSize: '0.76rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#1a73e8' }} />
+                  <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#17652f' }} />
                   <span style={{ color: '#475569', fontWeight: '700' }}>Vacancies ({portfolioStats.totalVacancies})</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -832,7 +832,7 @@ export const PropertyInventoryPage = () => {
                   <span style={{ color: '#475569', fontWeight: '700' }}>Reserved ({portfolioStats.totalReserved})</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#2563eb' }} />
+                  <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#17652f' }} />
                   <span style={{ color: '#475569', fontWeight: '700' }}>Occupied ({portfolioStats.totalOccupied})</span>
                 </div>
               </div>
@@ -924,9 +924,9 @@ export const PropertyInventoryPage = () => {
                     <th style={{ padding: '14px 16px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase' }}>Tower / Building</th>
                     <th style={{ padding: '14px 14px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Floors</th>
                     <th style={{ padding: '14px 14px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Total Units</th>
-                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#1e40af', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Vacancies (Available)</th>
+                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#17652f', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Vacancies (Available)</th>
                     <th style={{ padding: '14px 16px', fontWeight: '800', color: '#334155', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Reserved (On Hold)</th>
-                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#1d4ed8', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Occupied (Sold)</th>
+                    <th style={{ padding: '14px 16px', fontWeight: '800', color: '#17652f', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'center' }}>Occupied (Sold)</th>
                     <th style={{ padding: '14px 16px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase', width: '22%' }}>Occupancy Ratio</th>
                     <th style={{ padding: '14px 18px', fontWeight: '800', color: '#475569', fontSize: '0.74rem', textTransform: 'uppercase', textAlign: 'right' }}>Action</th>
                   </tr>
@@ -962,9 +962,9 @@ export const PropertyInventoryPage = () => {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
-                          background: '#eff6ff',
-                          color: '#1e40af',
-                          border: '1px solid #bfdbfe',
+                          background: '#e8f2e5',
+                          color: '#17652f',
+                          border: '1px solid #cde4c9',
                           padding: '3px 8px',
                           borderRadius: '6px',
                           fontWeight: '800',
@@ -994,9 +994,9 @@ export const PropertyInventoryPage = () => {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
-                          background: '#dbeafe',
-                          color: '#1d4ed8',
-                          border: '1px solid #93c5fd',
+                          background: '#e8f2e5',
+                          color: '#17652f',
+                          border: '1px solid #86c8a0',
                           padding: '3px 8px',
                           borderRadius: '6px',
                           fontWeight: '800',
@@ -1023,9 +1023,9 @@ export const PropertyInventoryPage = () => {
                           }}
                           style={{
                             padding: '6px 12px',
-                            background: '#eff6ff',
-                            color: '#1d4ed8',
-                            border: '1px solid #bfdbfe',
+                            background: '#e8f2e5',
+                            color: '#17652f',
+                            border: '1px solid #cde4c9',
                             borderRadius: '6px',
                             fontWeight: '700',
                             fontSize: '0.76rem',
@@ -1074,7 +1074,7 @@ export const PropertyInventoryPage = () => {
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <h4 style={{ fontSize: '1.18rem', fontWeight: '800', color: '#0f172a' }}>{proj.projectName}</h4>
-                            <span style={{ fontSize: '0.72rem', background: '#e8f0fe', padding: '2px 6px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
+                            <span style={{ fontSize: '0.72rem', background: '#e8f2e5', padding: '2px 6px', borderRadius: '4px', color: '#17652f', fontWeight: '700' }}>
                               {proj.projectCode}
                             </span>
                           </div>
@@ -1110,16 +1110,16 @@ export const PropertyInventoryPage = () => {
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
                         {/* Vacancies (Available) */}
                         <div style={{
-                          background: '#eff6ff',
-                          border: '1px solid #dbeafe',
+                          background: '#e8f2e5',
+                          border: '1px solid #e8f2e5',
                           borderRadius: '6px',
                           padding: '6px 8px',
                           textAlign: 'center'
                         }}>
-                          <div style={{ fontSize: '0.64rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>
+                          <div style={{ fontSize: '0.64rem', fontWeight: '700', color: '#17652f', textTransform: 'uppercase' }}>
                             Vacancies
                           </div>
-                          <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1e40af' }}>
+                          <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f' }}>
                             {proj.stats?.available || 0}
                           </div>
                         </div>
@@ -1142,16 +1142,16 @@ export const PropertyInventoryPage = () => {
 
                         {/* Occupied (Sold) */}
                         <div style={{
-                          background: '#eff6ff',
-                          border: '1px solid #bfdbfe',
+                          background: '#e8f2e5',
+                          border: '1px solid #cde4c9',
                           borderRadius: '6px',
                           padding: '6px 8px',
                           textAlign: 'center'
                         }}>
-                          <div style={{ fontSize: '0.64rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>
+                          <div style={{ fontSize: '0.64rem', fontWeight: '700', color: '#17652f', textTransform: 'uppercase' }}>
                             Occupied
                           </div>
-                          <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1d4ed8' }}>
+                          <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f' }}>
                             {proj.stats?.occupied || 0}
                           </div>
                         </div>
@@ -1188,7 +1188,7 @@ export const PropertyInventoryPage = () => {
                         }}
                       >
                         <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Layers size={14} color="#2563eb" />
+                          <Layers size={14} color="#17652f" />
                           Tower Breakdown ({bldsCount} Towers)
                         </span>
                         {isExpanded ? (
@@ -1244,13 +1244,13 @@ export const PropertyInventoryPage = () => {
 
                                 {/* Tower Mini Status Badges */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', fontSize: '0.72rem' }}>
-                                  <span style={{ background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                                  <span style={{ background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
                                     {bld.stats?.available || 0} Vacant
                                   </span>
                                   <span style={{ background: '#f1f5f9', color: '#334155', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
                                     {bld.stats?.reserved || 0} Reserved
                                   </span>
-                                  <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                                  <span style={{ background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
                                     {bld.stats?.occupied || 0} Occupied
                                   </span>
                                   <span style={{ marginLeft: 'auto', fontWeight: '800', color: '#0f172a' }}>
@@ -1277,9 +1277,9 @@ export const PropertyInventoryPage = () => {
                                     padding: '5px 8px',
                                     fontSize: '0.72rem',
                                     fontWeight: '700',
-                                    color: '#2563eb',
-                                    background: '#eff6ff',
-                                    border: '1px solid #bfdbfe',
+                                    color: '#17652f',
+                                    background: '#e8f2e5',
+                                    border: '1px solid #cde4c9',
                                     borderRadius: '4px',
                                     cursor: 'pointer',
                                     display: 'flex',
@@ -1343,7 +1343,7 @@ export const PropertyInventoryPage = () => {
                           background: 'none',
                           border: 'none',
                           fontSize: '0.8rem',
-                          color: '#1a73e8',
+                          color: '#17652f',
                           fontWeight: '700',
                           display: 'flex',
                           alignItems: 'center',
@@ -1382,13 +1382,13 @@ export const PropertyInventoryPage = () => {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{selectedProject.projectName}</h3>
-                  <span style={{ fontSize: '0.75rem', background: '#e8f0fe', padding: '2px 8px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
+                  <span style={{ fontSize: '0.75rem', background: '#e8f2e5', padding: '2px 8px', borderRadius: '4px', color: '#17652f', fontWeight: '700' }}>
                     {selectedProject.projectCode}
                   </span>
                   <StatusBadge status={selectedProject.status} />
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <MapPin size={13} color="#1a73e8" style={{ flexShrink: 0 }} />
+                  <MapPin size={13} color="#17652f" style={{ flexShrink: 0 }} />
                   <span>{selectedProject.address?.addressLine1}, {selectedProject.address?.city}, {selectedProject.address?.state} - {selectedProject.address?.pincode}</span>
                 </div>
               </div>
@@ -1397,7 +1397,7 @@ export const PropertyInventoryPage = () => {
                 <button
                   onClick={() => setIsBuildingModalOpen(true)}
                   style={{
-                    background: '#1a73e8',
+                    background: '#17652f',
                     color: '#ffffff',
                     padding: '8px 16px',
                     borderRadius: '6px',
@@ -1435,10 +1435,10 @@ export const PropertyInventoryPage = () => {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
-                <div style={{ background: '#eff6ff', border: '1px solid #dbeafe', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>Vacancies</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1e40af' }}>{selectedProject.stats?.available || 0}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#1e40af' }}>{selectedProject.stats?.vacancyRate || 0}%</div>
+                <div style={{ background: '#e8f2e5', border: '1px solid #e8f2e5', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#17652f', textTransform: 'uppercase' }}>Vacancies</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f' }}>{selectedProject.stats?.available || 0}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#17652f' }}>{selectedProject.stats?.vacancyRate || 0}%</div>
                 </div>
 
                 <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
@@ -1447,10 +1447,10 @@ export const PropertyInventoryPage = () => {
                   <div style={{ fontSize: '0.68rem', color: '#334155' }}>{selectedProject.stats?.reservedRate || 0}%</div>
                 </div>
 
-                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>Occupied</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1d4ed8' }}>{selectedProject.stats?.occupied || 0}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#1e40af' }}>{selectedProject.stats?.occupancyRate || 0}%</div>
+                <div style={{ background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#17652f', textTransform: 'uppercase' }}>Occupied</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f' }}>{selectedProject.stats?.occupied || 0}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#17652f' }}>{selectedProject.stats?.occupancyRate || 0}%</div>
                 </div>
 
                 <div style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px', textAlign: 'center' }}>
@@ -1482,7 +1482,7 @@ export const PropertyInventoryPage = () => {
               <p style={{ color: '#414754', marginBottom: '14px' }}>No buildings or towers added to this project yet.</p>
               <button
                 onClick={() => setIsBuildingModalOpen(true)}
-                style={{ background: '#1a73e8', color: '#ffffff', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', border: 'none', fontWeight: '600' }}
+                style={{ background: '#17652f', color: '#ffffff', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', border: 'none', fontWeight: '600' }}
               >
                 <Plus size={14} /> Add First Building / Tower
               </button>
@@ -1507,7 +1507,7 @@ export const PropertyInventoryPage = () => {
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <h4 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>{bld.buildingName}</h4>
-                        <span style={{ fontSize: '0.7rem', background: '#e8f0fe', padding: '2px 6px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
+                        <span style={{ fontSize: '0.7rem', background: '#e8f2e5', padding: '2px 6px', borderRadius: '4px', color: '#17652f', fontWeight: '700' }}>
                           {bld.buildingCode}
                         </span>
                       </div>
@@ -1539,9 +1539,9 @@ export const PropertyInventoryPage = () => {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
                       {/* Vacancies */}
-                      <div style={{ background: '#eff6ff', border: '1px solid #dbeafe', borderRadius: '6px', padding: '6px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '0.62rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>Vacancies</div>
-                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1e40af' }}>{bld.stats?.available || 0}</div>
+                      <div style={{ background: '#e8f2e5', border: '1px solid #e8f2e5', borderRadius: '6px', padding: '6px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '0.62rem', fontWeight: '700', color: '#17652f', textTransform: 'uppercase' }}>Vacancies</div>
+                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f' }}>{bld.stats?.available || 0}</div>
                       </div>
 
                       {/* Reserved */}
@@ -1551,9 +1551,9 @@ export const PropertyInventoryPage = () => {
                       </div>
 
                       {/* Occupied */}
-                      <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '0.62rem', fontWeight: '700', color: '#1e40af', textTransform: 'uppercase' }}>Occupied</div>
-                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1d4ed8' }}>{bld.stats?.occupied || 0}</div>
+                      <div style={{ background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '6px', padding: '6px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '0.62rem', fontWeight: '700', color: '#17652f', textTransform: 'uppercase' }}>Occupied</div>
+                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f' }}>{bld.stats?.occupied || 0}</div>
                       </div>
                     </div>
 
@@ -1587,7 +1587,7 @@ export const PropertyInventoryPage = () => {
                       </button>
                     )}
 
-                    <span style={{ fontSize: '0.8rem', color: '#1a73e8', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#17652f', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       View Flats Matrix <ArrowRight size={14} />
                     </span>
                   </div>
@@ -1613,7 +1613,7 @@ export const PropertyInventoryPage = () => {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <h3 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>{selectedBuilding.buildingName}</h3>
-                <span style={{ fontSize: '0.72rem', background: '#e8f0fe', padding: '2px 8px', borderRadius: '4px', color: '#1a73e8', fontWeight: '700' }}>
+                <span style={{ fontSize: '0.72rem', background: '#e8f2e5', padding: '2px 8px', borderRadius: '4px', color: '#17652f', fontWeight: '700' }}>
                   {selectedBuilding.buildingCode}
                 </span>
                 <StatusBadge status={selectedBuilding.status} />
@@ -1624,13 +1624,13 @@ export const PropertyInventoryPage = () => {
 
               {/* Tower Status Badges */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', flexWrap: 'wrap', fontSize: '0.75rem' }}>
-                <span style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>
+                <span style={{ background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>
                   Vacancies: {availableCount} ({flats.length > 0 ? Math.round((availableCount / flats.length) * 100) : 0}%)
                 </span>
                 <span style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>
                   Reserved: {holdCount} ({flats.length > 0 ? Math.round((holdCount / flats.length) * 100) : 0}%)
                 </span>
-                <span style={{ background: '#dbeafe', color: '#1d4ed8', border: '1px solid #93c5fd', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>
+                <span style={{ background: '#e8f2e5', color: '#17652f', border: '1px solid #86c8a0', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>
                   Occupied: {soldCount} ({flats.length > 0 ? Math.round((soldCount / flats.length) * 100) : 0}%)
                 </span>
               </div>
@@ -1643,7 +1643,7 @@ export const PropertyInventoryPage = () => {
                   style={{
                     background: '#ffffff',
                     border: '1px solid #dadce0',
-                    color: '#1a73e8',
+                    color: '#17652f',
                     padding: '8px 16px',
                     borderRadius: '6px',
                     fontSize: '0.82rem',
@@ -1660,7 +1660,7 @@ export const PropertyInventoryPage = () => {
                 <button
                   onClick={() => { setEditingFlat(null); setIsFlatModalOpen(true); }}
                   style={{
-                    background: '#1a73e8',
+                    background: '#17652f',
                     color: '#ffffff',
                     padding: '8px 16px',
                     borderRadius: '6px',
@@ -1685,7 +1685,7 @@ export const PropertyInventoryPage = () => {
               <p style={{ color: '#414754', marginBottom: '14px' }}>No flats added to this building yet.</p>
               <button
                 onClick={() => { setEditingFlat(null); setIsFlatModalOpen(true); }}
-                style={{ background: '#1a73e8', color: '#ffffff', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', border: 'none', fontWeight: '600' }}
+                style={{ background: '#17652f', color: '#ffffff', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', border: 'none', fontWeight: '600' }}
               >
                 <Plus size={14} /> Add First Flat
               </button>
@@ -1721,7 +1721,7 @@ export const PropertyInventoryPage = () => {
                       gap: '5px',
                       marginRight: '4px'
                     }}>
-                      <Filter size={15} color="#1a73e8" />
+                      <Filter size={15} color="#17652f" />
                       <span>Availability:</span>
                     </div>
 
@@ -1733,9 +1733,9 @@ export const PropertyInventoryPage = () => {
                         borderRadius: '20px',
                         fontSize: '0.8rem',
                         fontWeight: availabilityFilter === 'all' ? '700' : '500',
-                        background: availabilityFilter === 'all' ? '#1a73e8' : '#f1f3f4',
+                        background: availabilityFilter === 'all' ? '#17652f' : '#f1f3f4',
                         color: availabilityFilter === 'all' ? '#ffffff' : '#3c4043',
-                        border: availabilityFilter === 'all' ? '1px solid #1a73e8' : '1px solid #dadce0',
+                        border: availabilityFilter === 'all' ? '1px solid #17652f' : '1px solid #dadce0',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -1764,9 +1764,9 @@ export const PropertyInventoryPage = () => {
                         borderRadius: '20px',
                         fontSize: '0.8rem',
                         fontWeight: availabilityFilter === 'available' ? '700' : '600',
-                        background: availabilityFilter === 'available' ? '#1a73e8' : '#eff6ff',
-                        color: availabilityFilter === 'available' ? '#ffffff' : '#1a73e8',
-                        border: availabilityFilter === 'available' ? '1px solid #1a73e8' : '1px solid #bfdbfe',
+                        background: availabilityFilter === 'available' ? '#17652f' : '#e8f2e5',
+                        color: availabilityFilter === 'available' ? '#ffffff' : '#17652f',
+                        border: availabilityFilter === 'available' ? '1px solid #17652f' : '1px solid #cde4c9',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -1777,8 +1777,8 @@ export const PropertyInventoryPage = () => {
                       <CheckCircle2 size={13} />
                       <span>Available</span>
                       <span style={{
-                        background: availabilityFilter === 'available' ? 'rgba(255,255,255,0.25)' : '#bfdbfe',
-                        color: availabilityFilter === 'available' ? '#ffffff' : '#00285c',
+                        background: availabilityFilter === 'available' ? 'rgba(255,255,255,0.25)' : '#cde4c9',
+                        color: availabilityFilter === 'available' ? '#ffffff' : '#17652f',
                         padding: '1px 6px',
                         borderRadius: '10px',
                         fontSize: '0.72rem',
@@ -1873,7 +1873,7 @@ export const PropertyInventoryPage = () => {
                     >
                       {filteredFlats.length > 0 && filteredFlats.every((f) => selectedFlatIds.includes(f._id || f.id)) ? (
                         <>
-                          <CheckSquare size={14} color="#1a73e8" /> Deselect All ({filteredFlats.length})
+                          <CheckSquare size={14} color="#17652f" /> Deselect All ({filteredFlats.length})
                         </>
                       ) : (
                         <>
@@ -2051,14 +2051,14 @@ export const PropertyInventoryPage = () => {
                       gap: '10px',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      border: isSelected ? '2px solid #1a73e8' : '1px solid #dadce0',
+                      border: isSelected ? '2px solid #17652f' : '1px solid #dadce0',
                       background: isSelected ? '#f4f8fe' : '#ffffff',
                       position: 'relative'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.boxShadow = '0 6px 18px rgba(26, 115, 232, 0.12)';
-                      if (!isSelected) e.currentTarget.style.borderColor = '#1a73e8';
+                      if (!isSelected) e.currentTarget.style.borderColor = '#17652f';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
@@ -2077,7 +2077,7 @@ export const PropertyInventoryPage = () => {
                             width: '18px',
                             height: '18px',
                             cursor: 'pointer',
-                            accentColor: '#1a73e8'
+                            accentColor: '#17652f'
                           }}
                           title="Select unit for bulk rental & sales enrollment"
                         />
@@ -2085,18 +2085,18 @@ export const PropertyInventoryPage = () => {
                           width: '30px',
                           height: '30px',
                           borderRadius: '6px',
-                          background: isSelected ? '#d8e2ff' : '#e8f0fe',
+                          background: isSelected ? '#d8e2ff' : '#e8f2e5',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#1a73e8',
+                          color: '#17652f',
                           fontWeight: '800'
                         }}>
                           <Home size={15} />
                         </div>
                         <div>
                           <span style={{ fontSize: '1.05rem', fontWeight: '700', color: '#191c1d' }}>{flat.flatNumber}</span>
-                          <span style={{ fontSize: '0.68rem', color: '#1a73e8', display: 'block', fontWeight: '600' }}>
+                          <span style={{ fontSize: '0.68rem', color: '#17652f', display: 'block', fontWeight: '600' }}>
                             Click to inspect </span>
                         </div>
                       </div>
@@ -2124,7 +2124,7 @@ export const PropertyInventoryPage = () => {
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span>Rental Program:</span>
-                        <strong style={{ color: flat.takenForRental ? '#7e22ce' : '#727785' }}>
+                        <strong style={{ color: flat.takenForRental ? '#17652f' : '#727785' }}>
                           {flat.takenForRental ? '3-Yr Rental Lock-in' : 'Available'}
                         </strong>
                       </div>
@@ -2148,7 +2148,7 @@ export const PropertyInventoryPage = () => {
                           border: 'none',
                           padding: 0,
                           fontSize: '0.75rem',
-                          color: '#1a73e8',
+                          color: '#17652f',
                           fontWeight: '700',
                           cursor: 'pointer',
                           display: 'flex',
@@ -2236,7 +2236,7 @@ export const PropertyInventoryPage = () => {
           position: 'sticky',
           bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)',
           zIndex: 40,
-          background: '#0f172a',
+          background: '#17652f',
           color: '#ffffff',
           padding: '12px 24px',
           borderRadius: '10px',
@@ -2250,13 +2250,13 @@ export const PropertyInventoryPage = () => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <span style={{ fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <CheckCircle2 size={18} color="#2563eb" />
+              <CheckCircle2 size={18} color="#17652f" />
               {selectedFlatIds.length} Unit(s) Selected
             </span>
             <button
               onClick={handleClearSelection}
               style={{
-                background: '#334155',
+                background: '#e8f2e5',
                 color: '#e2e8f0',
                 border: 'none',
                 borderRadius: '6px',
@@ -2275,7 +2275,7 @@ export const PropertyInventoryPage = () => {
               <button
                 onClick={handleBulkDeleteSelected}
                 style={{
-                  background: '#0f172a',
+                  background: '#17652f',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '6px',

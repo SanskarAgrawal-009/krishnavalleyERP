@@ -112,9 +112,9 @@ export const SalesTeamManagementModal = ({
         {/* Info Banner */}
         <div style={{
           padding: '14px 18px',
-          background: 'linear-gradient(135deg, #eff6ff 0%, #eff6ff 100%)',
+          background: 'linear-gradient(135deg, #e8f2e5 0%, #e8f2e5 100%)',
           borderRadius: '10px',
-          border: '1px solid #bfdbfe',
+          border: '1px solid #cde4c9',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -122,11 +122,11 @@ export const SalesTeamManagementModal = ({
           gap: '12px'
         }}>
           <div>
-            <div style={{ fontSize: '0.94rem', fontWeight: '700', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Zap size={16} color="#2563eb" />
+            <div style={{ fontSize: '0.94rem', fontWeight: '700', color: '#17652f', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Zap size={16} color="#17652f" />
               Automated 1-by-1 Sequential Lead Rotation
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#3b82f6', marginTop: '3px' }}>
+            <div style={{ fontSize: '0.8rem', color: '#17652f', marginTop: '3px' }}>
               Incoming leads are distributed alternatively among active members (Member 1 → Member 2 → Member 3 → Member 1).
             </div>
           </div>
@@ -233,7 +233,7 @@ export const SalesTeamManagementModal = ({
                   style={{
                     padding: '14px 18px',
                     borderRadius: '10px',
-                    border: isNext ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                    border: isNext ? '2px solid #17652f' : '1px solid #e2e8f0',
                     background: isNext ? '#f0f7ff' : (isActive ? '#ffffff' : '#f8fafc'),
                     display: 'flex',
                     alignItems: 'center',
@@ -249,7 +249,7 @@ export const SalesTeamManagementModal = ({
                       width: '32px',
                       height: '32px',
                       borderRadius: '50%',
-                      background: isNext ? '#2563eb' : '#e2e8f0',
+                      background: isNext ? '#17652f' : '#e2e8f0',
                       color: isNext ? '#ffffff' : '#475569',
                       display: 'flex',
                       alignItems: 'center',
@@ -270,7 +270,7 @@ export const SalesTeamManagementModal = ({
                         {isNext && (
                           <span style={{
                             fontSize: '0.68rem',
-                            background: '#2563eb',
+                            background: '#17652f',
                             color: '#ffffff',
                             padding: '2px 8px',
                             borderRadius: '12px',
@@ -300,14 +300,14 @@ export const SalesTeamManagementModal = ({
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontWeight: '800', color: '#2563eb', fontSize: '0.95rem' }}>
+                      <div style={{ fontWeight: '800', color: '#17652f', fontSize: '0.95rem' }}>
                         {member.metrics?.activeLeads || 0}
                       </div>
                       <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Active</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontWeight: '800', color: '#1a73e8', fontSize: '0.95rem' }}>
+                      <div style={{ fontWeight: '800', color: '#17652f', fontSize: '0.95rem' }}>
                         {member.metrics?.convertedLeads || 0}
                       </div>
                       <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Converted</div>
@@ -324,8 +324,8 @@ export const SalesTeamManagementModal = ({
                         cursor: 'pointer',
                         fontSize: '0.75rem',
                         fontWeight: '700',
-                        background: member.isActiveInRoundRobin ? '#eff6ff' : '#f1f5f9',
-                        color: member.isActiveInRoundRobin ? '#1e40af' : '#0f172a',
+                        background: member.isActiveInRoundRobin ? '#e8f2e5' : '#f1f5f9',
+                        color: member.isActiveInRoundRobin ? '#17652f' : '#0f172a',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '5px'

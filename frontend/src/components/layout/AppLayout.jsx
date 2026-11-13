@@ -253,6 +253,12 @@ export const NAV_CATEGORIES = [
           { path: '/agent-network', label: 'Channel Partner Directory', icon: Users },
           { path: '/site-visits', label: 'Site Visit Approvals', icon: ShieldCheck, permission: 'agent:verify' },
         ]
+      },
+      {
+        path: '/settings',
+        label: 'System Settings',
+        icon: Settings,
+        permission: ['settings:view', 'users:manage']
       }
     ]
   },
@@ -981,6 +987,55 @@ export const AppLayout = () => {
             )}
           </div>
 
+          {/* Vrindavan Cluster Enterprise Account Card */}
+          {(!isCollapsed || isMobile) && (
+            <div
+              onClick={() => navigate(isTaskforceManager ? '/taskforce-dashboard' : '/dashboard')}
+              style={{
+                margin: '2px 0 6px',
+                padding: '9px 12px',
+                backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                border: isDark ? '1px solid #334155' : '1px solid #e8e6df',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                cursor: 'pointer',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+                transition: 'all 0.15s ease'
+              }}
+              title="Current Cluster: Vrindavan Cluster"
+            >
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: '#17652f',
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  letterSpacing: '0.02em',
+                  flexShrink: 0
+                }}
+              >
+                KV
+              </div>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: isDark ? '#f8fafc' : '#1f2937', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  Vrindavan Cluster
+                </div>
+                <div style={{ fontSize: '0.68rem', color: isDark ? '#94a3b8' : '#6b7280', marginTop: '2px' }}>
+                  Enterprise Account
+                </div>
+              </div>
+              <ChevronDown size={14} color={isDark ? '#94a3b8' : '#9ca3af'} />
+            </div>
+          )}
+
           {/* Mobile User Identity Pill */}
           {isMobile && user && (
             <div
@@ -1000,8 +1055,8 @@ export const AppLayout = () => {
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: isDark ? '#1e3a8a' : '#e8f0fe',
-                  color: isDark ? '#60a5fa' : '#1a73e8',
+                  backgroundColor: isDark ? '#17652f' : '#e8f2e5',
+                  color: isDark ? '#4a9e68' : '#17652f',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1017,7 +1072,7 @@ export const AppLayout = () => {
                   {user?.firstName} {user?.lastName}
                 </div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--on-surface-variant)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <ShieldCheck size={11} color="#1a73e8" />
+                  <ShieldCheck size={11} color="#17652f" />
                   <span>{user?.role?.roleName || userRole || 'User'}</span>
                 </div>
               </div>
@@ -1105,7 +1160,7 @@ export const AppLayout = () => {
                         margin: isCollapsed && !isMobile ? '2px 8px' : '2px 10px',
                         borderRadius: '10px',
                         backgroundColor: isSelected
-                          ? (isDark ? '#2e633a' : '#386e38')
+                          ? '#17652f'
                           : 'transparent',
                         color: isSelected
                           ? '#ffffff'
@@ -1116,12 +1171,12 @@ export const AppLayout = () => {
                         userSelect: 'none',
                         transition: 'all 0.15s ease',
                         minHeight: '42px',
-                        boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                        boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) {
-                          e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
-                          e.currentTarget.style.color = isDark ? '#ffffff' : '#111827';
+                          e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(23, 101, 47, 0.06)';
+                          e.currentTarget.style.color = isDark ? '#ffffff' : '#17652f';
                         }
                       }}
                       onMouseLeave={(e) => {
@@ -1168,7 +1223,7 @@ export const AppLayout = () => {
                                 fontWeight: '700',
                                 backgroundColor: isSelected
                                   ? 'rgba(255, 255, 255, 0.25)'
-                                  : (item.highlight ? '#005bbf' : '#1a73e8'),
+                                  : (item.highlight ? '#17652f' : '#17652f'),
                                 color: '#ffffff',
                                 padding: '1px 6px',
                                 borderRadius: '9999px'
@@ -1234,14 +1289,14 @@ export const AppLayout = () => {
                                 fontSize: '0.8rem',
                                 fontWeight: isSubActive ? '700' : '500',
                                 textDecoration: 'none',
-                                color: isSubActive ? (isDark ? '#86efac' : '#2e633a') : (isDark ? '#94a3b8' : 'var(--on-surface-variant)'),
-                                backgroundColor: isSubActive ? (isDark ? 'rgba(46, 99, 58, 0.25)' : '#e8f2e8') : 'transparent',
+                                color: isSubActive ? (isDark ? '#86efac' : '#17652f') : (isDark ? '#94a3b8' : 'var(--on-surface-variant)'),
+                                backgroundColor: isSubActive ? (isDark ? 'rgba(23, 101, 47, 0.25)' : '#e8f2e5') : 'transparent',
                                 transition: 'all 0.12s ease'
                               }}
                               onMouseEnter={(e) => {
                                 if (!isSubActive) {
-                                  e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
-                                  e.currentTarget.style.color = isDark ? '#ffffff' : 'var(--on-surface)';
+                                  e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(23, 101, 47, 0.04)';
+                                  e.currentTarget.style.color = isDark ? '#ffffff' : '#17652f';
                                 }
                               }}
                               onMouseLeave={(e) => {
@@ -1256,7 +1311,7 @@ export const AppLayout = () => {
                                   width: '5px',
                                   height: '5px',
                                   borderRadius: '50%',
-                                  backgroundColor: isSubActive ? '#386e38' : '#94a3b8',
+                                  backgroundColor: isSubActive ? '#17652f' : '#94a3b8',
                                   flexShrink: 0
                                 }}
                               />
@@ -1299,7 +1354,7 @@ export const AppLayout = () => {
                             padding: '6px 10px',
                             fontSize: '0.82rem',
                             fontWeight: '700',
-                            color: '#1a73e8',
+                            color: '#17652f',
                             borderBottom: '1px solid #edeef0',
                             marginBottom: '4px'
                           }}
@@ -1337,90 +1392,8 @@ export const AppLayout = () => {
           ))}
         </div>
 
-        {/* Bottom Pinned Area */}
-        {(isSuperAdmin || hasPermission('settings:view')) && (
-          <div
-            style={{
-              padding: isCollapsed && !isMobile ? '10px 8px' : '10px 14px',
-              borderTop: '1px solid #dadce0',
-              backgroundColor: '#f8f9fa'
-            }}
-          >
-            {(!isCollapsed || isMobile) ? (
-              <NavLink
-                to="/settings"
-                onClick={() => isMobile && setMobileMenuOpen(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '9px 12px',
-                  borderRadius: '8px',
-                  color: location.pathname.startsWith('/settings') ? '#00285c' : 'var(--on-surface-variant)',
-                  backgroundColor: location.pathname.startsWith('/settings') ? '#d8e2ff' : 'transparent',
-                  fontWeight: location.pathname.startsWith('/settings') ? '700' : '600',
-                  textDecoration: 'none',
-                  fontSize: '0.84rem',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  if (!location.pathname.startsWith('/settings')) {
-                    e.currentTarget.style.backgroundColor = '#edeeef';
-                    e.currentTarget.style.color = 'var(--on-surface)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!location.pathname.startsWith('/settings')) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = 'var(--on-surface-variant)';
-                  }
-                }}
-              >
-                <Settings
-                  size={18}
-                  color={location.pathname.startsWith('/settings') ? '#00285c' : 'var(--on-surface-variant)'}
-                  strokeWidth={location.pathname.startsWith('/settings') ? 2.5 : 2}
-                />
-                <span style={{ flex: 1 }}>System Settings</span>
-              </NavLink>
-            ) : (
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <button
-                  onClick={() => navigate('/settings')}
-                  title="System Settings"
-                  style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '8px',
-                    backgroundColor: location.pathname.startsWith('/settings') ? '#d8e2ff' : 'transparent',
-                    border: 'none',
-                    color: location.pathname.startsWith('/settings') ? '#00285c' : 'var(--on-surface-variant)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!location.pathname.startsWith('/settings')) {
-                      e.currentTarget.style.backgroundColor = '#edeeef';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!location.pathname.startsWith('/settings')) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }
-                  }}
-                >
-                  <Settings
-                    size={18}
-                    strokeWidth={location.pathname.startsWith('/settings') ? 2.5 : 2}
-                  />
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Bottom spacing for clean, minimal navigation flow */}
+        <div style={{ height: '16px', flexShrink: 0 }} />
 
         {/* Resizable Draggable Right-Edge Handle */}
         {!isMobile && (
@@ -1447,7 +1420,7 @@ export const AppLayout = () => {
               height: '100%',
               cursor: 'col-resize',
               zIndex: 60,
-              backgroundColor: isResizing ? '#1a73e8' : 'transparent',
+              backgroundColor: isResizing ? '#17652f' : 'transparent',
               transition: isResizing ? 'none' : 'background-color 0.15s ease',
               display: 'flex',
               alignItems: 'center',
@@ -1501,116 +1474,109 @@ export const AppLayout = () => {
         <header
           className="app-header"
           style={{
-            height: '68px',
-            minHeight: '68px',
-            maxHeight: '68px',
-            backgroundColor: '#ffffff',
-            borderBottom: '1px solid #dadce0',
+            height: '64px',
+            minHeight: '64px',
+            maxHeight: '64px',
+            backgroundColor: isDark ? '#0b1120' : '#ffffff',
+            borderBottom: isDark ? '1px solid #1e293b' : '1px solid #e8e6df',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: isMobile ? '0 18px' : '0 36px',
+            padding: isMobile ? '0 16px' : '0 28px',
             position: 'sticky',
             top: 0,
             zIndex: 30,
             gap: '16px',
             flexShrink: 0,
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
           }}
         >
-          {/* Left Title & Mobile Menu Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-            {isMobile && (
+          {/* Header Left: On mobile show hamburger + small logo. On desktop show nothing on left so search bar aligns cleanly */}
+          {isMobile ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
               <button
                 onClick={() => setMobileMenuOpen(true)}
                 style={{
                   padding: '8px',
-                  background: '#f3f4f5',
+                  background: isDark ? '#1e293b' : '#f3f4f5',
                   color: 'var(--on-surface)',
                   borderRadius: '8px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '1px solid #dadce0',
+                  border: isDark ? '1px solid #334155' : '1px solid #dadce0',
                   cursor: 'pointer'
                 }}
                 aria-label="Open Navigation Sidebar"
               >
                 <Menu size={19} />
               </button>
-            )}
-
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                cursor: 'pointer'
-              }}
-              onClick={() => navigate('/dashboard')}
-              title="Go to Dashboard"
-            >
               <img
-                src={logoUrl}
+                src={logoPngUrl}
                 alt="Krishna Valley"
                 style={{
                   width: '32px',
                   height: '32px',
-                  objectFit: 'contain',
-                  borderRadius: '6px',
-                  backgroundColor: isDark ? '#000000' : '#ffffff',
-                  border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid #e2e8f0',
-                  flexShrink: 0
+                  objectFit: 'contain'
                 }}
               />
-              <div
-                style={{
-                  fontSize: isMobile ? '1rem' : '1.15rem',
-                  fontWeight: '700',
-                  color: isDark ? '#60a5fa' : '#1a73e8',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                Krishna Valley ERP
-              </div>
             </div>
-          </div>
+          ) : null}
 
-          {/* Omnisearch Bar */}
+          {/* Omnisearch Bar - Reference Image Minimal Pill */}
           <form
             onSubmit={handleGlobalSearch}
             style={{
               flex: 1,
-              maxWidth: '560px',
-              padding: '0 4px',
+              maxWidth: '520px',
               display: isMobile && window.innerWidth < 640 ? 'none' : 'block'
             }}
           >
             <div style={{ position: 'relative', width: '100%' }}>
               <Search
                 size={16}
-                color="var(--outline)"
-                style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}
+                color={isDark ? '#94a3b8' : '#718096'}
+                style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
               />
               <input
                 type="text"
-                placeholder="Search projects, resources, or documents..."
+                placeholder="Search projects, leads, sites, materials, or documents..."
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
                 style={{
                   width: '100%',
-                  backgroundColor: '#f3f4f5',
-                  border: '1px solid #dadce0',
-                  borderRadius: '8px',
-                  paddingLeft: '38px',
-                  paddingRight: '14px',
-                  paddingTop: '8px',
-                  paddingBottom: '8px',
-                  fontSize: '0.875rem',
-                  color: 'var(--on-surface)',
-                  fontWeight: '500'
+                  backgroundColor: isDark ? '#1e293b' : '#faf9f6',
+                  border: isDark ? '1px solid #334155' : '1px solid #e8e6df',
+                  borderRadius: '10px',
+                  paddingLeft: '40px',
+                  paddingRight: '74px',
+                  paddingTop: '9px',
+                  paddingBottom: '9px',
+                  fontSize: '0.85rem',
+                  color: isDark ? '#f8fafc' : '#1f2937',
+                  outline: 'none',
+                  fontWeight: '400',
+                  transition: 'all 0.15s ease'
                 }}
               />
+              <span
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  fontSize: '0.67rem',
+                  fontWeight: '600',
+                  color: isDark ? '#94a3b8' : '#718096',
+                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                  border: isDark ? '1px solid #334155' : '1px solid #e8e6df',
+                  padding: '2px 7px',
+                  borderRadius: '6px',
+                  pointerEvents: 'none'
+                }}
+              >
+                Ctrl + K
+              </span>
             </div>
           </form>
 
@@ -1626,44 +1592,33 @@ export const AppLayout = () => {
                   width: '38px',
                   height: '38px',
                   borderRadius: '50%',
-                  backgroundColor: notifBoxOpen ? '#e0f2fe' : 'transparent',
+                  backgroundColor: notifBoxOpen ? (isDark ? '#1e293b' : '#e8f2e5') : 'transparent',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: notifBoxOpen ? '#0284c7' : 'var(--on-surface-variant)',
+                  color: notifBoxOpen ? '#17652f' : 'var(--on-surface-variant)',
                   position: 'relative',
                   cursor: 'pointer',
                   border: 'none',
                   transition: 'all 0.15s ease'
                 }}
-                onMouseEnter={(e) => { if (!notifBoxOpen) e.currentTarget.style.backgroundColor = '#f3f4f5'; }}
+                onMouseEnter={(e) => { if (!notifBoxOpen) e.currentTarget.style.backgroundColor = isDark ? '#1e293b' : '#f3f4f2'; }}
                 onMouseLeave={(e) => { if (!notifBoxOpen) e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
                 <Bell size={19} />
-                {unreadNotifCount > 0 && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '5px',
-                      right: '5px',
-                      minWidth: '16px',
-                      height: '16px',
-                      padding: '0 4px',
-                      borderRadius: '8px',
-                      backgroundColor: '#0f172a',
-                      color: '#ffffff',
-                      fontSize: '0.65rem',
-                      fontWeight: '800',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '1.5px solid #ffffff',
-                      boxShadow: '0 0 0 1px rgba(15, 23, 42, 0.3)'
-                    }}
-                  >
-                    {unreadNotifCount}
-                  </span>
-                )}
+                {/* Emerald Green unread indicator dot matching reference image */}
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: '#10b981',
+                    border: '1.5px solid #ffffff'
+                  }}
+                />
               </button>
 
               <NotificationAlertBox
@@ -1674,30 +1629,29 @@ export const AppLayout = () => {
               />
             </div>
 
-            {/* Reports & Analytics shortcut */}
-            {(isSuperAdmin || hasPermission('reports:view')) && (
-              <button
-                onClick={() => navigate('/reports')}
-                title="Reports & Analytics Hub"
-                style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '50%',
-                  backgroundColor: 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--on-surface-variant)',
-                  cursor: 'pointer',
-                  border: 'none',
-                  transition: 'background-color 0.15s ease'
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = isDark ? '#334155' : '#f3f4f5'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-              >
-                <BarChart3 size={19} />
-              </button>
-            )}
+            {/* Help / Guide button */}
+            <button
+              type="button"
+              onClick={() => navigate('/notifications')}
+              title="Help & System Documentation"
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                backgroundColor: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--on-surface-variant)',
+                cursor: 'pointer',
+                border: 'none',
+                transition: 'background-color 0.15s ease'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = isDark ? '#1e293b' : '#f3f4f2'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+            >
+              <HelpCircle size={19} />
+            </button>
 
             {/* Theme Mode Toggle (Light / Dark) */}
             <button
@@ -1718,24 +1672,22 @@ export const AppLayout = () => {
                 transition: 'all 0.2s ease',
                 boxShadow: isDark ? '0 2px 6px rgba(0,0,0,0.3)' : 'none'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = isDark ? '#334155' : '#f3f4f5'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = isDark ? '#334155' : '#f3f4f2'; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isDark ? '#1e293b' : 'transparent'; }}
             >
               {isDark ? <Sun size={19} /> : <Moon size={19} />}
             </button>
 
             {/* User Identity & Profile Menu Dropdown */}
-            <div ref={profileDropdownRef} style={{ position: 'relative', marginLeft: '6px' }}>
+            <div ref={profileDropdownRef} style={{ position: 'relative', marginLeft: '4px' }}>
               <div
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  padding: '4px 8px 4px 6px',
+                  gap: '6px',
+                  padding: '4px 6px',
                   borderRadius: '24px',
-                  border: '1px solid #dadce0',
-                  backgroundColor: profileDropdownOpen ? '#e8f0fe' : '#ffffff',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}
@@ -1743,29 +1695,21 @@ export const AppLayout = () => {
               >
                 <div
                   style={{
-                    width: '30px',
-                    height: '30px',
+                    width: '34px',
+                    height: '34px',
                     borderRadius: '50%',
-                    backgroundColor: '#1a73e8',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: '700',
-                    fontSize: '0.8rem',
-                    boxShadow: '0 2px 5px rgba(26,115,232,0.25)'
+                    fontSize: '0.82rem',
+                    letterSpacing: '0.02em',
+                    boxShadow: '0 1px 3px rgba(23, 101, 47, 0.25)'
                   }}
                 >
-                  {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
-                </div>
-
-                <div style={{ display: 'none', flexDirection: 'column', textAlign: 'left', lineHeight: 1.2 }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#1f2937' }}>
-                    {user?.firstName || 'User'}
-                  </span>
-                  <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>
-                    {user?.role?.roleName || 'Staff'}
-                  </span>
+                  {user?.firstName?.[0] || 'S'}{user?.lastName?.[0] || 'A'}
                 </div>
 
                 <ChevronDown size={14} style={{ color: '#5f6368', transform: profileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
@@ -1797,8 +1741,8 @@ export const AppLayout = () => {
                         width: '42px',
                         height: '42px',
                         borderRadius: '50%',
-                        backgroundColor: '#e8f0fe',
-                        color: '#1a73e8',
+                        backgroundColor: '#e8f2e5',
+                        color: '#17652f',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -2175,7 +2119,7 @@ export const AppLayout = () => {
               >
                 <QuickActionIcon size={22} strokeWidth={2.5} />
               </button>
-              <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#1a73e8', marginTop: '2px' }}>
+              <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#17652f', marginTop: '2px' }}>
                 {quickActionConfig.shortLabel || 'Add'}
               </span>
             </div>

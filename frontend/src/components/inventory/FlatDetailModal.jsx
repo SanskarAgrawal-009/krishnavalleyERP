@@ -167,24 +167,24 @@ export const FlatDetailModal = ({
         {/* MODAL HEADER */}
         <div style={{
           padding: '18px 24px',
-          background: 'linear-gradient(135deg, #1e293b, #0f172a)',
+          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
           color: '#ffffff',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottom: '1px solid #334155'
+          borderBottom: '1px solid rgba(255,255,255,0.15)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div style={{
               width: '44px',
               height: '44px',
               borderRadius: '12px',
-              background: 'rgba(59, 130, 246, 0.2)',
-              border: '1px solid rgba(59, 130, 246, 0.4)',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#60a5fa'
+              color: '#4a9e68'
             }}>
               <Home size={22} />
             </div>
@@ -198,9 +198,9 @@ export const FlatDetailModal = ({
                   fontWeight: '700',
                   padding: '2px 8px',
                   borderRadius: '12px',
-                  background: isSold ? '#1e3a8a' : '#001a41',
-                  color: isSold ? '#93c5fd' : '#bfdbfe',
-                  border: isSold ? '1px solid #3b82f6' : '1px solid #2563eb',
+                  background: isSold ? '#17652f' : '#001a41',
+                  color: isSold ? '#86c8a0' : '#cde4c9',
+                  border: isSold ? '1px solid #17652f' : '1px solid #17652f',
                   textTransform: 'uppercase'
                 }}>
                   {flat.status ? flat.status.replace(/_/g, ' ') : (isSold ? 'SOLD' : 'AVAILABLE')}
@@ -212,8 +212,8 @@ export const FlatDetailModal = ({
                     padding: '2px 8px',
                     borderRadius: '12px',
                     background: '#581c87',
-                    color: '#dbeafe',
-                    border: '1px solid #a855f7'
+                    color: '#e8f2e5',
+                    border: '1px solid #4a9e68'
                   }}>
                     3-YR RENTAL POOL
                   </span>
@@ -241,7 +241,7 @@ export const FlatDetailModal = ({
                 gap: '6px',
                 padding: '7px 14px',
                 borderRadius: '8px',
-                background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                background: 'linear-gradient(135deg, #17652f, #17652f)',
                 color: '#ffffff',
                 border: 'none',
                 fontWeight: '700',
@@ -277,16 +277,16 @@ export const FlatDetailModal = ({
         {toastMessage && (
           <div style={{
             padding: '8px 24px',
-            background: '#eff6ff',
-            borderBottom: '1px solid #bfdbfe',
-            color: '#1e3a8a',
+            background: '#e8f2e5',
+            borderBottom: '1px solid #cde4c9',
+            color: '#17652f',
             fontSize: '0.82rem',
             fontWeight: '700',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
           }}>
-            <CheckCircle2 size={16} color="#1e40af" />
+            <CheckCircle2 size={16} color="#17652f" />
             <span>{toastMessage}</span>
           </div>
         )}
@@ -321,8 +321,8 @@ export const FlatDetailModal = ({
                   padding: '12px 14px',
                   background: 'transparent',
                   border: 'none',
-                  borderBottom: isActive ? '3px solid #2563eb' : '3px solid transparent',
-                  color: isActive ? '#2563eb' : '#64748b',
+                  borderBottom: isActive ? '3px solid #17652f' : '3px solid transparent',
+                  color: isActive ? '#17652f' : '#64748b',
                   fontWeight: isActive ? '700' : '600',
                   fontSize: '0.82rem',
                   display: 'flex',
@@ -625,7 +625,7 @@ export const FlatDetailModal = ({
 
                 <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>RATE PER SQ.FT</span>
-                  <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(flat.pricePerSqFt || 4200)}/sqft
                   </div>
                   <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Carpet area calculation</span>
@@ -633,7 +633,7 @@ export const FlatDetailModal = ({
 
                 <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>FLOOR RISE PREMIUM</span>
-                  <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#1e40af', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     ₹{((flat.floor || 1) * 25).toLocaleString('en-IN')}/sqft
                   </div>
                   <span style={{ fontSize: '0.74rem', color: '#64748b' }}>₹25 per floor above Ground</span>
@@ -665,8 +665,8 @@ export const FlatDetailModal = ({
               {/* Status Case A: SOLD */}
               {isSold && (
                 <div style={{
-                  background: '#eff6ff',
-                  border: '1.5px solid #bfdbfe',
+                  background: '#e8f2e5',
+                  border: '1.5px solid #cde4c9',
                   borderRadius: '12px',
                   padding: '18px 20px',
                   display: 'flex',
@@ -675,12 +675,12 @@ export const FlatDetailModal = ({
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CheckCircle2 size={20} color="#2563eb" />
-                      <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e40af' }}>
+                      <CheckCircle2 size={20} color="#17652f" />
+                      <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
                         Unit is Sold &amp; Allotted to Registered Buyer
                       </span>
                     </div>
-                    <span style={{ fontSize: '0.72rem', background: '#2563eb', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.72rem', background: '#17652f', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontWeight: '700' }}>
                       SALES ALLOTMENT ACTIVE
                     </span>
                   </div>
@@ -702,13 +702,13 @@ export const FlatDetailModal = ({
                     </div>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #dbeafe', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <div style={{ borderTop: '1px solid #e8f2e5', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
                     <button
                       type="button"
                       onClick={handleNavigateToSales}
                       style={{
                         padding: '8px 16px',
-                        background: '#2563eb',
+                        background: '#17652f',
                         color: '#ffffff',
                         border: 'none',
                         borderRadius: '6px',
@@ -729,8 +729,8 @@ export const FlatDetailModal = ({
               {/* Status Case B: RENTAL POOL */}
               {isRental && (
                 <div style={{
-                  background: '#eff6ff',
-                  border: '1.5px solid #bfdbfe',
+                  background: '#e8f2e5',
+                  border: '1.5px solid #cde4c9',
                   borderRadius: '12px',
                   padding: '18px 20px',
                   display: 'flex',
@@ -739,12 +739,12 @@ export const FlatDetailModal = ({
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Sparkles size={20} color="#1e40af" />
-                      <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#00285c' }}>
+                      <Sparkles size={20} color="#17652f" />
+                      <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
                         Unit Enrolled in 3-Year Guaranteed Rental Program
                       </span>
                     </div>
-                    <span style={{ fontSize: '0.72rem', background: '#1e40af', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.72rem', background: '#17652f', color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontWeight: '700' }}>
                       RENT-BACK ACTIVE
                     </span>
                   </div>
@@ -752,7 +752,7 @@ export const FlatDetailModal = ({
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                     <div>
                       <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>MONTHLY GUARANTEED RETURN</span>
-                      <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#00285c' }}>
+                      <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f' }}>
                         {formatINR(flat.rentalDetails?.monthlyRent || 25000)}/month
                       </div>
                     </div>
@@ -765,13 +765,13 @@ export const FlatDetailModal = ({
                     </div>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #eff6ff', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <div style={{ borderTop: '1px solid #e8f2e5', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
                     <button
                       type="button"
                       onClick={handleNavigateToFlatProfile}
                       style={{
                         padding: '8px 16px',
-                        background: '#1e40af',
+                        background: '#17652f',
                         color: '#ffffff',
                         border: 'none',
                         borderRadius: '6px',
@@ -792,8 +792,8 @@ export const FlatDetailModal = ({
               {/* Status Case C: AVAILABLE */}
               {!isSold && (
                 <div style={{
-                  background: '#eff6ff',
-                  border: '1.5px solid #dbeafe',
+                  background: '#e8f2e5',
+                  border: '1.5px solid #e8f2e5',
                   borderRadius: '12px',
                   padding: '18px 20px',
                   display: 'flex',
@@ -801,12 +801,12 @@ export const FlatDetailModal = ({
                   gap: '12px'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle2 size={20} color="#1a73e8" />
-                    <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e40af' }}>
+                    <CheckCircle2 size={20} color="#17652f" />
+                    <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
                       Unit is Vacant &amp; Available for Booking
                     </span>
                   </div>
-                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#1e40af' }}>
+                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#17652f' }}>
                     This flat is unencumbered in the physical inventory and ready for client allotment or enrollment into the rental program.
                   </p>
 
@@ -816,7 +816,7 @@ export const FlatDetailModal = ({
                       onClick={handleNavigateToSales}
                       style={{
                         padding: '8px 16px',
-                        background: '#1a73e8',
+                        background: '#17652f',
                         color: '#ffffff',
                         border: 'none',
                         borderRadius: '6px',
@@ -836,8 +836,8 @@ export const FlatDetailModal = ({
                       style={{
                         padding: '8px 16px',
                         background: '#ffffff',
-                        border: '1px solid #1e40af',
-                        color: '#1e40af',
+                        border: '1px solid #17652f',
+                        color: '#17652f',
                         borderRadius: '6px',
                         fontSize: '0.82rem',
                         fontWeight: '700',
@@ -878,7 +878,7 @@ export const FlatDetailModal = ({
             onClick={onClose}
             style={{
               padding: '8px 20px',
-              background: '#0f172a',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

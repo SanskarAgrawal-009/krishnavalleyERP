@@ -41,14 +41,14 @@ import {
 } from 'lucide-react';
 
 const REPORT_TABS = [
-  { id: 'sales', name: 'Sales Report', icon: ShoppingBag, color: '#1a73e8' },
-  { id: 'rental', name: 'Rental Report', icon: Repeat, color: '#3b82f6' },
+  { id: 'sales', name: 'Sales Report', icon: ShoppingBag, color: '#17652f' },
+  { id: 'rental', name: 'Rental Report', icon: Repeat, color: '#17652f' },
   { id: 'collection', name: 'Collection Report', icon: DollarSign, color: '#475569' },
-  { id: 'maintenance', name: 'Maintenance Report', icon: Wrench, color: '#1e40af' },
-  { id: 'inventory', name: 'Inventory Report', icon: Package, color: '#2563eb' },
+  { id: 'maintenance', name: 'Maintenance Report', icon: Wrench, color: '#17652f' },
+  { id: 'inventory', name: 'Inventory Report', icon: Package, color: '#17652f' },
   { id: 'finance', name: 'Finance Report', icon: PieChart, color: '#0284c7' },
   { id: 'crm', name: 'CRM Report', icon: Users, color: '#0284c7' },
-  { id: 'hr', name: 'HR Report', icon: Briefcase, color: '#1e40af' }
+  { id: 'hr', name: 'HR Report', icon: Briefcase, color: '#17652f' }
 ];
 
 export const ReportsPage = () => {
@@ -260,7 +260,7 @@ export const ReportsPage = () => {
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ display: 'inline-block', padding: '4px 10px', background: '#005bbf', color: '#ffffff', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase' }}>
+            <div style={{ display: 'inline-block', padding: '4px 10px', background: '#17652f', color: '#ffffff', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase' }}>
               Official BI Report
             </div>
             <div style={{ fontSize: '0.74rem', color: '#475569', marginTop: '6px' }}>
@@ -272,7 +272,7 @@ export const ReportsPage = () => {
         {/* Report Scope & Filter Context */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', fontSize: '0.8rem', color: '#1e293b' }}>
           <div>
-            <strong>Report Title:</strong> <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#005bbf' }}>{currentTabInfo?.name}</span>
+            <strong>Report Title:</strong> <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>{currentTabInfo?.name}</span>
           </div>
           <div>
             <strong>Target Site:</strong> <span style={{ fontWeight: '700' }}>{currentProjectName}</span>
@@ -293,38 +293,39 @@ export const ReportsPage = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '20px'
+        gap: '20px',
+        border: '1px solid #e8e6df'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{
             width: '48px',
             height: '48px',
             borderRadius: '12px',
-            background: '#e8f0fe',
+            background: '#e8f2e5',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#1a73e8',
+            color: '#17652f',
             flexShrink: 0
           }}>
             <BarChart3 size={24} />
           </div>
           <div>
-            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#191c1d', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: 700, color: '#1f2937', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               Reports & Enterprise BI Analytics
               <span style={{
                 fontSize: '0.74rem',
                 fontWeight: '700',
                 padding: '3px 10px',
                 borderRadius: '6px',
-                background: '#eff6ff',
-                color: '#1a73e8',
-                border: '1px solid #bfdbfe'
+                background: '#e8f2e5',
+                color: '#17652f',
+                border: '1px solid #cde4c9'
               }}>
                 REAL-TIME BI
               </span>
             </div>
-            <div style={{ fontSize: '0.88rem', color: '#414754', marginTop: '4px' }}>
+            <div style={{ fontSize: '0.88rem', color: '#596372', marginTop: '4px' }}>
               Comprehensive performance registers, revenue realized, aging arrears, occupancy metrics, and financial P&L.
             </div>
           </div>
@@ -339,8 +340,8 @@ export const ReportsPage = () => {
                 padding: '8px 14px',
                 borderRadius: '6px',
                 background: '#ffffff',
-                border: '1px solid #dadce0',
-                color: '#191c1d',
+                border: '1px solid #e8e6df',
+                color: '#1f2937',
                 fontSize: '0.82rem',
                 fontWeight: '600',
                 display: 'flex',
@@ -349,7 +350,7 @@ export const ReportsPage = () => {
                 cursor: 'pointer'
               }}
             >
-              <FileSpreadsheet size={15} color="#1a73e8" />
+              <FileSpreadsheet size={15} color="#17652f" />
               Export CSV
             </button>
           )}
@@ -360,8 +361,8 @@ export const ReportsPage = () => {
               padding: '8px 14px',
               borderRadius: '6px',
               background: '#ffffff',
-              border: '1px solid #dadce0',
-              color: '#191c1d',
+              border: '1px solid #e8e6df',
+              color: '#1f2937',
               fontSize: '0.82rem',
               fontWeight: '600',
               display: 'flex',
@@ -370,7 +371,7 @@ export const ReportsPage = () => {
               cursor: 'pointer'
             }}
           >
-            <Printer size={15} color="#1a73e8" />
+            <Printer size={15} color="#17652f" />
             Print Report
           </button>
 
@@ -380,15 +381,16 @@ export const ReportsPage = () => {
             style={{
               padding: '8px 14px',
               borderRadius: '6px',
-              background: '#1a73e8',
+              background: '#17652f',
               border: 'none',
-              color: '#111827',
+              color: '#ffffff',
               fontSize: '0.82rem',
               fontWeight: '600',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              boxShadow: '0 1px 3px rgba(23,101,47,0.2)'
             }}
           >
             <RefreshCw size={14} className={loading ? 'spin' : ''} />
@@ -492,8 +494,8 @@ export const ReportsPage = () => {
           )}
         </div>
 
-        <div style={{ fontSize: '0.76rem', color: '#727785' }}>
-          Active View: <strong style={{ color: '#1a73e8' }}>{currentTabInfo?.name}</strong>
+        <div style={{ fontSize: '0.76rem', color: '#596372' }}>
+          Active View: <strong style={{ color: '#17652f' }}>{currentTabInfo?.name}</strong>
         </div>
       </div>
 
@@ -504,7 +506,8 @@ export const ReportsPage = () => {
         WebkitOverflowScrolling: 'touch',
         whiteSpace: 'nowrap',
         gap: '6px',
-        padding: '6px'
+        padding: '6px',
+        border: '1px solid #e8e6df'
       }}>
         {visibleReportTabs.map((tab) => {
           const IconComp = tab.icon;
@@ -521,18 +524,18 @@ export const ReportsPage = () => {
                 padding: '9px 14px',
                 borderRadius: '6px',
                 border: 'none',
-                background: isActive ? '#1a73e8' : 'transparent',
-                color: isActive ? '#ffffff' : '#414754',
+                background: isActive ? '#17652f' : 'transparent',
+                color: isActive ? '#ffffff' : '#596372',
                 fontWeight: isActive ? '700' : '500',
                 fontSize: '0.8rem',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
-                boxShadow: isActive ? '0 1px 3px rgba(26,115,232,0.3)' : 'none',
+                boxShadow: isActive ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                 whiteSpace: 'nowrap',
                 flex: '0 0 auto'
               }}
             >
-              <IconComp size={15} color={isActive ? '#ffffff' : tab.color} />
+              <IconComp size={15} color={isActive ? '#ffffff' : '#17652f'} />
               {tab.name}
             </button>
           );
@@ -560,7 +563,7 @@ export const ReportsPage = () => {
             style={{
               padding: '4px 10px',
               borderRadius: '4px',
-              backgroundColor: '#0f172a',
+              backgroundColor: '#17652f',
               color: '#111827',
               fontSize: '0.75rem',
               fontWeight: '700'
@@ -596,10 +599,10 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>REALIZED COLLECTION</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(summary.totalRealizedCollection)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1a73e8' }}>{summary.collectionEfficiency || 0}% Recovery</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>{summary.collectionEfficiency || 0}% Recovery</div>
                 </div>
 
                 <div className="stat-card">
@@ -612,7 +615,7 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>POSSESSION COMPLETED</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {summary.possessedCount || 0}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#414754' }}>Keys delivered</div>
@@ -630,10 +633,10 @@ export const ReportsPage = () => {
               }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#191c1d' }}>Deal Conversion Funnel:</div>
                 <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', fontSize: '0.78rem' }}>
-                  <span>Token Booked: <strong style={{ color: '#1a73e8' }}>{summary.bookedCount || 0}</strong></span>
-                  <span>Agreement Signed: <strong style={{ color: '#1a73e8' }}>{summary.agreementCompletedCount || 0}</strong></span>
-                  <span>Payment In Progress: <strong style={{ color: '#2563eb' }}>{summary.inPaymentProgressCount || 0}</strong></span>
-                  <span>Fully Paid: <strong style={{ color: '#1e40af' }}>{summary.fullyPaidCount || 0}</strong></span>
+                  <span>Token Booked: <strong style={{ color: '#17652f' }}>{summary.bookedCount || 0}</strong></span>
+                  <span>Agreement Signed: <strong style={{ color: '#17652f' }}>{summary.agreementCompletedCount || 0}</strong></span>
+                  <span>Payment In Progress: <strong style={{ color: '#17652f' }}>{summary.inPaymentProgressCount || 0}</strong></span>
+                  <span>Fully Paid: <strong style={{ color: '#17652f' }}>{summary.fullyPaidCount || 0}</strong></span>
                   <span>Cancelled: <strong style={{ color: '#0f172a' }}>{summary.cancelledCount || 0}</strong></span>
                 </div>
               </div>
@@ -673,13 +676,13 @@ export const ReportsPage = () => {
                           <td style={{ fontWeight: '700', color: '#191c1d' }}>
                             {formatINR(row.dealValue)}
                           </td>
-                          <td style={{ color: '#1a73e8', fontWeight: '700' }}>
+                          <td style={{ color: '#17652f', fontWeight: '700' }}>
                             {formatINR(row.collectedAmount)}
                           </td>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <div style={{ width: '60px', height: '6px', background: '#e1e3e4', borderRadius: '4px', overflow: 'hidden' }}>
-                                <div style={{ width: `${row.paymentProgressPercent}%`, height: '100%', background: '#1a73e8' }} />
+                                <div style={{ width: `${row.paymentProgressPercent}%`, height: '100%', background: '#17652f' }} />
                               </div>
                               <span style={{ fontSize: '0.72rem', color: '#414754' }}>{row.paymentProgressPercent}%</span>
                             </div>
@@ -707,7 +710,7 @@ export const ReportsPage = () => {
               <div className="grid-cols-4">
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>MONTHLY GROSS DISBURSEMENTS</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1e40af', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(summary.totalMonthlyGrossPayouts || summary.totalMonthlyOwnerOutflow)}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#414754' }}>{summary.activeRentBackCount || summary.totalManagedUnits || 0} Rent-Back Units</div>
@@ -723,10 +726,10 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>NET TRANSFERS TO OWNERS</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(summary.totalMonthlyNetDisbursed)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1e40af' }}>Monthly Bank NEFT Outflow</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>Monthly Bank NEFT Outflow</div>
                 </div>
 
                 <div className="stat-card">
@@ -771,13 +774,13 @@ export const ReportsPage = () => {
                             <div style={{ fontWeight: '700', color: '#0f172a' }}>{row.ownerName}</div>
                             <div style={{ fontSize: '0.72rem', color: '#727785' }}>{row.ownerPhone}</div>
                           </td>
-                          <td style={{ color: '#1e40af', fontWeight: '800' }}>
+                          <td style={{ color: '#17652f', fontWeight: '800' }}>
                             {formatINR(row.monthlyGrossRent)}/mo
                           </td>
-                          <td style={{ color: row.tdsDeducted > 0 ? '#0f172a' : '#1e40af', fontWeight: '700' }}>
+                          <td style={{ color: row.tdsDeducted > 0 ? '#0f172a' : '#17652f', fontWeight: '700' }}>
                             {row.tdsDeducted > 0 ? `${row.tdsPercentage || 10}% (-${formatINR(row.tdsDeducted)})` : '0% (Exempt)'}
                           </td>
-                          <td style={{ color: '#1a73e8', fontWeight: '800', fontSize: '0.95rem' }}>
+                          <td style={{ color: '#17652f', fontWeight: '800', fontSize: '0.95rem' }}>
                             {formatINR(row.netMonthlyPayout)}/mo
                           </td>
                           <td style={{ color: '#475569', fontWeight: '600' }}>
@@ -806,10 +809,10 @@ export const ReportsPage = () => {
               <div className="grid-cols-4">
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>TOTAL REALIZED COLLECTIONS</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(summary.totalRealizedRevenue)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1a73e8' }}>{summary.collectionRealizationRate}% Realization Rate</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>{summary.collectionRealizationRate}% Realization Rate</div>
                 </div>
 
                 <div className="stat-card">
@@ -830,7 +833,7 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>MAINTENANCE & RENT</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR((summary.rentalCollected || 0) + (summary.maintCollected || 0))}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#727785' }}>Pending: {formatINR((summary.rentalPending || 0) + (summary.maintPending || 0))}</div>
@@ -843,13 +846,13 @@ export const ReportsPage = () => {
                   Arrears Aging Analysis (Due vs Delay Buckets)
                 </h4>
                 <div className="grid-cols-4">
-                  <div style={{ background: '#eff6ff', padding: '14px', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                    <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>Current (0-15 Days)</div>
+                  <div style={{ background: '#e8f2e5', padding: '14px', borderRadius: '6px', border: '1px solid #cde4c9' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>Current (0-15 Days)</div>
                     <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#191c1d', marginTop: '4px' }}>{formatINR(reportData?.agingBuckets?.current)}</div>
                   </div>
 
-                  <div style={{ background: '#e8f0fe', padding: '14px', borderRadius: '6px', border: '1px solid #d2e3fc' }}>
-                    <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>1 - 30 Days Overdue</div>
+                  <div style={{ background: '#e8f2e5', padding: '14px', borderRadius: '6px', border: '1px solid #d2e3fc' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>1 - 30 Days Overdue</div>
                     <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#191c1d', marginTop: '4px' }}>{formatINR(reportData?.agingBuckets?.days1To30)}</div>
                   </div>
 
@@ -875,7 +878,7 @@ export const ReportsPage = () => {
                     <div key={pm.mode} style={{ background: '#f8f9fa', padding: '12px 14px', borderRadius: '6px', border: '1px solid #dadce0' }}>
                       <div style={{ fontSize: '0.75rem', color: '#727785' }}>{pm.mode}</div>
                       <div style={{ fontSize: '1.05rem', fontWeight: '700', color: '#191c1d', marginTop: '3px' }}>{formatINR(pm.amount)}</div>
-                      <div style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700', marginTop: '2px' }}>{pm.percentage}% of collections</div>
+                      <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', marginTop: '2px' }}>{pm.percentage}% of collections</div>
                     </div>
                   ))}
                 </div>
@@ -899,10 +902,10 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>FEES RECOVERED</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(summary.totalCollected)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1a73e8' }}>{summary.recoveryRate || 0}% Recovery</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>{summary.recoveryRate || 0}% Recovery</div>
                 </div>
 
                 <div className="stat-card">
@@ -915,7 +918,7 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>SERVICE REQUESTS (TAT)</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {summary.averageResolutionHours || 28.4} hrs
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#414754' }}>Avg resolution speed</div>
@@ -931,7 +934,7 @@ export const ReportsPage = () => {
                   {(reportData?.categoryBreakdown || []).map((cat) => (
                     <div key={cat.category} style={{ background: '#f8f9fa', padding: '12px 14px', borderRadius: '6px', border: '1px solid #dadce0' }}>
                       <div style={{ fontSize: '0.78rem', color: '#191c1d', fontWeight: '600' }}>{cat.category}</div>
-                      <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>{cat.count} tickets</div>
+                      <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{cat.count} tickets</div>
                       <div style={{ fontSize: '0.72rem', color: '#727785' }}>{cat.percentage}% of workload</div>
                     </div>
                   ))}
@@ -956,15 +959,15 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>AVAILABLE FOR SALE</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {summary.availableFlats || 0}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1a73e8' }}>Ready to pitch</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>Ready to pitch</div>
                 </div>
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>BOOKED & ALLOTTED</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {summary.bookedFlats || 0}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#414754' }}>{summary.absorptionRatePercent || 0}% Sold Rate</div>
@@ -993,12 +996,12 @@ export const ReportsPage = () => {
                         <strong style={{ color: '#191c1d' }}>{ft.total}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '0.76rem' }}>
-                        <span style={{ color: '#1a73e8' }}>Available:</span>
-                        <strong style={{ color: '#1a73e8' }}>{ft.available}</strong>
+                        <span style={{ color: '#17652f' }}>Available:</span>
+                        <strong style={{ color: '#17652f' }}>{ft.available}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '0.76rem' }}>
-                        <span style={{ color: '#1a73e8' }}>Booked:</span>
-                        <strong style={{ color: '#1a73e8' }}>{ft.booked}</strong>
+                        <span style={{ color: '#17652f' }}>Booked:</span>
+                        <strong style={{ color: '#17652f' }}>{ft.booked}</strong>
                       </div>
                     </div>
                   ))}
@@ -1015,10 +1018,10 @@ export const ReportsPage = () => {
               <div className="grid-cols-4">
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>TOTAL CASH INFLOW</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(summary.totalCashInflow)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1a73e8' }}>Sales, Rent & Maintenance</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>Sales, Rent & Maintenance</div>
                 </div>
 
                 <div className="stat-card">
@@ -1031,10 +1034,10 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>NET OPERATING PROFIT</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(summary.netOperatingProfit)}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1a73e8' }}>{summary.profitMarginPercent || 0}% Operating Margin</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>{summary.profitMarginPercent || 0}% Operating Margin</div>
                 </div>
 
                 <div className="stat-card">
@@ -1050,7 +1053,7 @@ export const ReportsPage = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
                 {/* INFLOWS */}
                 <div className="g-card" style={{ padding: '20px' }}>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a73e8', margin: '0 0 14px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#17652f', margin: '0 0 14px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <ArrowUpRight size={18} /> Revenue Inflow Streams
                   </h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1060,7 +1063,7 @@ export const ReportsPage = () => {
                           <div style={{ fontSize: '0.8rem', color: '#191c1d', fontWeight: '600' }}>{inf.stream}</div>
                           <div style={{ fontSize: '0.7rem', color: '#727785' }}>{inf.percentage}% of revenue</div>
                         </div>
-                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1a73e8' }}>{formatINR(inf.amount)}</div>
+                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>{formatINR(inf.amount)}</div>
                       </div>
                     ))}
                   </div>
@@ -1103,15 +1106,15 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>DEALS CONVERTED</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {summary.convertedLeads || 0}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1a73e8' }}>{summary.overallConversionRate || '14%'} Conversion</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>{summary.overallConversionRate || '14%'} Conversion</div>
                 </div>
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>SITE VISITS COMPLETED</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {summary.siteVisitsScheduled || 0}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#414754' }}>Physical walkthroughs</div>
@@ -1149,8 +1152,8 @@ export const ReportsPage = () => {
                         <tr key={src.source}>
                           <td style={{ fontWeight: '600' }}>{src.source}</td>
                           <td>{src.totalLeads}</td>
-                          <td style={{ color: '#1a73e8', fontWeight: '700' }}>{src.converted}</td>
-                          <td style={{ color: '#1a73e8', fontWeight: '700' }}>{src.conversionRate}</td>
+                          <td style={{ color: '#17652f', fontWeight: '700' }}>{src.converted}</td>
+                          <td style={{ color: '#17652f', fontWeight: '700' }}>{src.conversionRate}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1184,15 +1187,15 @@ export const ReportsPage = () => {
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>AVERAGE ATTENDANCE</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {summary.averageAttendanceRate || '94.2%'}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#1a73e8' }}>High Workforce Reliability</div>
+                  <div style={{ fontSize: '0.72rem', color: '#17652f' }}>High Workforce Reliability</div>
                 </div>
 
                 <div className="stat-card">
                   <div style={{ fontSize: '0.74rem', color: '#727785', fontWeight: '700' }}>CONTRACT LABOUR FORCE</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {summary.activeContractLabour || 45}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#414754' }}>On-site construction team</div>
@@ -1223,7 +1226,7 @@ export const ReportsPage = () => {
                           <td style={{ fontWeight: '600' }}>{dept.department}</td>
                           <td>{dept.headcount} Staff</td>
                           <td style={{ color: '#0f172a', fontWeight: '700' }}>{formatINR(dept.monthlyPayroll)}</td>
-                          <td style={{ color: '#1a73e8', fontWeight: '600' }}>
+                          <td style={{ color: '#17652f', fontWeight: '600' }}>
                             {formatINR(Math.round(dept.monthlyPayroll / (dept.headcount || 1)))}
                           </td>
                         </tr>

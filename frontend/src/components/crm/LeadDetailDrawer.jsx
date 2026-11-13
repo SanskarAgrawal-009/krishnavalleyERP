@@ -324,11 +324,11 @@ export const LeadDetailDrawer = ({
     switch (status) {
       case 'new': return { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd', label: 'New Prospect' };
       case 'contacted': return { bg: '#f1f5f9', color: '#334155', border: '#cbd5e1', label: 'Contacted' };
-      case 'in_discussion': return { bg: '#eff6ff', color: '#7e22ce', border: '#dbeafe', label: 'In Discussion' };
+      case 'in_discussion': return { bg: '#e8f2e5', color: '#17652f', border: '#e8f2e5', label: 'In Discussion' };
       case 'followup_scheduled': return { bg: '#f1f5f9', color: '#334155', border: '#e2e8f0', label: 'Follow-Up Scheduled' };
       case 'site_visit_scheduled': return { bg: '#f1f5f9', color: '#334155', border: '#cbd5e1', label: 'Visit Scheduled' };
-      case 'site_visit_completed': return { bg: '#eff6ff', color: '#1e40af', border: '#dbeafe', label: 'Site Visit Done' };
-      case 'converted': return { bg: '#eff6ff', color: '#1a73e8', border: '#bfdbfe', label: 'Won Deal (Converted)' };
+      case 'site_visit_completed': return { bg: '#e8f2e5', color: '#17652f', border: '#e8f2e5', label: 'Site Visit Done' };
+      case 'converted': return { bg: '#e8f2e5', color: '#17652f', border: '#cde4c9', label: 'Won Deal (Converted)' };
       case 'lost': return { bg: '#f1f5f9', color: '#0f172a', border: '#e2e8f0', label: 'Lost Prospect' };
       default: return { bg: '#f1f5f9', color: '#334155', border: '#cbd5e1', label: (status || 'Lead').replace(/_/g, ' ') };
     }
@@ -383,9 +383,9 @@ export const LeadDetailDrawer = ({
               width: '48px',
               height: '48px',
               borderRadius: '50%',
-              background: isAssignedToCurrentUser ? '#eff6ff' : '#e0f2fe',
-              color: isAssignedToCurrentUser ? '#1e40af' : '#0369a1',
-              border: isAssignedToCurrentUser ? '2px solid #bfdbfe' : '2px solid #bae6fd',
+              background: isAssignedToCurrentUser ? '#e8f2e5' : '#e0f2fe',
+              color: isAssignedToCurrentUser ? '#17652f' : '#0369a1',
+              border: isAssignedToCurrentUser ? '2px solid #cde4c9' : '2px solid #bae6fd',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -425,7 +425,7 @@ export const LeadDetailDrawer = ({
 
                 {/* Agent Tag */}
                 {lead.agentId && (
-                  <span style={{ fontSize: '0.68rem', fontWeight: '700', background: '#eff6ff', color: '#1d4ed8', padding: '2px 6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: '700', background: '#e8f2e5', color: '#17652f', padding: '2px 6px', borderRadius: '4px', border: '1px solid #cde4c9' }}>
                     Agent ({lead.agentId.firstName || lead.agentId.username})
                   </span>
                 )}
@@ -466,8 +466,8 @@ export const LeadDetailDrawer = ({
                     gap: '4px',
                     padding: '3px 8px',
                     borderRadius: '5px',
-                    background: '#eff6ff',
-                    color: '#1e40af',
+                    background: '#e8f2e5',
+                    color: '#17652f',
                     fontSize: '0.76rem',
                     fontWeight: '800',
                     textDecoration: 'none'
@@ -503,7 +503,7 @@ export const LeadDetailDrawer = ({
                 <button
                   type="button"
                   onClick={() => handleCopy(`${lead.name} - ${lead.mobileNo}`)}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: copiedText ? '#1a73e8' : '#94a3b8', display: 'inline-flex', alignItems: 'center' }}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: copiedText ? '#17652f' : '#94a3b8', display: 'inline-flex', alignItems: 'center' }}
                   title="Copy Contact"
                 >
                   {copiedText ? <Check size={13} /> : <Copy size={13} />}
@@ -589,9 +589,9 @@ export const LeadDetailDrawer = ({
               height: '34px',
               padding: '0 12px',
               borderRadius: '7px',
-              border: isAddingNewFu ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
-              background: isAddingNewFu ? '#eff6ff' : '#ffffff',
-              color: isAddingNewFu ? '#1a73e8' : '#0f172a',
+              border: isAddingNewFu ? '1.5px solid #17652f' : '1px solid #cbd5e1',
+              background: isAddingNewFu ? '#e8f2e5' : '#ffffff',
+              color: isAddingNewFu ? '#17652f' : '#0f172a',
               fontSize: '0.78rem',
               fontWeight: '700',
               display: 'inline-flex',
@@ -602,7 +602,7 @@ export const LeadDetailDrawer = ({
               transition: 'all 0.15s ease'
             }}
           >
-            <Plus size={14} color={isAddingNewFu ? '#1a73e8' : '#475569'} />
+            <Plus size={14} color={isAddingNewFu ? '#17652f' : '#475569'} />
             <span>Log Follow-Up</span>
           </button>
 
@@ -628,7 +628,7 @@ export const LeadDetailDrawer = ({
             }}
             title="Schedule Follow-Up Task for Team Member"
           >
-            <Calendar size={14} color="#2563eb" />
+            <Calendar size={14} color="#17652f" />
             <span>Schedule Task</span>
           </button>
 
@@ -642,7 +642,7 @@ export const LeadDetailDrawer = ({
               borderRadius: '7px',
               border: '1px solid #cbd5e1',
               background: '#ffffff',
-              color: '#1e40af',
+              color: '#17652f',
               fontSize: '0.78rem',
               fontWeight: '700',
               display: 'inline-flex',
@@ -653,7 +653,7 @@ export const LeadDetailDrawer = ({
               transition: 'all 0.15s ease'
             }}
           >
-            <Car size={14} color="#1a73e8" />
+            <Car size={14} color="#17652f" />
             <span>Site Visit</span>
           </button>
 
@@ -692,9 +692,9 @@ export const LeadDetailDrawer = ({
           {/* Success Banner */}
           {fuSuccessMsg && (
             <div style={{
-              background: '#eff6ff',
-              border: '1px solid #bfdbfe',
-              color: '#1e40af',
+              background: '#e8f2e5',
+              border: '1px solid #cde4c9',
+              color: '#17652f',
               padding: '10px 14px',
               borderRadius: '8px',
               fontSize: '0.84rem',
@@ -731,7 +731,7 @@ export const LeadDetailDrawer = ({
                   width: '26px',
                   height: '26px',
                   borderRadius: '50%',
-                  background: isAssignedToCurrentUser ? '#1a73e8' : '#4f46e5',
+                  background: isAssignedToCurrentUser ? '#17652f' : '#17652f',
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
@@ -746,7 +746,7 @@ export const LeadDetailDrawer = ({
                     {assignee?.firstName ? `${assignee.firstName} ${assignee.lastName || ''}` : (assignee?.username || 'Unassigned (In Queue)')}
                   </span>
                   {isAssignedToCurrentUser && (
-                    <span style={{ marginLeft: '6px', fontSize: '0.68rem', fontWeight: '800', background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px' }}>
+                    <span style={{ marginLeft: '6px', fontSize: '0.68rem', fontWeight: '800', background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px' }}>
                       Assigned to You
                     </span>
                   )}
@@ -799,7 +799,7 @@ export const LeadDetailDrawer = ({
           {/* ========================================================================= */}
           {isMetaLead && (
             <div style={{
-              background: 'linear-gradient(135deg, #f0f9ff 0%, #eff6ff 100%)',
+              background: 'linear-gradient(135deg, #f0f9ff 0%, #e8f2e5 100%)',
               border: '1px solid #bae6fd',
               borderRadius: '10px',
               padding: '14px 18px',
@@ -847,7 +847,7 @@ export const LeadDetailDrawer = ({
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Calendar size={16} color="#2563eb" />
+                <Calendar size={16} color="#17652f" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
                   Active Scheduled Follow-Ups & Tasks ({pendingFollowUps.length})
                 </h3>
@@ -859,9 +859,9 @@ export const LeadDetailDrawer = ({
                   style={{
                     fontSize: '0.74rem',
                     fontWeight: '800',
-                    color: '#1d4ed8',
-                    background: '#eff6ff',
-                    border: '1px solid #bfdbfe',
+                    color: '#17652f',
+                    background: '#e8f2e5',
+                    border: '1px solid #cde4c9',
                     padding: '3px 8px',
                     borderRadius: '5px',
                     cursor: 'pointer'
@@ -893,7 +893,7 @@ export const LeadDetailDrawer = ({
                   style={{
                     padding: '8px 16px',
                     borderRadius: '7px',
-                    background: '#2563eb',
+                    background: '#17652f',
                     color: '#ffffff',
                     border: 'none',
                     fontSize: '0.80rem',
@@ -921,7 +921,7 @@ export const LeadDetailDrawer = ({
                       key={fu._id}
                       style={{
                         background: '#ffffff',
-                        border: isScheduledByHead ? '2px solid #93c5fd' : '1px solid #cbd5e1',
+                        border: isScheduledByHead ? '2px solid #86c8a0' : '1px solid #cbd5e1',
                         borderRadius: '10px',
                         padding: '14px 16px',
                         boxShadow: '0 2px 5px rgba(0,0,0,0.04)',
@@ -936,11 +936,11 @@ export const LeadDetailDrawer = ({
                             <span style={{
                               fontSize: '0.72rem',
                               fontWeight: '800',
-                              background: '#eff6ff',
-                              color: '#1e40af',
+                              background: '#e8f2e5',
+                              color: '#17652f',
                               padding: '2px 8px',
                               borderRadius: '4px',
-                              border: '1px solid #bfdbfe',
+                              border: '1px solid #cde4c9',
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '4px'
@@ -966,8 +966,8 @@ export const LeadDetailDrawer = ({
                             fontSize: '0.72rem',
                             fontWeight: '800',
                             textTransform: 'uppercase',
-                            background: fu.mode === 'site_visit' ? '#f1f5f9' : '#dbeafe',
-                            color: fu.mode === 'site_visit' ? '#334155' : '#1e40af',
+                            background: fu.mode === 'site_visit' ? '#f1f5f9' : '#e8f2e5',
+                            color: fu.mode === 'site_visit' ? '#334155' : '#17652f',
                             padding: '2px 8px',
                             borderRadius: '4px'
                           }}>
@@ -1040,9 +1040,9 @@ export const LeadDetailDrawer = ({
                                   style={{
                                     padding: '5px 10px',
                                     borderRadius: '6px',
-                                    background: '#eff6ff',
-                                    border: '1px solid #bfdbfe',
-                                    color: '#1d4ed8',
+                                    background: '#e8f2e5',
+                                    border: '1px solid #cde4c9',
+                                    color: '#17652f',
                                     fontSize: '0.74rem',
                                     fontWeight: '700',
                                     textDecoration: 'none',
@@ -1074,7 +1074,7 @@ export const LeadDetailDrawer = ({
                                     borderRadius: '6px',
                                     background: '#ffffff',
                                     border: '1px solid #dadce0',
-                                    color: '#1a73e8',
+                                    color: '#17652f',
                                     fontSize: '0.74rem',
                                     fontWeight: '700',
                                     cursor: 'pointer',
@@ -1094,7 +1094,7 @@ export const LeadDetailDrawer = ({
                                 style={{
                                   padding: '5px 12px',
                                   borderRadius: '6px',
-                                  background: 'linear-gradient(135deg, #1a73e8 0%, #1e40af 100%)',
+                                  background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                                   color: '#ffffff',
                                   fontSize: '0.76rem',
                                   fontWeight: '800',
@@ -1138,14 +1138,14 @@ export const LeadDetailDrawer = ({
                             gap: '10px'
                           }}>
                             <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <CheckCircle2 size={14} color="#1a73e8" /> Update Follow-Up Status (Team Member)
+                              <CheckCircle2 size={14} color="#17652f" /> Update Follow-Up Status (Team Member)
                             </div>
 
                             {/* Status Choice Segmented Buttons */}
                             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                               {[
-                                { id: 'completed', label: 'Mark Completed', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
-                                { id: 'rescheduled', label: 'Reschedule', color: '#1d4ed8', bg: '#dbeafe', border: '#93c5fd' },
+                                { id: 'completed', label: 'Mark Completed', color: '#17652f', bg: '#e8f2e5', border: '#cde4c9' },
+                                { id: 'rescheduled', label: 'Reschedule', color: '#17652f', bg: '#e8f2e5', border: '#86c8a0' },
                                 { id: 'cancelled', label: 'Cancelled', color: '#0f172a', bg: '#f1f5f9', border: '#cbd5e1' },
                               ].map((opt) => (
                                 <button
@@ -1172,7 +1172,7 @@ export const LeadDetailDrawer = ({
                             {/* Reschedule Date Picker if Rescheduled */}
                             {fuStatus === 'rescheduled' && (
                               <div>
-                                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#1e40af', marginBottom: '3px' }}>
+                                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#17652f', marginBottom: '3px' }}>
                                   New Scheduled Date & Time *
                                 </label>
                                 <input
@@ -1180,7 +1180,7 @@ export const LeadDetailDrawer = ({
                                   required
                                   value={fuRescheduleDate}
                                   onChange={(e) => setFuRescheduleDate(e.target.value)}
-                                  style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #93c5fd', fontSize: '0.8rem' }}
+                                  style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #86c8a0', fontSize: '0.8rem' }}
                                 />
                               </div>
                             )}
@@ -1217,7 +1217,7 @@ export const LeadDetailDrawer = ({
                                   padding: '5px 16px',
                                   fontSize: '0.76rem',
                                   fontWeight: '800',
-                                  background: '#1a73e8',
+                                  background: '#17652f',
                                   color: '#ffffff',
                                   border: 'none',
                                   borderRadius: '5px',
@@ -1243,15 +1243,15 @@ export const LeadDetailDrawer = ({
           {isAddingNewFu && (
             <div style={{
               background: '#f8fafc',
-              border: '2px solid #2563eb',
+              border: '2px solid #17652f',
               borderRadius: '10px',
               padding: '16px 18px',
               boxShadow: '0 4px 12px rgba(37,99,235,0.08)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <div>
-                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Plus size={16} color="#2563eb" /> Log Completed Follow-Up Interaction
+                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Plus size={16} color="#17652f" /> Log Completed Follow-Up Interaction
                   </span>
                   <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
                     Record calls, messages, or meetings. Saved directly to Completed Interaction History.
@@ -1320,11 +1320,11 @@ export const LeadDetailDrawer = ({
                     alignItems: 'center',
                     gap: '8px',
                     padding: '8px 12px',
-                    background: '#eff6ff',
-                    border: '1px solid #bfdbfe',
+                    background: '#e8f2e5',
+                    border: '1px solid #cde4c9',
                     borderRadius: '6px',
                     fontSize: '0.76rem',
-                    color: '#1e40af'
+                    color: '#17652f'
                   }}>
                     <input
                       type="checkbox"
@@ -1354,7 +1354,7 @@ export const LeadDetailDrawer = ({
                       padding: '6px 16px',
                       fontSize: '0.78rem',
                       fontWeight: '800',
-                      background: '#2563eb',
+                      background: '#17652f',
                       color: '#ffffff',
                       border: 'none',
                       borderRadius: '6px',
@@ -1374,7 +1374,7 @@ export const LeadDetailDrawer = ({
           {externalSiteVisits.length > 0 && (
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <Car size={16} color="#1a73e8" />
+                <Car size={16} color="#17652f" />
                 <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
                   Recorded Site Visits ({externalSiteVisits.length})
                 </h3>
@@ -1385,18 +1385,18 @@ export const LeadDetailDrawer = ({
                   <div
                     key={svIdx}
                     style={{
-                      background: '#eff6ff',
-                      border: '1px solid #dbeafe',
+                      background: '#e8f2e5',
+                      border: '1px solid #e8f2e5',
                       borderRadius: '8px',
                       padding: '12px 16px'
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#1e40af' }}>
+                        <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#17652f' }}>
                           Visited: {sv.flatLabel || 'Project Site'}
                         </span>
-                        <span style={{ fontSize: '0.72rem', background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>
+                        <span style={{ fontSize: '0.72rem', background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>
                           Rating: {sv.interestRating}/5 
                         </span>
                       </div>
@@ -1410,7 +1410,7 @@ export const LeadDetailDrawer = ({
                     </div>
 
                     {sv.cabDetails?.isCabProvided && (
-                      <div style={{ fontSize: '0.72rem', color: '#1e40af', background: '#eff6ff', padding: '4px 8px', borderRadius: '4px', marginTop: '6px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#17652f', background: '#e8f2e5', padding: '4px 8px', borderRadius: '4px', marginTop: '6px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                         <Car size={11} /> Cab: {sv.cabDetails.cabNumber || 'Company Vehicle'} (Driver: {sv.cabDetails.driverName || 'Assigned'})
                       </div>
                     )}
@@ -1453,8 +1453,8 @@ export const LeadDetailDrawer = ({
                           fontSize: '0.7rem',
                           fontWeight: '800',
                           textTransform: 'uppercase',
-                          background: fu.status === 'completed' ? '#eff6ff' : '#f1f5f9',
-                          color: fu.status === 'completed' ? '#1e40af' : '#0f172a',
+                          background: fu.status === 'completed' ? '#e8f2e5' : '#f1f5f9',
+                          color: fu.status === 'completed' ? '#17652f' : '#0f172a',
                           padding: '1px 6px',
                           borderRadius: '4px'
                         }}>
@@ -1493,7 +1493,7 @@ export const LeadDetailDrawer = ({
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
               <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <FileText size={14} style={{ color: '#1a73e8' }} />
+                <FileText size={14} style={{ color: '#17652f' }} />
                 Lead Overview & Requirements
               </div>
 
@@ -1509,7 +1509,7 @@ export const LeadDetailDrawer = ({
                     borderRadius: '6px',
                     border: '1px solid #cbd5e1',
                     background: '#ffffff',
-                    color: '#1a73e8',
+                    color: '#17652f',
                     fontSize: '0.74rem',
                     fontWeight: '700',
                     cursor: 'pointer',
@@ -1546,7 +1546,7 @@ export const LeadDetailDrawer = ({
                       padding: '4px 12px',
                       borderRadius: '6px',
                       border: 'none',
-                      background: '#1a73e8',
+                      background: '#17652f',
                       color: '#ffffff',
                       fontSize: '0.74rem',
                       fontWeight: '800',
@@ -1564,7 +1564,7 @@ export const LeadDetailDrawer = ({
             </div>
 
             {overviewMsg && (
-              <div style={{ padding: '6px 10px', borderRadius: '6px', backgroundColor: '#eff6ff', color: '#1e40af', fontSize: '0.74rem', fontWeight: '700', marginBottom: '10px' }}>
+              <div style={{ padding: '6px 10px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', fontSize: '0.74rem', fontWeight: '700', marginBottom: '10px' }}>
                 {overviewMsg}
               </div>
             )}

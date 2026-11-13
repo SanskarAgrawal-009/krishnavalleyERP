@@ -325,7 +325,7 @@ export const FlatProfilePage = () => {
               borderRadius: '6px',
               background: '#ffffff',
               border: '1px solid #dadce0',
-              color: '#1a73e8',
+              color: '#17652f',
               fontSize: '0.82rem',
               fontWeight: '600',
               cursor: 'pointer',
@@ -362,7 +362,7 @@ export const FlatProfilePage = () => {
               cursor: 'pointer'
             }}
           >
-            <Pencil size={13} color="#1a73e8" /> Edit Specs
+            <Pencil size={13} color="#17652f" /> Edit Specs
           </button>
 
           <button
@@ -381,7 +381,7 @@ export const FlatProfilePage = () => {
               cursor: 'pointer'
             }}
           >
-            <FileText size={13} color="#1a73e8" /> Update MOU Terms
+            <FileText size={13} color="#17652f" /> Update MOU Terms
           </button>
 
           <button
@@ -392,7 +392,7 @@ export const FlatProfilePage = () => {
               gap: '6px',
               padding: '7px 14px',
               borderRadius: '6px',
-              background: '#1a73e8',
+              background: '#17652f',
               border: 'none',
               color: '#ffffff',
               fontSize: '0.8rem',
@@ -414,7 +414,7 @@ export const FlatProfilePage = () => {
               borderRadius: '6px',
               background: '#ffffff',
               border: '1px solid #dadce0',
-              color: '#2563eb',
+              color: '#17652f',
               fontSize: '0.8rem',
               fontWeight: '600',
               cursor: 'pointer'
@@ -449,7 +449,7 @@ export const FlatProfilePage = () => {
       <div
         className="g-card"
         style={{
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8faff 100%)',
+          background: 'linear-gradient(135deg, #ffffff 0%, #faf9f6 100%)',
           border: '1px solid #dadce0',
           borderRadius: '12px',
           padding: '24px 28px',
@@ -465,8 +465,8 @@ export const FlatProfilePage = () => {
                   width: '46px',
                   height: '46px',
                   borderRadius: '10px',
-                  background: '#e8f0fe',
-                  color: '#1a73e8',
+                  background: '#e8f2e5',
+                  color: '#17652f',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -489,8 +489,8 @@ export const FlatProfilePage = () => {
                         fontWeight: '700',
                         padding: '3px 9px',
                         borderRadius: '12px',
-                        background: '#eff6ff',
-                        color: '#1a73e8',
+                        background: '#e8f2e5',
+                        color: '#17652f',
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '4px'
@@ -506,8 +506,8 @@ export const FlatProfilePage = () => {
                         fontWeight: '700',
                         padding: '3px 9px',
                         borderRadius: '12px',
-                        background: '#eff6ff',
-                        color: '#2563eb'
+                        background: '#e8f2e5',
+                        color: '#17652f'
                       }}
                     >
                       REGISTRY COMPLETED
@@ -516,7 +516,7 @@ export const FlatProfilePage = () => {
                 </div>
                 <div style={{ display: 'flex', gap: '16px', fontSize: '0.85rem', color: '#5f6368', marginTop: '6px', flexWrap: 'wrap' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Building2 size={14} color="#1a73e8" /> {flat.buildingName || 'Tower A'}, {flat.projectName || 'Krishna Valley Resorts'}
+                    <Building2 size={14} color="#17652f" /> {flat.buildingName || 'Tower A'}, {flat.projectName || 'Krishna Valley Resorts'}
                   </span>
                   <span>•</span>
                   <span>{flat.floor === 0 ? 'Ground Floor' : `Floor ${flat.floor}`}</span>
@@ -547,8 +547,8 @@ export const FlatProfilePage = () => {
                 width: '40px',
                 height: '40px',
                 borderRadius: '8px',
-                background: '#eff6ff',
-                color: '#2563eb',
+                background: '#e8f2e5',
+                color: '#17652f',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -562,7 +562,7 @@ export const FlatProfilePage = () => {
               <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {owner.name || 'Unassigned / Available'}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#1a73e8', fontWeight: '600' }}>
+              <div style={{ fontSize: '0.75rem', color: '#17652f', fontWeight: '600' }}>
                 {owner.mobileNo || 'Contact on file'}
               </div>
             </div>
@@ -573,7 +573,7 @@ export const FlatProfilePage = () => {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#1a73e8',
+                  color: '#17652f',
                   cursor: 'pointer',
                   padding: '4px'
                 }}
@@ -598,11 +598,11 @@ export const FlatProfilePage = () => {
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Monthly Assured Rent</span>
-            <div style={{ padding: '5px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
+            <div style={{ padding: '5px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <DollarSign size={15} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
             {formatINR(monthlyRent)}
             <span style={{ fontSize: '0.75rem', color: '#5f6368', fontWeight: '600' }}> /mo</span>
           </div>
@@ -616,17 +616,17 @@ export const FlatProfilePage = () => {
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Tenure Progress</span>
-            <div style={{ padding: '5px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
+            <div style={{ padding: '5px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <Clock size={15} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
             {paidMonthsCount} / {tenureMonths}
             <span style={{ fontSize: '0.75rem', color: '#5f6368', fontWeight: '600' }}> Months</span>
           </div>
           <div style={{ marginTop: '6px' }}>
             <div style={{ width: '100%', height: '6px', background: '#e0e2ec', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${progressPct}%`, height: '100%', background: '#1a73e8', borderRadius: '3px', transition: 'width 0.4s ease' }} />
+              <div style={{ width: `${progressPct}%`, height: '100%', background: '#17652f', borderRadius: '3px', transition: 'width 0.4s ease' }} />
             </div>
             <div style={{ fontSize: '0.72rem', color: '#5f6368', display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
               <span>{outstandingMonthsCount} mos remaining</span>
@@ -647,7 +647,7 @@ export const FlatProfilePage = () => {
             {formatINR(totalCommitment)}
           </div>
           <div style={{ fontSize: '0.74rem', color: '#4b5563', marginTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
-            <span>Disbursed: <strong style={{ color: '#1a73e8' }}>{formatINR(totalDisbursed)}</strong></span>
+            <span>Disbursed: <strong style={{ color: '#17652f' }}>{formatINR(totalDisbursed)}</strong></span>
             <span>Bal: <strong>{formatINR(balancePayable)}</strong></span>
           </div>
         </div>
@@ -656,7 +656,7 @@ export const FlatProfilePage = () => {
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Possession & Lock-in</span>
-            <div style={{ padding: '5px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
+            <div style={{ padding: '5px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <Key size={15} />
             </div>
           </div>
@@ -701,7 +701,7 @@ export const FlatProfilePage = () => {
                 gap: '8px',
                 padding: '9px 18px',
                 borderRadius: '6px',
-                background: isSelected ? '#1a73e8' : 'transparent',
+                background: isSelected ? '#17652f' : 'transparent',
                 color: isSelected ? '#ffffff' : '#3c4043',
                 fontSize: '0.82rem',
                 fontWeight: isSelected ? '700' : '600',
@@ -729,7 +729,7 @@ export const FlatProfilePage = () => {
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <FileText size={18} color="#1a73e8" />
+                <FileText size={18} color="#17652f" />
                 <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                   Assured Returns MOU & Payout Terms
                 </h3>
@@ -744,7 +744,7 @@ export const FlatProfilePage = () => {
                   borderRadius: '5px',
                   background: '#f1f3f4',
                   border: '1px solid #dadce0',
-                  color: '#1a73e8',
+                  color: '#17652f',
                   fontSize: '0.78rem',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -773,7 +773,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Installment Amount</span>
-                <strong style={{ fontSize: '0.92rem', color: '#1a73e8' }}>{formatINR(monthlyRent)}</strong>
+                <strong style={{ fontSize: '0.92rem', color: '#17652f' }}>{formatINR(monthlyRent)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>TDS Withheld (10%)</span>
@@ -781,11 +781,11 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Net Monthly Disbursal</span>
-                <strong style={{ fontSize: '1rem', color: '#1a73e8' }}>{formatINR(netMonthlyRent)}</strong>
+                <strong style={{ fontSize: '1rem', color: '#17652f' }}>{formatINR(netMonthlyRent)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Registry Status</span>
-                <strong style={{ fontSize: '0.92rem', color: flat.salesDetails?.salesStatus === 'fully_paid' ? '#1a73e8' : '#475569' }}>
+                <strong style={{ fontSize: '0.92rem', color: flat.salesDetails?.salesStatus === 'fully_paid' ? '#17652f' : '#475569' }}>
                   {flat.salesDetails?.salesStatus === 'fully_paid' ? 'DONE' : 'PENDING'}
                 </strong>
               </div>
@@ -793,7 +793,7 @@ export const FlatProfilePage = () => {
 
             {/* Owner's Bank Account for Payouts */}
             <div style={{ marginTop: '18px', paddingTop: '16px', borderTop: '1px solid #f1f3f4', display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1a73e8', fontWeight: '700', fontSize: '0.8rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#17652f', fontWeight: '700', fontSize: '0.8rem' }}>
                 <CreditCard size={15} /> Payout Bank Details:
               </div>
               <span style={{ fontSize: '0.82rem', color: '#3c4043' }}>
@@ -830,7 +830,7 @@ export const FlatProfilePage = () => {
                   gap: '6px',
                   padding: '7px 16px',
                   borderRadius: '6px',
-                  background: '#1a73e8',
+                  background: '#17652f',
                   border: 'none',
                   color: '#ffffff',
                   fontSize: '0.82rem',
@@ -877,13 +877,13 @@ export const FlatProfilePage = () => {
                         <td style={{ padding: '10px 12px', color: '#3c4043' }}>
                           {formatDate(entry.dueDate)}
                         </td>
-                        <td style={{ padding: '10px 12px', color: isPaid ? '#1a73e8' : '#9aa0a6' }}>
+                        <td style={{ padding: '10px 12px', color: isPaid ? '#17652f' : '#9aa0a6' }}>
                           {formatDate(entry.paymentDate)}
                         </td>
                         <td style={{ padding: '10px 12px', color: '#5f6368' }}>
                           {entry.paymentMode || 'NEFT'}
                         </td>
-                        <td style={{ padding: '10px 12px', fontFamily: 'monospace', fontSize: '0.75rem', color: '#1a73e8' }}>
+                        <td style={{ padding: '10px 12px', fontFamily: 'monospace', fontSize: '0.75rem', color: '#17652f' }}>
                           {entry.referenceNumber || '—'}
                         </td>
                         <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '600' }}>
@@ -892,7 +892,7 @@ export const FlatProfilePage = () => {
                         <td style={{ padding: '10px 12px', textAlign: 'right', color: '#0f172a' }}>
                           - {formatINR(entry.tdsDeducted || tdsAmount)}
                         </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '700', color: '#1a73e8' }}>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '700', color: '#17652f' }}>
                           {formatINR(entry.netAmountPaid || netMonthlyRent)}
                         </td>
                         <td style={{ padding: '10px 12px', textAlign: 'right', color: '#5f6368' }}>
@@ -905,8 +905,8 @@ export const FlatProfilePage = () => {
                               fontWeight: '700',
                               padding: '2px 8px',
                               borderRadius: '4px',
-                              background: isPaid ? '#eff6ff' : (isDue ? '#f8fafc' : '#f1f3f4'),
-                              color: isPaid ? '#1a73e8' : (isDue ? '#475569' : '#5f6368'),
+                              background: isPaid ? '#e8f2e5' : (isDue ? '#f8fafc' : '#f1f3f4'),
+                              color: isPaid ? '#17652f' : (isDue ? '#475569' : '#5f6368'),
                               textTransform: 'uppercase'
                             }}
                           >
@@ -920,9 +920,9 @@ export const FlatProfilePage = () => {
                               style={{
                                 padding: '3px 8px',
                                 borderRadius: '4px',
-                                background: '#e8f0fe',
+                                background: '#e8f2e5',
                                 border: '1px solid #c2e7ff',
-                                color: '#1a73e8',
+                                color: '#17652f',
                                 fontSize: '0.72rem',
                                 fontWeight: '700',
                                 cursor: 'pointer'
@@ -931,7 +931,7 @@ export const FlatProfilePage = () => {
                               Mark Paid
                             </button>
                           ) : (
-                            <span style={{ color: '#1a73e8', fontSize: '0.8rem' }}></span>
+                            <span style={{ color: '#17652f', fontSize: '0.8rem' }}></span>
                           )}
                         </td>
                       </tr>
@@ -954,7 +954,7 @@ export const FlatProfilePage = () => {
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <User size={18} color="#1a73e8" />
+                <User size={18} color="#17652f" />
                 <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                   Current Registered Owner
                 </h3>
@@ -967,9 +967,9 @@ export const FlatProfilePage = () => {
                   gap: '6px',
                   padding: '6px 14px',
                   borderRadius: '6px',
-                  background: '#eff6ff',
+                  background: '#e8f2e5',
                   border: '1px solid #d8b4fe',
-                  color: '#2563eb',
+                  color: '#17652f',
                   fontSize: '0.8rem',
                   fontWeight: '700',
                   cursor: 'pointer'
@@ -986,11 +986,11 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Primary Mobile</span>
-                <strong style={{ fontSize: '0.95rem', color: '#1a73e8' }}>{owner.mobileNo || '—'}</strong>
+                <strong style={{ fontSize: '0.95rem', color: '#17652f' }}>{owner.mobileNo || '—'}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Email Address</span>
-                <strong style={{ fontSize: '0.92rem', color: '#1a73e8' }}>{owner.email || '—'}</strong>
+                <strong style={{ fontSize: '0.92rem', color: '#17652f' }}>{owner.email || '—'}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Ownership Type</span>
@@ -1014,7 +1014,7 @@ export const FlatProfilePage = () => {
           {/* Ownership Trail / Resale History */}
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-              <History size={18} color="#2563eb" />
+              <History size={18} color="#17652f" />
               <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                 Ownership Trail & Resale History ({flat.ownershipHistory?.length || 0})
               </h3>
@@ -1053,8 +1053,8 @@ export const FlatProfilePage = () => {
                               fontWeight: '700',
                               padding: '2px 8px',
                               borderRadius: '4px',
-                              background: '#eff6ff',
-                              color: '#2563eb',
+                              background: '#e8f2e5',
+                              color: '#17652f',
                               textTransform: 'uppercase'
                             }}
                           >
@@ -1064,7 +1064,7 @@ export const FlatProfilePage = () => {
                         <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '600' }}>
                           {formatINR(item.transferDealValue || 0)}
                         </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right', color: '#1a73e8', fontWeight: '600' }}>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', color: '#17652f', fontWeight: '600' }}>
                           {formatINR(item.totalRentPaid || 0)}
                         </td>
                         <td style={{ padding: '10px 12px', color: '#5f6368', fontStyle: 'italic' }}>
@@ -1090,7 +1090,7 @@ export const FlatProfilePage = () => {
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Layers size={18} color="#1a73e8" />
+                <Layers size={18} color="#17652f" />
                 <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                   Architectural & Unit Specifications
                 </h3>
@@ -1105,7 +1105,7 @@ export const FlatProfilePage = () => {
                   borderRadius: '5px',
                   background: '#f1f3f4',
                   border: '1px solid #dadce0',
-                  color: '#1a73e8',
+                  color: '#17652f',
                   fontSize: '0.78rem',
                   fontWeight: '600',
                   cursor: 'pointer'
@@ -1152,7 +1152,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Current Valuation / Price</span>
-                <strong style={{ fontSize: '1.05rem', color: '#1a73e8' }}>{formatINR(flat.basePrice || 2500000)}</strong>
+                <strong style={{ fontSize: '1.05rem', color: '#17652f' }}>{formatINR(flat.basePrice || 2500000)}</strong>
               </div>
             </div>
           </div>
@@ -1161,7 +1161,7 @@ export const FlatProfilePage = () => {
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Maximize2 size={18} color="#1a73e8" />
+                <Maximize2 size={18} color="#17652f" />
                 <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                   Blueprints & Architectural Floor Plans ({flat.blueprints?.length || 0})
                 </h3>
@@ -1173,7 +1173,7 @@ export const FlatProfilePage = () => {
                   gap: '6px',
                   padding: '7px 14px',
                   borderRadius: '6px',
-                  background: '#1a73e8',
+                  background: '#17652f',
                   color: '#ffffff',
                   fontSize: '0.8rem',
                   fontWeight: '600',
@@ -1229,7 +1229,7 @@ export const FlatProfilePage = () => {
                             alignItems: 'center',
                             gap: '4px',
                             fontSize: '0.74rem',
-                            color: '#1a73e8',
+                            color: '#17652f',
                             fontWeight: '600',
                             textDecoration: 'none'
                           }}
@@ -1253,7 +1253,7 @@ export const FlatProfilePage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <DollarSign size={18} color="#1a73e8" />
+              <DollarSign size={18} color="#17652f" />
               <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                 Sales Allotment & Financial Deal Summary
               </h3>
@@ -1270,7 +1270,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Agreed Deal Price</span>
-                <strong style={{ fontSize: '1.05rem', color: '#1a73e8' }}>{formatINR(sales.agreedDealPrice || sales.booking?.agreedDealPrice || flat.basePrice)}</strong>
+                <strong style={{ fontSize: '1.05rem', color: '#17652f' }}>{formatINR(sales.agreedDealPrice || sales.booking?.agreedDealPrice || flat.basePrice)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Booking Amount Paid</span>
@@ -1278,7 +1278,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Total Paid Towards Deal</span>
-                <strong style={{ fontSize: '0.92rem', color: '#1a73e8' }}>{formatINR(sales.totalAmountPaid || sales.booking?.bookingAmount || 0)}</strong>
+                <strong style={{ fontSize: '0.92rem', color: '#17652f' }}>{formatINR(sales.totalAmountPaid || sales.booking?.bookingAmount || 0)}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Balance Deal Due</span>
@@ -1286,7 +1286,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Sales Status</span>
-                <strong style={{ fontSize: '0.92rem', color: '#1a73e8', textTransform: 'capitalize' }}>
+                <strong style={{ fontSize: '0.92rem', color: '#17652f', textTransform: 'capitalize' }}>
                   {(sales.salesStatus || 'agreement_completed').replace(/_/g, ' ')}
                 </strong>
               </div>
@@ -1296,7 +1296,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Possession Status</span>
-                <strong style={{ fontSize: '0.92rem', color: sales.possessionStatus === 'handed_over' ? '#1a73e8' : '#475569', textTransform: 'capitalize' }}>
+                <strong style={{ fontSize: '0.92rem', color: sales.possessionStatus === 'handed_over' ? '#17652f' : '#475569', textTransform: 'capitalize' }}>
                   {(sales.possessionStatus || 'handed_over').replace(/_/g, ' ')}
                 </strong>
               </div>
@@ -1312,7 +1312,7 @@ export const FlatProfilePage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="g-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '22px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <ShieldCheck size={18} color="#1a73e8" />
+              <ShieldCheck size={18} color="#17652f" />
               <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                 Common Area Maintenance (CAM) & Facility Services
               </h3>
@@ -1331,7 +1331,7 @@ export const FlatProfilePage = () => {
               </div>
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#5f6368', display: 'block' }}>Outstanding Due</span>
-                <strong style={{ fontSize: '0.92rem', color: flat.maintenanceDetails?.outstandingMaintenanceDue > 0 ? '#0f172a' : '#1a73e8' }}>
+                <strong style={{ fontSize: '0.92rem', color: flat.maintenanceDetails?.outstandingMaintenanceDue > 0 ? '#0f172a' : '#17652f' }}>
                   {formatINR(flat.maintenanceDetails?.outstandingMaintenanceDue || 0)}
                 </strong>
               </div>
@@ -1343,8 +1343,8 @@ export const FlatProfilePage = () => {
                     fontWeight: '700',
                     padding: '2px 8px',
                     borderRadius: '4px',
-                    background: '#eff6ff',
-                    color: '#1a73e8',
+                    background: '#e8f2e5',
+                    color: '#17652f',
                     textTransform: 'uppercase'
                   }}
                 >
@@ -1477,7 +1477,7 @@ export const FlatProfilePage = () => {
                 >
                   Cancel
                 </button>
-                <LoadingButton loading={savingSpecs} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#1a73e8', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
+                <LoadingButton loading={savingSpecs} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#17652f', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
                   Save Specifications
                 </LoadingButton>
               </div>
@@ -1592,7 +1592,7 @@ export const FlatProfilePage = () => {
                 >
                   Cancel
                 </button>
-                <LoadingButton loading={savingMou} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#1a73e8', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
+                <LoadingButton loading={savingMou} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#17652f', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
                   Save MOU Terms
                 </LoadingButton>
               </div>
@@ -1619,14 +1619,14 @@ export const FlatProfilePage = () => {
         >
           <div style={{ background: '#ffffff', borderRadius: '12px', width: '100%', maxWidth: '480px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: '#1a73e8' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: '#17652f' }}>
                 Record Rental Disbursement Payout
               </h3>
               <button onClick={() => setIsPayoutModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={18} /></button>
             </div>
 
             <form onSubmit={handleSavePayout} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ background: '#eff6ff', border: '1px solid #e0f2fe', padding: '10px 14px', borderRadius: '6px', fontSize: '0.82rem', color: '#1a73e8' }}>
+              <div style={{ background: '#e8f2e5', border: '1px solid #e0f2fe', padding: '10px 14px', borderRadius: '6px', fontSize: '0.82rem', color: '#17652f' }}>
                 Recording payout for <strong>Flat {flat.flatNumber}</strong> • Owner: <strong>{owner.name}</strong>
               </div>
 
@@ -1708,7 +1708,7 @@ export const FlatProfilePage = () => {
                 >
                   Cancel
                 </button>
-                <LoadingButton loading={savingPayout} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#1a73e8', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
+                <LoadingButton loading={savingPayout} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#17652f', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
                   Commit Payout to Ledger
                 </LoadingButton>
               </div>
@@ -1735,14 +1735,14 @@ export const FlatProfilePage = () => {
         >
           <div style={{ background: '#ffffff', borderRadius: '12px', width: '100%', maxWidth: '540px', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: '#2563eb' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: '#17652f' }}>
                 Record Resale or Ownership Transfer
               </h3>
               <button onClick={() => setIsResaleModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={18} /></button>
             </div>
 
             <form onSubmit={handleSaveResale} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ background: '#eff6ff', border: '1px solid #dbeafe', padding: '10px 14px', borderRadius: '6px', fontSize: '0.8rem', color: '#00285c' }}>
+              <div style={{ background: '#e8f2e5', border: '1px solid #e8f2e5', padding: '10px 14px', borderRadius: '6px', fontSize: '0.8rem', color: '#17652f' }}>
                 Current Owner <strong>{owner.name}</strong> will be archived into the permanent ownership history trail, and the new purchaser will become the active owner.
               </div>
 
@@ -1823,7 +1823,7 @@ export const FlatProfilePage = () => {
                 >
                   Cancel
                 </button>
-                <LoadingButton loading={savingResale} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
+                <LoadingButton loading={savingResale} type="submit" style={{ padding: '8px 18px', borderRadius: '6px', background: '#17652f', color: '#fff', border: 'none', fontWeight: '600', cursor: 'pointer' }}>
                   Execute Transfer
                 </LoadingButton>
               </div>

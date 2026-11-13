@@ -225,7 +225,7 @@ export const ManageCredentialsModal = ({
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#005bbf',
+                    color: '#17652f',
                     fontSize: '11px',
                     fontWeight: 600,
                     cursor: 'pointer',

@@ -30,7 +30,7 @@ const TYPE_CONFIG = {
   site_progress: { label: 'Site Review', color: '#0284c7', bg: '#e0f2fe' },
   department_sync: { label: 'Dept Sync', color: '#059669', bg: '#d1fae5' },
   emergency_huddle: { label: 'Roadblock', color: '#dc2626', bg: '#fee2e2' },
-  vendor_alignment: { label: 'Vendor Sync', color: '#7c3aed', bg: '#ede9fe' },
+  vendor_alignment: { label: 'Vendor Sync', color: '#17652f', bg: '#e8f2e5' },
   general: { label: 'General Sync', color: '#475569', bg: '#f1f5f9' },
 };
 
@@ -258,7 +258,7 @@ export const TaskforceMeetingsTab = ({ onOpenTaskDetail }) => {
         <div style={{ padding: '14px', borderRadius: '10px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>TOTAL MEETINGS</span>
-            <Calendar size={16} color="#005bbf" />
+            <Calendar size={16} color="#17652f" />
           </div>
           <div style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a', margin: '4px 0' }}>
             {stats?.totalMeetings || 0}
@@ -487,7 +487,7 @@ export const TaskforceMeetingsTab = ({ onOpenTaskDetail }) => {
                           setEditingMeeting(null);
                           setIsScheduleModalOpen(true);
                         }}
-                        style={{ color: '#005bbf', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }}
+                        style={{ color: '#17652f', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }}
                       >
                         Schedule a meeting now.
                       </span>
@@ -537,7 +537,7 @@ export const TaskforceMeetingsTab = ({ onOpenTaskDetail }) => {
                       {/* Date & Venue */}
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Calendar size={12} color="#005bbf" />
+                          <Calendar size={12} color="#17652f" />
                           {m.scheduledDate ? new Date(m.scheduledDate).toLocaleDateString() : 'N/A'} at {m.startTime || '10:30'}
                         </div>
                         <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>

@@ -143,7 +143,7 @@ export const SendReminderModal = ({
         )}
 
         {successMsg && (
-          <div style={{ background: '#eff6ff', border: '1px solid #dbeafe', color: '#1e40af', padding: '10px 14px', borderRadius: '8px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ background: '#e8f2e5', border: '1px solid #e8f2e5', color: '#17652f', padding: '10px 14px', borderRadius: '8px', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <CheckCircle2 size={16} />
             <span>{successMsg}</span>
           </div>
@@ -175,9 +175,9 @@ export const SendReminderModal = ({
                   borderRadius: '6px',
                   fontSize: '0.75rem',
                   fontWeight: '800',
-                  border: targetType === 'client' ? '2px solid #1a73e8' : '1px solid #cbd5e1',
-                  background: targetType === 'client' ? '#eff6ff' : '#ffffff',
-                  color: targetType === 'client' ? '#1e40af' : '#475569',
+                  border: targetType === 'client' ? '2px solid #17652f' : '1px solid #cbd5e1',
+                  background: targetType === 'client' ? '#e8f2e5' : '#ffffff',
+                  color: targetType === 'client' ? '#17652f' : '#475569',
                   cursor: 'pointer'
                 }}
               >
@@ -191,9 +191,9 @@ export const SendReminderModal = ({
                   borderRadius: '6px',
                   fontSize: '0.75rem',
                   fontWeight: '800',
-                  border: targetType === 'team' ? '2px solid #2563eb' : '1px solid #cbd5e1',
-                  background: targetType === 'team' ? '#dbeafe' : '#ffffff',
-                  color: targetType === 'team' ? '#1d4ed8' : '#475569',
+                  border: targetType === 'team' ? '2px solid #17652f' : '1px solid #cbd5e1',
+                  background: targetType === 'team' ? '#e8f2e5' : '#ffffff',
+                  color: targetType === 'team' ? '#17652f' : '#475569',
                   cursor: 'pointer'
                 }}
               >
@@ -204,9 +204,9 @@ export const SendReminderModal = ({
 
           {/* Sender Context: Highlight that client reminders are sent by the handling team member */}
           {targetType === 'client' && (
-            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px 10px', fontSize: '0.74rem', color: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+            <div style={{ background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '6px', padding: '6px 10px', fontSize: '0.74rem', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
               <span><strong>Handling Executive (Sender):</strong> {handlingAdvisorName} {handlingAdvisorPhone ? `(${handlingAdvisorPhone})` : ''}</span>
-              <span style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: '600' }}>Sent directly by handling member to client</span>
+              <span style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600' }}>Sent directly by handling member to client</span>
             </div>
           )}
         </div>
@@ -224,8 +224,8 @@ export const SendReminderModal = ({
                 padding: '10px 12px',
                 borderRadius: '8px',
                 border: channel === 'whatsapp' ? '2px solid #0f172a' : '1px solid #cbd5e1',
-                background: channel === 'whatsapp' ? '#eff6ff' : '#ffffff',
-                color: channel === 'whatsapp' ? '#1e40af' : '#334155',
+                background: channel === 'whatsapp' ? '#e8f2e5' : '#ffffff',
+                color: channel === 'whatsapp' ? '#17652f' : '#334155',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -245,9 +245,9 @@ export const SendReminderModal = ({
               style={{
                 padding: '10px 12px',
                 borderRadius: '8px',
-                border: channel === 'email' ? '2px solid #2563eb' : '1px solid #cbd5e1',
-                background: channel === 'email' ? '#eff6ff' : '#ffffff',
-                color: channel === 'email' ? '#1d4ed8' : '#334155',
+                border: channel === 'email' ? '2px solid #17652f' : '1px solid #cbd5e1',
+                background: channel === 'email' ? '#e8f2e5' : '#ffffff',
+                color: channel === 'email' ? '#17652f' : '#334155',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -257,7 +257,7 @@ export const SendReminderModal = ({
                 fontSize: '0.82rem'
               }}
             >
-              <Mail size={16} color="#2563eb" />
+              <Mail size={16} color="#17652f" />
               <span>Email (HTML)</span>
             </button>
 
@@ -267,9 +267,9 @@ export const SendReminderModal = ({
               style={{
                 padding: '10px 12px',
                 borderRadius: '8px',
-                border: channel === 'sms' ? '2px solid #1e40af' : '1px solid #cbd5e1',
+                border: channel === 'sms' ? '2px solid #17652f' : '1px solid #cbd5e1',
                 background: channel === 'sms' ? '#faf5ff' : '#ffffff',
-                color: channel === 'sms' ? '#1e3a8a' : '#334155',
+                color: channel === 'sms' ? '#17652f' : '#334155',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -279,7 +279,7 @@ export const SendReminderModal = ({
                 fontSize: '0.82rem'
               }}
             >
-              <Smartphone size={16} color="#1e40af" />
+              <Smartphone size={16} color="#17652f" />
               <span>SMS Gateway</span>
             </button>
           </div>
@@ -323,7 +323,7 @@ export const SendReminderModal = ({
               style={{
                 padding: '9px 16px',
                 borderRadius: '8px',
-                background: '#0f172a',
+                background: '#17652f',
                 color: '#ffffff',
                 textDecoration: 'none',
                 fontWeight: '800',
@@ -360,8 +360,8 @@ export const SendReminderModal = ({
                 borderRadius: '8px',
                 border: 'none',
                 background: channel === 'whatsapp'
-                  ? 'linear-gradient(135deg, #1a73e8 0%, #1e40af 100%)'
-                  : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                  ? 'linear-gradient(135deg, #17652f 0%, #17652f 100%)'
+                  : 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
                 fontWeight: '800',
                 fontSize: '0.84rem',

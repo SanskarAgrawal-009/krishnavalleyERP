@@ -180,18 +180,18 @@ export const AgentPortalPage = () => {
     switch (action) {
       case 'SITE_VISIT_APPROVED':
       case 'APPROVE':
-        return { bg: '#eff6ff', color: '#1e40af', border: '#dbeafe' };
+        return { bg: '#e8f2e5', color: '#17652f', border: '#e8f2e5' };
       case 'SITE_VISIT_REJECTED':
       case 'REJECT':
         return { bg: '#f1f5f9', color: '#0f172a', border: '#e2e8f0' };
       case 'COMMISSION_CREDIT':
-        return { bg: '#eff6ff', color: '#0284c7', border: '#bfdbfe' };
+        return { bg: '#e8f2e5', color: '#0284c7', border: '#cde4c9' };
       case 'COMMISSION_DEBIT':
         return { bg: '#fff1f2', color: '#0f172a', border: '#e2e8f0' };
       case 'LEAD_SUBMITTED':
       case 'SITE_VISIT_LOGGED':
       case 'CREATE':
-        return { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
+        return { bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
       default:
         return { bg: '#f8fafc', color: '#475569', border: '#e2e8f0' };
     }
@@ -275,7 +275,7 @@ export const AgentPortalPage = () => {
             zIndex: 9999,
             padding: '14px 22px',
             borderRadius: '12px',
-            backgroundColor: feedbackToast.type === 'error' ? '#0f172a' : '#1a73e8',
+            backgroundColor: feedbackToast.type === 'error' ? '#0f172a' : '#17652f',
             color: '#ffffff',
             fontWeight: '600',
             fontSize: '0.9rem',
@@ -295,8 +295,8 @@ export const AgentPortalPage = () => {
       {isViewingOtherAgent && (
         <div
           style={{
-            backgroundColor: '#eff6ff',
-            border: '1px solid #bfdbfe',
+            backgroundColor: '#e8f2e5',
+            border: '1px solid #cde4c9',
             borderRadius: '16px',
             padding: '16px 22px',
             display: 'flex',
@@ -313,7 +313,7 @@ export const AgentPortalPage = () => {
                 width: '42px',
                 height: '42px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #1d4ed8, #1e40af)',
+                background: 'linear-gradient(135deg, #17652f, #17652f)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
@@ -326,7 +326,7 @@ export const AgentPortalPage = () => {
               
             </div>
             <div>
-              <div style={{ fontSize: '0.96rem', fontWeight: '800', color: '#1e3a8a' }}>
+              <div style={{ fontSize: '0.96rem', fontWeight: '800', color: '#17652f' }}>
                 Inhouse Management Inspection: Viewing Profile for {dashboardData?.agent?.firstName || 'Partner'} {dashboardData?.agent?.lastName || ''} ({agentProfile.agentCode || 'AGT-PARTNER'})
               </div>
               <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '2px' }}>
@@ -359,7 +359,7 @@ export const AgentPortalPage = () => {
       {/* Header Banner: Agent Partner Profile & Commission Model */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0369a1 100%)',
+          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
           borderRadius: '20px',
           padding: '32px',
           color: '#ffffff',
@@ -396,7 +396,7 @@ export const AgentPortalPage = () => {
             </span>
 
             {agentProfile.reraNumber && (
-              <span style={{ fontSize: '0.78rem', color: '#93c5fd', backgroundColor: 'rgba(0,0,0,0.2)', padding: '4px 10px', borderRadius: '20px' }}>
+              <span style={{ fontSize: '0.78rem', color: '#86c8a0', backgroundColor: 'rgba(0,0,0,0.2)', padding: '4px 10px', borderRadius: '20px' }}>
                 RERA: {agentProfile.reraNumber}
               </span>
             )}
@@ -419,12 +419,12 @@ export const AgentPortalPage = () => {
               borderRadius: '12px',
               backgroundColor: 'rgba(13, 144, 79, 0.25)',
               border: '1px solid rgba(52, 211, 153, 0.4)',
-              color: '#93c5fd',
+              color: '#86c8a0',
               fontSize: '0.88rem',
               fontWeight: '700',
             }}
           >
-            <Sparkles size={16} style={{ color: '#60a5fa' }} />
+            <Sparkles size={16} style={{ color: '#4a9e68' }} />
             <span>Commission Terms: {commissionModelLabel}</span>
           </div>
         </div>
@@ -457,7 +457,7 @@ export const AgentPortalPage = () => {
               gap: '8px',
               padding: '12px 20px',
               borderRadius: '12px',
-              backgroundColor: '#1a73e8',
+              backgroundColor: '#17652f',
               color: '#ffffff',
               border: 'none',
               fontSize: '0.92rem',
@@ -493,7 +493,7 @@ export const AgentPortalPage = () => {
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
           >
-            <Plus size={18} style={{ color: '#1a73e8' }} />
+            <Plus size={18} style={{ color: '#17652f' }} />
             <span>Submit New Buyer Lead</span>
           </button>
         </div>
@@ -518,14 +518,14 @@ export const AgentPortalPage = () => {
             <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
               Credited Wallet Balance
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: '800', color: '#1a73e8', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: '1.85rem', fontWeight: '800', color: '#17652f', letterSpacing: '-0.02em' }}>
               ₹{(agentProfile.walletBalance || 0).toLocaleString('en-IN')}
             </div>
             <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px' }}>
               Credited directly upon verified site visits
             </div>
           </div>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Wallet size={24} />
           </div>
         </div>
@@ -554,7 +554,7 @@ export const AgentPortalPage = () => {
               {commissions.length} credited payouts logged
             </div>
           </div>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <TrendingUp size={24} />
           </div>
         </div>
@@ -579,7 +579,7 @@ export const AgentPortalPage = () => {
             <div style={{ fontSize: '1.85rem', fontWeight: '800', color: '#1e293b', letterSpacing: '-0.02em' }}>
               {dashboardData?.metrics?.maturedVisits ?? agentProfile.maturedLeadsCount ?? 0}
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#1a73e8', fontWeight: '600', marginTop: '6px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#17652f', fontWeight: '600', marginTop: '6px' }}>
               100% Commission Credited
             </div>
           </div>
@@ -621,8 +621,8 @@ export const AgentPortalPage = () => {
       {/* 5-Day Maturity Window Informational Policy Banner */}
       <div
         style={{
-          backgroundColor: '#eff6ff',
-          border: '1px solid #bfdbfe',
+          backgroundColor: '#e8f2e5',
+          border: '1px solid #cde4c9',
           borderRadius: '16px',
           padding: '16px 20px',
           display: 'flex',
@@ -636,8 +636,8 @@ export const AgentPortalPage = () => {
             width: '40px',
             height: '40px',
             borderRadius: '10px',
-            backgroundColor: '#dbeafe',
-            color: '#1d4ed8',
+            backgroundColor: '#e8f2e5',
+            color: '#17652f',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -646,7 +646,7 @@ export const AgentPortalPage = () => {
         >
           <Clock size={22} />
         </div>
-        <div style={{ fontSize: '0.86rem', color: '#1e40af', lineHeight: 1.5 }}>
+        <div style={{ fontSize: '0.86rem', color: '#17652f', lineHeight: 1.5 }}>
           <strong>5-Day Maturity & Handover Policy:</strong> Once you complete a site visit with your buyer, your commission is credited and you have an exclusive <strong>5-day window</strong> to close the prospect. After 5 days, the lead automatically transfers to the inhouse CRM team for final conversion while your commission remains <strong>100% secured</strong> in your wallet.
         </div>
       </div>
@@ -659,8 +659,8 @@ export const AgentPortalPage = () => {
             padding: '12px 4px',
             backgroundColor: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'leads' ? '2px solid #1a73e8' : '2px solid transparent',
-            color: activeTab === 'leads' ? '#1a73e8' : '#64748b',
+            borderBottom: activeTab === 'leads' ? '2px solid #17652f' : '2px solid transparent',
+            color: activeTab === 'leads' ? '#17652f' : '#64748b',
             fontWeight: activeTab === 'leads' ? '700' : '500',
             fontSize: '0.95rem',
             cursor: 'pointer',
@@ -679,8 +679,8 @@ export const AgentPortalPage = () => {
             padding: '12px 4px',
             backgroundColor: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'visits' ? '2px solid #1a73e8' : '2px solid transparent',
-            color: activeTab === 'visits' ? '#1a73e8' : '#64748b',
+            borderBottom: activeTab === 'visits' ? '2px solid #17652f' : '2px solid transparent',
+            color: activeTab === 'visits' ? '#17652f' : '#64748b',
             fontWeight: activeTab === 'visits' ? '700' : '500',
             fontSize: '0.95rem',
             cursor: 'pointer',
@@ -699,8 +699,8 @@ export const AgentPortalPage = () => {
             padding: '12px 4px',
             backgroundColor: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'commissions' ? '2px solid #1a73e8' : '2px solid transparent',
-            color: activeTab === 'commissions' ? '#1a73e8' : '#64748b',
+            borderBottom: activeTab === 'commissions' ? '2px solid #17652f' : '2px solid transparent',
+            color: activeTab === 'commissions' ? '#17652f' : '#64748b',
             fontWeight: activeTab === 'commissions' ? '700' : '500',
             fontSize: '0.95rem',
             cursor: 'pointer',
@@ -719,8 +719,8 @@ export const AgentPortalPage = () => {
             padding: '12px 4px',
             backgroundColor: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'audit' ? '2px solid #1a73e8' : '2px solid transparent',
-            color: activeTab === 'audit' ? '#1a73e8' : '#64748b',
+            borderBottom: activeTab === 'audit' ? '2px solid #17652f' : '2px solid transparent',
+            color: activeTab === 'audit' ? '#17652f' : '#64748b',
             fontWeight: activeTab === 'audit' ? '700' : '500',
             fontSize: '0.95rem',
             cursor: 'pointer',
@@ -820,7 +820,7 @@ export const AgentPortalPage = () => {
                 <p style={{ margin: '0 0 16px', fontSize: '0.85rem' }}>Upload your first buyer lead to begin tracking site visits and earning commissions.</p>
                 <button
                   onClick={() => setUploadModalOpen(true)}
-                  style={{ padding: '8px 16px', borderRadius: '8px', backgroundColor: '#1a73e8', color: '#ffffff', border: 'none', fontWeight: '600', cursor: 'pointer' }}
+                  style={{ padding: '8px 16px', borderRadius: '8px', backgroundColor: '#17652f', color: '#ffffff', border: 'none', fontWeight: '600', cursor: 'pointer' }}
                 >
                   Submit Lead
                 </button>
@@ -847,11 +847,11 @@ export const AgentPortalPage = () => {
 
                       const stagePills = {
                         new: { label: 'New Lead', bg: '#f1f5f9', color: '#475569' },
-                        contacted: { label: 'Contacted', bg: '#eff6ff', color: '#1d4ed8' },
+                        contacted: { label: 'Contacted', bg: '#e8f2e5', color: '#17652f' },
                         site_visit_scheduled: { label: 'Visit Scheduled', bg: '#f1f5f9', color: '#334155' },
-                        site_visit_completed: { label: 'Visit Completed', bg: '#eff6ff', color: '#1a73e8' },
-                        matured: { label: 'Matured Lead', bg: '#eff6ff', color: '#1a73e8' },
-                        booked: { label: 'Booked Deal', bg: '#f3e8fd', color: '#7e22ce' },
+                        site_visit_completed: { label: 'Visit Completed', bg: '#e8f2e5', color: '#17652f' },
+                        matured: { label: 'Matured Lead', bg: '#e8f2e5', color: '#17652f' },
+                        booked: { label: 'Booked Deal', bg: '#f3e8fd', color: '#17652f' },
                         lost: { label: 'Closed/Lost', bg: '#f1f5f9', color: '#0f172a' },
                       }[lead.status] || { label: lead.status, bg: '#f1f5f9', color: '#475569' };
 
@@ -873,7 +873,7 @@ export const AgentPortalPage = () => {
                             <div style={{ fontWeight: '600', color: '#334155' }}>
                               {lead.requirement || '2BHK Apartment'}
                             </div>
-                            <div style={{ fontSize: '0.78rem', color: '#1a73e8', fontWeight: '700', marginTop: '2px' }}>
+                            <div style={{ fontSize: '0.78rem', color: '#17652f', fontWeight: '700', marginTop: '2px' }}>
                               Budget: ₹{(lead.budget || 0).toLocaleString('en-IN')}
                             </div>
                           </td>
@@ -899,7 +899,7 @@ export const AgentPortalPage = () => {
                           <td style={{ padding: '14px 18px' }}>
                             {lead.siteVisitDetails?.completedDate ? (
                               <div>
-                                <div style={{ fontSize: '0.8rem', color: '#1a73e8', fontWeight: '600' }}>
+                                <div style={{ fontSize: '0.8rem', color: '#17652f', fontWeight: '600' }}>
                                   Visited: {new Date(lead.siteVisitDetails.completedDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                                 </div>
                                 <div style={{ marginTop: '4px' }}>
@@ -978,11 +978,11 @@ export const AgentPortalPage = () => {
                                   gap: '4px',
                                   padding: '4px 10px',
                                   borderRadius: '8px',
-                                  backgroundColor: '#eff6ff',
-                                  color: '#1a73e8',
+                                  backgroundColor: '#e8f2e5',
+                                  color: '#17652f',
                                   fontWeight: '700',
                                   fontSize: '0.8rem',
-                                  border: '1px solid #dbeafe',
+                                  border: '1px solid #e8f2e5',
                                 }}
                               >
                                 <CheckCircle2 size={13} />
@@ -1021,7 +1021,7 @@ export const AgentPortalPage = () => {
                                   style={{
                                     padding: '6px 12px',
                                     borderRadius: '8px',
-                                    backgroundColor: '#1a73e8',
+                                    backgroundColor: '#17652f',
                                     color: '#ffffff',
                                     border: 'none',
                                     fontSize: '0.78rem',
@@ -1051,7 +1051,7 @@ export const AgentPortalPage = () => {
                                 style={{
                                   padding: '6px 12px',
                                   borderRadius: '8px',
-                                  backgroundColor: '#1a73e8',
+                                  backgroundColor: '#17652f',
                                   color: '#ffffff',
                                   border: 'none',
                                   fontSize: '0.78rem',
@@ -1071,7 +1071,7 @@ export const AgentPortalPage = () => {
                                 Handed Over
                               </span>
                             ) : (
-                              <span style={{ fontSize: '0.78rem', color: '#1a73e8', fontWeight: '600' }}>
+                              <span style={{ fontSize: '0.78rem', color: '#17652f', fontWeight: '600' }}>
                                 Active in Window </span>
                             )}
                           </td>
@@ -1109,7 +1109,7 @@ export const AgentPortalPage = () => {
                 gap: '8px',
                 padding: '10px 18px',
                 borderRadius: '10px',
-                backgroundColor: '#1a73e8',
+                backgroundColor: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.86rem',
@@ -1163,7 +1163,7 @@ export const AgentPortalPage = () => {
                       return (
                         <tr key={visit._id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '14px 18px' }}>
-                            <strong style={{ color: '#1a73e8', display: 'block' }}>{visit.visitCode}</strong>
+                            <strong style={{ color: '#17652f', display: 'block' }}>{visit.visitCode}</strong>
                             <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
                               {new Date(visit.visitDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </span>
@@ -1171,7 +1171,7 @@ export const AgentPortalPage = () => {
 
                           <td style={{ padding: '14px 18px' }}>
                             <div style={{ fontWeight: '800', color: '#1e293b' }}>{visit.partyName}</div>
-                            <div style={{ fontSize: '0.76rem', color: '#1a73e8', fontWeight: '700' }}>{visit.partyMobile}</div>
+                            <div style={{ fontSize: '0.76rem', color: '#17652f', fontWeight: '700' }}>{visit.partyMobile}</div>
                           </td>
 
                           <td style={{ padding: '14px 18px' }}>
@@ -1193,7 +1193,7 @@ export const AgentPortalPage = () => {
                                 href={visit.partySelfieUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#1a73e8', fontSize: '0.74rem', fontWeight: '700' }}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#17652f', fontSize: '0.74rem', fontWeight: '700' }}
                               >
                                 <img
                                   src={visit.partySelfieUrl}
@@ -1214,7 +1214,7 @@ export const AgentPortalPage = () => {
                               </span>
                             )}
                             {isApproved && (
-                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#eff6ff', color: '#1e40af', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <CheckCircle2 size={11} /> Approved
                               </span>
                             )}
@@ -1228,15 +1228,15 @@ export const AgentPortalPage = () => {
                           <td style={{ padding: '14px 18px' }}>
                             {isBooked ? (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#eff6ff', color: '#7e22ce', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                   <Award size={12} /> Deal Booked
                                 </span>
-                                <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#1e40af' }}>
+                                <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#17652f' }}>
                                   + ₹{(visit.commissionAmount || 0).toLocaleString('en-IN')} Credited
                                 </span>
                               </div>
                             ) : isApproved ? (
-                              <span style={{ fontSize: '0.74rem', color: '#1e40af', fontWeight: '700' }}>
+                              <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '700' }}>
                                 Eligible for Auto-Credit upon Booking
                               </span>
                             ) : (
@@ -1258,7 +1258,7 @@ export const AgentPortalPage = () => {
                                   style={{
                                     padding: '6px 12px',
                                     borderRadius: '8px',
-                                    backgroundColor: '#1a73e8',
+                                    backgroundColor: '#17652f',
                                     color: '#ffffff',
                                     border: 'none',
                                     fontSize: '0.78rem',
@@ -1339,7 +1339,7 @@ export const AgentPortalPage = () => {
               <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Net Wallet Balance</div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f' }}>
                     ₹{(agentProfile.walletBalance || 0).toLocaleString('en-IN')}
                   </div>
                 </div>
@@ -1413,7 +1413,7 @@ export const AgentPortalPage = () => {
                               style={{
                                 fontSize: '0.95rem',
                                 fontWeight: '800',
-                                color: isDebit ? '#0f172a' : '#1a73e8',
+                                color: isDebit ? '#0f172a' : '#17652f',
                               }}
                             >
                               {isDebit ? '- ' : '+ '}₹{(comm.calculatedAmount || 0).toLocaleString('en-IN')}
@@ -1426,8 +1426,8 @@ export const AgentPortalPage = () => {
                                 display: 'inline-block',
                                 padding: '3px 8px',
                                 borderRadius: '6px',
-                                backgroundColor: isDebit ? '#f1f5f9' : '#eff6ff',
-                                color: isDebit ? '#0f172a' : '#1a73e8',
+                                backgroundColor: isDebit ? '#f1f5f9' : '#e8f2e5',
+                                color: isDebit ? '#0f172a' : '#17652f',
                                 fontSize: '0.75rem',
                                 fontWeight: '700',
                                 textTransform: 'capitalize',
@@ -1455,7 +1455,7 @@ export const AgentPortalPage = () => {
           {/* Audit KPI Summary Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
             <div style={{ backgroundColor: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Activity size={20} />
               </div>
               <div>
@@ -1465,12 +1465,12 @@ export const AgentPortalPage = () => {
             </div>
 
             <div style={{ backgroundColor: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#eff6ff', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <CheckCircle2 size={20} />
               </div>
               <div>
                 <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>Approved Visits</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1e40af' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f' }}>
                   {auditLogs.filter((l) => l.action === 'SITE_VISIT_APPROVED' || l.action === 'APPROVE').length}
                 </div>
               </div>
@@ -1489,7 +1489,7 @@ export const AgentPortalPage = () => {
             </div>
 
             <div style={{ backgroundColor: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#eff6ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#e8f2e5', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <DollarSign size={20} />
               </div>
               <div>
@@ -1731,7 +1731,7 @@ export const AgentPortalPage = () => {
           >
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Plus size={20} style={{ color: '#1a73e8' }} />
+                <Plus size={20} style={{ color: '#17652f' }} />
                 <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
                   Submit Buyer Lead
                 </h3>
@@ -1862,7 +1862,7 @@ export const AgentPortalPage = () => {
                     padding: '10px 24px',
                     borderRadius: '10px',
                     border: 'none',
-                    backgroundColor: '#1a73e8',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontSize: '0.9rem',
                     fontWeight: '700',
@@ -1906,7 +1906,7 @@ export const AgentPortalPage = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <CheckCircle2 size={22} style={{ color: '#1a73e8' }} />
+                <CheckCircle2 size={22} style={{ color: '#17652f' }} />
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>
                   Verify & Complete Site Visit
                 </h3>
@@ -1919,11 +1919,11 @@ export const AgentPortalPage = () => {
               </button>
             </div>
 
-            <div style={{ padding: '14px', borderRadius: '12px', backgroundColor: '#eff6ff', border: '1px solid #dbeafe', marginBottom: '18px' }}>
-              <div style={{ fontSize: '0.85rem', color: '#1e40af', fontWeight: '600' }}>
+            <div style={{ padding: '14px', borderRadius: '12px', backgroundColor: '#e8f2e5', border: '1px solid #e8f2e5', marginBottom: '18px' }}>
+              <div style={{ fontSize: '0.85rem', color: '#17652f', fontWeight: '600' }}>
                 Lead: <strong>{selectedLeadForMaturity.name}</strong> ({selectedLeadForMaturity.mobileNo})
               </div>
-              <div style={{ fontSize: '0.82rem', color: '#1e40af', marginTop: '4px' }}>
+              <div style={{ fontSize: '0.82rem', color: '#17652f', marginTop: '4px' }}>
                 Estimated Commission: <strong>
                   {agentProfile.commissionType === 'percentage'
                     ? `₹${Math.round(((selectedLeadForMaturity.budget || 4500000) * (agentProfile.commissionRate || 2)) / 100).toLocaleString('en-IN')} (${agentProfile.commissionRate}% of ₹${(selectedLeadForMaturity.budget || 4500000).toLocaleString('en-IN')})`
@@ -1974,7 +1974,7 @@ export const AgentPortalPage = () => {
                     padding: '10px 24px',
                     borderRadius: '10px',
                     border: 'none',
-                    backgroundColor: '#1a73e8',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontSize: '0.9rem',
                     fontWeight: '700',

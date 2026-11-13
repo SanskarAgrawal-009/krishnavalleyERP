@@ -37,9 +37,9 @@ export const UploadAnimation = ({
         alignItems: 'center',
         justifyContent: 'center',
         gap: '16px',
-        background: 'linear-gradient(135deg, #f8fafc, #eff6ff)',
+        background: 'linear-gradient(135deg, #f8fafc, #e8f2e5)',
         borderRadius: '16px',
-        border: '1.5px solid #bfdbfe'
+        border: '1.5px solid #cde4c9'
       }}
     >
       {/* Pulsing Icon */}
@@ -48,7 +48,7 @@ export const UploadAnimation = ({
           width: '76px',
           height: '76px',
           borderRadius: '50%',
-          background: '#1a73e8',
+          background: '#17652f',
           color: '#ffffff',
           display: 'flex',
           alignItems: 'center',
@@ -64,7 +64,7 @@ export const UploadAnimation = ({
         <h4 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
           Processing &amp; Uploading File
         </h4>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', color: '#1e40af', background: '#dbeafe', padding: '3px 10px', borderRadius: '12px', fontWeight: '600' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', color: '#17652f', background: '#e8f2e5', padding: '3px 10px', borderRadius: '12px', fontWeight: '600' }}>
           <FileSpreadsheet size={14} />
           <span>{fileName}</span>
           {recordCount ? <span>({recordCount} Rows)</span> : null}
@@ -87,7 +87,7 @@ export const UploadAnimation = ({
           style={{
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(90deg, #3b82f6, #60a5fa, #2563eb)',
+            background: 'linear-gradient(90deg, #17652f, #4a9e68, #17652f)',
             backgroundSize: '200% 100%',
             animation: 'topBarGlow 1.2s linear infinite',
             borderRadius: '10px'
@@ -97,7 +97,7 @@ export const UploadAnimation = ({
 
       {/* Dynamic Stage Text */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.84rem', color: '#475569', fontWeight: '600' }}>
-        <RefreshCw size={14} className="spin" color="#2563eb" />
+        <RefreshCw size={14} className="spin" color="#17652f" />
         <span>{stages[stage]}</span>
       </div>
     </div>

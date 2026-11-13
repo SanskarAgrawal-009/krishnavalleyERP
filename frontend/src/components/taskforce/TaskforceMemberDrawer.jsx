@@ -55,8 +55,8 @@ export const TaskforceMemberDrawer = ({
         return {
           label: 'SUPERVISOR',
           icon: Shield,
-          bg: '#eef2ff',
-          color: '#4338ca',
+          bg: '#e8f2e5',
+          color: '#17652f',
           border: '#c7d2fe',
         };
       case 'helper':
@@ -64,9 +64,9 @@ export const TaskforceMemberDrawer = ({
         return {
           label: 'HELPER',
           icon: HardHat,
-          bg: '#eff6ff',
-          color: '#1d4ed8',
-          border: '#bfdbfe',
+          bg: '#e8f2e5',
+          color: '#17652f',
+          border: '#cde4c9',
         };
     }
   };
@@ -144,12 +144,12 @@ export const TaskforceMemberDrawer = ({
                 width: '40px',
                 height: '40px',
                 borderRadius: '10px',
-                backgroundColor: '#eff6ff',
-                color: '#2563eb',
+                backgroundColor: '#e8f2e5',
+                color: '#17652f',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: '1px solid #bfdbfe',
+                border: '1px solid #cde4c9',
                 flexShrink: 0,
               }}
             >

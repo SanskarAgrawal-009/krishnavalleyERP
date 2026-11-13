@@ -131,7 +131,7 @@ export const AgentProfilePage = () => {
 
   const tierColor = (tier) => {
     switch (tier) {
-      case 'Platinum': return { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
+      case 'Platinum': return { bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
       case 'Gold': return { bg: '#f8fafc', color: '#334155', border: '#cbd5e1' };
       case 'Silver': return { bg: '#f1f5f9', color: '#475569', border: '#cbd5e1' };
       default: return { bg: '#f9fafb', color: '#6b7280', border: '#e5e7eb' };
@@ -176,18 +176,18 @@ export const AgentProfilePage = () => {
     switch (action) {
       case 'SITE_VISIT_APPROVED':
       case 'APPROVE':
-        return { bg: '#eff6ff', color: '#1e40af', border: '#dbeafe' };
+        return { bg: '#e8f2e5', color: '#17652f', border: '#e8f2e5' };
       case 'SITE_VISIT_REJECTED':
       case 'REJECT':
         return { bg: '#f1f5f9', color: '#0f172a', border: '#e2e8f0' };
       case 'COMMISSION_CREDIT':
-        return { bg: '#eff6ff', color: '#0284c7', border: '#bfdbfe' };
+        return { bg: '#e8f2e5', color: '#0284c7', border: '#cde4c9' };
       case 'COMMISSION_DEBIT':
         return { bg: '#fff1f2', color: '#0f172a', border: '#e2e8f0' };
       case 'LEAD_SUBMITTED':
       case 'SITE_VISIT_LOGGED':
       case 'CREATE':
-        return { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
+        return { bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
       default:
         return { bg: '#f8fafc', color: '#475569', border: '#e2e8f0' };
     }
@@ -196,20 +196,20 @@ export const AgentProfilePage = () => {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'new':
-        return { label: 'New Lead', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
+        return { label: 'New Lead', bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
       case 'contacted':
         return { label: 'Contacted', bg: '#f1f5f9', color: '#334155', border: '#cbd5e1' };
       case 'site_visit_scheduled':
-        return { label: 'Visit Scheduled', bg: '#eff6ff', color: '#1e3a8a', border: '#bfdbfe' };
+        return { label: 'Visit Scheduled', bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
       case 'site_visit_completed_pending_approval':
         return { label: 'Pending Approval', bg: '#f1f5f9', color: '#334155', border: '#475569' };
       case 'site_visit_completed':
       case 'matured':
-        return { label: 'Visit Approved', bg: '#eff6ff', color: '#1e40af', border: '#bfdbfe' };
+        return { label: 'Visit Approved', bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
       case 'site_visit_rejected':
         return { label: 'Visit Rejected', bg: '#f1f5f9', color: '#0f172a', border: '#cbd5e1' };
       case 'booked':
-        return { label: 'Deal Booked', bg: '#eff6ff', color: '#1e3a8a', border: '#93c5fd' };
+        return { label: 'Deal Booked', bg: '#e8f2e5', color: '#17652f', border: '#86c8a0' };
       case 'lost':
         return { label: 'Lost / Closed', bg: '#f1f5f9', color: '#64748b', border: '#cbd5e1' };
       default:
@@ -229,7 +229,7 @@ export const AgentProfilePage = () => {
             zIndex: 9999,
             padding: '14px 22px',
             borderRadius: '12px',
-            backgroundColor: feedbackToast.type === 'error' ? '#0f172a' : '#1a73e8',
+            backgroundColor: feedbackToast.type === 'error' ? '#0f172a' : '#17652f',
             color: '#ffffff',
             fontWeight: '600',
             fontSize: '0.9rem',
@@ -253,14 +253,14 @@ export const AgentProfilePage = () => {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '6px',
-            color: '#1a73e8',
+            color: '#17652f',
             fontSize: '0.88rem',
             fontWeight: '700',
             textDecoration: 'none',
             padding: '6px 12px',
             borderRadius: '8px',
-            backgroundColor: '#eff6ff',
-            border: '1px solid #bfdbfe',
+            backgroundColor: '#e8f2e5',
+            border: '1px solid #cde4c9',
           }}
         >
           <ArrowLeft size={16} /> Back to Channel Partner Directory
@@ -290,7 +290,7 @@ export const AgentProfilePage = () => {
       {/* Agent Hero Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0284c7 100%)',
+          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
           borderRadius: '20px',
           padding: '28px 32px',
           color: '#ffffff',
@@ -308,7 +308,7 @@ export const AgentProfilePage = () => {
               width: '68px',
               height: '68px',
               borderRadius: '18px',
-              background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+              background: 'linear-gradient(135deg, #17652f, #17652f)',
               border: '3px solid rgba(255, 255, 255, 0.25)',
               display: 'flex',
               alignItems: 'center',
@@ -386,10 +386,10 @@ export const AgentProfilePage = () => {
             minWidth: '220px',
           }}
         >
-          <div style={{ fontSize: '0.75rem', color: '#93c5fd', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: '0.75rem', color: '#86c8a0', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Commission Setup
           </div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#93c5fd' }}>
+          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#86c8a0' }}>
             {ap.commissionRate || 2}% Comm Rate
           </div>
           <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
@@ -403,12 +403,12 @@ export const AgentProfilePage = () => {
         <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '18px 20px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Wallet Balance</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '2px' }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
               ₹{(ap.walletBalance || 0).toLocaleString('en-IN')}
             </div>
             <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>Available for payout</div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Wallet size={22} />
           </div>
         </div>
@@ -421,7 +421,7 @@ export const AgentProfilePage = () => {
             </div>
             <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>{commissions.length} payouts logged</div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <TrendingUp size={22} />
           </div>
         </div>
@@ -436,7 +436,7 @@ export const AgentProfilePage = () => {
               {leads.filter(l => l.status === 'site_visit_completed_pending_approval').length} awaiting review
             </div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#faf5ff', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#faf5ff', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Users size={22} />
           </div>
         </div>
@@ -465,8 +465,8 @@ export const AgentProfilePage = () => {
             padding: '12px 4px',
             backgroundColor: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'leads' ? '2px solid #1a73e8' : '2px solid transparent',
-            color: activeTab === 'leads' ? '#1a73e8' : '#64748b',
+            borderBottom: activeTab === 'leads' ? '2px solid #17652f' : '2px solid transparent',
+            color: activeTab === 'leads' ? '#17652f' : '#64748b',
             fontWeight: activeTab === 'leads' ? '700' : '500',
             fontSize: '0.95rem',
             cursor: 'pointer',
@@ -486,8 +486,8 @@ export const AgentProfilePage = () => {
             padding: '12px 4px',
             backgroundColor: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'visits' ? '2px solid #1a73e8' : '2px solid transparent',
-            color: activeTab === 'visits' ? '#1a73e8' : '#64748b',
+            borderBottom: activeTab === 'visits' ? '2px solid #17652f' : '2px solid transparent',
+            color: activeTab === 'visits' ? '#17652f' : '#64748b',
             fontWeight: activeTab === 'visits' ? '700' : '500',
             fontSize: '0.95rem',
             cursor: 'pointer',
@@ -507,8 +507,8 @@ export const AgentProfilePage = () => {
             padding: '12px 4px',
             backgroundColor: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'commissions' ? '2px solid #1a73e8' : '2px solid transparent',
-            color: activeTab === 'commissions' ? '#1a73e8' : '#64748b',
+            borderBottom: activeTab === 'commissions' ? '2px solid #17652f' : '2px solid transparent',
+            color: activeTab === 'commissions' ? '#17652f' : '#64748b',
             fontWeight: activeTab === 'commissions' ? '700' : '500',
             fontSize: '0.95rem',
             cursor: 'pointer',
@@ -528,8 +528,8 @@ export const AgentProfilePage = () => {
             padding: '12px 4px',
             backgroundColor: 'transparent',
             border: 'none',
-            borderBottom: activeTab === 'audit' ? '2px solid #1a73e8' : '2px solid transparent',
-            color: activeTab === 'audit' ? '#1a73e8' : '#64748b',
+            borderBottom: activeTab === 'audit' ? '2px solid #17652f' : '2px solid transparent',
+            color: activeTab === 'audit' ? '#17652f' : '#64748b',
             fontWeight: activeTab === 'audit' ? '700' : '500',
             fontSize: '0.95rem',
             cursor: 'pointer',
@@ -622,7 +622,7 @@ export const AgentProfilePage = () => {
           >
             {loading ? (
               <div style={{ padding: '60px 0', textAlign: 'center' }}>
-                <div style={{ width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#1a73e8', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 10px' }} />
+                <div style={{ width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#17652f', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 10px' }} />
                 <span style={{ color: '#64748b', fontSize: '0.85rem' }}>Loading agent's leads...</span>
               </div>
             ) : filteredLeads.length === 0 ? (
@@ -662,7 +662,7 @@ export const AgentProfilePage = () => {
 
                           <td style={{ padding: '14px 18px' }}>
                             <div style={{ fontWeight: '600', color: '#334155' }}>{lead.requirement || '2BHK Apartment'}</div>
-                            <div style={{ fontSize: '0.74rem', color: '#1a73e8', fontWeight: '700', marginTop: '2px' }}>
+                            <div style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '700', marginTop: '2px' }}>
                               ₹{(lead.budget || 4500000).toLocaleString('en-IN')}
                             </div>
                           </td>
@@ -705,7 +705,7 @@ export const AgentProfilePage = () => {
                                 </span>
                               ) : (
                                 <div>
-                                  <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#1e40af' }}>
+                                  <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#17652f' }}>
                                     {meta.daysRemainingInMaturity || 5} day{meta.daysRemainingInMaturity > 1 ? 's' : ''} left
                                   </div>
                                   <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
@@ -739,7 +739,7 @@ export const AgentProfilePage = () => {
                                   style={{
                                     padding: '5px 12px',
                                     borderRadius: '8px',
-                                    backgroundColor: '#1a73e8',
+                                    backgroundColor: '#17652f',
                                     color: '#ffffff',
                                     border: 'none',
                                     fontSize: '0.74rem',
@@ -871,7 +871,7 @@ export const AgentProfilePage = () => {
                       return (
                         <tr key={visit._id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '14px 18px' }}>
-                            <div style={{ fontWeight: '700', color: '#1a73e8' }}>{visit.visitCode}</div>
+                            <div style={{ fontWeight: '700', color: '#17652f' }}>{visit.visitCode}</div>
                             <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
                               {new Date(visit.visitDate).toLocaleDateString('en-IN', {
                                 day: '2-digit',
@@ -906,9 +906,9 @@ export const AgentProfilePage = () => {
                                 style={{
                                   padding: '4px 8px',
                                   borderRadius: '6px',
-                                  backgroundColor: '#eff6ff',
-                                  border: '1px solid #bfdbfe',
-                                  color: '#1d4ed8',
+                                  backgroundColor: '#e8f2e5',
+                                  border: '1px solid #cde4c9',
+                                  color: '#17652f',
                                   fontSize: '0.72rem',
                                   fontWeight: '700',
                                   cursor: 'pointer',
@@ -931,9 +931,9 @@ export const AgentProfilePage = () => {
                                 borderRadius: '14px',
                                 fontSize: '0.72rem',
                                 fontWeight: '700',
-                                backgroundColor: isApproved ? '#eff6ff' : isRejected ? '#f1f5f9' : '#f1f5f9',
-                                color: isApproved ? '#1e40af' : isRejected ? '#0f172a' : '#334155',
-                                border: isApproved ? '1px solid #bfdbfe' : isRejected ? '1px solid #cbd5e1' : '1px solid #cbd5e1',
+                                backgroundColor: isApproved ? '#e8f2e5' : isRejected ? '#f1f5f9' : '#f1f5f9',
+                                color: isApproved ? '#17652f' : isRejected ? '#0f172a' : '#334155',
+                                border: isApproved ? '1px solid #cde4c9' : isRejected ? '1px solid #cbd5e1' : '1px solid #cbd5e1',
                               }}
                             >
                               {isApproved ? 'Approved' : isRejected ? 'Rejected' : 'Pending Approval'}
@@ -964,7 +964,7 @@ export const AgentProfilePage = () => {
                                 style={{
                                   padding: '6px 14px',
                                   borderRadius: '8px',
-                                  backgroundColor: '#1a73e8',
+                                  backgroundColor: '#17652f',
                                   color: '#ffffff',
                                   border: 'none',
                                   fontSize: '0.74rem',
@@ -1050,8 +1050,8 @@ export const AgentProfilePage = () => {
                                 borderRadius: '6px',
                                 fontSize: '0.72rem',
                                 fontWeight: '800',
-                                backgroundColor: isDebit ? '#f1f5f9' : '#eff6ff',
-                                color: isDebit ? '#0f172a' : '#1e40af',
+                                backgroundColor: isDebit ? '#f1f5f9' : '#e8f2e5',
+                                color: isDebit ? '#0f172a' : '#17652f',
                               }}
                             >
                               {isDebit ? '▼ DEBIT' : '▲ CREDIT'}
@@ -1071,7 +1071,7 @@ export const AgentProfilePage = () => {
                             </div>
                           </td>
 
-                          <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: '800', fontSize: '0.92rem', color: isDebit ? '#0f172a' : '#1a73e8' }}>
+                          <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: '800', fontSize: '0.92rem', color: isDebit ? '#0f172a' : '#17652f' }}>
                             {isDebit ? '-' : '+'}₹{(comm.calculatedAmount || 0).toLocaleString('en-IN')}
                           </td>
 
@@ -1080,8 +1080,8 @@ export const AgentProfilePage = () => {
                               style={{
                                 padding: '2px 8px',
                                 borderRadius: '4px',
-                                backgroundColor: isDebit ? '#f1f5f9' : '#eff6ff',
-                                color: isDebit ? '#0f172a' : '#1a73e8',
+                                backgroundColor: isDebit ? '#f1f5f9' : '#e8f2e5',
+                                color: isDebit ? '#0f172a' : '#17652f',
                                 fontSize: '0.72rem',
                                 fontWeight: '700',
                               }}
@@ -1262,7 +1262,7 @@ export const AgentProfilePage = () => {
           >
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <History size={22} style={{ color: '#1a73e8' }} />
+                <History size={22} style={{ color: '#17652f' }} />
                 <div>
                   <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>
                     Lead Activity Track & Timeline
@@ -1291,13 +1291,13 @@ export const AgentProfilePage = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700' }}>BUDGET</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1a73e8' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f' }}>
                     ₹{(selectedLeadForTimeline.budget || 4500000).toLocaleString('en-IN')}
                   </div>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700' }}>REQUIREMENT</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1a73e8' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f' }}>
                     {selectedLeadForTimeline.requirement || '2BHK'}
                   </div>
                 </div>
@@ -1324,7 +1324,7 @@ export const AgentProfilePage = () => {
                           width: '10px',
                           height: '10px',
                           borderRadius: '50%',
-                          backgroundColor: '#1a73e8',
+                          backgroundColor: '#17652f',
                         }}
                       />
                       <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '600' }}>
@@ -1332,7 +1332,7 @@ export const AgentProfilePage = () => {
                           day: '2-digit',
                           month: 'short',
                           year: 'numeric',
-                        })} • Mode: <strong style={{ color: '#1e293b' }}>{fu.mode}</strong> • Status: <strong style={{ color: fu.status === 'completed' ? '#1e40af' : '#334155' }}>{fu.status}</strong>
+                        })} • Mode: <strong style={{ color: '#1e293b' }}>{fu.mode}</strong> • Status: <strong style={{ color: fu.status === 'completed' ? '#17652f' : '#334155' }}>{fu.status}</strong>
                       </div>
                       <div style={{ fontSize: '0.84rem', color: '#1e293b', marginTop: '2px', backgroundColor: '#f8fafc', padding: '8px 12px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
                         {fu.notes || 'Activity recorded.'}
@@ -1349,7 +1349,7 @@ export const AgentProfilePage = () => {
                 style={{
                   padding: '8px 18px',
                   borderRadius: '8px',
-                  backgroundColor: '#334155',
+                  backgroundColor: '#596372',
                   color: '#ffffff',
                   border: 'none',
                   fontSize: '0.84rem',

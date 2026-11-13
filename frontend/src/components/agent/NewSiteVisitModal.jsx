@@ -176,7 +176,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
         <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Sparkles size={14} color="#1a73e8" /> 1. Enter Agent Code *
+              <Sparkles size={14} color="#17652f" /> 1. Enter Agent Code *
             </label>
             <span style={{ fontSize: '0.7rem', color: '#64748b' }}>e.g. AGT-101, KV-AGT-001</span>
           </div>
@@ -201,7 +201,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
                 fontWeight: '700',
                 fontSize: '0.9rem',
                 textTransform: 'uppercase',
-                borderColor: agentInfo ? '#1a73e8' : agentError ? '#0f172a' : '#cbd5e1'
+                borderColor: agentInfo ? '#17652f' : agentError ? '#0f172a' : '#cbd5e1'
               }}
             />
             <button
@@ -210,7 +210,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
               disabled={lookingUpAgent || !agentCode.trim()}
               style={{
                 padding: '0 16px',
-                background: '#1a73e8',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '6px',
@@ -229,17 +229,17 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
 
           {/* AGENT AUTO-LOOKUP SUCCESS BADGE */}
           {agentInfo && (
-            <div style={{ marginTop: '10px', padding: '10px 12px', background: '#eff6ff', borderRadius: '6px', border: '1px solid #dbeafe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ marginTop: '10px', padding: '10px 12px', background: '#e8f2e5', borderRadius: '6px', border: '1px solid #e8f2e5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontWeight: '800', color: '#1e40af', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={15} color="#1a73e8" /> {agentInfo.agentName} ({agentInfo.agentCode})
+                <div style={{ fontWeight: '800', color: '#17652f', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={15} color="#17652f" /> {agentInfo.agentName} ({agentInfo.agentCode})
                 </div>
-                <div style={{ fontSize: '0.74rem', color: '#1e40af', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.74rem', color: '#17652f', marginTop: '2px' }}>
                   {agentInfo.agencyName} • {agentInfo.phone}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', background: '#eff6ff', color: '#001a41', borderRadius: '12px', fontWeight: '800' }}>
+                <span style={{ fontSize: '0.7rem', padding: '2px 8px', background: '#e8f2e5', color: '#001a41', borderRadius: '12px', fontWeight: '800' }}>
                   {agentInfo.commissionType === 'percentage' ? `${agentInfo.commissionRate}% Commission Rate` : `₹${agentInfo.commissionRate} Flat Rate`}
                 </span>
               </div>
@@ -353,9 +353,9 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
                         borderRadius: '4px',
                         fontSize: '0.72rem',
                         fontWeight: '700',
-                        border: isSelected ? '1px solid #1a73e8' : '1px solid #cbd5e1',
-                        background: isSelected ? '#e8f0fe' : '#ffffff',
-                        color: isSelected ? '#1a73e8' : '#334155',
+                        border: isSelected ? '1px solid #17652f' : '1px solid #cbd5e1',
+                        background: isSelected ? '#e8f2e5' : '#ffffff',
+                        color: isSelected ? '#17652f' : '#334155',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -400,7 +400,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
                 cursor: 'pointer'
               }}
             >
-              <Upload size={14} color="#1a73e8" /> {proofFile ? 'Change Photo' : 'Upload Party Selfie / Geo-Photo Proof'}
+              <Upload size={14} color="#17652f" /> {proofFile ? 'Change Photo' : 'Upload Party Selfie / Geo-Photo Proof'}
             </label>
 
             {proofPreview && (
@@ -454,7 +454,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
             disabled={submitting || !agentInfo}
             style={{
               padding: '8px 20px',
-              background: '#1a73e8',
+              background: '#17652f',
               border: 'none',
               borderRadius: '6px',
               fontWeight: '800',

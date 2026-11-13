@@ -343,7 +343,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)',
+            background: 'linear-gradient(135deg, #17652f, #17652f)',
             color: '#ffffff'
           }}
         >
@@ -365,7 +365,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
               <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800' }}>
                 Upload Passbook Excel & Auto-Calculate Ledgers
               </h2>
-              <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: '#bfdbfe' }}>
+              <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: '#cde4c9' }}>
                 Auto-computes paid months from Total Paid ÷ Net Monthly Rent and generates all paid ledger passbook entries
               </p>
             </div>
@@ -399,19 +399,19 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
               justifyContent: 'space-between',
               padding: '14px 18px',
               borderRadius: '10px',
-              backgroundColor: '#eff6ff',
-              border: '1px solid #bfdbfe',
+              backgroundColor: '#e8f2e5',
+              border: '1px solid #cde4c9',
               flexWrap: 'wrap',
               gap: '12px'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Sparkles size={18} color="#2563eb" />
+              <Sparkles size={18} color="#17652f" />
               <div>
-                <span style={{ fontSize: '0.86rem', fontWeight: '700', color: '#1e3a8a' }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: '700', color: '#17652f' }}>
                   Smart Month Calculation Formula:
                 </span>
-                <span style={{ fontSize: '0.82rem', color: '#3b82f6', marginLeft: '6px' }}>
+                <span style={{ fontSize: '0.82rem', color: '#17652f', marginLeft: '6px' }}>
                   Paid Months = Total Paid ÷ Monthly Net Rent • Remaining months up to Tenure will be scheduled as Upcoming.
                 </span>
               </div>
@@ -425,8 +425,8 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                 gap: '6px',
                 padding: '8px 14px',
                 backgroundColor: '#ffffff',
-                border: '1px solid #2563eb',
-                color: '#2563eb',
+                border: '1px solid #17652f',
+                color: '#17652f',
                 borderRadius: '8px',
                 fontSize: '0.82rem',
                 fontWeight: '700',
@@ -447,11 +447,11 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               style={{
-                border: `2px dashed ${dragActive ? '#2563eb' : '#cbd5e1'}`,
+                border: `2px dashed ${dragActive ? '#17652f' : '#cbd5e1'}`,
                 borderRadius: '12px',
                 padding: '40px 20px',
                 textAlign: 'center',
-                backgroundColor: dragActive ? '#f8faff' : '#f8fafc',
+                backgroundColor: dragActive ? '#faf9f6' : '#f8fafc',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease'
               }}
@@ -468,8 +468,8 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                   width: '56px',
                   height: '56px',
                   borderRadius: '50%',
-                  backgroundColor: '#dbeafe',
-                  color: '#2563eb',
+                  backgroundColor: '#e8f2e5',
+                  color: '#17652f',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -535,7 +535,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                       <th style={{ padding: '10px 12px', fontWeight: '700', color: '#475569' }}>Net Rent / Mo</th>
                       <th style={{ padding: '10px 12px', fontWeight: '700', color: '#475569' }}>TDS</th>
                       <th style={{ padding: '10px 12px', fontWeight: '700', color: '#475569' }}>Total Paid</th>
-                      <th style={{ padding: '10px 12px', fontWeight: '700', color: '#1e40af' }}>
+                      <th style={{ padding: '10px 12px', fontWeight: '700', color: '#17652f' }}>
                         Paid Months
                       </th>
                       <th style={{ padding: '10px 12px', fontWeight: '700', color: '#334155' }}>
@@ -583,7 +583,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                             <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>None</span>
                           )}
                         </td>
-                        <td style={{ padding: '10px 12px', fontWeight: '700', color: '#1a73e8' }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '700', color: '#17652f' }}>
                           {formatINR(row.totalPaid)}
                         </td>
                         <td style={{ padding: '10px 12px' }}>
@@ -594,8 +594,8 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                               gap: '4px',
                               padding: '2px 8px',
                               borderRadius: '6px',
-                              background: '#eff6ff',
-                              color: '#1e40af',
+                              background: '#e8f2e5',
+                              color: '#17652f',
                               fontWeight: '800'
                             }}
                           >
@@ -635,19 +635,19 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
           {uploadSummary && (
             <div
               style={{
-                backgroundColor: '#eff6ff',
-                border: '1px solid #dbeafe',
+                backgroundColor: '#e8f2e5',
+                border: '1px solid #e8f2e5',
                 borderRadius: '12px',
                 padding: '20px'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <CheckCircle2 size={24} color="#1a73e8" />
+                <CheckCircle2 size={24} color="#17652f" />
                 <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#001a41' }}>
                   Passbook Generation Completed!
                 </h4>
               </div>
-              <p style={{ margin: '0 0 14px', fontSize: '0.85rem', color: '#1e40af' }}>
+              <p style={{ margin: '0 0 14px', fontSize: '0.85rem', color: '#17652f' }}>
                 Successfully updated <strong>{uploadSummary.updatedCount}</strong> rental customer passbooks with all calculated paid and upcoming tenure entries.
               </p>
 
@@ -707,7 +707,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                   padding: '8px 22px',
                   borderRadius: '8px',
                   border: 'none',
-                  backgroundColor: submitting ? '#93c5fd' : '#2563eb',
+                  backgroundColor: submitting ? '#86c8a0' : '#17652f',
                   color: '#ffffff',
                   fontSize: '0.84rem',
                   fontWeight: '800',

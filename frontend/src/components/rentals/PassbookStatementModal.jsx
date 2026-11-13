@@ -165,7 +165,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'linear-gradient(135deg, #0f172a, #1e293b)',
+            background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
             color: '#ffffff'
           }}
         >
@@ -175,7 +175,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                 width: '46px',
                 height: '46px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+                background: 'linear-gradient(135deg, #17652f, #17652f)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -193,7 +193,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                   style={{
                     padding: '2px 8px',
                     borderRadius: '6px',
-                    backgroundColor: '#3b82f6',
+                    backgroundColor: '#17652f',
                     fontSize: '0.75rem',
                     fontWeight: '800'
                   }}
@@ -216,7 +216,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '8px',
-                backgroundColor: '#2563eb',
+                backgroundColor: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.82rem',
@@ -235,7 +235,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '8px',
-                backgroundColor: '#1a73e8',
+                backgroundColor: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.82rem',
@@ -291,7 +291,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
             <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>
               Monthly Net Disbursable
             </span>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#2563eb' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f' }}>
               {formatINR(ledger.netRent)}
             </div>
             <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -306,19 +306,19 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
             <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>
               {formatINR(ledger.totalCommitment || ledger.totalCommitmentGross || (ledger.grossRent * ledger.tenureMonths))}
             </div>
-            <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '600' }}>
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>
               Rent × {ledger.tenureMonths} Mos (Gross)
             </span>
           </div>
 
           <div>
-            <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', textTransform: 'uppercase' }}>
               Total Paid to Date
             </span>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1a73e8' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f' }}>
               {formatINR(ledger.totalPaid)}
             </div>
-            <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
               {ledger.paidCount} of {ledger.tenureMonths} Months Disbursed
             </span>
           </div>
@@ -351,7 +351,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
               style={{
                 width: `${ledger.completionPercentage}%`,
                 height: '100%',
-                backgroundColor: ledger.completionPercentage === 100 ? '#1a73e8' : '#2563eb',
+                backgroundColor: ledger.completionPercentage === 100 ? '#17652f' : '#17652f',
                 transition: 'width 0.4s ease'
               }}
             />
@@ -381,9 +381,9 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                 style={{
                   padding: '6px 14px',
                   borderRadius: '20px',
-                  border: filterStatus === tab.id ? '1px solid #2563eb' : '1px solid #e2e8f0',
-                  backgroundColor: filterStatus === tab.id ? '#eff6ff' : '#ffffff',
-                  color: filterStatus === tab.id ? '#2563eb' : '#64748b',
+                  border: filterStatus === tab.id ? '1px solid #17652f' : '1px solid #e2e8f0',
+                  backgroundColor: filterStatus === tab.id ? '#e8f2e5' : '#ffffff',
+                  color: filterStatus === tab.id ? '#17652f' : '#64748b',
                   fontSize: '0.8rem',
                   fontWeight: '700',
                   cursor: 'pointer'
@@ -433,7 +433,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                   <td style={{ padding: '12px 10px', color: '#475569' }}>
                     {formatDate(e.dueDate)}
                   </td>
-                  <td style={{ padding: '12px 10px', color: e.paymentDate ? '#1e40af' : '#94a3b8', fontWeight: e.paymentDate ? '600' : '400' }}>
+                  <td style={{ padding: '12px 10px', color: e.paymentDate ? '#17652f' : '#94a3b8', fontWeight: e.paymentDate ? '600' : '400' }}>
                     {formatDate(e.paymentDate)}
                   </td>
                   <td style={{ padding: '12px 10px' }}>
@@ -459,10 +459,10 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                   <td style={{ padding: '12px 10px', textAlign: 'right', color: '#0f172a' }}>
                     {e.tdsDeducted > 0 ? `-${formatINR(e.tdsDeducted)}` : '₹0'}
                   </td>
-                  <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: '800', color: e.status === 'paid' ? '#1a73e8' : '#0f172a' }}>
+                  <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: '800', color: e.status === 'paid' ? '#17652f' : '#0f172a' }}>
                     {formatINR(e.netAmountPaid)}
                   </td>
-                  <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: '700', color: '#2563eb' }}>
+                  <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: '700', color: '#17652f' }}>
                     {formatINR(e.cumulativePaid)}
                   </td>
                   <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: '700', color: '#64748b' }}>
@@ -477,8 +477,8 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                           gap: '3px',
                           padding: '3px 8px',
                           borderRadius: '6px',
-                          backgroundColor: '#eff6ff',
-                          color: '#1e40af',
+                          backgroundColor: '#e8f2e5',
+                          color: '#17652f',
                           fontWeight: '800',
                           fontSize: '0.74rem'
                         }}
@@ -534,9 +534,9 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                         style={{
                           padding: '4px 10px',
                           borderRadius: '6px',
-                          border: '1px solid #2563eb',
+                          border: '1px solid #17652f',
                           backgroundColor: '#ffffff',
-                          color: '#2563eb',
+                          color: '#17652f',
                           fontSize: '0.74rem',
                           fontWeight: '700',
                           cursor: 'pointer'
@@ -545,7 +545,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                         Disburse
                       </button>
                     ) : (
-                      <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
                         Settled
                       </span>
                     )}
@@ -668,7 +668,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
             </div>
 
             <p style={{ margin: '0 0 16px', fontSize: '0.82rem', color: '#475569' }}>
-              Amount: <strong style={{ color: '#1e40af' }}>{formatINR(ledger.netRent)}</strong> for Flat {ledger.flatNumber} ({ledger.ownerName})
+              Amount: <strong style={{ color: '#17652f' }}>{formatINR(ledger.netRent)}</strong> for Flat {ledger.flatNumber} ({ledger.ownerName})
             </p>
 
             <form onSubmit={handleDisburseSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -725,7 +725,7 @@ export const PassbookStatementModal = ({ isOpen, onClose, ledger, onRefresh }) =
                 </button>
                 <button
                   type="submit"
-                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', background: '#1a73e8', color: '#ffffff', cursor: 'pointer', fontWeight: '800' }}
+                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', background: '#17652f', color: '#ffffff', cursor: 'pointer', fontWeight: '800' }}
                 >
                   Confirm Paid
                 </button>

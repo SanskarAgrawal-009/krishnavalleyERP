@@ -64,7 +64,7 @@ export const TopLoadingBar = () => {
         style={{
           width: `${progress}%`,
           height: '100%',
-          background: 'linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa, #93c5fd)',
+          background: 'linear-gradient(90deg, #17652f, #17652f, #4a9e68, #86c8a0)',
           backgroundSize: '200% 100%',
           boxShadow: '0 0 10px rgba(59, 130, 246, 0.8), 0 0 4px rgba(96, 165, 250, 0.6)',
           transition: progress === 100 ? 'width 0.15s ease-out, opacity 0.25s ease 0.15s' : 'width 0.35s ease-out',

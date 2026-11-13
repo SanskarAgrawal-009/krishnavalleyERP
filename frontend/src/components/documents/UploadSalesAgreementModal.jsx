@@ -134,7 +134,7 @@ export const UploadSalesAgreementModal = ({ isOpen, onClose, onUpload, onSubmit 
               borderRadius: '6px',
               fontSize: '0.82rem',
               cursor: 'pointer',
-              color: file ? '#1a73e8' : '#4b5563',
+              color: file ? '#17652f' : '#4b5563',
               fontWeight: '500'
             }}
           >
@@ -147,7 +147,7 @@ export const UploadSalesAgreementModal = ({ isOpen, onClose, onUpload, onSubmit 
           <button type="button" onClick={onClose} style={{ padding: '8px 16px', background: '#f8f9fa', color: '#374151', borderRadius: '6px', border: '1px solid #dadce0', cursor: 'pointer' }}>
             Cancel
           </button>
-          <button type="submit" disabled={uploading || !file} style={{ padding: '8px 20px', background: 'linear-gradient(135deg, #1a73e8, #0d47a1)', color: '#ffffff', fontWeight: '700', borderRadius: '6px', cursor: 'pointer', border: 'none' }}>
+          <button type="submit" disabled={uploading || !file} style={{ padding: '8px 20px', background: 'linear-gradient(135deg, #17652f, #17652f)', color: '#ffffff', fontWeight: '700', borderRadius: '6px', cursor: 'pointer', border: 'none' }}>
             {uploading ? 'Uploading to S3...' : 'Upload Sales Agreement to S3'}
           </button>
         </div>

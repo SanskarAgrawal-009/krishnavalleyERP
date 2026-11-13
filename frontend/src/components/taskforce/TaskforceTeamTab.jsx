@@ -67,7 +67,7 @@ export const TaskforceTeamTab = ({
   const [newDeptName, setNewDeptName] = useState('');
   const [newDeptCode, setNewDeptCode] = useState('');
   const [newDeptDesc, setNewDeptDesc] = useState('');
-  const [newDeptColor, setNewDeptColor] = useState('#2563eb');
+  const [newDeptColor, setNewDeptColor] = useState('#17652f');
   const [newDeptHeadId, setNewDeptHeadId] = useState('');
   const [isSavingDept, setIsSavingDept] = useState(false);
 
@@ -126,7 +126,7 @@ export const TaskforceTeamTab = ({
           name,
           code: name.substring(0, 4).toUpperCase(),
           description: `${name} operational division`,
-          color: '#2563eb',
+          color: '#17652f',
         }));
         setDepartments(constructed);
       }
@@ -298,7 +298,7 @@ export const TaskforceTeamTab = ({
   }, [departments, selectedDept]);
 
   // Department color palette options
-  const colorOptions = ['#2563eb', '#0284c7', '#059669', '#d97706', '#dc2626', '#7c3aed', '#475569'];
+  const colorOptions = ['#17652f', '#0284c7', '#059669', '#d97706', '#dc2626', '#17652f', '#475569'];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
@@ -457,17 +457,17 @@ export const TaskforceTeamTab = ({
               label: 'Site Supervisors',
               value: members.filter((m) => m.hierarchyLevel === 'supervisor').length,
               faIcon: 'fa-solid fa-user-gear',
-              color: '#4f46e5',
-              bg: '#eef2ff',
+              color: '#17652f',
+              bg: '#e8f2e5',
               border: '#c7d2fe',
             },
             {
               label: 'Field Helpers',
               value: members.filter((m) => m.hierarchyLevel === 'helper').length,
               faIcon: 'fa-solid fa-person-digging',
-              color: '#2563eb',
-              bg: '#eff6ff',
-              border: '#bfdbfe',
+              color: '#17652f',
+              bg: '#e8f2e5',
+              border: '#cde4c9',
             },
           ].map((item, idx) => (
             <div
@@ -843,8 +843,8 @@ export const TaskforceTeamTab = ({
           {[
             { id: 'all', label: `All Tiers (${departmentFilteredMembers.length})`, faIcon: 'fa-solid fa-layer-group', color: '#059669' },
             { id: 'head', label: `Department Heads (${departmentFilteredMembers.filter((m) => m.hierarchyLevel === 'head').length})`, faIcon: 'fa-solid fa-user-tie', color: '#0891b2' },
-            { id: 'supervisor', label: `Site Supervisors (${departmentFilteredMembers.filter((m) => m.hierarchyLevel === 'supervisor').length})`, faIcon: 'fa-solid fa-user-gear', color: '#4f46e5' },
-            { id: 'helper', label: `Field Helpers (${departmentFilteredMembers.filter((m) => m.hierarchyLevel === 'helper').length})`, faIcon: 'fa-solid fa-person-digging', color: '#2563eb' },
+            { id: 'supervisor', label: `Site Supervisors (${departmentFilteredMembers.filter((m) => m.hierarchyLevel === 'supervisor').length})`, faIcon: 'fa-solid fa-user-gear', color: '#17652f' },
+            { id: 'helper', label: `Field Helpers (${departmentFilteredMembers.filter((m) => m.hierarchyLevel === 'helper').length})`, faIcon: 'fa-solid fa-person-digging', color: '#17652f' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -1017,7 +1017,7 @@ export const TaskforceTeamTab = ({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i className="fa-solid fa-user-gear" style={{ fontSize: '18px', color: '#4f46e5' }} />
+                  <i className="fa-solid fa-user-gear" style={{ fontSize: '18px', color: '#17652f' }} />
                   <span style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0f172a' }}>
                     Field &amp; Site Supervisors
                   </span>
@@ -1027,8 +1027,8 @@ export const TaskforceTeamTab = ({
                       fontWeight: '800',
                       padding: '2px 8px',
                       borderRadius: '12px',
-                      background: '#eef2ff',
-                      color: '#4f46e5',
+                      background: '#e8f2e5',
+                      color: '#17652f',
                       border: '1px solid #c7d2fe',
                     }}
                   >
@@ -1058,8 +1058,8 @@ export const TaskforceTeamTab = ({
                   <button
                     onClick={() => setIsAddMemberModalOpen(true)}
                     style={{
-                      background: '#eef2ff',
-                      color: '#4f46e5',
+                      background: '#e8f2e5',
+                      color: '#17652f',
                       border: '1px solid #c7d2fe',
                       padding: '5px 10px',
                       borderRadius: '6px',
@@ -1092,7 +1092,7 @@ export const TaskforceTeamTab = ({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i className="fa-solid fa-person-digging" style={{ fontSize: '18px', color: '#2563eb' }} />
+                  <i className="fa-solid fa-person-digging" style={{ fontSize: '18px', color: '#17652f' }} />
                   <span style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0f172a' }}>
                     Field Helpers &amp; Technicians
                   </span>
@@ -1102,9 +1102,9 @@ export const TaskforceTeamTab = ({
                       fontWeight: '800',
                       padding: '2px 8px',
                       borderRadius: '12px',
-                      background: '#eff6ff',
-                      color: '#2563eb',
-                      border: '1px solid #bfdbfe',
+                      background: '#e8f2e5',
+                      color: '#17652f',
+                      border: '1px solid #cde4c9',
                     }}
                   >
                     LEVEL 1 • GROUND CREW ({helpersList.length})
@@ -1133,9 +1133,9 @@ export const TaskforceTeamTab = ({
                   <button
                     onClick={() => setIsAddMemberModalOpen(true)}
                     style={{
-                      background: '#eff6ff',
-                      color: '#2563eb',
-                      border: '1px solid #bfdbfe',
+                      background: '#e8f2e5',
+                      color: '#17652f',
+                      border: '1px solid #cde4c9',
                       padding: '5px 10px',
                       borderRadius: '6px',
                       fontSize: '0.72rem',
@@ -1556,9 +1556,9 @@ export const TaskforceTeamTab = ({
     const isSupervisor = level === 'supervisor';
     const isHelper = level === 'helper';
 
-    const tierBadgeBg = isHead ? '#ecfeff' : isSupervisor ? '#eef2ff' : '#eff6ff';
-    const tierBadgeColor = isHead ? '#0e7490' : isSupervisor ? '#4338ca' : '#1d4ed8';
-    const tierBadgeBorder = isHead ? '#a5f3fc' : isSupervisor ? '#c7d2fe' : '#bfdbfe';
+    const tierBadgeBg = isHead ? '#ecfeff' : isSupervisor ? '#e8f2e5' : '#e8f2e5';
+    const tierBadgeColor = isHead ? '#0e7490' : isSupervisor ? '#17652f' : '#17652f';
+    const tierBadgeBorder = isHead ? '#a5f3fc' : isSupervisor ? '#c7d2fe' : '#cde4c9';
 
     return (
       <div
@@ -1586,8 +1586,8 @@ export const TaskforceTeamTab = ({
                 background: isHead
                   ? 'linear-gradient(135deg, #0891b2, #0e7490)'
                   : isSupervisor
-                  ? 'linear-gradient(135deg, #4f46e5, #4338ca)'
-                  : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                  ? 'linear-gradient(135deg, #17652f, #17652f)'
+                  : 'linear-gradient(135deg, #17652f, #17652f)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
@@ -1668,7 +1668,7 @@ export const TaskforceTeamTab = ({
             <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
               <i className="fa-solid fa-list-check" style={{ fontSize: '9px' }} /> Active
             </div>
-            <div style={{ fontSize: '1rem', fontWeight: '800', color: '#2563eb', marginTop: '2px' }}>
+            <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
               {m.stats?.activeTasks || 0}
             </div>
           </div>
@@ -1684,7 +1684,7 @@ export const TaskforceTeamTab = ({
             <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
               <i className="fa-solid fa-camera" style={{ fontSize: '9px' }} /> Proofs
             </div>
-            <div style={{ fontSize: '1rem', fontWeight: '800', color: '#7c3aed', marginTop: '2px' }}>
+            <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
               {m.stats?.uploadCount || 0}
             </div>
           </div>
@@ -1732,9 +1732,9 @@ export const TaskforceTeamTab = ({
               gap: '6px',
               padding: '6px 12px',
               borderRadius: '7px',
-              background: '#eff6ff',
-              color: '#1d4ed8',
-              border: '1px solid #bfdbfe',
+              background: '#e8f2e5',
+              color: '#17652f',
+              border: '1px solid #cde4c9',
               fontSize: '0.74rem',
               fontWeight: '700',
               cursor: 'pointer',

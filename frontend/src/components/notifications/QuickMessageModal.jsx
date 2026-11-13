@@ -304,12 +304,12 @@ export const QuickMessageModal = ({
               />
               WhatsApp
             </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', color: '#60a5fa', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', color: '#4a9e68', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={channels.sms}
                 onChange={(e) => setChannels({ ...channels, sms: e.target.checked })}
-                style={{ accentColor: '#3b82f6' }}
+                style={{ accentColor: '#17652f' }}
               />
               SMS
             </label>
@@ -325,7 +325,7 @@ export const QuickMessageModal = ({
           </div>
 
           {result && (
-            <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#1a73e8', padding: '8px 12px', borderRadius: '4px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#17652f', padding: '8px 12px', borderRadius: '4px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <CheckCircle size={14} /> Message sent successfully!
             </div>
           )}
@@ -361,10 +361,10 @@ export const QuickMessageModal = ({
                 rel="noopener noreferrer"
                 style={{
                   padding: '8px 14px',
-                  background: '#eff6ff',
-                  border: '1px solid #1a73e8',
+                  background: '#e8f2e5',
+                  border: '1px solid #17652f',
                   borderRadius: 'var(--radius-sm)',
-                  color: '#1a73e8',
+                  color: '#17652f',
                   fontSize: '0.8rem',
                   fontWeight: '700',
                   textDecoration: 'none',

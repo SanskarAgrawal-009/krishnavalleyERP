@@ -42,11 +42,11 @@ export const QuickStatusModal = ({
 
   const statusWorkflow = [
     { value: 'new', label: 'New Lead', color: '#64748b', desc: 'Fresh inquiry awaiting first contact' },
-    { value: 'contacted', label: 'Contacted', color: '#2563eb', desc: 'Spoke with buyer / requirements gathered' },
+    { value: 'contacted', label: 'Contacted', color: '#17652f', desc: 'Spoke with buyer / requirements gathered' },
     { value: 'site_visit_scheduled', label: 'Site Visit Scheduled', color: '#334155', desc: 'Tour date and time fixed' },
-    { value: 'site_visit_completed', label: 'Site Visit Completed', color: '#1a73e8', desc: 'Buyer visited Krishna Valley site' },
-    { value: 'negotiation', label: 'In Negotiation', color: '#2563eb', desc: 'Price, payment plan, or unit selection discussions' },
-    { value: 'booked', label: 'Booked / Token Paid', color: '#1e40af', desc: 'Booking form signed or token paid' },
+    { value: 'site_visit_completed', label: 'Site Visit Completed', color: '#17652f', desc: 'Buyer visited Krishna Valley site' },
+    { value: 'negotiation', label: 'In Negotiation', color: '#17652f', desc: 'Price, payment plan, or unit selection discussions' },
+    { value: 'booked', label: 'Booked / Token Paid', color: '#17652f', desc: 'Booking form signed or token paid' },
     { value: 'converted', label: 'Converted to Sale', color: '#0284c7', desc: 'Moved to Sales Allotment ledger' },
     { value: 'lost', label: 'Lost / Disqualified', color: '#0f172a', desc: 'Out of budget, uninterested, or invalid' },
   ];
@@ -93,7 +93,7 @@ export const QuickStatusModal = ({
         {/* Status Stage Selection Grid */}
         <div>
           <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Sliders size={14} color="#1a73e8" />
+            <Sliders size={14} color="#17652f" />
             Select New Pipeline Stage *
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -136,7 +136,7 @@ export const QuickStatusModal = ({
         {(status === 'site_visit_scheduled' || status === 'contacted' || status === 'negotiation') && (
           <div>
             <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Calendar size={14} color="#1a73e8" />
+              <Calendar size={14} color="#17652f" />
               {status === 'site_visit_scheduled' ? 'Scheduled Site Visit Date & Time *' : 'Next Follow-Up Date & Time (Optional)'}
             </label>
             <input
@@ -153,7 +153,7 @@ export const QuickStatusModal = ({
         {/* Remarks / Conversation Notes */}
         <div>
           <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <FileText size={14} color="#1a73e8" />
+            <FileText size={14} color="#17652f" />
             Stage Update Remarks / Conversation Notes
           </label>
           <textarea

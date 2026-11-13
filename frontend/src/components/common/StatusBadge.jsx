@@ -28,9 +28,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'completed':
       case 'approved':
         return {
-          bg: '#eff6ff',
-          color: '#1d4ed8',
-          border: '#bfdbfe',
+          bg: '#e8f2e5',
+          color: '#17652f',
+          border: '#cde4c9',
           label: status === 'on_track' ? 'On Track' : status?.replace(/_/g, ' ') || 'Active',
           Icon: CheckCircle
         };
@@ -38,9 +38,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'resell':
       case 'resold':
         return {
-          bg: '#f1f5f9',
-          color: '#1e293b',
-          border: '#cbd5e1',
+          bg: '#f4f6f4',
+          color: '#2d3748',
+          border: '#e2e8e0',
           label: 'Resell',
           Icon: Repeat
         };
@@ -48,9 +48,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'buy_back':
       case 'buyback':
         return {
-          bg: '#e0f2fe',
-          color: '#0284c7',
-          border: '#bae6fd',
+          bg: '#f0f7f0',
+          color: '#1b4d2e',
+          border: '#cfe2ce',
           label: 'Buy Back',
           Icon: RotateCcw
         };
@@ -58,9 +58,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'possession_renewal':
       case 'renewal':
         return {
-          bg: '#eff6ff',
-          color: '#1e40af',
-          border: '#bfdbfe',
+          bg: '#e8f2e5',
+          color: '#17652f',
+          border: '#cde4c9',
           label: 'Possession Renewal',
           Icon: RefreshCw
         };
@@ -73,9 +73,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'draft':
       case 'under_review':
         return {
-          bg: '#f8fafc',
-          color: '#475569',
-          border: '#e2e8f0',
+          bg: '#fef3c7',
+          color: '#b45309',
+          border: '#fde68a',
           label: status?.replace(/_/g, ' ') || 'Pending',
           Icon: Clock
         };
@@ -92,9 +92,9 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'planning':
       case 'operational':
         return {
-          bg: '#d8e2ff',
-          color: '#00285c',
-          border: '#adc7ff',
+          bg: '#17652f',
+          color: '#ffffff',
+          border: '#17652f',
           label: status === 'sold' ? 'Sold' : (status === 'leased' ? 'Leased' : status?.replace(/_/g, ' ') || 'Allocated'),
           Icon: ShieldCheck
         };
@@ -109,18 +109,18 @@ export const StatusBadge = ({ status, size = 'normal', showIcon = true }) => {
       case 'critical':
       case 'high_risk':
         return {
-          bg: '#0f172a',
-          color: '#ffffff',
-          border: '#1e293b',
+          bg: '#fef2f2',
+          color: '#b91c1c',
+          border: '#fecaca',
           label: status === 'at_risk' ? 'At Risk' : status?.replace(/_/g, ' ') || 'Cancelled',
           Icon: AlertTriangle
         };
 
       default:
         return {
-          bg: '#f1f3f4',
-          color: '#414754',
-          border: '#dadce0',
+          bg: '#f8f9fa',
+          color: '#4b5563',
+          border: '#e8e6df',
           label: status || 'Unknown',
           Icon: HelpCircle
         };

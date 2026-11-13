@@ -29,7 +29,7 @@ export const ProtectedRoute = ({
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: '#f8f9fa',
-          color: '#1a73e8',
+          color: '#17652f',
           gap: '16px',
         }}
       >
@@ -38,7 +38,7 @@ export const ProtectedRoute = ({
             width: '56px',
             height: '56px',
             borderRadius: '14px',
-            backgroundColor: '#1a73e8',
+            backgroundColor: '#17652f',
             color: '#fff',
             display: 'flex',
             alignItems: 'center',
@@ -172,7 +172,7 @@ export const ProtectedRoute = ({
                 gap: '8px',
                 padding: '10px 20px',
                 borderRadius: '10px',
-                backgroundColor: '#1a73e8',
+                backgroundColor: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.9rem',

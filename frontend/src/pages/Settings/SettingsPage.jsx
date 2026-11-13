@@ -199,7 +199,7 @@ export const SettingsPage = () => {
   if (loading) {
     return (
       <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
-        <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px', color: '#1a73e8' }} />
+        <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px', color: '#17652f' }} />
         <p style={{ fontWeight: '600', fontSize: '0.95rem' }}>Loading Krishna Valley ERP System Settings...</p>
       </div>
     );
@@ -217,7 +217,7 @@ export const SettingsPage = () => {
             zIndex: 9999,
             padding: '14px 22px',
             borderRadius: '12px',
-            backgroundColor: toast.type === 'error' ? '#0f172a' : '#1a73e8',
+            backgroundColor: toast.type === 'error' ? '#0f172a' : '#17652f',
             color: '#ffffff',
             fontWeight: '600',
             fontSize: '0.9rem',
@@ -235,11 +235,12 @@ export const SettingsPage = () => {
       {/* Header Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #00285c 0%, #1a73e8 60%, #2563eb 100%)',
-          borderRadius: '20px',
-          padding: '28px 32px',
-          color: '#ffffff',
-          boxShadow: '0 12px 36px rgba(27, 94, 32, 0.25)',
+          background: '#ffffff',
+          borderRadius: '16px',
+          padding: '24px 28px',
+          border: '1px solid #e8e6df',
+          color: '#1f2937',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -256,10 +257,11 @@ export const SettingsPage = () => {
                 gap: '6px',
                 padding: '4px 12px',
                 borderRadius: '20px',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                backdropFilter: 'blur(8px)',
+                backgroundColor: '#e8f2e5',
+                color: '#17652f',
+                border: '1px solid #cde4c9',
                 fontSize: '0.78rem',
-                fontWeight: '800',
+                fontWeight: '700',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -268,11 +270,11 @@ export const SettingsPage = () => {
               Module 14 • System Governance
             </span>
           </div>
-          <h1 style={{ margin: '0 0 6px', fontSize: '1.85rem', fontWeight: '800', letterSpacing: '-0.02em' }}>
-            System Settings & Administration
+          <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', margin: '0 0 6px', fontSize: '26px', fontWeight: 700, color: '#1f2937', letterSpacing: '-0.02em' }}>
+            System Settings &amp; Administration
           </h1>
-          <p style={{ margin: 0, fontSize: '0.92rem', color: '#e8f5e9', lineHeight: 1.5 }}>
-            Configure company legal profiles, active financial years, GST/TDS tax matrices, payment gateways, live SMTP & WhatsApp APIs, database backups, and global ERP policies.
+          <p style={{ margin: 0, fontSize: '0.88rem', color: '#596372', lineHeight: 1.5 }}>
+            Configure company legal profiles, active financial years, GST/TDS tax matrices, payment gateways, live SMTP &amp; WhatsApp APIs, database backups, and global ERP policies.
           </p>
         </div>
 
@@ -280,20 +282,20 @@ export const SettingsPage = () => {
           <button
             onClick={loadSettings}
             style={{
-              padding: '10px 18px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.15)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '0.88rem',
+              padding: '9px 16px',
+              borderRadius: '8px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #e8e6df',
+              color: '#596372',
+              fontWeight: '600',
+              fontSize: '0.84rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
             }}
           >
-            <RefreshCw size={16} />
+            <RefreshCw size={15} style={{ color: '#17652f' }} />
             <span>Reload</span>
           </button>
         </div>
@@ -306,10 +308,10 @@ export const SettingsPage = () => {
           className="no-scrollbar"
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '18px',
-            border: '1px solid #e2e8f0',
+            borderRadius: '16px',
+            border: '1px solid #e8e6df',
             padding: '12px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
             display: 'flex',
             flexDirection: 'column',
             gap: '4px',
@@ -327,14 +329,14 @@ export const SettingsPage = () => {
                   alignItems: 'center',
                   gap: '12px',
                   padding: '12px 14px',
-                  borderRadius: '12px',
-                  border: tab.danger ? '1px solid #e2e8f0' : 'none',
+                  borderRadius: '10px',
+                  border: tab.danger ? '1px solid #fecaca' : 'none',
                   backgroundColor: isActive
-                    ? (tab.danger ? '#f1f5f9' : '#e8f5e9')
+                    ? (tab.danger ? '#fef2f2' : '#e8f2e5')
                     : 'transparent',
                   color: isActive
-                    ? (tab.danger ? '#0f172a' : '#00285c')
-                    : (tab.danger ? '#0f172a' : '#475569'),
+                    ? (tab.danger ? '#b91c1c' : '#17652f')
+                    : (tab.danger ? '#b91c1c' : '#596372'),
                   textAlign: 'left',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
@@ -347,11 +349,11 @@ export const SettingsPage = () => {
                     height: '36px',
                     borderRadius: '10px',
                     backgroundColor: isActive
-                      ? (tab.danger ? '#0f172a' : '#1a73e8')
-                      : (tab.danger ? '#f1f5f9' : '#f1f5f9'),
+                      ? (tab.danger ? '#b91c1c' : '#17652f')
+                      : (tab.danger ? '#fee2e2' : '#faf9f6'),
                     color: isActive
                       ? '#ffffff'
-                      : (tab.danger ? '#0f172a' : '#64748b'),
+                      : (tab.danger ? '#b91c1c' : '#596372'),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -364,7 +366,7 @@ export const SettingsPage = () => {
                   <div style={{ fontSize: '0.9rem', fontWeight: isActive ? '800' : '600' }}>
                     {tab.label}
                   </div>
-                  <div style={{ fontSize: '0.74rem', color: isActive ? (tab.danger ? '#0f172a' : '#1a73e8') : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '0.74rem', color: isActive ? (tab.danger ? '#0f172a' : '#17652f') : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {tab.desc}
                   </div>
                 </div>
@@ -406,7 +408,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#00285c',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -586,7 +588,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#00285c',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -600,20 +602,20 @@ export const SettingsPage = () => {
               </div>
 
               {/* Active FY Card */}
-              <div style={{ backgroundColor: '#eff6ff', border: '1px solid #dbeafe', padding: '18px 22px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ backgroundColor: '#e8f2e5', border: '1px solid #e8f2e5', padding: '18px 22px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                  <div style={{ fontSize: '0.8rem', color: '#1e40af', fontWeight: '700', textTransform: 'uppercase' }}>Current Active Accounting Year</div>
+                  <div style={{ fontSize: '0.8rem', color: '#17652f', fontWeight: '700', textTransform: 'uppercase' }}>Current Active Accounting Year</div>
                   <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#001a41', marginTop: '2px' }}>
                     FY {fyForm.activeFY || '2025-2026'}
                   </div>
-                  <div style={{ fontSize: '0.82rem', color: '#1e40af', marginTop: '4px' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#17652f', marginTop: '4px' }}>
                     Period: 01-Apr-2025 to 31-Mar-2026 • Transactions & Demand Letters are mapped to this period
                   </div>
                 </div>
                 <select
                   value={fyForm.activeFY || '2025-2026'}
                   onChange={(e) => setFyForm({ ...fyForm, activeFY: e.target.value })}
-                  style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid #bfdbfe', backgroundColor: '#ffffff', fontWeight: '700', fontSize: '0.9rem', color: '#1e40af' }}
+                  style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid #cde4c9', backgroundColor: '#ffffff', fontWeight: '700', fontSize: '0.9rem', color: '#17652f' }}
                 >
                   <option value="2024-2025">FY 2024 - 2025</option>
                   <option value="2025-2026">FY 2025 - 2026 (Active)</option>
@@ -691,7 +693,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#00285c',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -727,7 +729,7 @@ export const SettingsPage = () => {
                             {slab.label}
                             <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '400', marginTop: '2px' }}>{slab.description}</div>
                           </td>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#00285c' }}>{slab.rate}%</td>
+                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#17652f' }}>{slab.rate}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.cgst}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.sgst}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.igst}%</td>
@@ -758,7 +760,7 @@ export const SettingsPage = () => {
                         <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '12px 16px', fontWeight: '800', color: '#1e293b' }}>{rule.section}</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{rule.label}</td>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#1a73e8' }}>{rule.rate}%</td>
+                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#17652f' }}>{rule.rate}%</td>
                           <td style={{ padding: '12px 16px', color: '#64748b' }}>₹{(rule.threshold || 0).toLocaleString('en-IN')}</td>
                         </tr>
                       ))}
@@ -792,7 +794,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#00285c',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -916,7 +918,7 @@ export const SettingsPage = () => {
                       gap: '8px',
                       padding: '10px 20px',
                       borderRadius: '10px',
-                      backgroundColor: '#00285c',
+                      backgroundColor: '#17652f',
                       color: '#ffffff',
                       fontWeight: '700',
                       fontSize: '0.88rem',
@@ -1021,7 +1023,7 @@ export const SettingsPage = () => {
                       gap: '8px',
                       padding: '10px 20px',
                       borderRadius: '10px',
-                      backgroundColor: '#00285c',
+                      backgroundColor: '#17652f',
                       color: '#ffffff',
                       fontWeight: '700',
                       fontSize: '0.88rem',
@@ -1094,7 +1096,7 @@ export const SettingsPage = () => {
                     style={{
                       padding: '10px 18px',
                       borderRadius: '10px',
-                      backgroundColor: '#00285c',
+                      backgroundColor: '#17652f',
                       color: '#ffffff',
                       fontWeight: '700',
                       fontSize: '0.88rem',
@@ -1157,7 +1159,7 @@ export const SettingsPage = () => {
                           <td style={{ padding: '12px 16px', color: '#475569' }}>
                             {new Date(bkp.timestamp).toLocaleString('en-IN')}
                           </td>
-                          <td style={{ padding: '12px 16px', fontWeight: '700', color: '#00285c' }}>
+                          <td style={{ padding: '12px 16px', fontWeight: '700', color: '#17652f' }}>
                             {bkp.totalRecords || 142} entities
                           </td>
                           <td style={{ padding: '12px 16px', color: '#64748b' }}>
@@ -1165,7 +1167,7 @@ export const SettingsPage = () => {
                           </td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{bkp.triggeredBy}</td>
                           <td style={{ padding: '12px 16px' }}>
-                            <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '6px', backgroundColor: '#e8f5e9', color: '#00285c', fontWeight: '700', fontSize: '0.75rem' }}>
+                            <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '6px', backgroundColor: '#e8f5e9', color: '#17652f', fontWeight: '700', fontSize: '0.75rem' }}>
                               Completed </span>
                           </td>
                         </tr>
@@ -1200,7 +1202,7 @@ export const SettingsPage = () => {
                     gap: '8px',
                     padding: '10px 20px',
                     borderRadius: '10px',
-                    backgroundColor: '#00285c',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontWeight: '700',
                     fontSize: '0.88rem',
@@ -1214,14 +1216,14 @@ export const SettingsPage = () => {
               </div>
 
               {/* Agent 5-Day Maturity Window Setting Card */}
-              <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', padding: '20px', borderRadius: '14px' }}>
+              <div style={{ backgroundColor: '#e8f2e5', border: '1px solid #cde4c9', padding: '20px', borderRadius: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <Clock size={20} style={{ color: '#1d4ed8' }} />
-                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#1e40af' }}>
+                  <Clock size={20} style={{ color: '#17652f' }} />
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
                     Channel Partner Agent Maturity Time Limit Policy
                   </h4>
                 </div>
-                <p style={{ margin: '0 0 14px', fontSize: '0.85rem', color: '#1e3a8a', lineHeight: 1.4 }}>
+                <p style={{ margin: '0 0 14px', fontSize: '0.85rem', color: '#17652f', lineHeight: 1.4 }}>
                   Defines how many exclusive days an Agent has post site-visit to convert a lead before the lead automatically hands over to the inhouse CRM sales team and unclosed commission is debited.
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -1231,9 +1233,9 @@ export const SettingsPage = () => {
                     max="30"
                     value={prefForm.agentMaturityWindowDays || 5}
                     onChange={(e) => setPrefForm({ ...prefForm, agentMaturityWindowDays: Number(e.target.value) })}
-                    style={{ width: '100px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #93c5fd', fontSize: '0.95rem', fontWeight: '700', textAlign: 'center' }}
+                    style={{ width: '100px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #86c8a0', fontSize: '0.95rem', fontWeight: '700', textAlign: 'center' }}
                   />
-                  <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#1e40af' }}>Days Exclusive Window (Default: 5 Days)</span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#17652f' }}>Days Exclusive Window (Default: 5 Days)</span>
                 </div>
               </div>
 
@@ -1279,8 +1281,8 @@ export const SettingsPage = () => {
 
           {/* ===== DANGER ZONE TAB (Super Admin Only) ===== */}
           {activeTab === 'dangerZone' && isSuperAdmin && (
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '2px solid #0f172a', overflow: 'hidden' }}>
-              <div style={{ padding: '24px 28px', background: 'linear-gradient(135deg, #0f172a 0%, #0f172a 50%, #0f172a 100%)' }}>
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '2px solid #17652f', overflow: 'hidden' }}>
+              <div style={{ padding: '24px 28px', background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)' }}>
                 <h2 style={{ margin: 0, color: '#ffffff', fontWeight: '800', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <AlertTriangle size={24} /> Danger Zone
                 </h2>
@@ -1315,8 +1317,8 @@ export const SettingsPage = () => {
                     style={{
                       padding: '10px 22px',
                       borderRadius: '10px',
-                      border: '2px solid #0f172a',
-                      backgroundColor: '#0f172a',
+                      border: '2px solid #17652f',
+                      backgroundColor: '#17652f',
                       color: '#ffffff',
                       fontWeight: '800',
                       fontSize: '0.85rem',
@@ -1359,7 +1361,7 @@ export const SettingsPage = () => {
               />
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <button type="button" onClick={() => setTestEmailModal(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff' }}>Cancel</button>
-                <button type="submit" disabled={testEmailLoading} style={{ padding: '8px 18px', borderRadius: '8px', backgroundColor: '#00285c', color: '#ffffff', border: 'none', fontWeight: '700' }}>
+                <button type="submit" disabled={testEmailLoading} style={{ padding: '8px 18px', borderRadius: '8px', backgroundColor: '#17652f', color: '#ffffff', border: 'none', fontWeight: '700' }}>
                   {testEmailLoading ? 'Sending...' : 'Send'}
                 </button>
               </div>
@@ -1385,7 +1387,7 @@ export const SettingsPage = () => {
               />
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <button type="button" onClick={() => setTestWaModal(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff' }}>Cancel</button>
-                <button type="submit" disabled={testWaLoading} style={{ padding: '8px 18px', borderRadius: '8px', backgroundColor: '#00285c', color: '#ffffff', border: 'none', fontWeight: '700' }}>
+                <button type="submit" disabled={testWaLoading} style={{ padding: '8px 18px', borderRadius: '8px', backgroundColor: '#17652f', color: '#ffffff', border: 'none', fontWeight: '700' }}>
                   {testWaLoading ? 'Connecting...' : 'Test Now'}
                 </button>
               </div>
@@ -1397,7 +1399,7 @@ export const SettingsPage = () => {
       {/* Wipe All Customers Confirmation Modal */}
       {wipeConfirmModal && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #0f172a' }}>
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #17652f' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <AlertTriangle size={22} style={{ color: '#0f172a' }} />

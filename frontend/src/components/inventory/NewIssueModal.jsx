@@ -171,7 +171,7 @@ export const NewIssueModal = ({ isOpen, onClose, onSubmit, stores: propStores })
               placeholder="e.g. Jai Balaji RCC Works / Ramesh Sharma"
               value={contractorName}
               onChange={(e) => setContractorName(e.target.value)}
-              style={{ width: '100%', fontSize: '0.85rem', borderColor: contractorName ? '#1a73e8' : '#d1d5db' }}
+              style={{ width: '100%', fontSize: '0.85rem', borderColor: contractorName ? '#17652f' : '#d1d5db' }}
             />
             <datalist id="contractor-suggestions">
               <option value="Jai Balaji RCC Works" />
@@ -185,7 +185,7 @@ export const NewIssueModal = ({ isOpen, onClose, onSubmit, stores: propStores })
 
           <div>
             <label style={{ fontSize: '0.78rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px', fontWeight: '700' }}>
-              <User size={14} color="#1a73e8" /> Issued By (Store In-charge / Engineer) *
+              <User size={14} color="#17652f" /> Issued By (Store In-charge / Engineer) *
             </label>
             <input
               type="text"
@@ -230,7 +230,7 @@ export const NewIssueModal = ({ isOpen, onClose, onSubmit, stores: propStores })
 
         {/* Material & Available Quantity Picker */}
         <div className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', background: '#fcfdfd' }}>
-          <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1a73e8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Package size={16} /> Material & Stock Availability
           </h4>
 
@@ -272,8 +272,8 @@ export const NewIssueModal = ({ isOpen, onClose, onSubmit, stores: propStores })
 
           {selectedStock && (
             <div style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '10px 14px', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem' }}>
-              <span style={{ color: '#4b5563' }}>Current Available: <strong style={{ color: '#1a73e8' }}>{selectedStock.availableQuantity} {selectedStock.materialId?.unit}</strong></span>
-              <span style={{ color: '#4b5563' }}>Valuation Rate: <strong style={{ color: '#1a73e8' }}>₹{selectedStock.averageRate}</strong></span>
+              <span style={{ color: '#4b5563' }}>Current Available: <strong style={{ color: '#17652f' }}>{selectedStock.availableQuantity} {selectedStock.materialId?.unit}</strong></span>
+              <span style={{ color: '#4b5563' }}>Valuation Rate: <strong style={{ color: '#17652f' }}>₹{selectedStock.averageRate}</strong></span>
             </div>
           )}
         </div>

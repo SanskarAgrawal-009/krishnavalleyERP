@@ -313,9 +313,9 @@ export const TaskforceMemberDashboard = ({
           type: 'proof',
           label: 'WORK PROOF UPLOADED',
           message: latestUpload.caption || latestUpload.remarks || `Work proof uploaded (${latestUpload.stage || 'proof'})`,
-          color: '#7c3aed',
+          color: '#17652f',
           bg: '#f5f3ff',
-          borderColor: '#ddd6fe',
+          borderColor: '#e8f2e5',
           icon: Camera,
           time: latestUpload.uploadedAt || latestUpload.createdAt,
         });
@@ -357,8 +357,8 @@ export const TaskforceMemberDashboard = ({
         return {
           label: 'SUPERVISOR',
           icon: Shield,
-          bg: '#eef2ff',
-          color: '#4338ca',
+          bg: '#e8f2e5',
+          color: '#17652f',
           border: '#c7d2fe',
         };
       case 'helper':
@@ -366,9 +366,9 @@ export const TaskforceMemberDashboard = ({
         return {
           label: 'HELPER',
           icon: HardHat,
-          bg: '#eff6ff',
-          color: '#1d4ed8',
-          border: '#bfdbfe',
+          bg: '#e8f2e5',
+          color: '#17652f',
+          border: '#cde4c9',
         };
     }
   };
@@ -390,7 +390,7 @@ export const TaskforceMemberDashboard = ({
           border: '1px solid #e2e8f0',
         }}
       >
-        <RefreshCw size={26} style={{ color: '#2563eb', animation: 'spin 1s linear infinite' }} />
+        <RefreshCw size={26} style={{ color: '#17652f', animation: 'spin 1s linear infinite' }} />
         <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>
           Loading member dashboard & directives...
         </span>
@@ -428,8 +428,8 @@ export const TaskforceMemberDashboard = ({
                   hierarchyLevel === 'head'
                     ? 'linear-gradient(135deg, #0891b2, #0e7490)'
                     : hierarchyLevel === 'supervisor'
-                    ? 'linear-gradient(135deg, #4f46e5, #4338ca)'
-                    : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                    ? 'linear-gradient(135deg, #17652f, #17652f)'
+                    : 'linear-gradient(135deg, #17652f, #17652f)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
@@ -543,7 +543,7 @@ export const TaskforceMemberDashboard = ({
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '8px',
-                background: '#2563eb',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.78rem',
@@ -583,10 +583,10 @@ export const TaskforceMemberDashboard = ({
         {/* ========================================================================= */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
           {[
-            { label: 'Assigned Directives', val: kpis.totalCount || 0, color: '#2563eb', bg: '#eff6ff', icon: FileText },
+            { label: 'Assigned Directives', val: kpis.totalCount || 0, color: '#17652f', bg: '#e8f2e5', icon: FileText },
             { label: 'Active In-Progress', val: kpis.inProgressCount || 0, color: '#0891b2', bg: '#ecfeff', icon: Clock },
             { label: 'Completed Works', val: kpis.completedCount || 0, color: '#16a34a', bg: '#f0fdf4', icon: CheckCircle2 },
-            { label: 'Work Proofs Uploaded', val: kpis.totalUploads || 0, color: '#7c3aed', bg: '#f5f3ff', icon: Upload },
+            { label: 'Work Proofs Uploaded', val: kpis.totalUploads || 0, color: '#17652f', bg: '#f5f3ff', icon: Upload },
             { label: 'Average Progress', val: `${kpis.avgProgress || 0}%`, color: '#d97706', bg: '#fffbeb', icon: TrendingUp },
             { label: 'Active Roadblocks', val: kpis.roadblockCount || 0, color: '#dc2626', bg: '#fef2f2', icon: AlertTriangle },
           ].map((stat, i) => (
@@ -640,8 +640,8 @@ export const TaskforceMemberDashboard = ({
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  background: '#eff6ff',
-                  color: '#2563eb',
+                  background: '#e8f2e5',
+                  color: '#17652f',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -677,7 +677,7 @@ export const TaskforceMemberDashboard = ({
               { id: 'roadblock', label: `Roadblocks (${taskAlerts.filter((a) => a.type === 'roadblock').length})`, color: '#dc2626' },
               { id: 'md_directive', label: `MD Notes (${taskAlerts.filter((a) => a.type === 'md_directive').length})`, color: '#ca8a04' },
               { id: 'comment', label: `Updates (${taskAlerts.filter((a) => a.type === 'comment').length})`, color: '#0284c7' },
-              { id: 'proof', label: `Proofs (${taskAlerts.filter((a) => a.type === 'proof').length})`, color: '#7c3aed' },
+              { id: 'proof', label: `Proofs (${taskAlerts.filter((a) => a.type === 'proof').length})`, color: '#17652f' },
               { id: 'followup', label: `Follow-ups (${taskAlerts.filter((a) => a.type === 'followup').length})`, color: '#d97706' },
             ].map((pill) => {
               const count =
@@ -812,9 +812,9 @@ export const TaskforceMemberDashboard = ({
             style={{
               padding: '8px 16px',
               border: 'none',
-              borderBottom: activeTab === 'tasks' ? '2px solid #2563eb' : '2px solid transparent',
+              borderBottom: activeTab === 'tasks' ? '2px solid #17652f' : '2px solid transparent',
               background: 'none',
-              color: activeTab === 'tasks' ? '#1d4ed8' : '#64748b',
+              color: activeTab === 'tasks' ? '#17652f' : '#64748b',
               fontWeight: activeTab === 'tasks' ? '800' : '600',
               fontSize: '0.84rem',
               cursor: 'pointer',
@@ -832,9 +832,9 @@ export const TaskforceMemberDashboard = ({
             style={{
               padding: '8px 16px',
               border: 'none',
-              borderBottom: activeTab === 'uploads' ? '2px solid #7c3aed' : '2px solid transparent',
+              borderBottom: activeTab === 'uploads' ? '2px solid #17652f' : '2px solid transparent',
               background: 'none',
-              color: activeTab === 'uploads' ? '#6d28d9' : '#64748b',
+              color: activeTab === 'uploads' ? '#17652f' : '#64748b',
               fontWeight: activeTab === 'uploads' ? '800' : '600',
               fontSize: '0.84rem',
               cursor: 'pointer',
@@ -931,7 +931,7 @@ export const TaskforceMemberDashboard = ({
                   {/* Task Header */}
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                     <div>
-                      <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#2563eb', fontFamily: 'monospace' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#17652f', fontFamily: 'monospace' }}>
                         {t.taskCode}
                       </span>
                       <h3
@@ -1036,8 +1036,8 @@ export const TaskforceMemberDashboard = ({
                           fontSize: '10px',
                           fontWeight: 700,
                           background: '#f5f3ff',
-                          color: '#7c3aed',
-                          border: '1px solid #ddd6fe',
+                          color: '#17652f',
+                          border: '1px solid #e8f2e5',
                           padding: '1px 6px',
                           borderRadius: '4px',
                           display: 'flex',
@@ -1075,7 +1075,7 @@ export const TaskforceMemberDashboard = ({
                             t.progress === 100
                               ? '#16a34a'
                               : t.progress > 50
-                              ? '#2563eb'
+                              ? '#17652f'
                               : '#f59e0b',
                           transition: 'width 0.3s ease',
                         }}
@@ -1095,7 +1095,7 @@ export const TaskforceMemberDashboard = ({
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#64748b' }}>
-                      <Upload size={13} color="#7c3aed" />
+                      <Upload size={13} color="#17652f" />
                       <span>{(t.uploads || []).length} proof file{(t.uploads || []).length !== 1 ? 's' : ''}</span>
                     </div>
 
@@ -1131,11 +1131,11 @@ export const TaskforceMemberDashboard = ({
                         style={{
                           padding: '4px 8px',
                           borderRadius: '6px',
-                          background: '#eff6ff',
-                          border: '1px solid #bfdbfe',
+                          background: '#e8f2e5',
+                          border: '1px solid #cde4c9',
                           fontSize: '0.72rem',
                           fontWeight: '700',
-                          color: '#1d4ed8',
+                          color: '#17652f',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -1172,7 +1172,7 @@ export const TaskforceMemberDashboard = ({
                         style={{
                           padding: '4px 8px',
                           borderRadius: '6px',
-                          background: '#2563eb',
+                          background: '#17652f',
                           border: 'none',
                           fontSize: '0.72rem',
                           fontWeight: '700',
@@ -1211,7 +1211,7 @@ export const TaskforceMemberDashboard = ({
                 gap: '5px',
                 padding: '6px 12px',
                 borderRadius: '7px',
-                background: '#7c3aed',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.76rem',
@@ -1282,14 +1282,14 @@ export const TaskforceMemberDashboard = ({
                           up.uploaderRole === 'head'
                             ? '#ecfeff'
                             : up.uploaderRole === 'supervisor'
-                            ? '#eef2ff'
-                            : '#eff6ff',
+                            ? '#e8f2e5'
+                            : '#e8f2e5',
                         color:
                           up.uploaderRole === 'head'
                             ? '#0e7490'
                             : up.uploaderRole === 'supervisor'
-                            ? '#4338ca'
-                            : '#1d4ed8',
+                            ? '#17652f'
+                            : '#17652f',
                       }}
                     >
                       {up.uploaderRole?.toUpperCase() || 'MEMBER'}
@@ -1297,7 +1297,7 @@ export const TaskforceMemberDashboard = ({
                   </div>
 
                   <div>
-                    <div style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '800' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '800' }}>
                       {up.taskCode}
                     </div>
                     <div
@@ -1330,10 +1330,10 @@ export const TaskforceMemberDashboard = ({
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '3px',
-                        color: '#2563eb',
+                        color: '#17652f',
                         fontWeight: '700',
                         textDecoration: 'none',
-                        background: '#eff6ff',
+                        background: '#e8f2e5',
                         padding: '3px 8px',
                         borderRadius: '5px',
                       }}
@@ -1378,7 +1378,7 @@ export const TaskforceMemberDashboard = ({
             <div
               style={{
                 padding: '16px 20px',
-                background: '#1e3a8a',
+                background: '#17652f',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
@@ -1472,7 +1472,7 @@ export const TaskforceMemberDashboard = ({
                     padding: '7px 16px',
                     borderRadius: '7px',
                     border: 'none',
-                    background: '#2563eb',
+                    background: '#17652f',
                     color: '#ffffff',
                     fontSize: '0.78rem',
                     fontWeight: '700',
@@ -1524,7 +1524,7 @@ export const TaskforceMemberDashboard = ({
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', fontWeight: '700', marginBottom: '6px' }}>
                 <span>Progress Percentage:</span>
-                <span style={{ color: '#2563eb' }}>{progressVal}%</span>
+                <span style={{ color: '#17652f' }}>{progressVal}%</span>
               </div>
               <input
                 type="range"
@@ -1568,7 +1568,7 @@ export const TaskforceMemberDashboard = ({
                   padding: '7px 16px',
                   borderRadius: '7px',
                   border: 'none',
-                  background: '#2563eb',
+                  background: '#17652f',
                   color: '#ffffff',
                   fontSize: '0.78rem',
                   fontWeight: '700',

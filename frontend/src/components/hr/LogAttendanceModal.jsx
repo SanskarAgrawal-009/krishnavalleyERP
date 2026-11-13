@@ -131,7 +131,7 @@ export const LogAttendanceModal = ({ isOpen, onClose, employees, onSubmit }) => 
             type="submit"
             style={{
               padding: '9px 22px',
-              background: '#1a73e8',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

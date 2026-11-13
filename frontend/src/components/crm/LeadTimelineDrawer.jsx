@@ -34,11 +34,11 @@ export const LeadTimelineDrawer = ({
 
   const getModeInfo = (mode) => {
     switch (mode) {
-      case 'call': return { label: 'Phone Call', icon: Phone, color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.12)' };
-      case 'whatsapp': return { label: 'WhatsApp', icon: MessageSquare, color: '#1a73e8', bg: 'rgba(16, 185, 129, 0.12)' };
+      case 'call': return { label: 'Phone Call', icon: Phone, color: '#17652f', bg: 'rgba(59, 130, 246, 0.12)' };
+      case 'whatsapp': return { label: 'WhatsApp', icon: MessageSquare, color: '#17652f', bg: 'rgba(16, 185, 129, 0.12)' };
       case 'site_visit': return { label: 'Site Visit', icon: Compass, color: '#475569', bg: 'rgba(245, 158, 11, 0.12)' };
-      case 'meeting': return { label: 'Meeting', icon: Users, color: '#2563eb', bg: 'rgba(139, 92, 246, 0.12)' };
-      case 'email': return { label: 'Email', icon: Mail, color: '#1e40af', bg: 'rgba(236, 72, 153, 0.12)' };
+      case 'meeting': return { label: 'Meeting', icon: Users, color: '#17652f', bg: 'rgba(139, 92, 246, 0.12)' };
+      case 'email': return { label: 'Email', icon: Mail, color: '#17652f', bg: 'rgba(236, 72, 153, 0.12)' };
       default: return { label: 'Other', icon: Tag, color: '#4b5563', bg: 'rgba(148, 163, 184, 0.12)' };
     }
   };
@@ -46,7 +46,7 @@ export const LeadTimelineDrawer = ({
   const getStatusBadge = (status) => {
     switch (status) {
       case 'completed':
-        return { label: 'Completed', color: '#1a73e8', bg: 'rgba(16, 185, 129, 0.15)', icon: CheckCircle2 };
+        return { label: 'Completed', color: '#17652f', bg: 'rgba(16, 185, 129, 0.15)', icon: CheckCircle2 };
       case 'cancelled':
         return { label: 'Cancelled', color: '#0f172a', bg: 'rgba(239, 68, 68, 0.15)', icon: XCircle };
       default:
@@ -80,14 +80,14 @@ export const LeadTimelineDrawer = ({
             <div style={{ display: 'flex', gap: '14px', fontSize: '0.8rem', color: '#374151', marginTop: '4px', flexWrap: 'wrap' }}>
               <a
                 href={`tel:${lead.mobileNo}`}
-                style={{ color: '#1a73e8', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+                style={{ color: '#17652f', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 <Phone size={13} /> {lead.mobileNo}
               </a>
               {lead.email && (
                 <a
                   href={`mailto:${lead.email}`}
-                  style={{ color: '#60a5fa', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  style={{ color: '#4a9e68', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
                   <Mail size={13} /> {lead.email}
                 </a>
@@ -95,7 +95,7 @@ export const LeadTimelineDrawer = ({
             </div>
 
             {assignedFlat && (
-              <div style={{ marginTop: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', padding: '3px 8px', borderRadius: '4px', fontWeight: '700' }}>
+              <div style={{ marginTop: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', background: 'rgba(168, 85, 247, 0.15)', color: '#86c8a0', padding: '3px 8px', borderRadius: '4px', fontWeight: '700' }}>
                 <Home size={13} />
                 <span>Assigned Unit: Flat {assignedFlat.flatNumber} {assignedFlat.projectId?.projectName ? `(${assignedFlat.projectId.projectName})` : ''}</span>
               </div>
@@ -237,9 +237,9 @@ export const LeadTimelineDrawer = ({
                             style={{
                               padding: '3px 8px',
                               borderRadius: '4px',
-                              background: '#eff6ff',
-                              border: '1px solid #bfdbfe',
-                              color: '#1d4ed8',
+                              background: '#e8f2e5',
+                              border: '1px solid #cde4c9',
+                              color: '#17652f',
                               fontSize: '0.72rem',
                               fontWeight: '700',
                               textDecoration: 'none',
@@ -271,7 +271,7 @@ export const LeadTimelineDrawer = ({
                               borderRadius: '4px',
                               background: '#ffffff',
                               border: '1px solid #dadce0',
-                              color: '#1a73e8',
+                              color: '#17652f',
                               fontSize: '0.72rem',
                               fontWeight: '600',
                               cursor: 'pointer',
@@ -292,7 +292,7 @@ export const LeadTimelineDrawer = ({
                               padding: '3px 8px',
                               borderRadius: '4px',
                               background: 'rgba(16, 185, 129, 0.15)',
-                              color: '#1a73e8',
+                              color: '#17652f',
                               fontSize: '0.72rem',
                               fontWeight: '600',
                               cursor: 'pointer'

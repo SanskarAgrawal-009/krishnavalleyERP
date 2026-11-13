@@ -26,7 +26,7 @@ const TYPE_CONFIG = {
   site_progress: { label: 'Site Review', color: '#0284c7', bg: '#e0f2fe' },
   department_sync: { label: 'Dept Sync', color: '#059669', bg: '#d1fae5' },
   emergency_huddle: { label: 'Roadblock', color: '#dc2626', bg: '#fee2e2' },
-  vendor_alignment: { label: 'Vendor Sync', color: '#7c3aed', bg: '#ede9fe' },
+  vendor_alignment: { label: 'Vendor Sync', color: '#17652f', bg: '#e8f2e5' },
   general: { label: 'General Sync', color: '#475569', bg: '#f1f5f9' },
 };
 
@@ -428,7 +428,7 @@ export const UpcomingMeetingsWidget = ({ className = '', style = {} }) => {
 
                     {/* Venue / Location */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '11.5px', color: '#475569' }}>
-                      <MapPin size={14} color="#2563eb" style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <MapPin size={14} color="#17652f" style={{ marginTop: '2px', flexShrink: 0 }} />
                       <span style={{ fontWeight: 600 }}>
                         <span style={{ color: '#64748b', fontWeight: 500 }}>Venue:</span> {m.venue || m.locationDetails || 'Site Operations Room'}
                       </span>
@@ -467,7 +467,7 @@ export const UpcomingMeetingsWidget = ({ className = '', style = {} }) => {
                         style={{
                           fontSize: '11.5px',
                           fontWeight: 700,
-                          color: '#2563eb',
+                          color: '#17652f',
                           textDecoration: 'none',
                           display: 'inline-flex',
                           alignItems: 'center',

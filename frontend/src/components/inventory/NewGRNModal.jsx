@@ -121,7 +121,7 @@ export const NewGRNModal = ({ isOpen, onClose, onSubmit }) => {
 
         {/* Received Items Inspection Table */}
         <div className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#1a73e8' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#17652f' }}>
             Goods Verification & Store Stock Auto-Credit ({receivedItems.length} items)
           </h4>
 
@@ -205,7 +205,7 @@ export const NewGRNModal = ({ isOpen, onClose, onSubmit }) => {
                 <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: '700', color: '#4b5563', marginBottom: '3px' }}>
                   Total Valuation
                 </label>
-                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1a73e8', paddingTop: '4px' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f', paddingTop: '4px' }}>
                   ₹{Math.round(item.receivedQuantity * item.unitRate).toLocaleString('en-IN')}
                 </div>
               </div>
@@ -213,7 +213,7 @@ export const NewGRNModal = ({ isOpen, onClose, onSubmit }) => {
           ))}
         </div>
 
-        <div style={{ background: '#e8f0fe', padding: '10px 14px', borderRadius: '6px', fontSize: '0.78rem', color: '#1f2937', border: '1px solid #d2e3fc' }}>
+        <div style={{ background: '#e8f2e5', padding: '10px 14px', borderRadius: '6px', fontSize: '0.78rem', color: '#1f2937', border: '1px solid #d2e3fc' }}>
           <strong>Automated Store Credit:</strong> Submitting this GRN will automatically increment the physical stock in the receiving store and recalculate the average unit cost.
         </div>
 
@@ -237,7 +237,7 @@ export const NewGRNModal = ({ isOpen, onClose, onSubmit }) => {
             type="submit"
             style={{
               padding: '9px 22px',
-              background: '#1a73e8',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

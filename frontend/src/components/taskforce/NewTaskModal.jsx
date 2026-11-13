@@ -309,12 +309,12 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
         name,
         initials,
         roleTitle: 'Field Supervisor',
-        bg: '#eff6ff',
-        color: '#1d4ed8',
-        border: '#bfdbfe',
-        badgeBg: '#dbeafe',
-        badgeColor: '#1e40af',
-        badgeBorder: '#93c5fd',
+        bg: '#e8f2e5',
+        color: '#17652f',
+        border: '#cde4c9',
+        badgeBg: '#e8f2e5',
+        badgeColor: '#17652f',
+        badgeBorder: '#86c8a0',
       };
     }
     return {
@@ -723,7 +723,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
               border: 'none',
               cursor: 'pointer',
               backgroundColor: currentStep === 1 ? '#ffffff' : 'transparent',
-              color: currentStep === 1 ? '#005bbf' : '#64748b',
+              color: currentStep === 1 ? '#17652f' : '#64748b',
               fontWeight: currentStep === 1 ? 700 : 500,
               fontSize: '13px',
               boxShadow: currentStep === 1 ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
@@ -735,7 +735,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                backgroundColor: currentStep === 1 ? '#005bbf' : '#cbd5e1',
+                backgroundColor: currentStep === 1 ? '#17652f' : '#cbd5e1',
                 color: '#ffffff',
                 fontSize: '11px',
                 fontWeight: 700,
@@ -778,7 +778,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
               border: 'none',
               cursor: 'pointer',
               backgroundColor: currentStep === 2 ? '#ffffff' : 'transparent',
-              color: currentStep === 2 ? '#005bbf' : '#64748b',
+              color: currentStep === 2 ? '#17652f' : '#64748b',
               fontWeight: currentStep === 2 ? 700 : 500,
               fontSize: '13px',
               boxShadow: currentStep === 2 ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
@@ -790,7 +790,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                backgroundColor: currentStep === 2 ? '#005bbf' : '#cbd5e1',
+                backgroundColor: currentStep === 2 ? '#17652f' : '#cbd5e1',
                 color: '#ffffff',
                 fontSize: '11px',
                 fontWeight: 700,
@@ -833,7 +833,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
               border: 'none',
               cursor: 'pointer',
               backgroundColor: currentStep === 3 ? '#ffffff' : 'transparent',
-              color: currentStep === 3 ? '#005bbf' : '#64748b',
+              color: currentStep === 3 ? '#17652f' : '#64748b',
               fontWeight: currentStep === 3 ? 700 : 500,
               fontSize: '13px',
               boxShadow: currentStep === 3 ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
@@ -845,7 +845,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                backgroundColor: currentStep === 3 ? '#005bbf' : '#cbd5e1',
+                backgroundColor: currentStep === 3 ? '#17652f' : '#cbd5e1',
                 color: '#ffffff',
                 fontSize: '11px',
                 fontWeight: 700,
@@ -967,9 +967,9 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                     style={{
                       fontSize: '11px',
                       fontWeight: 700,
-                      backgroundColor: autoFetchedInfo.count > 0 ? '#eff6ff' : '#f8fafc',
-                      color: autoFetchedInfo.count > 0 ? '#005bbf' : '#64748b',
-                      border: `1px solid ${autoFetchedInfo.count > 0 ? '#bfdbfe' : '#e2e8f0'}`,
+                      backgroundColor: autoFetchedInfo.count > 0 ? '#e8f2e5' : '#f8fafc',
+                      color: autoFetchedInfo.count > 0 ? '#17652f' : '#64748b',
+                      border: `1px solid ${autoFetchedInfo.count > 0 ? '#cde4c9' : '#e2e8f0'}`,
                       padding: '4px 10px',
                       borderRadius: '12px',
                       display: 'inline-flex',
@@ -979,7 +979,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                   >
                     <i
                       className={autoFetchedInfo.count > 0 ? 'fa-solid fa-bolt-lightning' : 'fa-solid fa-circle-info'}
-                      style={{ color: autoFetchedInfo.count > 0 ? '#005bbf' : '#94a3b8' }}
+                      style={{ color: autoFetchedInfo.count > 0 ? '#17652f' : '#94a3b8' }}
                     />
                     <span>
                       {autoFetchedInfo.count > 0
@@ -1192,10 +1192,10 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                   type="checkbox"
                   checked={isApartmentRelated}
                   onChange={(e) => setIsApartmentRelated(e.target.checked)}
-                  style={{ width: '17px', height: '17px', cursor: 'pointer', accentColor: '#005bbf' }}
+                  style={{ width: '17px', height: '17px', cursor: 'pointer', accentColor: '#17652f' }}
                 />
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Building2 size={16} color="#005bbf" />
+                  <Building2 size={16} color="#17652f" />
                   Link to Specific Tower / Flat (Optional)
                 </span>
               </label>
@@ -1297,8 +1297,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
             {/* Auto-Fetch Status Banner & Quick Action Buttons */}
             <div
               style={{
-                backgroundColor: '#eff6ff',
-                border: '1.5px solid #bfdbfe',
+                backgroundColor: '#e8f2e5',
+                border: '1.5px solid #cde4c9',
                 borderRadius: '10px',
                 padding: '10px 14px',
                 display: 'flex',
@@ -1309,8 +1309,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Users size={18} color="#005bbf" />
-                <span style={{ fontSize: '13px', color: '#1e3a8a', fontWeight: 600 }}>
+                <Users size={18} color="#17652f" />
+                <span style={{ fontSize: '13px', color: '#17652f', fontWeight: 600 }}>
                   Showing team members for <strong style={{ textTransform: 'capitalize' }}>{department}</strong>
                 </span>
               </div>
@@ -1325,8 +1325,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                     padding: '5px 10px',
                     borderRadius: '6px',
                     backgroundColor: '#ffffff',
-                    border: '1px solid #93c5fd',
-                    color: '#005bbf',
+                    border: '1px solid #86c8a0',
+                    color: '#17652f',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -1407,8 +1407,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                           gap: '8px',
                           padding: '4px 10px 4px 6px',
                           borderRadius: '24px',
-                          backgroundColor: details.badgeBg || '#eff6ff',
-                          border: `1.5px solid ${details.badgeBorder || '#bfdbfe'}`,
+                          backgroundColor: details.badgeBg || '#e8f2e5',
+                          border: `1.5px solid ${details.badgeBorder || '#cde4c9'}`,
                           boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
                         }}
                       >
@@ -1417,7 +1417,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                             width: '24px',
                             height: '24px',
                             borderRadius: '50%',
-                            backgroundColor: details.color || '#005bbf',
+                            backgroundColor: details.color || '#17652f',
                             color: '#ffffff',
                             display: 'flex',
                             alignItems: 'center',
@@ -1439,8 +1439,8 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                               padding: '2px 6px',
                               borderRadius: '6px',
                               backgroundColor: '#ffffff',
-                              color: details.badgeColor || '#005bbf',
-                              border: `1px solid ${details.badgeBorder || '#bfdbfe'}`,
+                              color: details.badgeColor || '#17652f',
+                              border: `1px solid ${details.badgeBorder || '#cde4c9'}`,
                               display: 'inline-flex',
                               alignItems: 'center',
                             }}
@@ -1491,7 +1491,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                             width: '24px',
                             height: '24px',
                             borderRadius: '50%',
-                            backgroundColor: '#7e22ce',
+                            backgroundColor: '#17652f',
                             color: '#ffffff',
                             display: 'flex',
                             alignItems: 'center',
@@ -1513,7 +1513,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                               padding: '2px 6px',
                               borderRadius: '6px',
                               backgroundColor: '#ffffff',
-                              color: '#7e22ce',
+                              color: '#17652f',
                               border: '1px solid #d8b4fe',
                               display: 'inline-flex',
                               alignItems: 'center',
@@ -1558,7 +1558,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                       borderRadius: '6px',
                       border: 'none',
                       backgroundColor: assigneeCategoryTab === 'taskforce' ? '#ffffff' : 'transparent',
-                      color: assigneeCategoryTab === 'taskforce' ? '#005bbf' : '#64748b',
+                      color: assigneeCategoryTab === 'taskforce' ? '#17652f' : '#64748b',
                       fontWeight: assigneeCategoryTab === 'taskforce' ? 700 : 500,
                       fontSize: '12px',
                       cursor: 'pointer',
@@ -1579,7 +1579,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                       borderRadius: '6px',
                       border: 'none',
                       backgroundColor: assigneeCategoryTab === 'erp' ? '#ffffff' : 'transparent',
-                      color: assigneeCategoryTab === 'erp' ? '#005bbf' : '#64748b',
+                      color: assigneeCategoryTab === 'erp' ? '#17652f' : '#64748b',
                       fontWeight: assigneeCategoryTab === 'erp' ? 700 : 500,
                       fontSize: '12px',
                       cursor: 'pointer',
@@ -1610,7 +1610,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                     type="checkbox"
                     checked={showOnlyDeptMembers}
                     onChange={(e) => setShowOnlyDeptMembers(e.target.checked)}
-                    style={{ accentColor: '#005bbf', cursor: 'pointer' }}
+                    style={{ accentColor: '#17652f', cursor: 'pointer' }}
                   />
                   <span>Show only {department} staff</span>
                 </label>
@@ -1684,17 +1684,17 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                     {
                       title: 'Site Supervisors (Level 2)',
                       faIcon: 'fa-solid fa-user-gear',
-                      color: '#4f46e5',
-                      badgeBg: '#eef2ff',
+                      color: '#17652f',
+                      badgeBg: '#e8f2e5',
                       badgeBorder: '#c7d2fe',
                       list: filteredTaskforceMembers.filter((m) => m.hierarchyLevel === 'supervisor'),
                     },
                     {
                       title: 'Field Helpers & Technicians (Level 1)',
                       faIcon: 'fa-solid fa-person-digging',
-                      color: '#2563eb',
-                      badgeBg: '#eff6ff',
-                      badgeBorder: '#bfdbfe',
+                      color: '#17652f',
+                      badgeBg: '#e8f2e5',
+                      badgeBorder: '#cde4c9',
                       list: filteredTaskforceMembers.filter((m) => m.hierarchyLevel === 'helper' || !m.hierarchyLevel),
                     },
                   ]
@@ -1754,7 +1754,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                                   padding: '10px 12px',
                                   borderRadius: '10px',
                                   backgroundColor: isSelected ? '#f0f9ff' : '#ffffff',
-                                  border: isSelected ? '2px solid #005bbf' : '1px solid #e2e8f0',
+                                  border: isSelected ? '2px solid #17652f' : '1px solid #e2e8f0',
                                   cursor: 'pointer',
                                   transition: 'all 0.15s ease',
                                   boxShadow: isSelected ? '0 2px 8px rgba(0,91,191,0.12)' : 'none',
@@ -1845,7 +1845,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                                     height: '22px',
                                     borderRadius: '50%',
                                     border: isSelected ? 'none' : '2px solid #cbd5e1',
-                                    backgroundColor: isSelected ? '#005bbf' : 'transparent',
+                                    backgroundColor: isSelected ? '#17652f' : 'transparent',
                                     color: '#ffffff',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -1893,7 +1893,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                         padding: '10px 12px',
                         borderRadius: '10px',
                         backgroundColor: isSelected ? '#faf5ff' : '#ffffff',
-                        border: isSelected ? '2px solid #7e22ce' : '1px solid #e2e8f0',
+                        border: isSelected ? '2px solid #17652f' : '1px solid #e2e8f0',
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
                         boxShadow: isSelected ? '0 2px 8px rgba(126,34,206,0.12)' : 'none',
@@ -1906,7 +1906,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                             height: '36px',
                             borderRadius: '50%',
                             backgroundColor: '#f3e8ff',
-                            color: '#7e22ce',
+                            color: '#17652f',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -1939,7 +1939,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                                 padding: '1px 6px',
                                 borderRadius: '4px',
                                 backgroundColor: '#f3e8ff',
-                                color: '#7e22ce',
+                                color: '#17652f',
                                 border: '1px solid #e9d5ff',
                               }}
                             >
@@ -1958,7 +1958,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                           height: '22px',
                           borderRadius: '50%',
                           border: isSelected ? 'none' : '2px solid #cbd5e1',
-                          backgroundColor: isSelected ? '#7e22ce' : 'transparent',
+                          backgroundColor: isSelected ? '#17652f' : 'transparent',
                           color: '#ffffff',
                           display: 'flex',
                           alignItems: 'center',
@@ -2053,7 +2053,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                   Completion Deadline / Target Date
                 </label>
                 {dueDate && (
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#005bbf' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#17652f' }}>
                     Target: {new Date(dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                 )}
@@ -2115,11 +2115,11 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                       fontSize: '12px',
                       padding: '6px 10px',
                       borderRadius: '6px',
-                      border: '1.5px solid #005bbf',
-                      backgroundColor: '#eff6ff',
+                      border: '1.5px solid #17652f',
+                      backgroundColor: '#e8f2e5',
                       cursor: 'pointer',
                       fontWeight: 700,
-                      color: '#005bbf',
+                      color: '#17652f',
                     }}
                   >
                     +3 Days (Recommended)
@@ -2197,9 +2197,9 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                       style={{
                         padding: '9px 8px',
                         borderRadius: '8px',
-                        border: isSelected ? '2px solid #005bbf' : '1px solid #e2e8f0',
-                        backgroundColor: isSelected ? '#eff6ff' : '#f8fafc',
-                        color: isSelected ? '#005bbf' : '#334155',
+                        border: isSelected ? '2px solid #17652f' : '1px solid #e2e8f0',
+                        backgroundColor: isSelected ? '#e8f2e5' : '#f8fafc',
+                        color: isSelected ? '#17652f' : '#334155',
                         fontWeight: isSelected ? 800 : 600,
                         fontSize: '12px',
                         cursor: 'pointer',
@@ -2266,7 +2266,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                     padding: '8px 16px',
                     borderRadius: '8px',
                     border: 'none',
-                    backgroundColor: '#005bbf',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontWeight: 700,
                     fontSize: '13px',
@@ -2413,7 +2413,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                   gap: '8px',
                   padding: '9px 22px',
                   fontSize: '13px',
-                  backgroundColor: '#005bbf',
+                  backgroundColor: '#17652f',
                   fontWeight: 700,
                 }}
               >
@@ -2459,7 +2459,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                     gap: '8px',
                     padding: '9px 22px',
                     fontSize: '13px',
-                    backgroundColor: '#005bbf',
+                    backgroundColor: '#17652f',
                     fontWeight: 700,
                   }}
                 >
@@ -2481,7 +2481,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                   gap: '8px',
                   padding: '10px 26px',
                   fontSize: '13px',
-                  backgroundColor: isMDDirective ? '#ca8a04' : '#005bbf',
+                  backgroundColor: isMDDirective ? '#ca8a04' : '#17652f',
                   fontWeight: 800,
                   boxShadow: isMDDirective
                     ? '0 2px 8px rgba(202, 138, 4, 0.3)'

@@ -157,7 +157,7 @@ export const MetaAdsIntegrationModal = ({
               padding: '8px 16px',
               borderRadius: '8px',
               border: 'none',
-              background: activeTab === 'test' ? '#1a73e8' : '#f1f5f9',
+              background: activeTab === 'test' ? '#17652f' : '#f1f5f9',
               color: activeTab === 'test' ? '#ffffff' : '#475569',
               fontWeight: '700',
               fontSize: '0.82rem',
@@ -178,7 +178,7 @@ export const MetaAdsIntegrationModal = ({
               padding: '8px 16px',
               borderRadius: '8px',
               border: 'none',
-              background: activeTab === 'config' ? '#1a73e8' : '#f1f5f9',
+              background: activeTab === 'config' ? '#17652f' : '#f1f5f9',
               color: activeTab === 'config' ? '#ffffff' : '#475569',
               fontWeight: '700',
               fontSize: '0.82rem',
@@ -196,10 +196,10 @@ export const MetaAdsIntegrationModal = ({
         {successMessage && (
           <div style={{
             padding: '10px 14px',
-            background: '#eff6ff',
-            border: '1px solid #bfdbfe',
+            background: '#e8f2e5',
+            border: '1px solid #cde4c9',
             borderRadius: '8px',
-            color: '#1e40af',
+            color: '#17652f',
             fontSize: '0.82rem',
             fontWeight: '600',
             display: 'flex',
@@ -233,12 +233,12 @@ export const MetaAdsIntegrationModal = ({
         {activeTab === 'test' && (
           <form onSubmit={handleTestIngestion} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{
-              background: '#eff6ff',
-              border: '1px solid #bfdbfe',
+              background: '#e8f2e5',
+              border: '1px solid #cde4c9',
               padding: '12px 16px',
               borderRadius: '8px',
               fontSize: '0.8rem',
-              color: '#1e40af',
+              color: '#17652f',
             }}>
               <strong>Live Meta Ad Simulator:</strong> Simulate an instant form lead coming from your active Facebook or Instagram advertisement. The lead will be captured with all client location data and custom form questions, and automatically assigned to the sales team one-by-one via Round-Robin!
             </div>
@@ -415,7 +415,7 @@ export const MetaAdsIntegrationModal = ({
                     onClick={() => handleCopy(webhookUrl, 'url')}
                     style={{ padding: '7px 12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', fontWeight: '700' }}
                   >
-                    {copiedKey === 'url' ? <Check size={13} color="#1a73e8" /> : <Copy size={13} />}
+                    {copiedKey === 'url' ? <Check size={13} color="#17652f" /> : <Copy size={13} />}
                     {copiedKey === 'url' ? 'Copied' : 'Copy'}
                   </button>
                 </div>
@@ -437,7 +437,7 @@ export const MetaAdsIntegrationModal = ({
                     onClick={() => handleCopy(config.verifyToken, 'token')}
                     style={{ padding: '7px 12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.76rem', fontWeight: '700' }}
                   >
-                    {copiedKey === 'token' ? <Check size={13} color="#1a73e8" /> : <Copy size={13} />}
+                    {copiedKey === 'token' ? <Check size={13} color="#17652f" /> : <Copy size={13} />}
                     {copiedKey === 'token' ? 'Copied' : 'Copy'}
                   </button>
                 </div>

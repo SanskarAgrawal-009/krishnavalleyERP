@@ -93,7 +93,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
           className="no-print"
           style={{
             padding: '12px 20px',
-            backgroundColor: '#0f172a',
+            backgroundColor: '#17652f',
             color: '#ffffff',
             display: 'flex',
             justifyContent: 'space-between',
@@ -102,9 +102,9 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Building2 size={18} color="#60a5fa" />
+            <Building2 size={18} color="#4a9e68" />
             <strong style={{ fontSize: '0.95rem' }}>Official Staff Payslip Preview</strong>
-            <span style={{ fontSize: '0.72rem', background: '#1e293b', padding: '2px 8px', borderRadius: '4px', color: '#94a3b8' }}>
+            <span style={{ fontSize: '0.72rem', background: 'rgba(255,255,255,0.15)', padding: '2px 8px', borderRadius: '4px', color: '#ffffff' }}>
               {monthName} {year}
             </span>
           </div>
@@ -113,7 +113,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
               type="button"
               onClick={handlePrint}
               style={{
-                backgroundColor: '#1a73e8',
+                backgroundColor: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 padding: '6px 14px',
@@ -159,10 +159,10 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
           }}
         >
           {/* Company Header */}
-          <div style={{ borderBottom: '2px solid #1a73e8', paddingBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ borderBottom: '2px solid #17652f', paddingBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#1a73e8', letterSpacing: '-0.5px' }}>
+                <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#17652f', letterSpacing: '-0.5px' }}>
                   KRISHNA VALLEY
                 </span>
                 <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#475569', letterSpacing: '1px' }}>
@@ -180,7 +180,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
               <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase' }}>
                 SALARY PAYSLIP
               </div>
-              <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#1a73e8', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#17652f', marginTop: '2px' }}>
                 {monthName.toUpperCase()} {year}
               </div>
               <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px' }}>
@@ -195,7 +195,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
               <tbody>
                 <tr style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: '#f8fafc' }}>
                   <td style={{ padding: '8px 14px', width: '20%', fontWeight: '700', color: '#475569' }}>Employee Code:</td>
-                  <td style={{ padding: '8px 14px', width: '30%', fontWeight: '800', color: '#1a73e8' }}>{payrollItem.employeeCode || 'N/A'}</td>
+                  <td style={{ padding: '8px 14px', width: '30%', fontWeight: '800', color: '#17652f' }}>{payrollItem.employeeCode || 'N/A'}</td>
                   <td style={{ padding: '8px 14px', width: '20%', fontWeight: '700', color: '#475569' }}>Staff Name:</td>
                   <td style={{ padding: '8px 14px', width: '30%', fontWeight: '800', color: '#0f172a' }}>{payrollItem.employeeName}</td>
                 </tr>
@@ -223,8 +223,8 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
                   <td style={{ padding: '8px 14px', fontWeight: '700', color: '#475569' }}>Status:</td>
                   <td style={{ padding: '8px 14px' }}>
                     <span style={{
-                      backgroundColor: payrollItem.status === 'paid' ? '#eff6ff' : '#f1f5f9',
-                      color: payrollItem.status === 'paid' ? '#1e40af' : '#334155',
+                      backgroundColor: payrollItem.status === 'paid' ? '#e8f2e5' : '#f1f5f9',
+                      color: payrollItem.status === 'paid' ? '#17652f' : '#334155',
                       padding: '2px 8px',
                       borderRadius: '4px',
                       fontWeight: '800',
@@ -245,7 +245,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '20px 0' }}>
             {/* Left: Earnings */}
             <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
-              <div style={{ backgroundColor: '#eff6ff', padding: '10px 14px', borderBottom: '1px solid #dbeafe', fontWeight: '800', color: '#1e40af', fontSize: '0.85rem' }}>
+              <div style={{ backgroundColor: '#e8f2e5', padding: '10px 14px', borderBottom: '1px solid #e8f2e5', fontWeight: '800', color: '#17652f', fontSize: '0.85rem' }}>
                 EARNINGS & ALLOWANCES
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
@@ -268,7 +268,7 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
                   </tr>
                   <tr style={{ backgroundColor: '#f8fafc', fontWeight: '800', borderTop: '2px solid #e2e8f0' }}>
                     <td style={{ padding: '10px 14px', color: '#0f172a' }}>GROSS EARNINGS (A)</td>
-                    <td style={{ padding: '10px 14px', textAlign: 'right', color: '#1a73e8', fontSize: '0.92rem' }}>{formatINR(gross)}</td>
+                    <td style={{ padding: '10px 14px', textAlign: 'right', color: '#17652f', fontSize: '0.92rem' }}>{formatINR(gross)}</td>
                   </tr>
                 </tbody>
               </table>
@@ -309,8 +309,8 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
           {/* Net Salary Highlight Box */}
           <div
             style={{
-              border: '2px solid #1a73e8',
-              backgroundColor: '#eff6ff',
+              border: '2px solid #17652f',
+              backgroundColor: '#e8f2e5',
               borderRadius: '8px',
               padding: '16px 20px',
               display: 'flex',
@@ -320,14 +320,14 @@ export const PrintablePayslipModal = ({ isOpen, onClose, payrollItem }) => {
             }}
           >
             <div>
-              <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 NET SALARY PAYABLE (A - B)
               </span>
               <div style={{ fontSize: '0.85rem', color: '#475569', fontStyle: 'italic', marginTop: '4px' }}>
                 {numberToWords(netSalary)}
               </div>
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#1d4ed8' }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#17652f' }}>
               {formatINR(netSalary)}
             </div>
           </div>

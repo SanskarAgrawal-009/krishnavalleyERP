@@ -624,23 +624,23 @@ export const LeadsPage = ({ onNavigateToSales }) => {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'new':
-        return { label: 'New Prospect', bg: '#e8f0fe', color: '#1a73e8', border: '#d2e3fc' };
+        return { label: 'New Prospect', bg: '#e8f2e5', color: '#17652f', border: '#d2e3fc' };
       case 'contacted':
         return { label: 'Contacted', bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' };
       case 'in_discussion':
-        return { label: 'In Discussion', bg: '#eff6ff', color: '#7e22ce', border: '#dbeafe' };
+        return { label: 'In Discussion', bg: '#e8f2e5', color: '#17652f', border: '#e8f2e5' };
       case 'followup_scheduled':
         return { label: 'Follow-Up Scheduled', bg: '#f1f5f9', color: '#334155', border: '#cbd5e1' };
       case 'site_visit_scheduled':
         return { label: 'Visit Scheduled', bg: '#f1f5f9', color: '#334155', border: '#e2e8f0' };
       case 'site_visit_completed':
-        return { label: 'Site Visit Done', bg: '#eff6ff', color: '#1e40af', border: '#dbeafe' };
+        return { label: 'Site Visit Done', bg: '#e8f2e5', color: '#17652f', border: '#e8f2e5' };
       case 'site_visit_completed_pending_approval':
         return { label: 'Visit Pending Review', bg: '#f8fafc', color: '#334155', border: '#f1f5f9' };
       case 'negotiation':
-        return { label: 'Negotiation', bg: '#e0e7ff', color: '#00285c', border: '#c7d2fe' };
+        return { label: 'Negotiation', bg: '#e8f2e5', color: '#17652f', border: '#c7d2fe' };
       case 'converted':
-        return { label: 'Converted Deal', bg: '#eff6ff', color: '#1e3a8a', border: '#bfdbfe' };
+        return { label: 'Converted Deal', bg: '#e8f2e5', color: '#17652f', border: '#cde4c9' };
       case 'lost':
         return { label: 'Lost / Dropped', bg: '#f1f5f9', color: '#0f172a', border: '#e2e8f0' };
       default:
@@ -664,25 +664,25 @@ export const LeadsPage = ({ onNavigateToSales }) => {
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-0.025em' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: 700, color: '#1f2937', margin: 0, letterSpacing: '-0.02em' }}>
               CRM Leads Hub
             </h2>
             <span style={{
               fontSize: '0.70rem',
               fontWeight: '800',
-              background: '#e0f2fe',
-              color: '#0369a1',
+              background: '#e8f2e5',
+              color: '#17652f',
               padding: '2px 8px',
               borderRadius: '20px',
-              border: '1px solid #bae6fd',
+              border: '1px solid #cde4c9',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '4px'
             }}>
-              <Zap size={11} color="#0284c7" /> Auto Round-Robin
+              <Zap size={11} color="#17652f" /> Auto Round-Robin
             </span>
           </div>
-          <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>
+          <p style={{ fontSize: '0.82rem', color: '#596372', margin: '4px 0 0 0' }}>
             Direct Meta Ads Ingestion, 1-by-1 Sequential Distribution, and Sales Follow-ups
           </p>
         </div>
@@ -700,22 +700,22 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               style={{
                 padding: '8px 14px',
                 borderRadius: '8px',
-                border: '1px solid #eff6ff',
-                background: '#eff6ff',
-                color: '#1e40af',
+                border: '1px solid #cde4c9',
+                background: '#e8f2e5',
+                color: '#17652f',
                 fontSize: '0.82rem',
-                fontWeight: '700',
+                fontWeight: '600',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#d9ebdc'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#e8f2e5'; }}
               title="Log an external lead or walk-in site visit"
             >
-              <Car size={14} color="#1a73e8" />
+              <Car size={14} color="#17652f" />
               Log Site Visit
             </button>
           )}
@@ -796,7 +796,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                         onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       >
-                        <FileSpreadsheet size={15} color="#2563eb" />
+                        <FileSpreadsheet size={15} color="#17652f" />
                         <span>Bulk Excel Upload</span>
                       </button>
                     )}
@@ -946,20 +946,20 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               style={{
                 padding: '8px 18px',
                 borderRadius: '8px',
-                background: '#1a73e8',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.84rem',
-                fontWeight: '700',
+                fontWeight: '600',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
+                boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#1557b0'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#1a73e8'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#125225'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#17652f'; }}
             >
               <UserPlus size={15} />
               + Add New Lead
@@ -981,10 +981,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
-          background: '#f1f5f9',
+          background: '#faf9f6',
           padding: '4px',
           borderRadius: '10px',
-          border: '1px solid #e2e8f0',
+          border: '1px solid #e8e6df',
           gap: '4px'
         }}>
           {/* Tab 1: All Pipeline Leads */}
@@ -996,10 +996,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               borderRadius: '7px',
               border: 'none',
               fontSize: '0.82rem',
-              fontWeight: activeWindow === 'all' ? '800' : '600',
-              background: activeWindow === 'all' ? '#ffffff' : 'transparent',
-              color: activeWindow === 'all' ? '#1a73e8' : '#64748b',
-              boxShadow: activeWindow === 'all' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              fontWeight: activeWindow === 'all' ? '700' : '500',
+              background: activeWindow === 'all' ? '#17652f' : 'transparent',
+              color: activeWindow === 'all' ? '#ffffff' : '#596372',
+              boxShadow: activeWindow === 'all' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
@@ -1007,15 +1007,15 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               transition: 'all 0.15s ease'
             }}
           >
-            <Users size={14} color={activeWindow === 'all' ? '#1a73e8' : '#64748b'} />
+            <Users size={14} color={activeWindow === 'all' ? '#ffffff' : '#596372'} />
             <span>All Leads</span>
             <span style={{
               fontSize: '0.70rem',
               padding: '1px 6px',
               borderRadius: '10px',
-              fontWeight: '800',
-              background: activeWindow === 'all' ? '#e8f0fe' : '#e2e8f0',
-              color: activeWindow === 'all' ? '#1a73e8' : '#475569'
+              fontWeight: '700',
+              background: activeWindow === 'all' ? '#e8f2e5' : '#e8e6df',
+              color: activeWindow === 'all' ? '#17652f' : '#596372'
             }}>
               {leads.length}
             </span>
@@ -1030,10 +1030,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               borderRadius: '7px',
               border: 'none',
               fontSize: '0.82rem',
-              fontWeight: activeWindow === 'assigned_to_me' ? '800' : '600',
-              background: activeWindow === 'assigned_to_me' ? '#ffffff' : 'transparent',
-              color: activeWindow === 'assigned_to_me' ? '#1a73e8' : '#64748b',
-              boxShadow: activeWindow === 'assigned_to_me' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              fontWeight: activeWindow === 'assigned_to_me' ? '700' : '500',
+              background: activeWindow === 'assigned_to_me' ? '#17652f' : 'transparent',
+              color: activeWindow === 'assigned_to_me' ? '#ffffff' : '#596372',
+              boxShadow: activeWindow === 'assigned_to_me' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
@@ -1041,15 +1041,15 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               transition: 'all 0.15s ease'
             }}
           >
-            <UserCheck size={14} color={activeWindow === 'assigned_to_me' ? '#1a73e8' : '#64748b'} />
+            <UserCheck size={14} color={activeWindow === 'assigned_to_me' ? '#ffffff' : '#596372'} />
             <span>Assigned to Me</span>
             <span style={{
               fontSize: '0.70rem',
               padding: '1px 6px',
               borderRadius: '10px',
-              fontWeight: '800',
-              background: activeWindow === 'assigned_to_me' ? '#e8f0fe' : '#e2e8f0',
-              color: activeWindow === 'assigned_to_me' ? '#1a73e8' : '#475569'
+              fontWeight: '700',
+              background: activeWindow === 'assigned_to_me' ? '#e8f2e5' : '#e8e6df',
+              color: activeWindow === 'assigned_to_me' ? '#17652f' : '#596372'
             }}>
               {myLeads.length}
             </span>
@@ -1066,7 +1066,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               fontSize: '0.82rem',
               fontWeight: activeWindow === 'site_visits' ? '800' : '600',
               background: activeWindow === 'site_visits' ? '#ffffff' : 'transparent',
-              color: activeWindow === 'site_visits' ? '#1e40af' : '#64748b',
+              color: activeWindow === 'site_visits' ? '#17652f' : '#64748b',
               boxShadow: activeWindow === 'site_visits' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
               cursor: 'pointer',
               display: 'inline-flex',
@@ -1075,15 +1075,15 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               transition: 'all 0.15s ease'
             }}
           >
-            <Car size={14} color={activeWindow === 'site_visits' ? '#1e40af' : '#64748b'} />
+            <Car size={14} color={activeWindow === 'site_visits' ? '#17652f' : '#64748b'} />
             <span>Site Visits</span>
             <span style={{
               fontSize: '0.70rem',
               padding: '1px 6px',
               borderRadius: '10px',
               fontWeight: '800',
-              background: activeWindow === 'site_visits' ? '#eff6ff' : '#e2e8f0',
-              color: activeWindow === 'site_visits' ? '#1e40af' : '#475569'
+              background: activeWindow === 'site_visits' ? '#e8f2e5' : '#e2e8f0',
+              color: activeWindow === 'site_visits' ? '#17652f' : '#475569'
             }}>
               {allSiteVisits.length}
             </span>
@@ -1111,12 +1111,12 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               gap: '14px',
               borderRadius: '12px',
               cursor: 'pointer',
-              border: siteVisitFilter === 'all' ? '2px solid #1e40af' : '1px solid #e2e8f0',
+              border: siteVisitFilter === 'all' ? '2px solid #17652f' : '1px solid #e2e8f0',
               background: siteVisitFilter === 'all' ? '#faf5ff' : '#ffffff',
               transition: 'all 0.15s ease'
             }}
           >
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Car size={20} />
             </div>
             <div>
@@ -1140,19 +1140,19 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               gap: '14px',
               borderRadius: '12px',
               cursor: 'pointer',
-              border: siteVisitFilter === 'scheduled' ? '2px solid #2563eb' : '1px solid #e2e8f0',
-              background: siteVisitFilter === 'scheduled' ? '#eff6ff' : '#ffffff',
+              border: siteVisitFilter === 'scheduled' ? '2px solid #17652f' : '1px solid #e2e8f0',
+              background: siteVisitFilter === 'scheduled' ? '#e8f2e5' : '#ffffff',
               transition: 'all 0.15s ease'
             }}
           >
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Calendar size={20} />
             </div>
             <div>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Scheduled & Upcoming
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: scheduledVisitsCount > 0 ? '#1d4ed8' : '#0f172a' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: scheduledVisitsCount > 0 ? '#17652f' : '#0f172a' }}>
                 {scheduledVisitsCount}
               </div>
             </div>
@@ -1169,19 +1169,19 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               gap: '14px',
               borderRadius: '12px',
               cursor: 'pointer',
-              border: siteVisitFilter === 'completed' ? '2px solid #1a73e8' : '1px solid #e2e8f0',
-              background: siteVisitFilter === 'completed' ? '#eff6ff' : '#ffffff',
+              border: siteVisitFilter === 'completed' ? '2px solid #17652f' : '1px solid #e2e8f0',
+              background: siteVisitFilter === 'completed' ? '#e8f2e5' : '#ffffff',
               transition: 'all 0.15s ease'
             }}
           >
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CheckCircle2 size={20} />
             </div>
             <div>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Completed Tours
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#1e40af' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#17652f' }}>
                 {completedVisitsCount}
               </div>
             </div>
@@ -1253,7 +1253,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
         }}>
           {/* Card 1: Total Prospects */}
           <div className="g-card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px', borderRadius: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Users size={20} />
             </div>
             <div>
@@ -1268,7 +1268,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
           {/* Card 2: Next Up in Rotation (Window 1) or My Portfolio Share (Window 2) */}
           <div className="g-card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px', borderRadius: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Zap size={20} />
             </div>
             <div>
@@ -1304,7 +1304,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                 onClick={handleDistributeRoundRobin}
                 style={{
                   padding: '6px 10px',
-                  background: '#1a73e8',
+                  background: '#17652f',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '6px',
@@ -1325,7 +1325,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
           {/* Card 4: Pending Action / Site Visits */}
           <div className="g-card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px', borderRadius: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#faf5ff', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#faf5ff', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Calendar size={20} />
             </div>
             <div>
@@ -1340,7 +1340,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
           {/* Card 5: Meta Ads Inflow */}
           <div className="g-card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px', borderRadius: '12px' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e8f2e5', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Globe size={20} />
             </div>
             <div>
@@ -1432,7 +1432,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#1a73e8';
+                    e.target.style.borderColor = '#17652f';
                     e.target.style.boxShadow = '0 0 0 3px rgba(26,115,232,0.12)';
                   }}
                   onBlur={(e) => {
@@ -1475,11 +1475,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       margin: 0,
                       boxSizing: 'border-box',
                       fontSize: '0.80rem',
-                      color: selectedRepFilter !== 'all' ? '#1a73e8' : '#1e293b',
+                      color: selectedRepFilter !== 'all' ? '#17652f' : '#1e293b',
                       fontWeight: selectedRepFilter !== 'all' ? '700' : '600',
                       borderRadius: '8px',
-                      border: selectedRepFilter !== 'all' ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
-                      background: selectedRepFilter !== 'all' ? '#eff6ff' : '#ffffff',
+                      border: selectedRepFilter !== 'all' ? '1.5px solid #17652f' : '1px solid #cbd5e1',
+                      background: selectedRepFilter !== 'all' ? '#e8f2e5' : '#ffffff',
                       cursor: 'pointer'
                     }}
                     title="Filter by assigned sales representative"
@@ -1517,7 +1517,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     color: stageFilter ? '#0f172a' : '#1e293b',
                     fontWeight: '700',
                     borderRadius: '8px',
-                    border: stageFilter ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
+                    border: stageFilter ? '1.5px solid #17652f' : '1px solid #cbd5e1',
                     background: stageFilter ? '#f1f5f9' : '#ffffff',
                     cursor: 'pointer'
                   }}
@@ -1548,7 +1548,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       padding: '0 12px',
                       borderRadius: '8px',
                       border: '1px solid #0f172a',
-                      background: 'linear-gradient(135deg, #0f172a 0%, #0f172a 100%)',
+                      background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
                       color: '#ffffff',
                       fontSize: '0.78rem',
                       fontWeight: '800',
@@ -1575,9 +1575,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     height: '38px',
                     padding: '0 12px',
                     borderRadius: '8px',
-                    border: (modeFilter || statusFilter || showAdvancedFilters) ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
-                    background: (modeFilter || statusFilter || showAdvancedFilters) ? '#eff6ff' : '#ffffff',
-                    color: (modeFilter || statusFilter || showAdvancedFilters) ? '#1a73e8' : '#475569',
+                    border: (modeFilter || statusFilter || showAdvancedFilters) ? '1.5px solid #17652f' : '1px solid #cbd5e1',
+                    background: (modeFilter || statusFilter || showAdvancedFilters) ? '#e8f2e5' : '#ffffff',
+                    color: (modeFilter || statusFilter || showAdvancedFilters) ? '#17652f' : '#475569',
                     fontSize: '0.80rem',
                     fontWeight: '700',
                     cursor: 'pointer',
@@ -1597,7 +1597,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       width: '7px',
                       height: '7px',
                       borderRadius: '50%',
-                      background: '#1a73e8'
+                      background: '#17652f'
                     }} />
                   )}
                 </button>
@@ -1690,11 +1690,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     margin: 0,
                     boxSizing: 'border-box',
                     fontSize: '0.80rem',
-                    color: modeFilter ? '#1a73e8' : '#1e293b',
+                    color: modeFilter ? '#17652f' : '#1e293b',
                     fontWeight: modeFilter ? '700' : '600',
                     borderRadius: '6px',
-                    border: modeFilter ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
-                    background: modeFilter ? '#eff6ff' : '#ffffff',
+                    border: modeFilter ? '1.5px solid #17652f' : '1px solid #cbd5e1',
+                    background: modeFilter ? '#e8f2e5' : '#ffffff',
                     cursor: 'pointer'
                   }}
                   title="Filter by interaction channel"
@@ -1720,11 +1720,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     margin: 0,
                     boxSizing: 'border-box',
                     fontSize: '0.80rem',
-                    color: statusFilter ? '#1a73e8' : '#1e293b',
+                    color: statusFilter ? '#17652f' : '#1e293b',
                     fontWeight: statusFilter ? '700' : '600',
                     borderRadius: '6px',
-                    border: statusFilter ? '1.5px solid #1a73e8' : '1px solid #cbd5e1',
-                    background: statusFilter ? '#eff6ff' : '#ffffff',
+                    border: statusFilter ? '1.5px solid #17652f' : '1px solid #cbd5e1',
+                    background: statusFilter ? '#e8f2e5' : '#ffffff',
                     cursor: 'pointer'
                   }}
                   title="Filter by task progress"
@@ -1772,10 +1772,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           {[
             { id: 'all', label: 'All Leads', count: totalLeads },
             { id: 'pending', label: 'Pending Action', count: pendingFollowUps, color: '#334155' },
-            { id: 'visits', label: 'Site Visits', count: siteVisitsCount, icon: Car, color: '#1e40af' },
+            { id: 'visits', label: 'Site Visits', count: siteVisitsCount, icon: Car, color: '#17652f' },
             { id: 'meta_ads', label: 'Meta Ads', count: metaLeadsCount, icon: Globe, color: '#0284c7' },
             { id: 'sales_unassigned', label: 'Unassigned', count: unassignedCount, icon: UserX, color: '#334155' },
-            { id: 'assigned', label: 'Unit Assigned', count: assignedFlatsCount, icon: Home, color: '#7e22ce' },
+            { id: 'assigned', label: 'Unit Assigned', count: assignedFlatsCount, icon: Home, color: '#17652f' },
           ].map((tab) => {
             const isActive = quickFilter === tab.id;
             const Icon = tab.icon;
@@ -1789,9 +1789,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   borderRadius: '20px',
                   fontSize: '0.76rem',
                   fontWeight: isActive ? '800' : '600',
-                  border: isActive ? '1px solid #1a73e8' : '1px solid #e2e8f0',
-                  background: isActive ? '#e8f0fe' : '#ffffff',
-                  color: isActive ? '#1a73e8' : '#475569',
+                  border: isActive ? '1px solid #17652f' : '1px solid #e2e8f0',
+                  background: isActive ? '#e8f2e5' : '#ffffff',
+                  color: isActive ? '#17652f' : '#475569',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -1801,14 +1801,14 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   boxShadow: isActive ? '0 1px 2px rgba(26,115,232,0.15)' : 'none'
                 }}
               >
-                {Icon && <Icon size={12} color={isActive ? '#1a73e8' : (tab.color || '#64748b')} />}
+                {Icon && <Icon size={12} color={isActive ? '#17652f' : (tab.color || '#64748b')} />}
                 <span>{tab.label}</span>
                 <span style={{
                   fontSize: '0.68rem',
                   fontWeight: '800',
                   padding: '1px 6px',
                   borderRadius: '10px',
-                  background: isActive ? '#1a73e8' : '#f1f5f9',
+                  background: isActive ? '#17652f' : '#f1f5f9',
                   color: isActive ? '#ffffff' : '#64748b',
                   minWidth: '16px',
                   textAlign: 'center'
@@ -1826,7 +1826,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
       {/* ========================================================================= */}
       {displayedLeads.length === 0 ? (
         <div className="g-card" style={{ textAlign: 'center', padding: '60px 24px', borderRadius: '12px' }}>
-          <Users size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#1a73e8' }} />
+          <Users size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#17652f' }} />
           <h3 style={{ color: '#111827', marginBottom: '8px', fontWeight: '800', fontSize: '1.2rem' }}>
             No Leads Found
           </h3>
@@ -1847,9 +1847,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                 padding: '8px 18px',
                 fontSize: '0.84rem',
                 fontWeight: '700',
-                color: '#1d4ed8',
-                backgroundColor: '#eff6ff',
-                border: '1px solid #bfdbfe',
+                color: '#17652f',
+                backgroundColor: '#e8f2e5',
+                border: '1px solid #cde4c9',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 display: 'inline-flex',
@@ -1857,7 +1857,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                 gap: '6px'
               }}
             >
-              <FileSpreadsheet size={15} color="#2563eb" />
+              <FileSpreadsheet size={15} color="#17652f" />
               Bulk Upload via Excel
             </button>
           </div>
@@ -1906,7 +1906,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     onClick={() => setSelectedLeadForDrawer(lead)}
                     style={{
                       borderBottom: '1px solid #f1f5f9',
-                      backgroundColor: isSelectedInDrawer ? '#eff6ff' : 'transparent',
+                      backgroundColor: isSelectedInDrawer ? '#e8f2e5' : 'transparent',
                       cursor: 'pointer',
                       transition: 'background-color 0.15s ease'
                     }}
@@ -1920,15 +1920,15 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           width: '40px',
                           height: '40px',
                           borderRadius: '50%',
-                          background: isAssignedToCurrentUser ? '#eff6ff' : '#e8f0fe',
-                          color: isAssignedToCurrentUser ? '#1e40af' : '#1a73e8',
+                          background: isAssignedToCurrentUser ? '#e8f2e5' : '#e8f2e5',
+                          color: isAssignedToCurrentUser ? '#17652f' : '#17652f',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontWeight: '800',
                           fontSize: '0.92rem',
                           flexShrink: 0,
-                          border: isAssignedToCurrentUser ? '2px solid #bfdbfe' : '1px solid #d2e3fc',
+                          border: isAssignedToCurrentUser ? '2px solid #cde4c9' : '1px solid #d2e3fc',
                           position: 'relative'
                         }}>
                           {lead.name ? lead.name.charAt(0).toUpperCase() : 'P'}
@@ -1942,7 +1942,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 width: '10px',
                                 height: '10px',
                                 borderRadius: '50%',
-                                backgroundColor: '#1a73e8',
+                                backgroundColor: '#17652f',
                                 border: '2px solid #ffffff'
                               }}
                             />
@@ -1980,11 +1980,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 style={{
                                   fontSize: '0.66rem',
                                   fontWeight: '800',
-                                  backgroundColor: '#eff6ff',
-                                  color: '#1e40af',
+                                  backgroundColor: '#e8f2e5',
+                                  color: '#17652f',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
-                                  border: '1px solid #dbeafe',
+                                  border: '1px solid #e8f2e5',
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px'
@@ -1999,11 +1999,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 style={{
                                   fontSize: '0.66rem',
                                   fontWeight: '800',
-                                  backgroundColor: '#eff6ff',
-                                  color: '#1e3a8a',
+                                  backgroundColor: '#e8f2e5',
+                                  color: '#17652f',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
-                                  border: '1px solid #bfdbfe',
+                                  border: '1px solid #cde4c9',
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px'
@@ -2019,11 +2019,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 style={{
                                   fontSize: '0.66rem',
                                   fontWeight: '700',
-                                  backgroundColor: '#eff6ff',
-                                  color: '#1d4ed8',
+                                  backgroundColor: '#e8f2e5',
+                                  color: '#17652f',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
-                                  border: '1px solid #bfdbfe',
+                                  border: '1px solid #cde4c9',
                                 }}
                                 title={`Transferred from Agent ${lead.agentId?.firstName || ''}`}
                               >
@@ -2058,7 +2058,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                             width: '28px',
                             height: '28px',
                             borderRadius: '50%',
-                            background: isAssignedToCurrentUser ? '#1a73e8' : '#4f46e5',
+                            background: isAssignedToCurrentUser ? '#17652f' : '#17652f',
                             color: '#ffffff',
                             display: 'flex',
                             alignItems: 'center',
@@ -2078,11 +2078,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                                 <span style={{
                                   fontSize: '0.64rem',
                                   fontWeight: '800',
-                                  background: '#eff6ff',
-                                  color: '#1e40af',
+                                  background: '#e8f2e5',
+                                  color: '#17652f',
                                   padding: '1px 5px',
                                   borderRadius: '4px',
-                                  border: '1px solid #bfdbfe'
+                                  border: '1px solid #cde4c9'
                                 }}>
                                   You
                                 </span>
@@ -2140,7 +2140,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       {assignedFlat ? (
                         <div style={{
                           background: '#faf5ff',
-                          border: '1px solid #dbeafe',
+                          border: '1px solid #e8f2e5',
                           padding: '3px 8px',
                           borderRadius: '5px',
                           display: 'inline-flex',
@@ -2148,12 +2148,12 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           gap: '4px',
                           marginBottom: '4px'
                         }}>
-                          <Home size={11} color="#1d4ed8" />
-                          <span style={{ fontWeight: '800', color: '#7e22ce', fontSize: '0.74rem' }}>
+                          <Home size={11} color="#17652f" />
+                          <span style={{ fontWeight: '800', color: '#17652f', fontSize: '0.74rem' }}>
                             Flat {assignedFlat.flatNumber}
                           </span>
                           {assignedFlat.projectId?.projectName && (
-                            <span style={{ fontSize: '0.68rem', color: '#a855f7' }}>
+                            <span style={{ fontSize: '0.68rem', color: '#4a9e68' }}>
                               ({assignedFlat.projectId.projectName})
                             </span>
                           )}
@@ -2168,11 +2168,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               <span style={{
                                 fontSize: '0.67rem',
                                 fontWeight: '800',
-                                color: '#1e40af',
-                                background: '#eff6ff',
+                                color: '#17652f',
+                                background: '#e8f2e5',
                                 padding: '1px 6px',
                                 borderRadius: '4px',
-                                border: '1px solid #bfdbfe'
+                                border: '1px solid #cde4c9'
                               }}>
                                 ₹{typeof lead.budget === 'number' ? lead.budget.toLocaleString('en-IN') : lead.budget}
                               </span>
@@ -2181,8 +2181,8 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               <span style={{
                                 fontSize: '0.67rem',
                                 fontWeight: '700',
-                                color: '#00285c',
-                                background: '#e0e7ff',
+                                color: '#17652f',
+                                background: '#e8f2e5',
                                 padding: '1px 6px',
                                 borderRadius: '4px',
                                 border: '1px solid #c7d2fe'
@@ -2197,9 +2197,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       {/* Scheduled Task Pill */}
                       {pendingFollowUp && pendingFollowUp.nextFollowUpDate ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <div style={{ fontSize: '0.72rem', color: isScheduledByHead ? '#1d4ed8' : '#334155', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div style={{ fontSize: '0.72rem', color: isScheduledByHead ? '#17652f' : '#334155', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {isScheduledByHead ? (
-                              <span style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '1px 5px', borderRadius: '4px', fontSize: '0.65rem' }}>
+                              <span style={{ background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '1px 5px', borderRadius: '4px', fontSize: '0.65rem' }}>
                                 Head Task
                               </span>
                             ) : (
@@ -2238,9 +2238,9 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                         style={{
                           padding: '6px 14px',
                           borderRadius: '7px',
-                          border: '1px solid #bfdbfe',
-                          background: '#eff6ff',
-                          color: '#1d4ed8',
+                          border: '1px solid #cde4c9',
+                          background: '#e8f2e5',
+                          color: '#17652f',
                           fontSize: '0.78rem',
                           fontWeight: '800',
                           cursor: 'pointer',
@@ -2251,12 +2251,12 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           transition: 'all 0.15s ease'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#dbeafe';
-                          e.currentTarget.style.borderColor = '#93c5fd';
+                          e.currentTarget.style.background = '#e8f2e5';
+                          e.currentTarget.style.borderColor = '#86c8a0';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = '#eff6ff';
-                          e.currentTarget.style.borderColor = '#bfdbfe';
+                          e.currentTarget.style.background = '#e8f2e5';
+                          e.currentTarget.style.borderColor = '#cde4c9';
                         }}
                         title="Open Lead Workspace Panel"
                       >
@@ -2288,7 +2288,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
               <span>Meta Ads: <strong style={{ color: '#0284c7' }}>{metaLeadsCount}</strong></span>
               <span>Unassigned: <strong style={{ color: '#334155' }}>{unassignedCount}</strong></span>
-              <span>Assigned Flats: <strong style={{ color: '#7e22ce' }}>{assignedFlatsCount}</strong></span>
+              <span>Assigned Flats: <strong style={{ color: '#17652f' }}>{assignedFlatsCount}</strong></span>
               <span>Pending Action: <strong style={{ color: '#334155' }}>{pendingFollowUps}</strong></span>
             </div>
           </div>

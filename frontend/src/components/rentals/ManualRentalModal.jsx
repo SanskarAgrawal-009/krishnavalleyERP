@@ -374,7 +374,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: isCompleted ? '#1a73e8' : isActive ? '#2563eb' : '#e2e8f0',
+                    background: isCompleted ? '#17652f' : isActive ? '#17652f' : '#e2e8f0',
                     color: isCompleted || isActive ? '#ffffff' : '#64748b',
                     fontSize: '0.8rem',
                     fontWeight: '800',
@@ -387,7 +387,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                     <div style={{
                       fontSize: '0.78rem',
                       fontWeight: isActive ? '800' : '600',
-                      color: isActive ? '#0f172a' : isCompleted ? '#1a73e8' : '#64748b',
+                      color: isActive ? '#0f172a' : isCompleted ? '#17652f' : '#64748b',
                       lineHeight: 1.2
                     }}>
                       {step.title}
@@ -403,7 +403,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                     flex: 1,
                     height: '2px',
                     margin: '0 12px',
-                    background: currentStep > idx + 1 ? '#1a73e8' : '#e2e8f0'
+                    background: currentStep > idx + 1 ? '#17652f' : '#e2e8f0'
                   }} />
                 )}
               </React.Fragment>
@@ -437,22 +437,22 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
           {currentStep === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fadeIn 0.2s ease' }}>
               <div style={{
-                background: '#eff6ff',
-                border: '1px solid #bfdbfe',
+                background: '#e8f2e5',
+                border: '1px solid #cde4c9',
                 borderRadius: '8px',
                 padding: '12px 14px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                <div style={{ background: '#dbeafe', padding: '8px', borderRadius: '50%', color: '#1d4ed8' }}>
+                <div style={{ background: '#e8f2e5', padding: '8px', borderRadius: '50%', color: '#17652f' }}>
                   <Home size={18} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#1e3a8a', margin: 0 }}>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#17652f', margin: 0 }}>
                     Step 1: Property Unit & Registered Owner
                   </h4>
-                  <p style={{ fontSize: '0.74rem', color: '#3b82f6', margin: '2px 0 0' }}>
+                  <p style={{ fontSize: '0.74rem', color: '#17652f', margin: '2px 0 0' }}>
                     Select the unit to enroll into the 3-Year Guaranteed Rent-Back Scheme.
                   </p>
                 </div>
@@ -496,7 +496,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                       style={{
                         background: 'transparent',
                         border: 'none',
-                        color: '#2563eb',
+                        color: '#17652f',
                         fontSize: '0.74rem',
                         fontWeight: '700',
                         cursor: 'pointer'
@@ -538,21 +538,21 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                         placeholder="Owner Name"
                         value={newOwnerName}
                         onChange={(e) => setNewOwnerName(e.target.value)}
-                        style={{ padding: '8px 10px', fontSize: '0.82rem', borderRadius: '6px', border: '1px solid #2563eb' }}
+                        style={{ padding: '8px 10px', fontSize: '0.82rem', borderRadius: '6px', border: '1px solid #17652f' }}
                       />
                       <input
                         type="text"
                         placeholder="Mobile"
                         value={newOwnerPhone}
                         onChange={(e) => setNewOwnerPhone(e.target.value)}
-                        style={{ padding: '8px 10px', fontSize: '0.82rem', borderRadius: '6px', border: '1px solid #2563eb' }}
+                        style={{ padding: '8px 10px', fontSize: '0.82rem', borderRadius: '6px', border: '1px solid #17652f' }}
                       />
                       <button
                         type="button"
                         onClick={handleCreateNewOwner}
                         style={{
                           padding: '8px 14px',
-                          background: '#2563eb',
+                          background: '#17652f',
                           color: '#fff',
                           border: 'none',
                           borderRadius: '6px',
@@ -570,17 +570,17 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
 
               {/* Status Banner */}
               {isFetchingOwner && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#2563eb', background: '#eff6ff', padding: '8px 12px', borderRadius: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', color: '#17652f', background: '#e8f2e5', padding: '8px 12px', borderRadius: '6px' }}>
                   <Loader2 size={14} className="spin" /> Verifying ownership records for this unit...
                 </div>
               )}
 
               {fetchedOwnerInfo && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.8rem', color: '#1e40af', background: '#eff6ff', border: '1px solid #dbeafe', padding: '10px 14px', borderRadius: '8px' }}>
-                  <CheckCircle2 size={18} color="#1a73e8" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.8rem', color: '#17652f', background: '#e8f2e5', border: '1px solid #e8f2e5', padding: '10px 14px', borderRadius: '8px' }}>
+                  <CheckCircle2 size={18} color="#17652f" />
                   <div>
                     <strong>{fetchedOwnerInfo.name}</strong> • Mobile: {fetchedOwnerInfo.mobileNo || 'N/A'} {fetchedOwnerInfo.email ? `• ${fetchedOwnerInfo.email}` : ''}
-                    <div style={{ fontSize: '0.72rem', color: '#1e40af', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#17652f', marginTop: '2px' }}>
                       Status: Verified Titleholder
                     </div>
                   </div>
@@ -593,22 +593,22 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
           {currentStep === 2 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fadeIn 0.2s ease' }}>
               <div style={{
-                background: '#eff6ff',
-                border: '1px solid #bfdbfe',
+                background: '#e8f2e5',
+                border: '1px solid #cde4c9',
                 borderRadius: '8px',
                 padding: '12px 14px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                <div style={{ background: '#eff6ff', padding: '8px', borderRadius: '50%', color: '#1a73e8' }}>
+                <div style={{ background: '#e8f2e5', padding: '8px', borderRadius: '50%', color: '#17652f' }}>
                   <Repeat size={18} />
                 </div>
                 <div>
                   <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#001a41', margin: 0 }}>
                     Step 2: Guaranteed Rent-Back Financial Terms
                   </h4>
-                  <p style={{ fontSize: '0.74rem', color: '#1e40af', margin: '2px 0 0' }}>
+                  <p style={{ fontSize: '0.74rem', color: '#17652f', margin: '2px 0 0' }}>
                     Configure monthly rent amount, TDS deductions, and auto-disbursement.
                   </p>
                 </div>
@@ -695,7 +695,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
               {/* Real-Time Calculation Preview Card */}
               <div style={{
                 background: '#ffffff',
-                border: '1.5px solid #dbeafe',
+                border: '1.5px solid #e8f2e5',
                 borderRadius: '8px',
                 padding: '12px 16px',
                 display: 'grid',
@@ -710,17 +710,17 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                 </div>
 
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: isTds ? '#0f172a' : '#1e40af', fontWeight: '700', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '0.7rem', color: isTds ? '#0f172a' : '#17652f', fontWeight: '700', textTransform: 'uppercase' }}>
                     {isTds ? `TDS (${tdsPct}%)` : 'TDS Withheld'}
                   </span>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '800', color: isTds ? '#0f172a' : '#1e40af' }}>
+                  <div style={{ fontSize: '1.1rem', fontWeight: '800', color: isTds ? '#0f172a' : '#17652f' }}>
                     {isTds ? `- ${formatINR(tdsAmount)}` : '₹0 (100% Payout)'}
                   </div>
                 </div>
 
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: '700', textTransform: 'uppercase' }}>Net Monthly to Owner</span>
-                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1a73e8' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '700', textTransform: 'uppercase' }}>Net Monthly to Owner</span>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f' }}>
                     {formatINR(netMonthlyPayout)} / mo
                   </div>
                 </div>
@@ -847,7 +847,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                   <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>
                     Monthly Net
                   </div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1a73e8' }}>
+                  <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
                     {formatINR(netMonthlyPayout)} / mo
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -859,7 +859,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                   <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>
                     36-Month Commitment
                   </div>
-                  <div style={{ fontSize: '1rem', fontWeight: '800', color: '#2563eb' }}>
+                  <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f' }}>
                     {formatINR(totalCommitment)}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -930,7 +930,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                     gap: '6px',
                     padding: '8px 18px',
                     borderRadius: '6px',
-                    background: '#2563eb',
+                    background: '#17652f',
                     border: 'none',
                     color: '#ffffff',
                     fontSize: '0.82rem',

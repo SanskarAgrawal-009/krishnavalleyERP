@@ -87,20 +87,22 @@ export const StatCard = ({
               borderRadius: '9999px',
               backgroundColor:
                 trendType === 'positive'
-                  ? '#eff6ff'
+                  ? '#e8f2e5'
                   : trendType === 'negative'
-                  ? '#f1f5f9'
-                  : '#f8fafc',
+                  ? '#fef2f2'
+                  : '#f8f9fa',
               color:
                 trendType === 'positive'
-                  ? '#1d4ed8'
+                  ? '#17652f'
                   : trendType === 'negative'
-                  ? '#0f172a'
-                  : '#475569',
+                  ? '#b91c1c'
+                  : '#4b5563',
               border:
                 trendType === 'positive'
-                  ? '1px solid #bfdbfe'
-                  : '1px solid #cbd5e1'
+                  ? '1px solid #cde4c9'
+                  : trendType === 'negative'
+                  ? '1px solid #fecaca'
+                  : '1px solid #e8e6df'
             }}
           >
             {trend || subtext || badge}

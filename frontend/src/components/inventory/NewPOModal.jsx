@@ -229,8 +229,8 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
               onClick={handleAddItem}
               style={{
                 padding: '6px 12px',
-                background: '#e8f0fe',
-                color: '#1a73e8',
+                background: '#e8f2e5',
+                color: '#17652f',
                 border: '1px solid #c7d2fe',
                 borderRadius: '6px',
                 fontSize: '0.78rem',
@@ -378,11 +378,11 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
         {/* PO Total Summary */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8f9fa', border: '1px solid #dadce0', padding: '12px 18px', borderRadius: '8px' }}>
           <div style={{ fontSize: '0.82rem', color: '#4b5563' }}>
-            Subtotal: <strong style={{ color: '#111827' }}>₹{Math.round(subtotal).toLocaleString('en-IN')}</strong> | GST Tax: <strong style={{ color: '#1a73e8' }}>₹{Math.round(totalTax).toLocaleString('en-IN')}</strong>
+            Subtotal: <strong style={{ color: '#111827' }}>₹{Math.round(subtotal).toLocaleString('en-IN')}</strong> | GST Tax: <strong style={{ color: '#17652f' }}>₹{Math.round(totalTax).toLocaleString('en-IN')}</strong>
           </div>
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700', textTransform: 'uppercase' }}>TOTAL PO VALUE:</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f' }}>
               ₹{Math.round(grandTotal).toLocaleString('en-IN')}
             </div>
           </div>
@@ -408,7 +408,7 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
             type="submit"
             style={{
               padding: '9px 22px',
-              background: '#1a73e8',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

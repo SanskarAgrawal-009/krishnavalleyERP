@@ -306,7 +306,7 @@ export const BulkRentalDocumentsModal = ({
         <div
           style={{
             padding: '18px 24px',
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)',
+            background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
             color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
@@ -372,7 +372,7 @@ export const BulkRentalDocumentsModal = ({
           <div
             style={{
               background: '#f8fafc',
-              border: '1.5px solid #bfdbfe',
+              border: '1.5px solid #cde4c9',
               borderRadius: '12px',
               overflow: 'hidden'
             }}
@@ -381,7 +381,7 @@ export const BulkRentalDocumentsModal = ({
               onClick={() => setShowTemplateGuide(!showTemplateGuide)}
               style={{
                 padding: '12px 18px',
-                background: '#eff6ff',
+                background: '#e8f2e5',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -390,15 +390,15 @@ export const BulkRentalDocumentsModal = ({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={16} color="#2563eb" />
-                <span style={{ fontSize: '0.86rem', fontWeight: '800', color: '#1e40af' }}>
+                <Sparkles size={16} color="#17652f" />
+                <span style={{ fontSize: '0.86rem', fontWeight: '800', color: '#17652f' }}>
                   File Naming Template &amp; Automated Renaming Rules
                 </span>
                 <span
                   style={{
                     fontSize: '0.68rem',
                     fontWeight: '700',
-                    background: '#2563eb',
+                    background: '#17652f',
                     color: '#ffffff',
                     padding: '1px 8px',
                     borderRadius: '10px'
@@ -428,7 +428,7 @@ export const BulkRentalDocumentsModal = ({
                   <div
                     style={{
                       background: '#ffffff',
-                      border: '1px solid #bfdbfe',
+                      border: '1px solid #cde4c9',
                       borderRadius: '10px',
                       padding: '12px 14px',
                       display: 'flex',
@@ -438,8 +438,8 @@ export const BulkRentalDocumentsModal = ({
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <ShieldCheck size={16} color="#1e40af" />
-                        <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#1e3a8a' }}>
+                        <ShieldCheck size={16} color="#17652f" />
+                        <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#17652f' }}>
                           Owner Registry (Sale Deed)
                         </span>
                       </div>
@@ -470,7 +470,7 @@ export const BulkRentalDocumentsModal = ({
                         fontFamily: 'monospace',
                         fontSize: '0.82rem',
                         fontWeight: '700',
-                        color: '#1e40af',
+                        color: '#17652f',
                         border: '1px dashed #cbd5e1'
                       }}
                     >
@@ -495,8 +495,8 @@ export const BulkRentalDocumentsModal = ({
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <FileText size={16} color="#4338ca" />
-                        <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#312e81' }}>
+                        <FileText size={16} color="#17652f" />
+                        <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#17652f' }}>
                           Rent Agreement (Contract)
                         </span>
                       </div>
@@ -527,7 +527,7 @@ export const BulkRentalDocumentsModal = ({
                         fontFamily: 'monospace',
                         fontSize: '0.82rem',
                         fontWeight: '700',
-                        color: '#4338ca',
+                        color: '#17652f',
                         border: '1px dashed #cbd5e1'
                       }}
                     >
@@ -556,14 +556,14 @@ export const BulkRentalDocumentsModal = ({
                       padding: '6px 12px',
                       borderRadius: '7px',
                       background: '#ffffff',
-                      border: '1px solid #2563eb',
-                      color: '#2563eb',
+                      border: '1px solid #17652f',
+                      color: '#17652f',
                       fontSize: '0.76rem',
                       fontWeight: '700',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#e8f2e5'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
                   >
                     <Download size={13} />
@@ -596,9 +596,9 @@ export const BulkRentalDocumentsModal = ({
                     borderRadius: '7px',
                     fontSize: '0.75rem',
                     fontWeight: docTypeMode === m.id ? '700' : '600',
-                    border: docTypeMode === m.id ? '1.5px solid #2563eb' : '1px solid #cbd5e1',
-                    background: docTypeMode === m.id ? '#eff6ff' : '#ffffff',
-                    color: docTypeMode === m.id ? '#1d4ed8' : '#475569',
+                    border: docTypeMode === m.id ? '1.5px solid #17652f' : '1px solid #cbd5e1',
+                    background: docTypeMode === m.id ? '#e8f2e5' : '#ffffff',
+                    color: docTypeMode === m.id ? '#17652f' : '#475569',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
@@ -618,8 +618,8 @@ export const BulkRentalDocumentsModal = ({
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
             style={{
-              border: isDragging ? '2px dashed #2563eb' : '2px dashed #cbd5e1',
-              background: isDragging ? '#eff6ff' : '#f8fafc',
+              border: isDragging ? '2px dashed #17652f' : '2px dashed #cbd5e1',
+              background: isDragging ? '#e8f2e5' : '#f8fafc',
               borderRadius: '14px',
               padding: '30px 20px',
               textAlign: 'center',
@@ -644,7 +644,7 @@ export const BulkRentalDocumentsModal = ({
                 width: '48px',
                 height: '48px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
@@ -656,7 +656,7 @@ export const BulkRentalDocumentsModal = ({
             </div>
             <div>
               <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#1e293b' }}>
-                Drag &amp; drop document files here, or <span style={{ color: '#2563eb', textDecoration: 'underline' }}>Browse</span>
+                Drag &amp; drop document files here, or <span style={{ color: '#17652f', textDecoration: 'underline' }}>Browse</span>
               </div>
               <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '3px' }}>
                 Supports multiple PDFs or images • Max 30MB per file • Up to 100 files at once
@@ -754,7 +754,7 @@ export const BulkRentalDocumentsModal = ({
                         {/* 1. File Name */}
                         <td style={{ padding: '8px 12px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <FileText size={15} color="#2563eb" style={{ flexShrink: 0 }} />
+                            <FileText size={15} color="#17652f" style={{ flexShrink: 0 }} />
                             <div style={{ minWidth: 0 }}>
                               <div
                                 style={{
@@ -935,7 +935,7 @@ export const BulkRentalDocumentsModal = ({
                       )}
                       <span style={{ fontWeight: '700', color: '#1e293b' }}>{res.fileName}</span>
                       {res.flatNumber && (
-                        <span style={{ color: '#2563eb', fontWeight: '600' }}>→ Flat {res.flatNumber}</span>
+                        <span style={{ color: '#17652f', fontWeight: '600' }}>→ Flat {res.flatNumber}</span>
                       )}
                     </div>
                     <span style={{ color: res.status === 'success' ? '#16a34a' : '#dc2626', fontWeight: '600' }}>
@@ -950,7 +950,7 @@ export const BulkRentalDocumentsModal = ({
           {/* Upload progress indicator */}
           {uploading && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: '700', color: '#1e40af' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: '700', color: '#17652f' }}>
                 <span>Uploading documents to server...</span>
                 <span>{uploadProgress}%</span>
               </div>
@@ -959,7 +959,7 @@ export const BulkRentalDocumentsModal = ({
                   style={{
                     height: '100%',
                     width: `${uploadProgress}%`,
-                    background: 'linear-gradient(90deg, #2563eb, #1d4ed8)',
+                    background: 'linear-gradient(90deg, #17652f, #17652f)',
                     transition: 'width 0.3s ease'
                   }}
                 />
@@ -1037,7 +1037,7 @@ export const BulkRentalDocumentsModal = ({
                   gap: '6px',
                   padding: '9px 20px',
                   borderRadius: '8px',
-                  background: readyCount > 0 && !uploading ? '#2563eb' : '#94a3b8',
+                  background: readyCount > 0 && !uploading ? '#17652f' : '#94a3b8',
                   color: '#ffffff',
                   border: 'none',
                   fontSize: '0.82rem',

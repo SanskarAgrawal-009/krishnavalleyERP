@@ -37,10 +37,11 @@
 }
 
 .page-title {
-  font-size: 2.2rem;
-  font-weight: 700;
+  font-family: var(--font-serif, 'Newsreader', 'Lora', 'Georgia', serif);
+  font-size: 2.15rem;
+  font-weight: 600;
   color: var(--on-surface);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   line-height: 1.2;
 }
 
@@ -399,12 +400,12 @@
   }
 
   .mobile-nav-btn.active {
-    color: #1a73e8;
+    color: #17652f;
     font-weight: 700;
   }
 
   .mobile-nav-btn.active svg {
-    color: #1a73e8;
+    color: #17652f;
     transform: scale(1.1);
   }
 
@@ -412,7 +413,7 @@
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    background: #1a73e8;
+    background: #17652f;
     color: #ffffff;
     display: flex;
     align-items: center;

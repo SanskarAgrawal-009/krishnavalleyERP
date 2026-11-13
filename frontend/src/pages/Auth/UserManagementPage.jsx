@@ -831,13 +831,13 @@ export const UserManagementPage = () => {
         return <Award size={18} style={{ color: '#0284c7' }} />;
       case 'Leads':
       case 'CRM':
-        return <Sparkles size={18} style={{ color: '#1a73e8' }} />;
+        return <Sparkles size={18} style={{ color: '#17652f' }} />;
       case 'Properties':
       case 'Rentals':
         return <Building2 size={18} style={{ color: '#059669' }} />;
       case 'Users':
       case 'Roles':
-        return <Users size={18} style={{ color: '#6366f1' }} />;
+        return <Users size={18} style={{ color: '#17652f' }} />;
       case 'Invoices':
       case 'Payments':
         return <DollarSign size={18} style={{ color: '#d97706' }} />;
@@ -904,12 +904,12 @@ export const UserManagementPage = () => {
           backgroundColor: '#ffffff',
           borderRadius: '16px',
           padding: '24px 28px',
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+          border: '1px solid #e8e6df',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
         }}
       >
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <span
               style={{
                 display: 'inline-flex',
@@ -917,12 +917,13 @@ export const UserManagementPage = () => {
                 gap: '5px',
                 padding: '4px 10px',
                 borderRadius: '6px',
-                backgroundColor: 'rgba(26, 115, 232, 0.08)',
-                color: '#1a73e8',
+                backgroundColor: '#e8f2e5',
+                color: '#17652f',
                 fontSize: '0.74rem',
                 fontWeight: '700',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
+                border: '1px solid #cde4c9',
               }}
             >
               <ShieldCheck size={14} />
@@ -935,8 +936,8 @@ export const UserManagementPage = () => {
                 gap: '4px',
                 padding: '4px 8px',
                 borderRadius: '6px',
-                backgroundColor: '#ecfdf5',
-                color: '#059669',
+                backgroundColor: '#e8f2e5',
+                color: '#17652f',
                 fontSize: '0.72rem',
                 fontWeight: '600',
               }}
@@ -945,10 +946,10 @@ export const UserManagementPage = () => {
               Zero-Trust RBAC Active
             </span>
           </div>
-          <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: '600', color: '#1f2937', letterSpacing: '-0.015em' }}>
             Identity & Privilege Governance
           </h1>
-          <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b', marginTop: '4px' }}>
+          <p style={{ margin: 0, fontSize: '0.88rem', color: '#596372', marginTop: '4px' }}>
             Unified directory for ERP operator accounts, granular module permission policies, and regional multi-site authorizations.
           </p>
         </div>
@@ -963,9 +964,9 @@ export const UserManagementPage = () => {
               gap: '6px',
               padding: '9px 14px',
               borderRadius: '9px',
-              border: '1px solid #cbd5e1',
+              border: '1px solid #e8e6df',
               backgroundColor: '#ffffff',
-              color: '#334155',
+              color: '#1f2937',
               fontSize: '0.84rem',
               fontWeight: '600',
               cursor: 'pointer',
@@ -984,16 +985,16 @@ export const UserManagementPage = () => {
               gap: '6px',
               padding: '9px 15px',
               borderRadius: '9px',
-              border: '1px solid #e2e8f0',
-              backgroundColor: '#f8fafc',
-              color: '#1e293b',
+              border: '1px solid #e8e6df',
+              backgroundColor: '#faf9f6',
+              color: '#1f2937',
               fontSize: '0.84rem',
               fontWeight: '600',
               cursor: 'pointer',
               transition: 'all 0.15s ease',
             }}
           >
-            <Shield size={15} style={{ color: '#1a73e8' }} />
+            <Shield size={15} style={{ color: '#17652f' }} />
             <span>Create Custom Role</span>
           </button>
 
@@ -1006,12 +1007,12 @@ export const UserManagementPage = () => {
               padding: '9px 18px',
               borderRadius: '9px',
               border: 'none',
-              backgroundColor: '#1a73e8',
+              backgroundColor: '#17652f',
               color: '#ffffff',
               fontSize: '0.86rem',
               fontWeight: '600',
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(26,115,232,0.3)',
+              boxShadow: '0 1px 3px rgba(23,101,47,0.2)',
               transition: 'all 0.15s ease',
             }}
           >
@@ -1030,12 +1031,12 @@ export const UserManagementPage = () => {
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '14px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid #e8e6df',
             padding: '18px 20px',
             display: 'flex',
             alignItems: 'center',
             gap: '16px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           }}
         >
           <div
@@ -1043,8 +1044,8 @@ export const UserManagementPage = () => {
               width: '46px',
               height: '46px',
               borderRadius: '12px',
-              backgroundColor: '#eff6ff',
-              color: '#1a73e8',
+              backgroundColor: '#e8f2e5',
+              color: '#17652f',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1054,16 +1055,16 @@ export const UserManagementPage = () => {
             <Users size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               System Users
             </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2 }}>
+            <div style={{ fontSize: '1.45rem', fontWeight: '700', color: '#1f2937', lineHeight: 1.2 }}>
               {users.length}{' '}
-              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#059669' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#17652f' }}>
                 ({users.filter((u) => u.status === 'active').length} Active)
               </span>
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '3px' }}>
+            <div style={{ fontSize: '0.74rem', color: '#8c95a4', marginTop: '3px' }}>
               {users.filter((u) => u.status === 'locked' || u.status === 'suspended').length} restricted accounts
             </div>
           </div>
@@ -1074,12 +1075,12 @@ export const UserManagementPage = () => {
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '14px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid #e8e6df',
             padding: '18px 20px',
             display: 'flex',
             alignItems: 'center',
             gap: '16px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           }}
         >
           <div
@@ -1087,8 +1088,8 @@ export const UserManagementPage = () => {
               width: '46px',
               height: '46px',
               borderRadius: '12px',
-              backgroundColor: '#f5f3ff',
-              color: '#7c3aed',
+              backgroundColor: '#f5f3ec',
+              color: '#2d6a4f',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1098,16 +1099,16 @@ export const UserManagementPage = () => {
             <ShieldCheck size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Configured Roles
             </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2 }}>
+            <div style={{ fontSize: '1.45rem', fontWeight: '700', color: '#1f2937', lineHeight: 1.2 }}>
               {roles.length}{' '}
-              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#7c3aed' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#2d6a4f' }}>
                 ({roles.filter((r) => r.isSystemRole).length} Built-in)
               </span>
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '3px' }}>
+            <div style={{ fontSize: '0.74rem', color: '#8c95a4', marginTop: '3px' }}>
               {roles.filter((r) => !r.isSystemRole).length} custom operational roles
             </div>
           </div>
@@ -1118,12 +1119,12 @@ export const UserManagementPage = () => {
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '14px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid #e8e6df',
             padding: '18px 20px',
             display: 'flex',
             alignItems: 'center',
             gap: '16px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           }}
         >
           <div
@@ -1131,8 +1132,8 @@ export const UserManagementPage = () => {
               width: '46px',
               height: '46px',
               borderRadius: '12px',
-              backgroundColor: '#ecfdf5',
-              color: '#059669',
+              backgroundColor: '#e8f2e5',
+              color: '#17652f',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1142,14 +1143,14 @@ export const UserManagementPage = () => {
             <Building2 size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Branch Locations
             </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2 }}>
+            <div style={{ fontSize: '1.45rem', fontWeight: '700', color: '#1f2937', lineHeight: 1.2 }}>
               {branches.length}{' '}
-              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#059669' }}>Hubs</span>
+              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#17652f' }}>Hubs</span>
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '3px' }}>
+            <div style={{ fontSize: '0.74rem', color: '#8c95a4', marginTop: '3px' }}>
               Head Office + regional sites
             </div>
           </div>
@@ -1160,12 +1161,12 @@ export const UserManagementPage = () => {
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '14px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid #e8e6df',
             padding: '18px 20px',
             display: 'flex',
             alignItems: 'center',
             gap: '16px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           }}
         >
           <div
@@ -1173,7 +1174,7 @@ export const UserManagementPage = () => {
               width: '46px',
               height: '46px',
               borderRadius: '12px',
-              backgroundColor: '#fffbeb',
+              backgroundColor: '#fef3c7',
               color: '#d97706',
               display: 'flex',
               alignItems: 'center',
@@ -1184,16 +1185,16 @@ export const UserManagementPage = () => {
             <Sliders size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Permission Capabilities
             </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2 }}>
+            <div style={{ fontSize: '1.45rem', fontWeight: '700', color: '#1f2937', lineHeight: 1.2 }}>
               {permissions.length}{' '}
               <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#d97706' }}>
                 ({Object.keys(permissionGroups).length} Modules)
               </span>
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '3px' }}>
+            <div style={{ fontSize: '0.74rem', color: '#8c95a4', marginTop: '3px' }}>
               Agents, CRM, Sales, Assets & Accounts
             </div>
           </div>
@@ -1206,8 +1207,9 @@ export const UserManagementPage = () => {
       <div
         style={{
           display: 'flex',
-          backgroundColor: '#f1f5f9',
-          padding: '6px',
+          backgroundColor: '#f5f3ec',
+          border: '1px solid #e8e6df',
+          padding: '4px',
           borderRadius: '12px',
           gap: '6px',
           width: 'fit-content',
@@ -1222,24 +1224,24 @@ export const UserManagementPage = () => {
             padding: '9px 18px',
             borderRadius: '9px',
             border: 'none',
-            backgroundColor: activeTab === 'users' ? '#ffffff' : 'transparent',
-            color: activeTab === 'users' ? '#0f172a' : '#64748b',
+            backgroundColor: activeTab === 'users' ? '#17652f' : 'transparent',
+            color: activeTab === 'users' ? '#ffffff' : '#596372',
             fontWeight: activeTab === 'users' ? '700' : '600',
             fontSize: '0.88rem',
             cursor: 'pointer',
-            boxShadow: activeTab === 'users' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+            boxShadow: activeTab === 'users' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
             transition: 'all 0.15s ease',
           }}
         >
-          <Users size={16} style={{ color: activeTab === 'users' ? '#1a73e8' : '#94a3b8' }} />
+          <Users size={16} style={{ color: activeTab === 'users' ? '#ffffff' : '#8c95a4' }} />
           <span>User Directory</span>
           <span
             style={{
               fontSize: '0.72rem',
               padding: '2px 7px',
               borderRadius: '999px',
-              backgroundColor: activeTab === 'users' ? '#eff6ff' : '#e2e8f0',
-              color: activeTab === 'users' ? '#1a73e8' : '#64748b',
+              backgroundColor: activeTab === 'users' ? '#e8f2e5' : '#e8e6df',
+              color: activeTab === 'users' ? '#17652f' : '#596372',
               fontWeight: '700',
             }}
           >
@@ -1256,24 +1258,24 @@ export const UserManagementPage = () => {
             padding: '9px 18px',
             borderRadius: '9px',
             border: 'none',
-            backgroundColor: activeTab === 'roles' ? '#ffffff' : 'transparent',
-            color: activeTab === 'roles' ? '#0f172a' : '#64748b',
+            backgroundColor: activeTab === 'roles' ? '#17652f' : 'transparent',
+            color: activeTab === 'roles' ? '#ffffff' : '#596372',
             fontWeight: activeTab === 'roles' ? '700' : '600',
             fontSize: '0.88rem',
             cursor: 'pointer',
-            boxShadow: activeTab === 'roles' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+            boxShadow: activeTab === 'roles' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
             transition: 'all 0.15s ease',
           }}
         >
-          <ShieldCheck size={16} style={{ color: activeTab === 'roles' ? '#1a73e8' : '#94a3b8' }} />
+          <ShieldCheck size={16} style={{ color: activeTab === 'roles' ? '#ffffff' : '#8c95a4' }} />
           <span>Role Permissions Matrix</span>
           <span
             style={{
               fontSize: '0.72rem',
               padding: '2px 7px',
               borderRadius: '999px',
-              backgroundColor: activeTab === 'roles' ? '#eff6ff' : '#e2e8f0',
-              color: activeTab === 'roles' ? '#1a73e8' : '#64748b',
+              backgroundColor: activeTab === 'roles' ? '#e8f2e5' : '#e8e6df',
+              color: activeTab === 'roles' ? '#17652f' : '#596372',
               fontWeight: '700',
             }}
           >
@@ -1290,24 +1292,24 @@ export const UserManagementPage = () => {
             padding: '9px 18px',
             borderRadius: '9px',
             border: 'none',
-            backgroundColor: activeTab === 'branches' ? '#ffffff' : 'transparent',
-            color: activeTab === 'branches' ? '#0f172a' : '#64748b',
+            backgroundColor: activeTab === 'branches' ? '#17652f' : 'transparent',
+            color: activeTab === 'branches' ? '#ffffff' : '#596372',
             fontWeight: activeTab === 'branches' ? '700' : '600',
             fontSize: '0.88rem',
             cursor: 'pointer',
-            boxShadow: activeTab === 'branches' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+            boxShadow: activeTab === 'branches' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
             transition: 'all 0.15s ease',
           }}
         >
-          <Building2 size={16} style={{ color: activeTab === 'branches' ? '#1a73e8' : '#94a3b8' }} />
+          <Building2 size={16} style={{ color: activeTab === 'branches' ? '#ffffff' : '#8c95a4' }} />
           <span>Branch Locations</span>
           <span
             style={{
               fontSize: '0.72rem',
               padding: '2px 7px',
               borderRadius: '999px',
-              backgroundColor: activeTab === 'branches' ? '#eff6ff' : '#e2e8f0',
-              color: activeTab === 'branches' ? '#1a73e8' : '#64748b',
+              backgroundColor: activeTab === 'branches' ? '#e8f2e5' : '#e8e6df',
+              color: activeTab === 'branches' ? '#17652f' : '#596372',
               fontWeight: '700',
             }}
           >
@@ -1553,7 +1555,7 @@ export const UserManagementPage = () => {
                     borderRadius: '6px',
                     border: 'none',
                     backgroundColor: viewMode === 'table' ? '#ffffff' : 'transparent',
-                    color: viewMode === 'table' ? '#1a73e8' : '#64748b',
+                    color: viewMode === 'table' ? '#17652f' : '#64748b',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -1574,7 +1576,7 @@ export const UserManagementPage = () => {
                     borderRadius: '6px',
                     border: 'none',
                     backgroundColor: viewMode === 'cards' ? '#ffffff' : 'transparent',
-                    color: viewMode === 'cards' ? '#1a73e8' : '#64748b',
+                    color: viewMode === 'cards' ? '#17652f' : '#64748b',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -1644,7 +1646,7 @@ export const UserManagementPage = () => {
                 color: '#64748b',
               }}
             >
-              <Loader2 size={28} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px', color: '#1a73e8' }} />
+              <Loader2 size={28} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px', color: '#17652f' }} />
               <div style={{ fontWeight: '600', fontSize: '0.95rem' }}>Loading operator catalog...</div>
             </div>
           ) : filteredUsers.length === 0 ? (
@@ -1740,15 +1742,15 @@ export const UserManagementPage = () => {
                                   width: '38px',
                                   height: '38px',
                                   borderRadius: '50%',
-                                  backgroundColor: isSuper ? '#fef3c7' : isAgent ? '#e0f2fe' : '#eff6ff',
-                                  color: isSuper ? '#d97706' : isAgent ? '#0284c7' : '#1a73e8',
+                                  backgroundColor: isSuper ? '#fef3c7' : isAgent ? '#e0f2fe' : '#e8f2e5',
+                                  color: isSuper ? '#d97706' : isAgent ? '#0284c7' : '#17652f',
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   fontWeight: '800',
                                   fontSize: '0.88rem',
                                   flexShrink: 0,
-                                  border: `1.5px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#bfdbfe'}`,
+                                  border: `1.5px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#cde4c9'}`,
                                 }}
                               >
                                 {u.firstName?.[0] || 'U'}
@@ -1758,7 +1760,7 @@ export const UserManagementPage = () => {
                                 <div style={{ fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                   <span>{u.firstName} {u.lastName}</span>
                                   {isMe && (
-                                    <span style={{ fontSize: '0.68rem', backgroundColor: '#eff6ff', color: '#1a73e8', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                                    <span style={{ fontSize: '0.68rem', backgroundColor: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
                                       You
                                     </span>
                                   )}
@@ -1792,7 +1794,7 @@ export const UserManagementPage = () => {
                                     <code style={{ color: '#0f172a', fontWeight: '700' }}>{u.username}</code>
                                     <span style={{ color: '#cbd5e1' }}>|</span>
                                     <span style={{ color: '#475569', fontWeight: '700' }}>Pass:</span>
-                                    <code style={{ color: '#2563eb', fontWeight: '700' }}>{u.initialPassword}</code>
+                                    <code style={{ color: '#17652f', fontWeight: '700' }}>{u.initialPassword}</code>
                                     <button
                                       type="button"
                                       onClick={(e) => {
@@ -1879,7 +1881,7 @@ export const UserManagementPage = () => {
                                   }}
                                 >
                                   {updatingRoleId === u._id ? (
-                                    <Loader2 size={12} style={{ animation: 'spin 1s linear infinite', color: '#1a73e8' }} />
+                                    <Loader2 size={12} style={{ animation: 'spin 1s linear infinite', color: '#17652f' }} />
                                   ) : isSuper ? (
                                     <ShieldCheck size={13} style={{ color: '#d97706' }} />
                                   ) : isAgent ? (
@@ -1934,7 +1936,7 @@ export const UserManagementPage = () => {
                                       fontSize: '0.7rem',
                                       color: '#0369a1',
                                       fontWeight: '700',
-                                      backgroundColor: '#eff6ff',
+                                      backgroundColor: '#e8f2e5',
                                       padding: '1px 6px',
                                       borderRadius: '4px',
                                     }}
@@ -2054,7 +2056,7 @@ export const UserManagementPage = () => {
                                   borderRadius: '7px',
                                   border: '1px solid #e2e8f0',
                                   backgroundColor: '#ffffff',
-                                  color: '#1a73e8',
+                                  color: '#17652f',
                                   cursor: 'pointer',
                                   transition: 'all 0.1s ease',
                                 }}
@@ -2069,9 +2071,9 @@ export const UserManagementPage = () => {
                                   style={{
                                     padding: '6px 9px',
                                     borderRadius: '7px',
-                                    border: '1px solid #bfdbfe',
-                                    backgroundColor: '#eff6ff',
-                                    color: '#1a73e8',
+                                    border: '1px solid #cde4c9',
+                                    backgroundColor: '#e8f2e5',
+                                    color: '#17652f',
                                     cursor: 'not-allowed',
                                   }}
                                 >
@@ -2183,14 +2185,14 @@ export const UserManagementPage = () => {
                               width: '46px',
                               height: '46px',
                               borderRadius: '50%',
-                              backgroundColor: isSuper ? '#fef3c7' : isAgent ? '#e0f2fe' : '#eff6ff',
-                              color: isSuper ? '#d97706' : isAgent ? '#0284c7' : '#1a73e8',
+                              backgroundColor: isSuper ? '#fef3c7' : isAgent ? '#e0f2fe' : '#e8f2e5',
+                              color: isSuper ? '#d97706' : isAgent ? '#0284c7' : '#17652f',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               fontWeight: '800',
                               fontSize: '1rem',
-                              border: `2px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#bfdbfe'}`,
+                              border: `2px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#cde4c9'}`,
                             }}
                           >
                             {u.firstName?.[0] || 'U'}
@@ -2200,7 +2202,7 @@ export const UserManagementPage = () => {
                             <div style={{ fontWeight: '700', fontSize: '1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <span>{u.firstName} {u.lastName}</span>
                               {isMe && (
-                                <span style={{ fontSize: '0.66rem', backgroundColor: '#eff6ff', color: '#1a73e8', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }}>
+                                <span style={{ fontSize: '0.66rem', backgroundColor: '#e8f2e5', color: '#17652f', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }}>
                                   You
                                 </span>
                               )}
@@ -2265,7 +2267,7 @@ export const UserManagementPage = () => {
                             }}
                           >
                             {updatingRoleId === u._id ? (
-                              <Loader2 size={13} style={{ animation: 'spin 1s linear infinite', color: '#1a73e8' }} />
+                              <Loader2 size={13} style={{ animation: 'spin 1s linear infinite', color: '#17652f' }} />
                             ) : isSuper ? (
                               <ShieldCheck size={14} style={{ color: '#d97706' }} />
                             ) : isAgent ? (
@@ -2316,7 +2318,7 @@ export const UserManagementPage = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '5px 8px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
                               <div>
                                 <span style={{ color: '#64748b', fontSize: '0.72rem' }}>Pass: </span>
-                                <code style={{ color: '#2563eb', fontWeight: '800', fontSize: '0.8rem' }}>{u.initialPassword}</code>
+                                <code style={{ color: '#17652f', fontWeight: '800', fontSize: '0.8rem' }}>{u.initialPassword}</code>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <button
@@ -2329,7 +2331,7 @@ export const UserManagementPage = () => {
                                     showFeedback(`Credentials for @${u.username} copied!`, 'success');
                                   }}
                                   title="Copy ID & Password"
-                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedUserId === u._id ? '#16a34a' : '#2563eb', display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.72rem', fontWeight: '700' }}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedUserId === u._id ? '#16a34a' : '#17652f', display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.72rem', fontWeight: '700' }}
                                 >
                                   {copiedUserId === u._id ? <Check size={11} /> : <Copy size={11} />}
                                   <span>{copiedUserId === u._id ? 'Copied' : 'Copy'}</span>
@@ -2442,7 +2444,7 @@ export const UserManagementPage = () => {
                             borderRadius: '6px',
                             border: '1px solid #e2e8f0',
                             backgroundColor: '#ffffff',
-                            color: '#1a73e8',
+                            color: '#17652f',
                             cursor: 'pointer',
                           }}
                         >
@@ -2509,8 +2511,8 @@ export const UserManagementPage = () => {
                   padding: '5px 10px',
                   borderRadius: '6px',
                   border: 'none',
-                  backgroundColor: '#eff6ff',
-                  color: '#1a73e8',
+                  backgroundColor: '#e8f2e5',
+                  color: '#17652f',
                   fontSize: '0.78rem',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -2556,14 +2558,14 @@ export const UserManagementPage = () => {
                     style={{
                       padding: '12px 14px',
                       borderRadius: '10px',
-                      backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
-                      border: isSelected ? '1.5px solid #1a73e8' : '1px solid #e2e8f0',
+                      backgroundColor: isSelected ? '#e8f2e5' : '#ffffff',
+                      border: isSelected ? '1.5px solid #17652f' : '1px solid #e2e8f0',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                      <span style={{ fontWeight: '700', fontSize: '0.88rem', color: isSelected ? '#1a73e8' : '#0f172a' }}>
+                      <span style={{ fontWeight: '700', fontSize: '0.88rem', color: isSelected ? '#17652f' : '#0f172a' }}>
                         {r.roleName}
                       </span>
                       {r.isSystemRole ? (
@@ -2585,7 +2587,7 @@ export const UserManagementPage = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#64748b' }}>
                         <span>{r.userCount || 0} user(s) assigned</span>
-                        <strong style={{ color: isSelected ? '#1a73e8' : '#475569' }}>
+                        <strong style={{ color: isSelected ? '#17652f' : '#475569' }}>
                           {isSuper ? 'Full 100%' : `${stats.granted} / ${stats.total} (${stats.percentage}%)`}
                         </strong>
                       </div>
@@ -2594,7 +2596,7 @@ export const UserManagementPage = () => {
                           style={{
                             width: `${stats.percentage}%`,
                             height: '100%',
-                            backgroundColor: isSuper ? '#d97706' : '#1a73e8',
+                            backgroundColor: isSuper ? '#d97706' : '#17652f',
                             borderRadius: '999px',
                             transition: 'width 0.3s ease',
                           }}
@@ -2635,7 +2637,7 @@ export const UserManagementPage = () => {
                         {selectedRoleForMatrix.roleCode}
                       </code>
                       {selectedRoleForMatrix.isSystemRole ? (
-                        <span style={{ fontSize: '0.72rem', backgroundColor: '#eff6ff', color: '#1a73e8', padding: '3px 8px', borderRadius: '6px', fontWeight: '700' }}>
+                        <span style={{ fontSize: '0.72rem', backgroundColor: '#e8f2e5', color: '#17652f', padding: '3px 8px', borderRadius: '6px', fontWeight: '700' }}>
                           System Protected
                         </span>
                       ) : (
@@ -2680,9 +2682,9 @@ export const UserManagementPage = () => {
                           gap: '6px',
                           padding: '7px 12px',
                           borderRadius: '7px',
-                          border: '1px solid #bfdbfe',
-                          backgroundColor: '#eff6ff',
-                          color: '#1a73e8',
+                          border: '1px solid #cde4c9',
+                          backgroundColor: '#e8f2e5',
+                          color: '#17652f',
                           fontSize: '0.8rem',
                           fontWeight: '700',
                           cursor: matrixUpdating ? 'not-allowed' : 'pointer',
@@ -2774,15 +2776,15 @@ export const UserManagementPage = () => {
                     style={{
                       padding: '10px 16px',
                       borderRadius: '10px',
-                      backgroundColor: '#eff6ff',
-                      border: '1.5px solid #bfdbfe',
-                      color: '#1a73e8',
+                      backgroundColor: '#e8f2e5',
+                      border: '1.5px solid #cde4c9',
+                      color: '#17652f',
                       fontSize: '0.85rem',
                       fontWeight: '700',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
-                      boxShadow: '0 2px 10px rgba(26, 115, 232, 0.15)',
+                      boxShadow: '0 2px 10px rgba(23, 101, 47, 0.15)',
                     }}
                   >
                     <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
@@ -2799,7 +2801,7 @@ export const UserManagementPage = () => {
                         <span>
                           Role Coverage: <strong>{stats.granted} of {stats.total} privileges active</strong>
                         </span>
-                        <strong style={{ color: stats.percentage === 100 ? '#059669' : '#1a73e8' }}>
+                        <strong style={{ color: stats.percentage === 100 ? '#059669' : '#17652f' }}>
                           {stats.percentage}% authorized
                         </strong>
                       </div>
@@ -2808,7 +2810,7 @@ export const UserManagementPage = () => {
                           style={{
                             width: `${stats.percentage}%`,
                             height: '100%',
-                            backgroundColor: stats.percentage === 100 ? '#059669' : '#1a73e8',
+                            backgroundColor: stats.percentage === 100 ? '#059669' : '#17652f',
                             borderRadius: '999px',
                             transition: 'width 0.3s ease',
                           }}
@@ -2879,9 +2881,9 @@ export const UserManagementPage = () => {
                       style={{
                         padding: '5px 12px',
                         borderRadius: '999px',
-                        border: selectedModuleCategory === cat ? '1px solid #1a73e8' : '1px solid #e2e8f0',
-                        backgroundColor: selectedModuleCategory === cat ? '#eff6ff' : '#ffffff',
-                        color: selectedModuleCategory === cat ? '#1a73e8' : '#64748b',
+                        border: selectedModuleCategory === cat ? '1px solid #17652f' : '1px solid #e2e8f0',
+                        backgroundColor: selectedModuleCategory === cat ? '#e8f2e5' : '#ffffff',
+                        color: selectedModuleCategory === cat ? '#17652f' : '#64748b',
                         fontSize: '0.78rem',
                         fontWeight: selectedModuleCategory === cat ? '700' : '600',
                         cursor: 'pointer',
@@ -2989,9 +2991,9 @@ export const UserManagementPage = () => {
                                 fontWeight: '700',
                                 padding: '4px 10px',
                                 borderRadius: '999px',
-                                backgroundColor: allActive ? '#ecfdf5' : activePermsCount > 0 ? '#eff6ff' : '#f1f5f9',
-                                color: allActive ? '#059669' : activePermsCount > 0 ? '#1a73e8' : '#64748b',
-                                border: `1px solid ${allActive ? '#a7f3d0' : activePermsCount > 0 ? '#bfdbfe' : '#e2e8f0'}`,
+                                backgroundColor: allActive ? '#ecfdf5' : activePermsCount > 0 ? '#e8f2e5' : '#f1f5f9',
+                                color: allActive ? '#059669' : activePermsCount > 0 ? '#17652f' : '#64748b',
+                                border: `1px solid ${allActive ? '#a7f3d0' : activePermsCount > 0 ? '#cde4c9' : '#e2e8f0'}`,
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '4px',
@@ -3015,9 +3017,9 @@ export const UserManagementPage = () => {
                                   style={{
                                     padding: '5px 10px',
                                     borderRadius: '6px',
-                                    border: '1px solid #bfdbfe',
-                                    backgroundColor: (allActive || matrixUpdating) ? '#f8fafc' : '#eff6ff',
-                                    color: (allActive || matrixUpdating) ? '#94a3b8' : '#1a73e8',
+                                    border: '1px solid #cde4c9',
+                                    backgroundColor: (allActive || matrixUpdating) ? '#f8fafc' : '#e8f2e5',
+                                    color: (allActive || matrixUpdating) ? '#94a3b8' : '#17652f',
                                     fontSize: '0.74rem',
                                     fontWeight: '700',
                                     cursor: (allActive || matrixUpdating) ? 'not-allowed' : 'pointer',
@@ -3076,7 +3078,7 @@ export const UserManagementPage = () => {
                                   style={{
                                     padding: '14px 16px',
                                     borderRadius: '12px',
-                                    border: isChecked ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                                    border: isChecked ? '1.5px solid #17652f' : '1px solid #e2e8f0',
                                     backgroundColor: isChecked ? '#f0f7ff' : '#ffffff',
                                     cursor: isSuper ? 'default' : matrixUpdating ? 'wait' : 'pointer',
                                     display: 'flex',
@@ -3111,8 +3113,8 @@ export const UserManagementPage = () => {
                                         <code
                                           style={{
                                             fontSize: '0.72rem',
-                                            backgroundColor: isChecked ? '#dbeafe' : '#f1f5f9',
-                                            color: isChecked ? '#1d4ed8' : '#64748b',
+                                            backgroundColor: isChecked ? '#e8f2e5' : '#f1f5f9',
+                                            color: isChecked ? '#17652f' : '#64748b',
                                             padding: '2px 7px',
                                             borderRadius: '4px',
                                             fontWeight: '600',
@@ -3151,7 +3153,7 @@ export const UserManagementPage = () => {
                                             width: '38px',
                                             height: '22px',
                                             borderRadius: '999px',
-                                            backgroundColor: isChecked ? '#1a73e8' : '#cbd5e1',
+                                            backgroundColor: isChecked ? '#17652f' : '#cbd5e1',
                                             transition: 'background-color 0.2s ease',
                                             position: 'relative',
                                             cursor: matrixUpdating ? 'wait' : 'pointer',
@@ -3175,7 +3177,7 @@ export const UserManagementPage = () => {
                                             }}
                                           >
                                             {isSwitchUpdating && (
-                                              <Loader2 size={10} style={{ animation: 'spin 1s linear infinite', color: '#1a73e8' }} />
+                                              <Loader2 size={10} style={{ animation: 'spin 1s linear infinite', color: '#17652f' }} />
                                             )}
                                           </div>
                                         </div>
@@ -3233,9 +3235,9 @@ export const UserManagementPage = () => {
           {/* Branch Overview Alert */}
           <div
             style={{
-              backgroundColor: '#eff6ff',
+              backgroundColor: '#e8f2e5',
               borderRadius: '12px',
-              border: '1px solid #bfdbfe',
+              border: '1px solid #cde4c9',
               padding: '16px 20px',
               display: 'flex',
               alignItems: 'center',
@@ -3244,12 +3246,12 @@ export const UserManagementPage = () => {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Building2 size={22} style={{ color: '#1a73e8', flexShrink: 0 }} />
+              <Building2 size={22} style={{ color: '#17652f', flexShrink: 0 }} />
               <div>
-                <div style={{ fontWeight: '700', fontSize: '0.92rem', color: '#1e3a8a' }}>
+                <div style={{ fontWeight: '700', fontSize: '0.92rem', color: '#17652f' }}>
                   Regional Branch Hubs & Access Segregation
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#1e40af', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.8rem', color: '#17652f', marginTop: '2px' }}>
                   Operators are scoped to one or more branch facilities. Head Office staff maintain cross-branch operational governance.
                 </div>
               </div>
@@ -3259,10 +3261,10 @@ export const UserManagementPage = () => {
                 fontSize: '0.78rem',
                 fontWeight: '700',
                 backgroundColor: '#ffffff',
-                color: '#1a73e8',
+                color: '#17652f',
                 padding: '4px 10px',
                 borderRadius: '6px',
-                border: '1px solid #bfdbfe',
+                border: '1px solid #cde4c9',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -3283,7 +3285,7 @@ export const UserManagementPage = () => {
                   style={{
                     backgroundColor: '#ffffff',
                     borderRadius: '16px',
-                    border: b.isHeadOffice ? '1.5px solid #1a73e8' : '1px solid #e2e8f0',
+                    border: b.isHeadOffice ? '1.5px solid #17652f' : '1px solid #e2e8f0',
                     padding: '22px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -3301,12 +3303,12 @@ export const UserManagementPage = () => {
                           width: '44px',
                           height: '44px',
                           borderRadius: '12px',
-                          backgroundColor: b.isHeadOffice ? '#eff6ff' : '#f8fafc',
-                          color: b.isHeadOffice ? '#1a73e8' : '#475569',
+                          backgroundColor: b.isHeadOffice ? '#e8f2e5' : '#f8fafc',
+                          color: b.isHeadOffice ? '#17652f' : '#475569',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          border: `1px solid ${b.isHeadOffice ? '#bfdbfe' : '#e2e8f0'}`,
+                          border: `1px solid ${b.isHeadOffice ? '#cde4c9' : '#e2e8f0'}`,
                         }}
                       >
                         <Building2 size={22} />
@@ -3316,12 +3318,12 @@ export const UserManagementPage = () => {
                         <span
                           style={{
                             fontSize: '0.72rem',
-                            backgroundColor: '#eff6ff',
-                            color: '#1a73e8',
+                            backgroundColor: '#e8f2e5',
+                            color: '#17652f',
                             padding: '3px 9px',
                             borderRadius: '999px',
                             fontWeight: '800',
-                            border: '1px solid #bfdbfe',
+                            border: '1px solid #cde4c9',
                             textTransform: 'uppercase',
                             letterSpacing: '0.04em',
                           }}
@@ -3465,7 +3467,7 @@ export const UserManagementPage = () => {
                         Department: <strong>{editingUser.department || 'Operations'}</strong>
                         {editingUser.initialPassword && (
                           <span style={{ marginLeft: '10px' }}>
-                            Initial Password: <strong style={{ color: '#1d4ed8' }}>{editingUser.initialPassword}</strong>
+                            Initial Password: <strong style={{ color: '#17652f' }}>{editingUser.initialPassword}</strong>
                           </span>
                         )}
                       </div>
@@ -3597,7 +3599,7 @@ export const UserManagementPage = () => {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#1a73e8',
+                          color: '#17652f',
                           fontSize: '0.72rem',
                           fontWeight: '700',
                           cursor: 'pointer',
@@ -3873,11 +3875,11 @@ export const UserManagementPage = () => {
                             type="checkbox"
                             checked={isAssigned}
                             onChange={(e) => handleBranchAccessChange(b._id, 'enabled', e.target.checked)}
-                            style={{ accentColor: '#1a73e8' }}
+                            style={{ accentColor: '#17652f' }}
                           />
                           <span>{b.branchName}</span>
                           {b.isHeadOffice && (
-                            <span style={{ fontSize: '0.68rem', backgroundColor: '#eff6ff', color: '#1a73e8', padding: '1px 5px', borderRadius: '4px' }}>
+                            <span style={{ fontSize: '0.68rem', backgroundColor: '#e8f2e5', color: '#17652f', padding: '1px 5px', borderRadius: '4px' }}>
                               HQ
                             </span>
                           )}
@@ -3901,7 +3903,7 @@ export const UserManagementPage = () => {
                                 name="primaryBranchRadio"
                                 checked={!!accessObj.isPrimary}
                                 onChange={() => handleBranchAccessChange(b._id, 'isPrimary', true)}
-                                style={{ accentColor: '#1a73e8' }}
+                                style={{ accentColor: '#17652f' }}
                               />
                               <span>Primary</span>
                             </label>
@@ -3930,12 +3932,12 @@ export const UserManagementPage = () => {
                       gap: '8px',
                       padding: '9px 20px',
                       borderRadius: '8px',
-                      backgroundColor: '#eff6ff',
-                      color: '#1a73e8',
-                      border: '1.5px solid #bfdbfe',
+                      backgroundColor: '#e8f2e5',
+                      color: '#17652f',
+                      border: '1.5px solid #cde4c9',
                       fontSize: '0.88rem',
                       fontWeight: '700',
-                      boxShadow: '0 2px 8px rgba(26,115,232,0.15)',
+                      boxShadow: '0 2px 8px rgba(23, 101, 47,0.15)',
                     }}
                   >
                     <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
@@ -3948,12 +3950,12 @@ export const UserManagementPage = () => {
                       padding: '9px 22px',
                       borderRadius: '8px',
                       border: 'none',
-                      backgroundColor: '#1a73e8',
+                      backgroundColor: '#17652f',
                       color: '#ffffff',
                       fontSize: '0.88rem',
                       fontWeight: '700',
                       cursor: 'pointer',
-                      boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
+                      boxShadow: '0 2px 6px rgba(23, 101, 47,0.3)',
                     }}
                   >
                     {editingUser ? 'Update Operator' : 'Create Operator'}
@@ -3994,7 +3996,7 @@ export const UserManagementPage = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <KeyRound size={20} style={{ color: '#1a73e8' }} />
+                <KeyRound size={20} style={{ color: '#17652f' }} />
                 <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>
                   Reset Password
                 </h3>
@@ -4027,7 +4029,7 @@ export const UserManagementPage = () => {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#1a73e8',
+                      color: '#17652f',
                       fontSize: '0.72rem',
                       fontWeight: '700',
                       cursor: 'pointer',
@@ -4064,12 +4066,12 @@ export const UserManagementPage = () => {
                       gap: '8px',
                       padding: '8px 18px',
                       borderRadius: '8px',
-                      backgroundColor: '#eff6ff',
-                      color: '#1a73e8',
-                      border: '1.5px solid #bfdbfe',
+                      backgroundColor: '#e8f2e5',
+                      color: '#17652f',
+                      border: '1.5px solid #cde4c9',
                       fontSize: '0.84rem',
                       fontWeight: '700',
-                      boxShadow: '0 2px 8px rgba(26,115,232,0.15)',
+                      boxShadow: '0 2px 8px rgba(23, 101, 47,0.15)',
                     }}
                   >
                     <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
@@ -4082,7 +4084,7 @@ export const UserManagementPage = () => {
                       padding: '8px 18px',
                       borderRadius: '8px',
                       border: 'none',
-                      backgroundColor: '#1a73e8',
+                      backgroundColor: '#17652f',
                       color: '#ffffff',
                       fontSize: '0.84rem',
                       fontWeight: '700',
@@ -4127,7 +4129,7 @@ export const UserManagementPage = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ShieldCheck size={20} style={{ color: '#1a73e8' }} />
+                <ShieldCheck size={20} style={{ color: '#17652f' }} />
                 <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
                   {editingRole ? `Edit Role: ${editingRole.roleName}` : 'Create Custom Operational Role'}
                 </h3>
@@ -4234,12 +4236,12 @@ export const UserManagementPage = () => {
                       gap: '8px',
                       padding: '8px 18px',
                       borderRadius: '8px',
-                      backgroundColor: '#eff6ff',
-                      color: '#1a73e8',
-                      border: '1.5px solid #bfdbfe',
+                      backgroundColor: '#e8f2e5',
+                      color: '#17652f',
+                      border: '1.5px solid #cde4c9',
                       fontSize: '0.84rem',
                       fontWeight: '700',
-                      boxShadow: '0 2px 8px rgba(26,115,232,0.15)',
+                      boxShadow: '0 2px 8px rgba(23, 101, 47,0.15)',
                     }}
                   >
                     <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
@@ -4252,7 +4254,7 @@ export const UserManagementPage = () => {
                       padding: '8px 18px',
                       borderRadius: '8px',
                       border: 'none',
-                      backgroundColor: '#1a73e8',
+                      backgroundColor: '#17652f',
                       color: '#ffffff',
                       fontSize: '0.84rem',
                       fontWeight: '700',
@@ -4290,7 +4292,7 @@ export const UserManagementPage = () => {
         }
         .perm-item-card:hover {
           transform: translateY(-2px);
-          border-color: #2563eb !important;
+          border-color: #17652f !important;
           box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12) !important;
         }
       `}</style>

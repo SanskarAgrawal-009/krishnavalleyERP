@@ -98,16 +98,16 @@ export const ManualBuildingModal = ({ isOpen, onClose, onSubmit, projectName }) 
         {/* Total Unit Estimation & Status */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '14px' }}>
           <div style={{
-            background: '#e8f0fe',
-            border: '1px solid #bfdbfe',
+            background: '#e8f2e5',
+            border: '1px solid #cde4c9',
             borderRadius: '6px',
             padding: '8px 12px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center'
           }}>
-            <span style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: '700' }}>ESTIMATED TOTAL UNITS</span>
-            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#1a73e8' }}>{totalEstimatedFlats} Flats</span>
+            <span style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '700' }}>ESTIMATED TOTAL UNITS</span>
+            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#17652f' }}>{totalEstimatedFlats} Flats</span>
           </div>
 
           <div>
@@ -140,7 +140,7 @@ export const ManualBuildingModal = ({ isOpen, onClose, onSubmit, projectName }) 
             type="submit"
             style={{
               padding: '9px 22px',
-              background: '#1a73e8',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',

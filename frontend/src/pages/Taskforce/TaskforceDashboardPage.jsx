@@ -26,13 +26,13 @@ const getFileTypeMeta = (url = '', fileName = '') => {
     return { type: 'pdf', isImage: false, icon: 'fa-solid fa-file-pdf', color: '#ef4444', label: 'PDF Document' };
   }
   if (target.match(/\.(mp4|webm|mov|mkv|avi)$/)) {
-    return { type: 'video', isImage: false, icon: 'fa-solid fa-file-video', color: '#8b5cf6', label: 'Video File' };
+    return { type: 'video', isImage: false, icon: 'fa-solid fa-file-video', color: '#4a9e68', label: 'Video File' };
   }
   if (target.match(/\.(mp3|wav|ogg|m4a)$/)) {
     return { type: 'audio', isImage: false, icon: 'fa-solid fa-file-audio', color: '#06b6d4', label: 'Audio Clip' };
   }
   if (target.match(/\.(doc|docx|xls|xlsx|csv|ppt|pptx|txt)$/)) {
-    return { type: 'doc', isImage: false, icon: 'fa-solid fa-file-lines', color: '#3b82f6', label: 'Document' };
+    return { type: 'doc', isImage: false, icon: 'fa-solid fa-file-lines', color: '#17652f', label: 'Document' };
   }
   if (target.match(/\.(zip|rar|7z)$/)) {
     return { type: 'archive', isImage: false, icon: 'fa-solid fa-file-zipper', color: '#f59e0b', label: 'Archive' };
@@ -373,9 +373,9 @@ export const TaskforceDashboardPage = () => {
             latestUpload.caption ||
             latestUpload.remarks ||
             `Work proof uploaded (${latestUpload.stage || 'proof'})`,
-          color: '#7c3aed',
+          color: '#17652f',
           bg: '#f5f3ff',
-          borderColor: '#ddd6fe',
+          borderColor: '#e8f2e5',
           icon: 'fa-solid fa-camera',
           time: latestUpload.uploadedAt || latestUpload.createdAt,
           author: latestUpload.uploadedBy?.firstName
@@ -673,17 +673,18 @@ export const TaskforceDashboardPage = () => {
   };
 
   return (
-    <div className="taskforce-dashboard-root" style={{ padding: '24px', background: '#f8fafc', minHeight: '100vh' }}>
+    <div className="taskforce-dashboard-root" style={{ padding: '24px', background: 'var(--background, #faf9f6)', minHeight: '100vh' }}>
       {/* ======================================================== */}
       {/* 1. TOP OPERATIONAL HERO & COMMAND BAR                     */}
       {/* ======================================================== */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f766e 100%)',
+          background: '#ffffff',
           borderRadius: '16px',
           padding: '24px 28px',
-          color: '#ffffff',
-          boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.25)',
+          border: '1px solid #e8e6df',
+          color: '#1f2937',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
           marginBottom: '24px',
           position: 'relative',
           overflow: 'hidden',
@@ -694,9 +695,9 @@ export const TaskforceDashboardPage = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
               <span
                 style={{
-                  background: 'rgba(20, 184, 166, 0.2)',
-                  border: '1px solid rgba(45, 212, 191, 0.4)',
-                  color: '#2dd4bf',
+                  background: '#e8f2e5',
+                  border: '1px solid #cde4c9',
+                  color: '#17652f',
                   fontSize: '11px',
                   fontWeight: 700,
                   letterSpacing: '0.08em',
@@ -708,14 +709,15 @@ export const TaskforceDashboardPage = () => {
                   gap: '6px',
                 }}
               >
-                <i className="fa-solid fa-satellite-dish" style={{ color: '#2dd4bf' }}></i>
+                <i className="fa-solid fa-satellite-dish" style={{ color: '#17652f' }}></i>
                 TASKFORCE OPERATIONS HUB
               </span>
 
               <span
                 style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  color: '#e2e8f0',
+                  background: '#faf9f6',
+                  color: '#596372',
+                  border: '1px solid #e8e6df',
                   fontSize: '11px',
                   fontWeight: 600,
                   padding: '4px 10px',
@@ -725,15 +727,15 @@ export const TaskforceDashboardPage = () => {
                   gap: '6px',
                 }}
               >
-                <i className="fa-solid fa-shield-halved" style={{ color: '#38bdf8' }}></i>
+                <i className="fa-solid fa-shield-halved" style={{ color: '#17652f' }}></i>
                 {userRole === 'taskforce_manager' ? 'Command Center' : 'Field Operations'}
               </span>
             </div>
 
-            <h1 style={{ fontSize: '26px', fontWeight: 800, margin: '0 0 6px 0', letterSpacing: '-0.02em', color: '#ffffff' }}>
+            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '28px', fontWeight: 700, margin: '0 0 6px 0', letterSpacing: '-0.02em', color: '#1f2937' }}>
               Taskforce Operations Dashboard
             </h1>
-            <p style={{ margin: 0, fontSize: '13px', color: '#94a3b8', maxWidth: '650px', lineHeight: 1.5 }}>
+            <p style={{ margin: 0, fontSize: '13px', color: '#596372', maxWidth: '650px', lineHeight: 1.5 }}>
               Dedicated operational workspace for active field directives, site evidence verification, roadblock resolution, and real-time team dispatch.
             </p>
           </div>
@@ -744,22 +746,22 @@ export const TaskforceDashboardPage = () => {
               <button
                 onClick={() => setIsAddMemberModalOpen(true)}
                 style={{
-                  background: '#059669',
+                  background: '#17652f',
                   color: '#ffffff',
                   border: 'none',
                   padding: '10px 18px',
                   borderRadius: '10px',
-                  fontWeight: 700,
+                  fontWeight: 600,
                   fontSize: '13px',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: '0 4px 14px rgba(5, 150, 105, 0.4)',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
+                  transition: 'all 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#047857')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = '#059669')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#125225')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#17652f')}
                 title="Directly add and register a new member into the Taskforce Team"
               >
                 <i className="fa-solid fa-user-plus"></i>
@@ -771,9 +773,9 @@ export const TaskforceDashboardPage = () => {
               <button
                 onClick={() => setIsNewTaskModalOpen(true)}
                 style={{
-                  background: '#0d9488',
-                  color: '#ffffff',
-                  border: 'none',
+                  background: '#e8f2e5',
+                  color: '#17652f',
+                  border: '1px solid #cde4c9',
                   padding: '10px 18px',
                   borderRadius: '10px',
                   fontWeight: 600,
@@ -782,11 +784,10 @@ export const TaskforceDashboardPage = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: '0 4px 12px rgba(13, 148, 136, 0.35)',
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#0f766e')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = '#0d9488')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#d9ebdc')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#e8f2e5')}
               >
                 <i className="fa-solid fa-plus"></i>
                 New Directive / Task
@@ -801,9 +802,9 @@ export const TaskforceDashboardPage = () => {
                 setIsQuickProofOpen(true);
               }}
               style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                color: '#ffffff',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                background: '#ffffff',
+                color: '#1f2937',
+                border: '1px solid #e8e6df',
                 padding: '10px 16px',
                 borderRadius: '10px',
                 fontWeight: 600,
@@ -812,13 +813,12 @@ export const TaskforceDashboardPage = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                backdropFilter: 'blur(8px)',
-                transition: 'all 0.2s ease',
+                transition: 'all 0.15s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#faf9f6')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
             >
-              <i className="fa-solid fa-camera"></i>
+              <i className="fa-solid fa-camera" style={{ color: '#17652f' }}></i>
               Upload Proof
             </button>
 
@@ -826,9 +826,9 @@ export const TaskforceDashboardPage = () => {
               onClick={() => fetchDashboardData(true)}
               disabled={refreshing}
               style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                color: '#cbd5e1',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: '#ffffff',
+                color: '#596372',
+                border: '1px solid #e8e6df',
                 padding: '10px 14px',
                 borderRadius: '10px',
                 fontWeight: 600,
@@ -837,30 +837,19 @@ export const TaskforceDashboardPage = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                transition: 'all 0.2s ease',
+                transition: 'all 0.15s ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#faf9f6')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
               title="Refresh Live Data"
             >
-              <i className={`fa-solid fa-arrows-rotate ${refreshing ? 'fa-spin' : ''}`}></i>
+              <i className={`fa-solid fa-arrows-rotate ${refreshing ? 'fa-spin' : ''}`} style={{ color: '#17652f' }}></i>
               <span style={{ fontSize: '12px' }}>
                 {refreshing ? 'Syncing...' : 'Sync'}
               </span>
             </button>
           </div>
         </div>
-
-        {/* Ambient background decoration */}
-        <div
-          style={{
-            position: 'absolute',
-            right: '-40px',
-            bottom: '-40px',
-            width: '260px',
-            height: '260px',
-            background: 'radial-gradient(circle, rgba(20, 184, 166, 0.18) 0%, rgba(15, 23, 42, 0) 70%)',
-            pointerEvents: 'none',
-          }}
-        />
       </div>
 
       {/* ======================================================== */}
@@ -893,7 +882,7 @@ export const TaskforceDashboardPage = () => {
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Active Directives
             </span>
-            <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <i className="fa-solid fa-list-check" style={{ fontSize: '15px' }}></i>
             </div>
           </div>
@@ -1048,7 +1037,7 @@ export const TaskforceDashboardPage = () => {
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Team Capacity
             </span>
-            <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#f5f3ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#f5f3ff', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <i className="fa-solid fa-users-gear" style={{ fontSize: '15px' }}></i>
             </div>
           </div>
@@ -1091,8 +1080,8 @@ export const TaskforceDashboardPage = () => {
                   width: '34px',
                   height: '34px',
                   borderRadius: '50%',
-                  background: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#fee2e2' : '#eff6ff',
-                  color: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#dc2626' : '#2563eb',
+                  background: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#fee2e2' : '#e8f2e5',
+                  color: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#dc2626' : '#17652f',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1178,7 +1167,7 @@ export const TaskforceDashboardPage = () => {
                   { id: 'roadblock', label: `Roadblocks (${managerTaskAlerts.filter((a) => a.category === 'roadblock').length})`, icon: 'fa-solid fa-triangle-exclamation', color: '#dc2626' },
                   { id: 'md_directive', label: `MD Notes (${managerTaskAlerts.filter((a) => a.category === 'md_directive').length})`, icon: 'fa-solid fa-crown', color: '#ca8a04' },
                   { id: 'comment', label: `Updates (${managerTaskAlerts.filter((a) => a.category === 'comment').length})`, icon: 'fa-solid fa-comments', color: '#0284c7' },
-                  { id: 'proof', label: `Site Evidence (${managerTaskAlerts.filter((a) => a.category === 'proof').length})`, icon: 'fa-solid fa-camera', color: '#7c3aed' },
+                  { id: 'proof', label: `Site Evidence (${managerTaskAlerts.filter((a) => a.category === 'proof').length})`, icon: 'fa-solid fa-camera', color: '#17652f' },
                   { id: 'followup', label: `Follow-ups (${managerTaskAlerts.filter((a) => a.category === 'followup').length})`, icon: 'fa-solid fa-clock-rotate-left', color: '#d97706' },
                 ].map((pill) => {
                   const count =
@@ -1389,21 +1378,22 @@ export const TaskforceDashboardPage = () => {
                 key={tab.id}
                 onClick={() => handleModeChange(tab.id)}
                 style={{
-                  background: isActive ? '#0f172a' : '#f8fafc',
-                  color: isActive ? '#ffffff' : tab.alert ? '#dc2626' : '#475569',
-                  border: isActive ? '1px solid #0f172a' : '1px solid #e2e8f0',
+                  background: isActive ? '#17652f' : '#ffffff',
+                  color: isActive ? '#ffffff' : tab.alert ? '#b91c1c' : '#596372',
+                  border: isActive ? '1px solid #17652f' : '1px solid #e8e6df',
                   padding: '8px 14px',
                   borderRadius: '8px',
                   fontSize: '13px',
-                  fontWeight: isActive ? 700 : 500,
+                  fontWeight: isActive ? 600 : 500,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
+                  boxShadow: isActive ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <i className={tab.icon}></i>
+                <i className={tab.icon} style={{ color: isActive ? '#ffffff' : tab.alert ? '#b91c1c' : '#17652f' }}></i>
                 {tab.label}
               </button>
             );
@@ -1416,7 +1406,7 @@ export const TaskforceDashboardPage = () => {
           <div style={{ position: 'relative', width: '220px' }}>
             <i
               className="fa-solid fa-magnifying-glass"
-              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '13px' }}
+              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '13px' }}
             ></i>
             <input
               type="text"
@@ -1427,7 +1417,8 @@ export const TaskforceDashboardPage = () => {
                 width: '100%',
                 padding: '8px 12px 8px 34px',
                 borderRadius: '8px',
-                border: '1px solid #cbd5e1',
+                border: '1px solid #e8e6df',
+                background: '#faf9f6',
                 fontSize: '13px',
                 outline: 'none',
               }}
@@ -1620,8 +1611,8 @@ export const TaskforceDashboardPage = () => {
                         {/* Status Chip */}
                         <span
                           style={{
-                            background: task.status === 'completed' ? '#ecfdf5' : task.status === 'in_progress' ? '#eff6ff' : '#f8fafc',
-                            color: task.status === 'completed' ? '#059669' : task.status === 'in_progress' ? '#2563eb' : '#64748b',
+                            background: task.status === 'completed' ? '#ecfdf5' : task.status === 'in_progress' ? '#e8f2e5' : '#f8fafc',
+                            color: task.status === 'completed' ? '#059669' : task.status === 'in_progress' ? '#17652f' : '#64748b',
                             fontSize: '11px',
                             fontWeight: 700,
                             padding: '3px 9px',
@@ -1707,8 +1698,8 @@ export const TaskforceDashboardPage = () => {
                               fontSize: '11px',
                               fontWeight: 700,
                               background: '#f5f3ff',
-                              color: '#7c3aed',
-                              border: '1px solid #ddd6fe',
+                              color: '#17652f',
+                              border: '1px solid #e8f2e5',
                               padding: '2px 8px',
                               borderRadius: '6px',
                               display: 'inline-flex',
@@ -1761,7 +1752,7 @@ export const TaskforceDashboardPage = () => {
                               style={{
                                 width: `${task.progress || 0}%`,
                                 height: '100%',
-                                background: task.status === 'completed' ? '#10b981' : isBlocked ? '#ef4444' : '#2563eb',
+                                background: task.status === 'completed' ? '#10b981' : isBlocked ? '#ef4444' : '#17652f',
                                 borderRadius: '4px',
                               }}
                             />
@@ -1974,7 +1965,7 @@ export const TaskforceDashboardPage = () => {
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#93c5fd')}
+                      onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#86c8a0')}
                       onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#e2e8f0')}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -2234,8 +2225,8 @@ export const TaskforceDashboardPage = () => {
                           fontSize: '10px',
                           fontWeight: 700,
                           background: '#f5f3ff',
-                          color: '#7c3aed',
-                          border: '1px solid #ddd6fe',
+                          color: '#17652f',
+                          border: '1px solid #e8f2e5',
                           padding: '2px 7px',
                           borderRadius: '5px',
                           display: 'inline-flex',
@@ -2253,7 +2244,7 @@ export const TaskforceDashboardPage = () => {
                     <button
                       onClick={() => openProgressModal(task)}
                       style={{
-                        background: '#0f172a',
+                        background: '#17652f',
                         color: '#ffffff',
                         border: 'none',
                         padding: '6px 14px',
@@ -2377,8 +2368,8 @@ export const TaskforceDashboardPage = () => {
                           fontSize: '11px',
                           fontWeight: 700,
                           background: '#f5f3ff',
-                          color: '#7c3aed',
-                          border: '1px solid #ddd6fe',
+                          color: '#17652f',
+                          border: '1px solid #e8f2e5',
                           padding: '2px 8px',
                           borderRadius: '5px',
                           display: 'inline-flex',
@@ -3111,7 +3102,7 @@ export const TaskforceDashboardPage = () => {
                 position: 'relative',
                 maxWidth: '90vw',
                 maxHeight: '90vh',
-                background: '#0f172a',
+                background: '#17652f',
                 borderRadius: '12px',
                 padding: '16px',
                 display: 'flex',
@@ -3129,7 +3120,7 @@ export const TaskforceDashboardPage = () => {
                     rel="noopener noreferrer"
                     download
                     style={{
-                      background: '#1e293b',
+                      background: '#17652f',
                       color: '#ffffff',
                       textDecoration: 'none',
                       fontSize: '12px',

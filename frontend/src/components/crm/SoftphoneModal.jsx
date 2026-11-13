@@ -241,7 +241,7 @@ export const SoftphoneModal = ({
         {/* Header */}
         <div style={{
           padding: '16px 20px',
-          background: 'linear-gradient(135deg, #005bbf 0%, #00285c 100%)',
+          background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
           color: '#ffffff',
           display: 'flex',
           justifyContent: 'space-between',
@@ -280,7 +280,7 @@ export const SoftphoneModal = ({
                 {recipientName}
               </h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px', fontSize: '0.8rem', color: '#475569' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: '700', color: '#005bbf' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: '700', color: '#17652f' }}>
                   <Phone size={12} /> {recipientPhone}
                 </span>
                 <span>•</span>
@@ -324,9 +324,9 @@ export const SoftphoneModal = ({
                 width: '68px',
                 height: '68px',
                 borderRadius: '50%',
-                background: '#eff6ff',
-                border: '2px solid #1a73e8',
-                color: '#1e40af',
+                background: '#e8f2e5',
+                border: '2px solid #17652f',
+                color: '#17652f',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -355,8 +355,8 @@ export const SoftphoneModal = ({
                       fontSize: '0.72rem',
                       borderRadius: '12px',
                       border: selectedProvider === p.id ? '1px solid #0284c7' : '1px solid #cbd5e1',
-                      background: selectedProvider === p.id ? '#eff6ff' : '#f8fafc',
-                      color: selectedProvider === p.id ? '#005bbf' : '#64748b',
+                      background: selectedProvider === p.id ? '#e8f2e5' : '#f8fafc',
+                      color: selectedProvider === p.id ? '#17652f' : '#64748b',
                       fontWeight: '600',
                       cursor: 'pointer'
                     }}
@@ -398,14 +398,14 @@ export const SoftphoneModal = ({
               <div style={{
                 fontSize: '2rem',
                 fontWeight: '900',
-                color: '#005bbf',
+                color: '#17652f',
                 fontFamily: 'monospace',
                 letterSpacing: '1px'
               }}>
                 {formatTimer(callDuration)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '6px', fontSize: '0.78rem', color: '#1e40af', fontWeight: '700' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1a73e8', display: 'inline-block' }}></span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '6px', fontSize: '0.78rem', color: '#17652f', fontWeight: '700' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#17652f', display: 'inline-block' }}></span>
                 CALL IN PROGRESS • HD AUDIO
               </div>
 
@@ -438,7 +438,7 @@ export const SoftphoneModal = ({
                     padding: '0 20px',
                     height: '42px',
                     borderRadius: '24px',
-                    background: '#0f172a',
+                    background: '#17652f',
                     color: '#ffffff',
                     border: 'none',
                     fontWeight: '700',
@@ -489,7 +489,7 @@ export const SoftphoneModal = ({
                 marginTop: '16px',
                 padding: '10px 24px',
                 borderRadius: '24px',
-                background: 'linear-gradient(135deg, #1e40af 0%, #1e40af 100%)',
+                background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
                 border: 'none',
                 fontWeight: '800',
@@ -567,9 +567,9 @@ export const SoftphoneModal = ({
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              background: feedback.type === 'success' ? '#eff6ff' : '#f1f5f9',
-              color: feedback.type === 'success' ? '#1e40af' : '#0f172a',
-              border: feedback.type === 'success' ? '1px solid #bfdbfe' : '1px solid #e2e8f0'
+              background: feedback.type === 'success' ? '#e8f2e5' : '#f1f5f9',
+              color: feedback.type === 'success' ? '#17652f' : '#0f172a',
+              border: feedback.type === 'success' ? '1px solid #cde4c9' : '1px solid #e2e8f0'
             }}>
               {feedback.type === 'success' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
               {feedback.message}
@@ -601,7 +601,7 @@ export const SoftphoneModal = ({
                 padding: '8px 18px',
                 borderRadius: '6px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #005bbf 0%, #0284c7 100%)',
+                background: 'linear-gradient(135deg, #17652f 0%, #0284c7 100%)',
                 color: '#ffffff',
                 fontSize: '0.8rem',
                 fontWeight: '800',

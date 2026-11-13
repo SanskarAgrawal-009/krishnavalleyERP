@@ -335,10 +335,10 @@ export const TaskDetailModal = ({
       return { label: 'HEAD', bg: '#ecfeff', color: '#0891b2' };
     }
     if (role.includes('supervisor')) {
-      return { label: 'SUPERVISOR', bg: '#eef2ff', color: '#4f46e5' };
+      return { label: 'SUPERVISOR', bg: '#e8f2e5', color: '#17652f' };
     }
     if (role.includes('helper') || role.includes('crew')) {
-      return { label: 'CREW', bg: '#eff6ff', color: '#2563eb' };
+      return { label: 'CREW', bg: '#e8f2e5', color: '#17652f' };
     }
     return { label: 'ASSIGNED', bg: '#f1f5f9', color: '#334155' };
   };
@@ -443,8 +443,8 @@ export const TaskDetailModal = ({
     }
     return {
       label: `Scheduled for ${nextD.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`,
-      color: '#005bbf',
-      bg: '#e8f0fe',
+      color: '#17652f',
+      bg: '#e8f2e5',
     };
   };
 
@@ -459,7 +459,7 @@ export const TaskDetailModal = ({
     >
       {loading ? (
         <div style={{ padding: '60px 20px', textAlign: 'center', color: '#64748b' }}>
-          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '28px', color: '#005bbf', marginBottom: '12px', display: 'block' }}></i>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '28px', color: '#17652f', marginBottom: '12px', display: 'block' }}></i>
           Loading task details & communication logs...
         </div>
       ) : !task ? (
@@ -470,7 +470,7 @@ export const TaskDetailModal = ({
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '16px' }}>
             <button
               onClick={() => loadTaskDetails()}
-              style={{ padding: '8px 16px', borderRadius: '8px', background: '#005bbf', color: '#ffffff', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+              style={{ padding: '8px 16px', borderRadius: '8px', background: '#17652f', color: '#ffffff', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
             >
               Retry
             </button>
@@ -684,9 +684,9 @@ export const TaskDetailModal = ({
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <TrendingUp size={18} color="#005bbf" />
+                <TrendingUp size={18} color="#17652f" />
                 <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
-                  Execution Progress: <span style={{ color: '#005bbf' }}>{progressVal}%</span>
+                  Execution Progress: <span style={{ color: '#17652f' }}>{progressVal}%</span>
                 </span>
               </div>
 
@@ -725,7 +725,7 @@ export const TaskDetailModal = ({
                 step="5"
                 value={progressVal}
                 onChange={(e) => setProgressVal(Number(e.target.value))}
-                style={{ flex: 1, accentColor: '#005bbf', cursor: 'pointer' }}
+                style={{ flex: 1, accentColor: '#17652f', cursor: 'pointer' }}
               />
 
               <div style={{ display: 'flex', gap: '4px' }}>
@@ -742,7 +742,7 @@ export const TaskDetailModal = ({
                       fontSize: '11px',
                       borderRadius: '4px',
                       border: '1px solid #cbd5e1',
-                      backgroundColor: progressVal === step ? '#005bbf' : '#ffffff',
+                      backgroundColor: progressVal === step ? '#17652f' : '#ffffff',
                       color: progressVal === step ? '#ffffff' : '#334155',
                       cursor: 'pointer',
                     }}
@@ -901,8 +901,8 @@ export const TaskDetailModal = ({
                 background: 'none',
                 fontWeight: 600,
                 fontSize: '13px',
-                color: activeTab === 'followups' ? '#005bbf' : '#64748b',
-                borderBottom: activeTab === 'followups' ? '2px solid #005bbf' : '2px solid transparent',
+                color: activeTab === 'followups' ? '#17652f' : '#64748b',
+                borderBottom: activeTab === 'followups' ? '2px solid #17652f' : '2px solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -922,8 +922,8 @@ export const TaskDetailModal = ({
                 background: 'none',
                 fontWeight: 600,
                 fontSize: '13px',
-                color: activeTab === 'chat' ? '#005bbf' : '#64748b',
-                borderBottom: activeTab === 'chat' ? '2px solid #005bbf' : '2px solid transparent',
+                color: activeTab === 'chat' ? '#17652f' : '#64748b',
+                borderBottom: activeTab === 'chat' ? '2px solid #17652f' : '2px solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -943,8 +943,8 @@ export const TaskDetailModal = ({
                 background: 'none',
                 fontWeight: 600,
                 fontSize: '13px',
-                color: activeTab === 'details' ? '#005bbf' : '#64748b',
-                borderBottom: activeTab === 'details' ? '2px solid #005bbf' : '2px solid transparent',
+                color: activeTab === 'details' ? '#17652f' : '#64748b',
+                borderBottom: activeTab === 'details' ? '2px solid #17652f' : '2px solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -964,8 +964,8 @@ export const TaskDetailModal = ({
                 background: 'none',
                 fontWeight: 600,
                 fontSize: '13px',
-                color: activeTab === 'uploads' ? '#005bbf' : '#64748b',
-                borderBottom: activeTab === 'uploads' ? '2px solid #005bbf' : '2px solid transparent',
+                color: activeTab === 'uploads' ? '#17652f' : '#64748b',
+                borderBottom: activeTab === 'uploads' ? '2px solid #17652f' : '2px solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -988,14 +988,14 @@ export const TaskDetailModal = ({
                   justifyContent: 'space-between',
                   padding: '14px 18px',
                   borderRadius: '10px',
-                  backgroundColor: fuStatus?.bg || '#eff6ff',
-                  border: `1px solid ${fuStatus?.color || '#bfdbfe'}`,
+                  backgroundColor: fuStatus?.bg || '#e8f2e5',
+                  border: `1px solid ${fuStatus?.color || '#cde4c9'}`,
                 }}
               >
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Clock size={18} color={fuStatus?.color || '#005bbf'} />
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: fuStatus?.color || '#005bbf' }}>
+                    <Clock size={18} color={fuStatus?.color || '#17652f'} />
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: fuStatus?.color || '#17652f' }}>
                       {fuStatus?.label}
                     </span>
                   </div>
@@ -1150,7 +1150,7 @@ export const TaskDetailModal = ({
                     .map((log, index) => {
                       const outcomeColors = {
                         on_track: { bg: '#dcfce7', text: '#15803d', label: 'On Track' },
-                        milestone_reached: { bg: '#e0e7ff', text: '#4338ca', label: 'Milestone Reached' },
+                        milestone_reached: { bg: '#e8f2e5', text: '#17652f', label: 'Milestone Reached' },
                         needs_attention: { bg: '#fef3c7', text: '#b45309', label: 'Needs Attention' },
                         roadblock: { bg: '#fee2e2', text: '#b91c1c', label: 'Roadblock' },
                         rescheduled: { bg: '#f1f5f9', text: '#475569', label: 'Rescheduled' },
@@ -1232,8 +1232,8 @@ export const TaskDetailModal = ({
               {/* 1. TRANSPARENCY & PARTICIPANTS HEADER */}
               <div
                 style={{
-                  background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%)',
-                  border: '1px solid #bfdbfe',
+                  background: 'linear-gradient(135deg, #f8fafc 0%, #e8f2e5 100%)',
+                  border: '1px solid #cde4c9',
                   borderRadius: '12px',
                   padding: '12px 16px',
                   display: 'flex',
@@ -1249,8 +1249,8 @@ export const TaskDetailModal = ({
                       width: '36px',
                       height: '36px',
                       borderRadius: '10px',
-                      background: '#dbeafe',
-                      color: '#1d4ed8',
+                      background: '#e8f2e5',
+                      color: '#17652f',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -1306,7 +1306,7 @@ export const TaskDetailModal = ({
                     </span>
                   ))}
                   {allParticipants.length > 4 && (
-                    <span style={{ fontSize: '11px', color: '#2563eb', fontWeight: 700, background: '#eff6ff', padding: '3px 8px', borderRadius: '12px' }}>
+                    <span style={{ fontSize: '11px', color: '#17652f', fontWeight: 700, background: '#e8f2e5', padding: '3px 8px', borderRadius: '12px' }}>
                       +{allParticipants.length - 4} more
                     </span>
                   )}
@@ -1385,8 +1385,8 @@ export const TaskDetailModal = ({
                         width: '48px',
                         height: '48px',
                         borderRadius: '50%',
-                        background: '#eff6ff',
-                        color: '#3b82f6',
+                        background: '#e8f2e5',
+                        color: '#17652f',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1447,7 +1447,7 @@ export const TaskDetailModal = ({
                             height: '32px',
                             borderRadius: '50%',
                             background: isMe
-                              ? '#005bbf'
+                              ? '#17652f'
                               : isMD
                               ? '#ca8a04'
                               : isQuery
@@ -1486,7 +1486,7 @@ export const TaskDetailModal = ({
                               fontSize: '11px',
                             }}
                           >
-                            <span style={{ fontWeight: 700, color: isMe ? '#005bbf' : '#1e293b' }}>
+                            <span style={{ fontWeight: 700, color: isMe ? '#17652f' : '#1e293b' }}>
                               {isMe ? 'You' : senderName}
                             </span>
                             <span
@@ -1518,7 +1518,7 @@ export const TaskDetailModal = ({
                                   ? 'linear-gradient(135deg, #d97706, #b45309)'
                                   : isGuideline
                                   ? 'linear-gradient(135deg, #0d9488, #0f766e)'
-                                  : 'linear-gradient(135deg, #005bbf, #0284c7)'
+                                  : 'linear-gradient(135deg, #17652f, #0284c7)'
                                 : isMD
                                 ? '#fefce8'
                                 : isQuery
@@ -1603,7 +1603,7 @@ export const TaskDetailModal = ({
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <span style={{ fontSize: '11px', fontWeight: 700, color: '#475569' }}>Tag Message As:</span>
                     {[
-                      { type: 'chat', label: '💬 General Chat', color: '#005bbf' },
+                      { type: 'chat', label: '💬 General Chat', color: '#17652f' },
                       { type: 'query', label: '❓ Task Query', color: '#d97706' },
                       { type: 'guideline', label: '📋 Work Guideline', color: '#0d9488' },
                       { type: 'md_note', label: '👑 MD Note', color: '#ca8a04' },
@@ -1755,7 +1755,7 @@ export const TaskDetailModal = ({
                             ? '#0d9488'
                             : chatMessageType === 'md_note'
                             ? '#ca8a04'
-                            : '#005bbf',
+                            : '#17652f',
                         color: '#ffffff',
                         border: 'none',
                         borderRadius: '8px',
@@ -1836,7 +1836,7 @@ export const TaskDetailModal = ({
                             width: '34px',
                             height: '34px',
                             borderRadius: '50%',
-                            backgroundColor: '#005bbf',
+                            backgroundColor: '#17652f',
                             color: '#ffffff',
                             display: 'flex',
                             alignItems: 'center',
@@ -1879,7 +1879,7 @@ export const TaskDetailModal = ({
                           m.hierarchyLevel === 'head'
                             ? { label: 'HEAD', bg: '#fef3c7', color: '#92400e' }
                             : m.hierarchyLevel === 'supervisor'
-                            ? { label: 'SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' }
+                            ? { label: 'SUPERVISOR', bg: '#e8f2e5', color: '#17652f' }
                             : { label: 'HELPER', bg: '#f1f5f9', color: '#334155' };
                         return (
                           <div
@@ -1989,7 +1989,7 @@ export const TaskDetailModal = ({
                 }}
               >
                 <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Camera size={16} color="#005bbf" />
+                  <Camera size={16} color="#17652f" />
                   Upload Field Work Evidence / Progress Proof
                 </div>
                 <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '14px' }}>
@@ -2101,11 +2101,11 @@ export const TaskDetailModal = ({
                       const fullUrl = getFullProofUrl(up.fileUrl);
                       const stageLabels = {
                         before: { label: 'Pre-Work', bg: '#fef3c7', color: '#92400e' },
-                        in_progress: { label: 'In Progress', bg: '#eff6ff', color: '#1d4ed8' },
+                        in_progress: { label: 'In Progress', bg: '#e8f2e5', color: '#17652f' },
                         after: { label: 'Completed', bg: '#dcfce7', color: '#15803d' },
                         completed: { label: 'Completed', bg: '#dcfce7', color: '#15803d' },
-                        milestone: { label: 'Milestone', bg: '#f3e8ff', color: '#7e22ce' },
-                        inspection: { label: 'Inspection', bg: '#e0e7ff', color: '#3730a3' },
+                        milestone: { label: 'Milestone', bg: '#f3e8ff', color: '#17652f' },
+                        inspection: { label: 'Inspection', bg: '#e8f2e5', color: '#17652f' },
                         proof: { label: 'Evidence', bg: '#f1f5f9', color: '#334155' },
                         other: { label: 'General', bg: '#f1f5f9', color: '#475569' },
                       };
@@ -2113,7 +2113,7 @@ export const TaskDetailModal = ({
 
                       const roleLabels = {
                         helper: { label: 'HELPER', bg: '#f1f5f9', color: '#334155' },
-                        supervisor: { label: 'SUPERVISOR', bg: '#eff6ff', color: '#1d4ed8' },
+                        supervisor: { label: 'SUPERVISOR', bg: '#e8f2e5', color: '#17652f' },
                         head: { label: 'HEAD', bg: '#fef3c7', color: '#92400e' },
                         taskforce_manager: { label: 'MANAGER', bg: '#fdf2f8', color: '#9d174d' },
                         manager: { label: 'MANAGER', bg: '#fdf2f8', color: '#9d174d' },
@@ -2139,7 +2139,7 @@ export const TaskDetailModal = ({
                           <div
                             style={{
                               height: '140px',
-                              backgroundColor: '#0f172a',
+                              backgroundColor: '#17652f',
                               position: 'relative',
                               display: 'flex',
                               alignItems: 'center',
@@ -2173,9 +2173,9 @@ export const TaskDetailModal = ({
                                 <span style={{ fontSize: '11px', color: '#fca5a5', fontWeight: 700 }}>PDF Document</span>
                               </div>
                             ) : up.fileType === 'video' || (up.fileName && /\.(mp4|mov|avi|webm)$/i.test(up.fileName)) ? (
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#60a5fa', gap: '6px' }}>
-                                <Film size={36} color="#3b82f6" />
-                                <span style={{ fontSize: '11px', color: '#93c5fd', fontWeight: 700 }}>Video File</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#4a9e68', gap: '6px' }}>
+                                <Film size={36} color="#17652f" />
+                                <span style={{ fontSize: '11px', color: '#86c8a0', fontWeight: 700 }}>Video File</span>
                               </div>
                             ) : up.fileType === 'audio' || (up.fileName && /\.(mp3|wav|m4a|aac)$/i.test(up.fileName)) ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#34d399', gap: '6px' }}>

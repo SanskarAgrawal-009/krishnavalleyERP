@@ -7,9 +7,9 @@ export const DEPARTMENT_ICON_MAP = [
   {
     keywords: ['human resource', 'hr', 'people', 'talent'],
     icon: 'fa-solid fa-users',
-    color: '#8b5cf6', // Violet
+    color: '#4a9e68', // Violet
     bg: '#f5f3ff',
-    border: '#ddd6fe',
+    border: '#e8f2e5',
   },
   {
     keywords: ['i.t.', 'it', 'software', 'tech', 'computer'],
@@ -56,8 +56,8 @@ export const DEPARTMENT_ICON_MAP = [
   {
     keywords: ['admin / operations', 'admin', 'operations', 'governance'],
     icon: 'fa-solid fa-building',
-    color: '#6366f1', // Indigo
-    bg: '#eef2ff',
+    color: '#17652f', // Indigo
+    bg: '#e8f2e5',
     border: '#c7d2fe',
   },
   {
@@ -84,9 +84,9 @@ export const DEPARTMENT_ICON_MAP = [
   {
     keywords: ['vp', "vp's", 'vice president', 'president'],
     icon: 'fa-solid fa-crown',
-    color: '#7c3aed', // Royal Violet
+    color: '#17652f', // Royal Violet
     bg: '#f5f3ff',
-    border: '#ddd6fe',
+    border: '#e8f2e5',
   },
 ];
 
@@ -94,9 +94,9 @@ export const getDepartmentTheme = (deptName) => {
   if (!deptName) {
     return {
       icon: 'fa-solid fa-layer-group',
-      color: '#2563eb',
-      bg: '#eff6ff',
-      border: '#bfdbfe',
+      color: '#17652f',
+      bg: '#e8f2e5',
+      border: '#cde4c9',
     };
   }
   const clean = deptName.toLowerCase().trim();
@@ -110,9 +110,9 @@ export const getDepartmentTheme = (deptName) => {
 
   return {
     icon: 'fa-solid fa-layer-group',
-    color: '#005bbf',
-    bg: '#eff6ff',
-    border: '#bfdbfe',
+    color: '#17652f',
+    bg: '#e8f2e5',
+    border: '#cde4c9',
   };
 };
 
@@ -144,12 +144,12 @@ export const getHierarchyTheme = (level) => {
       icon: 'fa-solid fa-user-gear',
       title: 'Site Supervisor',
       levelText: 'Level 2',
-      color: '#1d4ed8',
-      bg: '#eff6ff',
-      border: '#bfdbfe',
-      badgeBg: '#dbeafe',
-      badgeColor: '#1e40af',
-      badgeBorder: '#93c5fd',
+      color: '#17652f',
+      bg: '#e8f2e5',
+      border: '#cde4c9',
+      badgeBg: '#e8f2e5',
+      badgeColor: '#17652f',
+      badgeBorder: '#86c8a0',
     };
   }
   return {

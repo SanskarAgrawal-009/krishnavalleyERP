@@ -270,7 +270,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
                 required
                 value={departmentId}
                 onChange={(e) => handleDepartmentChange(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem', borderColor: '#1a73e8' }}
+                style={{ width: '100%', fontSize: '0.8rem', borderColor: '#17652f' }}
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -461,7 +461,7 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
           <button type="button" onClick={onClose} style={{ padding: '7px 14px', background: '#f8f9fa', color: '#374151', borderRadius: '4px' }}>
             Cancel
           </button>
-          <button type="submit" style={{ padding: '7px 18px', background: 'linear-gradient(135deg, #1a73e8, #1e40af)', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
+          <button type="submit" style={{ padding: '7px 18px', background: 'linear-gradient(135deg, #17652f, #17652f)', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
             Onboard Employee & Issue Staff ID
           </button>
         </div>

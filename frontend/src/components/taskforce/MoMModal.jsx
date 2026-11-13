@@ -289,7 +289,7 @@ export const MoMModal = ({
             style={{
               padding: '12px 16px',
               borderRadius: '8px',
-              backgroundColor: '#0f172a',
+              backgroundColor: '#17652f',
               color: '#ffffff',
               display: 'flex',
               justifyContent: 'space-between',
@@ -302,7 +302,7 @@ export const MoMModal = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
                 <span
                   style={{
-                    backgroundColor: '#1e293b',
+                    backgroundColor: '#17652f',
                     color: '#38bdf8',
                     padding: '1px 6px',
                     borderRadius: '4px',
@@ -337,7 +337,7 @@ export const MoMModal = ({
               type="button"
               onClick={() => window.print()}
               style={{
-                backgroundColor: '#1e293b',
+                backgroundColor: '#17652f',
                 color: '#e2e8f0',
                 border: '1px solid #334155',
                 padding: '6px 12px',
@@ -357,7 +357,7 @@ export const MoMModal = ({
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Users size={13} color="#005bbf" />
+                <Users size={13} color="#17652f" />
                 Attendance ({presentCount} of {attendeesAttendance.length} Present)
               </label>
               <span style={{ fontSize: '10px', color: '#64748b' }}>Click name to toggle Present/Absent</span>

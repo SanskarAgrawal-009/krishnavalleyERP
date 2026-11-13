@@ -96,18 +96,18 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
         {/* Header */}
         <div style={{
           padding: '18px 24px',
-          background: 'linear-gradient(135deg, #00285c, #312e81)',
+          background: 'linear-gradient(135deg, #17652f, #17652f)',
           color: '#ffffff',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottom: '1px solid #4f46e5'
+          borderBottom: '1px solid #17652f'
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '1.25rem', fontWeight: '800' }}>Resale Transfer &amp; History Archive</span>
               <span style={{
-                background: '#6366f1',
+                background: '#17652f',
                 color: '#ffffff',
                 fontSize: '0.72rem',
                 fontWeight: '700',
@@ -145,7 +145,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
           
           {/* ARCHIVE NOTICE BOX */}
           <div style={{
-            background: '#eff6ff',
+            background: '#e8f2e5',
             border: '1.5px solid #c7d2fe',
             borderRadius: '12px',
             padding: '14px 18px',
@@ -155,7 +155,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
             gap: '12px'
           }}>
             <div>
-              <span style={{ fontSize: '0.72rem', color: '#00285c', fontWeight: '800', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '800', textTransform: 'uppercase' }}>
                 CURRENT OWNER (TO BE ARCHIVED AS "LAST OWNER")
               </span>
               <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1e1b4b', marginTop: '2px' }}>
@@ -166,7 +166,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
               </div>
             </div>
 
-            <div style={{ background: '#6366f1', color: '#ffffff', padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ background: '#17652f', color: '#ffffff', padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
               <ArrowRight size={20} />
             </div>
           </div>
@@ -174,7 +174,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
           {/* SECTION: NEW OWNER DETAILS */}
           <div>
             <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <UserPlus size={16} color="#00285c" /> New Buyer / Transferee Information (Table 1)
+              <UserPlus size={16} color="#17652f" /> New Buyer / Transferee Information (Table 1)
             </h4>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
@@ -329,7 +329,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
 
             <div style={{ textAlign: 'right' }}>
               <span style={{ color: '#64748b', fontSize: '0.72rem' }}>NEW TOTAL COMMITMENT:</span>
-              <strong style={{ display: 'block', color: '#2563eb', fontSize: '0.95rem' }}>{formatINR(totalCommitment)}</strong>
+              <strong style={{ display: 'block', color: '#17652f', fontSize: '0.95rem' }}>{formatINR(totalCommitment)}</strong>
             </div>
           </div>
 
@@ -358,7 +358,7 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
                 padding: '9px 24px',
                 borderRadius: '8px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #00285c, #3730a3)',
+                background: 'linear-gradient(135deg, #17652f, #17652f)',
                 color: '#ffffff',
                 fontWeight: '700',
                 fontSize: '0.82rem',

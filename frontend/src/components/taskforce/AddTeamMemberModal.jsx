@@ -255,7 +255,7 @@ export const AddTeamMemberModal = ({
         <div
           style={{
             padding: '18px 24px',
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)',
+            background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
             color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
@@ -318,8 +318,8 @@ export const AddTeamMemberModal = ({
                 <div
                   onClick={() => setHierarchyLevel('helper')}
                   style={{
-                    border: hierarchyLevel === 'helper' ? '2px solid #2563eb' : '1px solid #cbd5e1',
-                    background: hierarchyLevel === 'helper' ? '#eff6ff' : '#f8fafc',
+                    border: hierarchyLevel === 'helper' ? '2px solid #17652f' : '1px solid #cbd5e1',
+                    background: hierarchyLevel === 'helper' ? '#e8f2e5' : '#f8fafc',
                     borderRadius: '10px',
                     padding: '12px',
                     cursor: 'pointer',
@@ -327,8 +327,8 @@ export const AddTeamMemberModal = ({
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                    <HardHat size={16} color={hierarchyLevel === 'helper' ? '#2563eb' : '#64748b'} />
-                    <span style={{ fontSize: '0.84rem', fontWeight: '800', color: hierarchyLevel === 'helper' ? '#1e40af' : '#1e293b' }}>
+                    <HardHat size={16} color={hierarchyLevel === 'helper' ? '#17652f' : '#64748b'} />
+                    <span style={{ fontSize: '0.84rem', fontWeight: '800', color: hierarchyLevel === 'helper' ? '#17652f' : '#1e293b' }}>
                       Helper
                     </span>
                   </div>
@@ -341,8 +341,8 @@ export const AddTeamMemberModal = ({
                 <div
                   onClick={() => setHierarchyLevel('supervisor')}
                   style={{
-                    border: hierarchyLevel === 'supervisor' ? '2px solid #4f46e5' : '1px solid #cbd5e1',
-                    background: hierarchyLevel === 'supervisor' ? '#eef2ff' : '#f8fafc',
+                    border: hierarchyLevel === 'supervisor' ? '2px solid #17652f' : '1px solid #cbd5e1',
+                    background: hierarchyLevel === 'supervisor' ? '#e8f2e5' : '#f8fafc',
                     borderRadius: '10px',
                     padding: '12px',
                     cursor: 'pointer',
@@ -350,8 +350,8 @@ export const AddTeamMemberModal = ({
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                    <Shield size={16} color={hierarchyLevel === 'supervisor' ? '#4f46e5' : '#64748b'} />
-                    <span style={{ fontSize: '0.84rem', fontWeight: '800', color: hierarchyLevel === 'supervisor' ? '#3730a3' : '#1e293b' }}>
+                    <Shield size={16} color={hierarchyLevel === 'supervisor' ? '#17652f' : '#64748b'} />
+                    <span style={{ fontSize: '0.84rem', fontWeight: '800', color: hierarchyLevel === 'supervisor' ? '#17652f' : '#1e293b' }}>
                       Supervisor
                     </span>
                   </div>
@@ -481,7 +481,7 @@ export const AddTeamMemberModal = ({
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  <div style={{ color: '#2563eb', display: 'flex', alignItems: 'center' }}>
+                  <div style={{ color: '#17652f', display: 'flex', alignItems: 'center' }}>
                     <Briefcase size={15} />
                   </div>
 
@@ -540,7 +540,7 @@ export const AddTeamMemberModal = ({
             <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <KeyRound size={16} color="#2563eb" />
+                  <KeyRound size={16} color="#17652f" />
                   Access Control & Governance Credentials
                 </span>
                 <span style={{ fontSize: '0.7rem', color: '#059669', fontWeight: '700', backgroundColor: '#ecfdf5', padding: '2px 8px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
@@ -565,9 +565,9 @@ export const AddTeamMemberModal = ({
                       borderRadius: '6px',
                       fontSize: '0.75rem',
                       fontWeight: accountType === t.id ? '700' : '600',
-                      border: accountType === t.id ? '1.5px solid #2563eb' : '1px solid #cbd5e1',
-                      background: accountType === t.id ? '#eff6ff' : '#ffffff',
-                      color: accountType === t.id ? '#1e40af' : '#475569',
+                      border: accountType === t.id ? '1.5px solid #17652f' : '1px solid #cbd5e1',
+                      background: accountType === t.id ? '#e8f2e5' : '#ffffff',
+                      color: accountType === t.id ? '#17652f' : '#475569',
                       cursor: 'pointer',
                     }}
                   >
@@ -608,7 +608,7 @@ export const AddTeamMemberModal = ({
                         setPasswordTouched(true);
                         setNewPassword(e.target.value);
                       }}
-                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', fontWeight: '600', color: '#2563eb' }}
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem', fontWeight: '600', color: '#17652f' }}
                     />
                     <span style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '2px', display: 'block' }}>
                       {mobileNo ? 'Auto-filled from Mobile Number (editable)' : 'Auto-fills from Mobile Number (or custom password)'}
@@ -688,7 +688,7 @@ export const AddTeamMemberModal = ({
               style={{
                 padding: '8px 20px',
                 borderRadius: '8px',
-                background: '#2563eb',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.82rem',

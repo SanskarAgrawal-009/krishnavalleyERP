@@ -148,7 +148,7 @@ export const CustomerDetailModal = ({
                 padding: '2px 8px',
                 borderRadius: '4px',
                 background: isOwner ? 'rgba(168, 85, 247, 0.2)' : 'rgba(59, 130, 246, 0.2)',
-                color: isOwner ? '#c084fc' : '#60a5fa',
+                color: isOwner ? '#86c8a0' : '#4a9e68',
                 textTransform: 'uppercase'
               }}>
                 {customer.customerType} {isCompanyTenant ? '(Corporate)' : ''}
@@ -157,11 +157,11 @@ export const CustomerDetailModal = ({
 
             <div style={{ display: 'flex', gap: '14px', fontSize: '0.8rem', color: '#374151', marginTop: '4px', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Phone size={13} color="#1a73e8" /> {customer.mobileNo}
+                <Phone size={13} color="#17652f" /> {customer.mobileNo}
               </span>
               {customer.email && (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Mail size={13} color="#60a5fa" /> {customer.email}
+                  <Mail size={13} color="#4a9e68" /> {customer.email}
                 </span>
               )}
               {customer.address?.city && (
@@ -209,7 +209,7 @@ export const CustomerDetailModal = ({
                   gap: '6px',
                   padding: '8px 16px',
                   borderRadius: '6px',
-                  background: isSelected ? '#1a73e8' : 'transparent',
+                  background: isSelected ? '#17652f' : 'transparent',
                   color: isSelected ? '#ffffff' : '#374151',
                   fontWeight: isSelected ? '700' : '600',
                   fontSize: '0.8rem',
@@ -232,7 +232,7 @@ export const CustomerDetailModal = ({
             {/* Owner Properties Breakdown */}
             {isOwner && (
               <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#86c8a0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Key size={15} /> Owned Flats & Property Portfolios
                 </h4>
 
@@ -267,16 +267,16 @@ export const CustomerDetailModal = ({
                   const bank = customer.bankDetails || customer.ownerDetails?.bankDetails || {};
                   return (
                     <div style={{
-                      background: '#eff6ff',
-                      border: '1px solid #dbeafe',
+                      background: '#e8f2e5',
+                      border: '1px solid #e8f2e5',
                       borderRadius: 'var(--radius-sm)',
                       padding: '12px 16px',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '8px'
                     }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <CreditCard size={14} color="#1a73e8" /> Banking &amp; Assured Payout Account
+                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <CreditCard size={14} color="#17652f" /> Banking &amp; Assured Payout Account
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '0.8rem', color: '#001a41' }}>
                         <div><strong>Bank Name:</strong> {bank.bankName || 'Not configured'}</div>
@@ -316,7 +316,7 @@ export const CustomerDetailModal = ({
             {/* Tenant Lease & Profile Overview */}
             {isTenant && (
               <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#4a9e68', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Home size={15} /> Leased Flat & Tenant Identification
                 </h4>
 
@@ -333,10 +333,10 @@ export const CustomerDetailModal = ({
 
                   <div style={{ background: '#f8f9fa', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid #dadce0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>Monthly Rent & Status</div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1a73e8', marginTop: '2px' }}>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
                       {formatINR(customer.tenantDetails?.rentalDetails?.monthlyRent || 0)} / mo
                     </div>
-                    <span style={{ fontSize: '0.7rem', color: '#60a5fa', textTransform: 'uppercase', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#4a9e68', textTransform: 'uppercase', fontWeight: '700' }}>
                       Due on day {customer.tenantDetails?.rentalDetails?.rentDueDay || 5} of month
                     </span>
                   </div>
@@ -480,7 +480,7 @@ export const CustomerDetailModal = ({
                         padding: '2px 8px',
                         borderRadius: '4px',
                         background: doc.verificationStatus === 'verified' ? 'rgba(16, 185, 129, 0.15)' : (doc.verificationStatus === 'rejected' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(251, 191, 36, 0.15)'),
-                        color: doc.verificationStatus === 'verified' ? '#1a73e8' : (doc.verificationStatus === 'rejected' ? '#0f172a' : '#cbd5e1')
+                        color: doc.verificationStatus === 'verified' ? '#17652f' : (doc.verificationStatus === 'rejected' ? '#0f172a' : '#cbd5e1')
                       }}>
                         {doc.verificationStatus}
                       </span>
@@ -489,7 +489,7 @@ export const CustomerDetailModal = ({
                         <button
                           type="button"
                           onClick={() => onVerifyDocument(customer._id, doc._id, { verificationStatus: 'verified' })}
-                          style={{ padding: '3px 8px', background: 'rgba(16, 185, 129, 0.2)', color: '#1a73e8', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ padding: '3px 8px', background: 'rgba(16, 185, 129, 0.2)', color: '#17652f', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
                         >
                           Verify
                         </button>
@@ -507,7 +507,7 @@ export const CustomerDetailModal = ({
                           background: '#f8f9fa',
                           border: '1px solid #dadce0',
                           borderRadius: '4px',
-                          color: '#60a5fa',
+                          color: '#4a9e68',
                           textDecoration: 'none',
                           fontSize: '0.75rem',
                           fontWeight: '600'
@@ -529,7 +529,7 @@ export const CustomerDetailModal = ({
             {/* Quick Log Form */}
             <form onSubmit={handleCommSubmit} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Mic size={15} color="#1a73e8" /> Log Customer Interaction & Call Recording
+                <Mic size={15} color="#17652f" /> Log Customer Interaction & Call Recording
               </h4>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
@@ -612,7 +612,7 @@ export const CustomerDetailModal = ({
                       borderRadius: '4px',
                       fontSize: '0.75rem',
                       cursor: 'pointer',
-                      color: selectedAudioFile ? '#1a73e8' : 'var(--text-secondary)',
+                      color: selectedAudioFile ? '#17652f' : 'var(--text-secondary)',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '5px'
@@ -673,7 +673,7 @@ export const CustomerDetailModal = ({
                     {/* Audio Call Player */}
                     {comm.callRecordingUrl && (
                       <div style={{ background: '#f8f9fa', padding: '8px 10px', borderRadius: '4px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Volume2 size={16} color="#1a73e8" />
+                        <Volume2 size={16} color="#17652f" />
                         <audio controls src={comm.callRecordingUrl} style={{ width: '100%', height: '32px' }} />
                       </div>
                     )}
@@ -724,27 +724,27 @@ export const CustomerDetailModal = ({
 
                       <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>TOKEN / PAID AMOUNT</span>
-                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                           {formatINR(paidVal)}
                         </div>
-                        <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
                           {totalDealVal > 0 ? `${Math.round((paidVal / totalDealVal) * 100)}% Paid` : 'Recorded'}
                         </span>
                       </div>
 
                       <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>BALANCE OUTSTANDING</span>
-                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: balanceVal === 0 ? '#1a73e8' : '#475569', marginTop: '4px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: balanceVal === 0 ? '#17652f' : '#475569', marginTop: '4px' }}>
                           {formatINR(balanceVal)}
                         </div>
-                        <span style={{ fontSize: '0.72rem', color: balanceVal === 0 ? '#1a73e8' : '#475569', fontWeight: '600' }}>
+                        <span style={{ fontSize: '0.72rem', color: balanceVal === 0 ? '#17652f' : '#475569', fontWeight: '600' }}>
                           {balanceVal === 0 ? 'Fully Paid' : 'Milestone Schedule Active'}
                         </span>
                       </div>
 
                       <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>ALLOTMENT STATUS</span>
-                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#2563eb', marginTop: '4px', textTransform: 'capitalize' }}>
+                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f', marginTop: '4px', textTransform: 'capitalize' }}>
                           {sStatus.replace(/_/g, ' ')}
                         </div>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>Sales Registry Synced</span>
@@ -755,12 +755,12 @@ export const CustomerDetailModal = ({
                     <div style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '8px', padding: '16px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <FileText size={16} color="#1a73e8" />
+                          <FileText size={16} color="#17652f" />
                           <span style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>
                             Sales Agreement & Title Allotment
                           </span>
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: '#1a73e8', background: '#e8f0fe', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#17652f', background: '#e8f2e5', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
                           Agreement #{agrNum}
                         </span>
                       </div>
@@ -776,7 +776,7 @@ export const CustomerDetailModal = ({
                       <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', borderTop: '1px solid #dadce0', paddingTop: '10px' }}>
                         <div style={{ fontSize: '0.78rem', color: '#4b5563' }}>
                           {agreementDoc ? (
-                            <span style={{ color: '#1a73e8', fontWeight: '700' }}>Agreement document uploaded & verified in S3 vault</span>
+                            <span style={{ color: '#17652f', fontWeight: '700' }}>Agreement document uploaded & verified in S3 vault</span>
                           ) : (
                             <span style={{ color: '#475569' }}>Agreement document copy pending upload</span>
                           )}
@@ -809,12 +809,12 @@ export const CustomerDetailModal = ({
                     <div style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '8px', overflow: 'hidden' }}>
                       <div style={{ padding: '12px 16px', background: '#f8f9fa', borderBottom: '1px solid #dadce0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <DollarSign size={15} color="#1a73e8" /> Payment Receipts & Deposit Ledger ({receipts.length + receiptDocs.length})
+                          <DollarSign size={15} color="#17652f" /> Payment Receipts & Deposit Ledger ({receipts.length + receiptDocs.length})
                         </span>
                         <button
                           type="button"
                           onClick={() => setActiveTab('documents')}
-                          style={{ background: 'transparent', border: 'none', color: '#1a73e8', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ background: 'transparent', border: 'none', color: '#17652f', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
                         >
                           + Upload New Receipt
                         </button>
@@ -834,7 +834,7 @@ export const CustomerDetailModal = ({
                           <tbody>
                             {receipts.map((rec, idx) => (
                               <tr key={idx} style={{ borderBottom: '1px solid #f1f3f4' }}>
-                                <td style={{ padding: '10px 14px', fontWeight: '700', color: '#1a73e8' }}>
+                                <td style={{ padding: '10px 14px', fontWeight: '700', color: '#17652f' }}>
                                   {rec.receiptNumber || `REC-${idx + 1}`}
                                 </td>
                                 <td style={{ padding: '10px 14px', color: '#4b5563' }}>
@@ -843,7 +843,7 @@ export const CustomerDetailModal = ({
                                 <td style={{ padding: '10px 14px', color: '#111827' }}>
                                   Booking Token / Property Allotment Inflow
                                 </td>
-                                <td style={{ padding: '10px 14px', fontWeight: '800', color: '#1a73e8' }}>
+                                <td style={{ padding: '10px 14px', fontWeight: '800', color: '#17652f' }}>
                                   {formatINR(rec.amount || paidVal)}
                                 </td>
                                 <td style={{ padding: '10px 14px' }}>
@@ -852,7 +852,7 @@ export const CustomerDetailModal = ({
                                       href={rec.documentUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      style={{ color: '#1a73e8', fontWeight: '700', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                      style={{ color: '#17652f', fontWeight: '700', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                     >
                                       <ExternalLink size={12} /> View Receipt
                                     </a>
@@ -865,7 +865,7 @@ export const CustomerDetailModal = ({
 
                             {receiptDocs.map((rd, idx) => (
                               <tr key={`doc-${idx}`} style={{ borderBottom: '1px solid #f1f3f4' }}>
-                                <td style={{ padding: '10px 14px', fontWeight: '700', color: '#1a73e8' }}>
+                                <td style={{ padding: '10px 14px', fontWeight: '700', color: '#17652f' }}>
                                   {rd.documentNumber || `REC-S3-${idx + 1}`}
                                 </td>
                                 <td style={{ padding: '10px 14px', color: '#4b5563' }}>
@@ -874,7 +874,7 @@ export const CustomerDetailModal = ({
                                 <td style={{ padding: '10px 14px', color: '#111827' }}>
                                   {rd.documentName || 'Payment Proof Attachment'}
                                 </td>
-                                <td style={{ padding: '10px 14px', fontWeight: '800', color: '#1a73e8' }}>
+                                <td style={{ padding: '10px 14px', fontWeight: '800', color: '#17652f' }}>
                                   {formatINR(paidVal)}
                                 </td>
                                 <td style={{ padding: '10px 14px' }}>
@@ -882,7 +882,7 @@ export const CustomerDetailModal = ({
                                     href={rd.fileUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    style={{ color: '#1a73e8', fontWeight: '700', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                    style={{ color: '#17652f', fontWeight: '700', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                   >
                                     <ExternalLink size={12} /> View Receipt
                                   </a>

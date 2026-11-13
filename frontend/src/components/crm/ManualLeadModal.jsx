@@ -8,9 +8,9 @@ import { projectService } from '../../services/projectService.js';
 import { sanitizeAlphabetsOnly, sanitizePhone, sanitizeEmail, isValidEmail } from '../../utils/inputValidators.js';
 
 const STEPS = [
-  { id: 1, title: 'Contact Info', subtitle: 'Name & Contact', icon: User, color: '#2563eb' },
-  { id: 2, title: 'Requirements', subtitle: 'Budget & Preferences', icon: Tag, color: '#1e40af' },
-  { id: 3, title: 'Assignment', subtitle: 'Team & Follow-Up', icon: Users, color: '#1a73e8' },
+  { id: 1, title: 'Contact Info', subtitle: 'Name & Contact', icon: User, color: '#17652f' },
+  { id: 2, title: 'Requirements', subtitle: 'Budget & Preferences', icon: Tag, color: '#17652f' },
+  { id: 3, title: 'Assignment', subtitle: 'Team & Follow-Up', icon: Users, color: '#17652f' },
 ];
 
 export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMembers = [] }) => {
@@ -193,7 +193,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
   };
 
   const inputFocusStyle = {
-    borderColor: '#3b82f6',
+    borderColor: '#17652f',
     boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
   };
 
@@ -220,7 +220,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+          background: 'linear-gradient(135deg, #17652f, #17652f)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <User size={16} color="#fff" />
@@ -234,7 +234,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       {/* Full Name */}
       <div>
         <label style={labelStyle}>
-          <User size={13} color="#2563eb" />
+          <User size={13} color="#17652f" />
           Prospect Full Name * (Alphabets only)
         </label>
         <input
@@ -254,7 +254,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
         <div>
           <label style={labelStyle}>
-            <Phone size={13} color="#1a73e8" />
+            <Phone size={13} color="#17652f" />
             Mobile Number * (10 digits)
           </label>
           <input
@@ -270,7 +270,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
         </div>
         <div>
           <label style={labelStyle}>
-            <Mail size={13} color="#2563eb" />
+            <Mail size={13} color="#17652f" />
             Email Address
           </label>
           <input
@@ -322,11 +322,11 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       {/* Validation hint */}
       {formData.name && formData.mobileNo && (
         <div style={{
-          padding: '10px 14px', background: '#eff6ff', borderRadius: '10px',
-          border: '1px solid #dbeafe', display: 'flex', alignItems: 'center', gap: '8px',
+          padding: '10px 14px', background: '#e8f2e5', borderRadius: '10px',
+          border: '1px solid #e8f2e5', display: 'flex', alignItems: 'center', gap: '8px',
         }}>
-          <CheckCircle2 size={16} color="#1a73e8" />
-          <span style={{ fontSize: '0.78rem', color: '#1e40af', fontWeight: '600' }}>
+          <CheckCircle2 size={16} color="#17652f" />
+          <span style={{ fontSize: '0.78rem', color: '#17652f', fontWeight: '600' }}>
             Contact details captured — proceed to add requirements
           </span>
         </div>
@@ -342,7 +342,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #1e40af, #1e3a8a)',
+          background: 'linear-gradient(135deg, #17652f, #17652f)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Tag size={16} color="#fff" />
@@ -357,7 +357,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
         <div>
           <label style={labelStyle}>
-            <Tag size={13} color="#1e40af" />
+            <Tag size={13} color="#17652f" />
             Requirement / Looking For
           </label>
           <input
@@ -372,13 +372,13 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
         </div>
         <div>
           <label style={labelStyle}>
-            <DollarSign size={13} color="#1a73e8" />
+            <DollarSign size={13} color="#17652f" />
             Budget (₹)
           </label>
           <div style={{ position: 'relative' }}>
             <span style={{
               position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
-              fontWeight: '700', color: '#1a73e8', fontSize: '0.9rem',
+              fontWeight: '700', color: '#17652f', fontSize: '0.9rem',
             }}>₹</span>
             <input
               type="number"
@@ -391,7 +391,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
             />
           </div>
           {formData.budget && Number(formData.budget) > 0 && (
-            <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '600', marginTop: '4px', display: 'block' }}>
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600', marginTop: '4px', display: 'block' }}>
               ≈ ₹{(Number(formData.budget) / 100000).toFixed(1)} Lakh
             </span>
           )}
@@ -444,11 +444,11 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
 
       {/* Info banner */}
       <div style={{
-        padding: '10px 14px', background: '#eff6ff', borderRadius: '10px',
-        border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', gap: '8px',
+        padding: '10px 14px', background: '#e8f2e5', borderRadius: '10px',
+        border: '1px solid #cde4c9', display: 'flex', alignItems: 'center', gap: '8px',
       }}>
-        <Zap size={16} color="#1e40af" />
-        <span style={{ fontSize: '0.78rem', color: '#00285c', fontWeight: '600' }}>
+        <Zap size={16} color="#17652f" />
+        <span style={{ fontSize: '0.78rem', color: '#17652f', fontWeight: '600' }}>
           These details help prioritize and route leads effectively
         </span>
       </div>
@@ -463,7 +463,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
+          background: 'linear-gradient(135deg, #17652f, #17652f)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Users size={16} color="#fff" />
@@ -477,7 +477,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       {/* Assign to Sales Team */}
       <div>
         <label style={labelStyle}>
-          <Users size={13} color="#2563eb" />
+          <Users size={13} color="#17652f" />
           Assign Lead To (In-House Team)
         </label>
         <select
@@ -504,7 +504,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
       {/* Assign Flat */}
       <div>
         <label style={labelStyle}>
-          <Home size={13} color="#2563eb" />
+          <Home size={13} color="#17652f" />
           Assign Flat / Unit (Optional)
         </label>
         <select
@@ -530,8 +530,8 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
           return (
             <div style={{
               marginTop: '6px', padding: '8px 12px',
-              background: '#eff6ff', border: '1px solid #dbeafe',
-              borderRadius: '8px', fontSize: '0.78rem', color: '#1e40af',
+              background: '#e8f2e5', border: '1px solid #e8f2e5',
+              borderRadius: '8px', fontSize: '0.78rem', color: '#17652f',
               display: 'flex', alignItems: 'center', gap: '10px',
             }}>
               <span><strong>Floor:</strong> {selected.floor || 1}</span>
@@ -566,7 +566,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
                 type="checkbox"
                 checked={formData.addInitialFollowUp}
                 onChange={(e) => setFormData({ ...formData, addInitialFollowUp: e.target.checked })}
-                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#2563eb' }}
+                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#17652f' }}
               />
               <Clock size={14} color="#334155" />
               Log First Follow-up Activity Now
@@ -631,10 +631,10 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
 
       {/* Summary Preview */}
       <div style={{
-        padding: '14px 16px', background: '#eff6ff',
-        borderRadius: '12px', border: '1.5px solid #bfdbfe',
+        padding: '14px 16px', background: '#e8f2e5',
+        borderRadius: '12px', border: '1.5px solid #cde4c9',
       }}>
-        <h4 style={{ margin: '0 0 8px', fontSize: '0.78rem', fontWeight: '800', color: '#1e40af', textTransform: 'uppercase' }}>
+        <h4 style={{ margin: '0 0 8px', fontSize: '0.78rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase' }}>
           Lead Summary
         </h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px', fontSize: '0.8rem' }}>
@@ -649,7 +649,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
             <div key={i} style={{
               display: 'flex', justifyContent: 'space-between',
               padding: '4px 8px', borderRadius: '4px',
-              background: i % 2 === 0 ? '#ffffff' : '#eff6ff',
+              background: i % 2 === 0 ? '#ffffff' : '#e8f2e5',
             }}>
               <span style={{ color: '#64748b', fontWeight: '600' }}>{item.label}</span>
               <span style={{ color: '#0f172a', fontWeight: '700' }}>{item.value}</span>
@@ -691,7 +691,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
         {/* HEADER */}
         <div style={{
           padding: '18px 24px',
-          background: 'linear-gradient(135deg, #1e3a8a, #0f172a)',
+          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
           color: '#ffffff',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
@@ -702,7 +702,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
                 {lead ? `Edit Lead: ${lead.name}` : 'New CRM Lead'}
               </span>
             </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: '#93c5fd' }}>
+            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: '#86c8a0' }}>
               Step {currentStep} of {STEPS.length} — {STEPS[currentStep - 1].subtitle}
             </p>
           </div>
@@ -748,7 +748,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
                   <div style={{
                     width: '30px', height: '30px', borderRadius: '8px',
                     background: isCompleted
-                      ? 'linear-gradient(135deg, #1a73e8, #1e40af)'
+                      ? 'linear-gradient(135deg, #17652f, #17652f)'
                       : isActive
                         ? `linear-gradient(135deg, ${step.color}, ${step.color}dd)`
                         : '#e2e8f0',
@@ -764,7 +764,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
                   <div style={{ textAlign: 'left' }}>
                     <div style={{
                       fontSize: '0.72rem', fontWeight: '800',
-                      color: isActive ? '#0f172a' : isCompleted ? '#1a73e8' : '#94a3b8',
+                      color: isActive ? '#0f172a' : isCompleted ? '#17652f' : '#94a3b8',
                     }}>{step.title}</div>
                     {isActive && (
                       <div style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '600' }}>
@@ -776,7 +776,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
                 {idx < STEPS.length - 1 && (
                   <div style={{
                     width: '20px', height: '2px', flexShrink: 0,
-                    background: isCompleted ? '#1a73e8' : '#e2e8f0',
+                    background: isCompleted ? '#17652f' : '#e2e8f0',
                     borderRadius: '1px', transition: 'background 0.3s',
                   }} />
                 )}
@@ -820,7 +820,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
                   width: currentStep === step.id ? '24px' : '8px',
                   height: '8px', borderRadius: '4px',
                   background: currentStep >= step.id
-                    ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#e2e8f0',
+                    ? 'linear-gradient(135deg, #17652f, #17652f)' : '#e2e8f0',
                   transition: 'all 0.3s ease',
                 }}
               />
@@ -835,7 +835,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
               style={{
                 padding: '10px 24px', borderRadius: '10px', border: 'none',
                 background: validateStep(currentStep)
-                  ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#e2e8f0',
+                  ? 'linear-gradient(135deg, #17652f, #17652f)' : '#e2e8f0',
                 color: validateStep(currentStep) ? '#ffffff' : '#94a3b8',
                 fontSize: '0.84rem', fontWeight: '800',
                 cursor: validateStep(currentStep) ? 'pointer' : 'not-allowed',
@@ -852,7 +852,7 @@ export const ManualLeadModal = ({ isOpen, onClose, onSubmit, lead = null, teamMe
               onClick={handleSubmit}
               style={{
                 padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
+                background: 'linear-gradient(135deg, #17652f, #17652f)',
                 color: '#ffffff', fontSize: '0.84rem', fontWeight: '800',
                 cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(22,163,74,0.35)',

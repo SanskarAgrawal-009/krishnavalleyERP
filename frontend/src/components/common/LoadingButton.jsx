@@ -21,31 +21,31 @@ export const LoadingButton = ({
     switch (variant) {
       case 'success':
         return {
-          background: '#1a73e8',
+          background: '#17652f',
           color: '#ffffff',
           border: 'none',
-          boxShadow: '0 2px 4px rgba(22,163,74,0.25)'
+          boxShadow: '0 2px 4px rgba(23,101,47,0.2)'
         };
       case 'secondary':
         return {
           background: '#ffffff',
-          color: '#334155',
-          border: '1px solid #cbd5e1',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+          color: '#1f2937',
+          border: '1px solid #e8e6df',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
         };
       case 'danger':
         return {
-          background: '#0f172a',
+          background: '#b91c1c',
           color: '#ffffff',
           border: 'none',
-          boxShadow: '0 2px 4px rgba(220,38,38,0.25)'
+          boxShadow: '0 2px 4px rgba(185,28,28,0.2)'
         };
       default: // primary
         return {
-          background: '#1a73e8',
+          background: '#17652f',
           color: '#ffffff',
           border: 'none',
-          boxShadow: '0 2px 4px rgba(26,115,232,0.25)'
+          boxShadow: '0 2px 4px rgba(23,101,47,0.2)'
         };
     }
   };

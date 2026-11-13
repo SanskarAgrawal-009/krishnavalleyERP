@@ -156,7 +156,7 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
           subject: 'Update regarding {{project_name}} - Unit {{unit_number}}',
           preheader: 'Important communication from Krishna Valley',
           bodyHtml: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-  <h2 style="color: #005bbf;">Krishna Valley Real Estate</h2>
+  <h2 style="color: #17652f;">Krishna Valley Real Estate</h2>
   <p>Dear <strong>{{client_name}}</strong>,</p>
   <p>Please find your notification details for <strong>{{project_name}} (Unit {{unit_number}})</strong>.</p>
 </div>`
@@ -414,9 +414,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                     ...formData,
                     channels: { ...formData.channels, sms: e.target.checked }
                   })}
-                  style={{ accentColor: '#3b82f6' }}
+                  style={{ accentColor: '#17652f' }}
                 />
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#60a5fa', fontWeight: '600' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#4a9e68', fontWeight: '600' }}>
                   <Smartphone size={14} /> SMS
                 </span>
               </label>
@@ -444,9 +444,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                     ...formData,
                     channels: { ...formData.channels, push: e.target.checked }
                   })}
-                  style={{ accentColor: '#1e40af' }}
+                  style={{ accentColor: '#17652f' }}
                 />
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#60a5fa', fontWeight: '600' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#4a9e68', fontWeight: '600' }}>
                   <Bell size={14} /> Push
                 </span>
               </label>
@@ -538,9 +538,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                   gap: '6px',
                   padding: '8px 16px',
                   border: 'none',
-                  borderBottom: activeChannelTab === 'sms' ? '2px solid #3b82f6' : '2px solid transparent',
+                  borderBottom: activeChannelTab === 'sms' ? '2px solid #17652f' : '2px solid transparent',
                   background: activeChannelTab === 'sms' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                  color: activeChannelTab === 'sms' ? '#60a5fa' : 'var(--text-secondary)',
+                  color: activeChannelTab === 'sms' ? '#4a9e68' : 'var(--text-secondary)',
                   fontWeight: '600',
                   fontSize: '0.82rem',
                   cursor: 'pointer'
@@ -578,9 +578,9 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                   gap: '6px',
                   padding: '8px 16px',
                   border: 'none',
-                  borderBottom: activeChannelTab === 'push' ? '2px solid #1e40af' : '2px solid transparent',
+                  borderBottom: activeChannelTab === 'push' ? '2px solid #17652f' : '2px solid transparent',
                   background: activeChannelTab === 'push' ? 'rgba(236, 72, 153, 0.1)' : 'transparent',
-                  color: activeChannelTab === 'push' ? '#60a5fa' : 'var(--text-secondary)',
+                  color: activeChannelTab === 'push' ? '#4a9e68' : 'var(--text-secondary)',
                   fontWeight: '600',
                   fontSize: '0.82rem',
                   cursor: 'pointer'

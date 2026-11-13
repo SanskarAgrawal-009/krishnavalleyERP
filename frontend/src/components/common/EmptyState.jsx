@@ -24,7 +24,7 @@ export const EmptyState = ({
         textAlign: 'center',
         padding: '50px 24px',
         borderRadius: '12px',
-        border: '1px dashed #cbd5e1',
+        border: '1px dashed #e8e6df',
         background: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
@@ -38,8 +38,8 @@ export const EmptyState = ({
           width: '56px',
           height: '56px',
           borderRadius: '16px',
-          background: '#f1f5f9',
-          color: '#64748b',
+          background: '#e8f2e5',
+          color: '#17652f',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -53,7 +53,7 @@ export const EmptyState = ({
         style={{
           fontSize: '1.15rem',
           fontWeight: '700',
-          color: '#0f172a',
+          color: '#1f2937',
           margin: '0 0 6px 0'
         }}
       >
@@ -63,7 +63,7 @@ export const EmptyState = ({
       <p
         style={{
           fontSize: '0.86rem',
-          color: '#64748b',
+          color: '#596372',
           maxWidth: '460px',
           margin: '0 auto 20px',
           lineHeight: '1.5'
@@ -83,13 +83,13 @@ export const EmptyState = ({
               gap: '6px',
               padding: '9px 18px',
               borderRadius: '8px',
-              background: '#1a73e8',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
               fontWeight: '600',
               fontSize: '0.84rem',
               cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(26,115,232,0.25)',
+              boxShadow: '0 2px 4px rgba(23,101,47,0.2)',
               transition: 'all 0.15s ease'
             }}
           >
@@ -109,8 +109,8 @@ export const EmptyState = ({
               padding: '9px 16px',
               borderRadius: '8px',
               background: '#ffffff',
-              color: '#334155',
-              border: '1px solid #cbd5e1',
+              color: '#1f2937',
+              border: '1px solid #e8e6df',
               fontWeight: '600',
               fontSize: '0.84rem',
               cursor: 'pointer',

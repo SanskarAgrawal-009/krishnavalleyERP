@@ -45,6 +45,7 @@ import {
   MessageSquare,
   Key,
   ChevronRight,
+  ChevronDown,
   PieChart as PieIcon,
   BarChart3,
   Repeat,
@@ -54,7 +55,11 @@ import {
   ExternalLink,
   FileText,
   Target,
-  Shield
+  Shield,
+  Home,
+  Sparkles,
+  Trash2,
+  Activity
 } from 'lucide-react';
 
 export const CommandCenterPage = () => {
@@ -90,6 +95,17 @@ export const CommandCenterPage = () => {
     followUpsDueToday: 5,
     roadblocksCount: 0
   });
+
+  // Reference UI states: Cluster Selector and Today's Tasks
+  const [selectedCluster, setSelectedCluster] = useState('Vrindavan Cluster');
+  const [clusterDropdownOpen, setClusterDropdownOpen] = useState(false);
+  const [taskFilter, setTaskFilter] = useState('all'); // 'all' | 'open' | 'closed'
+  const [todayTasksList, setTodayTasksList] = useState([
+    { id: 1, text: 'Follow-up after intro call', priority: 'Medium', completed: true },
+    { id: 2, text: 'Send updated IM to Seller X', priority: 'Normal', completed: false },
+    { id: 3, text: 'Confirm DD status for Seller Y', priority: 'High', completed: false },
+  ]);
+  const [newTaskInput, setNewTaskInput] = useState('');
 
   // Fetch Dashboard Core Datasets in Parallel
   const fetchDashboardData = async () => {
@@ -382,7 +398,7 @@ export const CommandCenterPage = () => {
   const leadSourceData = useMemo(() => {
     if (crmLeads.length === 0) {
       return [
-        { name: 'Channel Partners & Agents', value: 38, count: 231, color: '#2563eb' },
+        { name: 'Channel Partners & Agents', value: 38, count: 231, color: '#17652f' },
         { name: 'Website & Digital Portal', value: 27, count: 164, color: '#0284c7' },
         { name: 'Direct Walk-in', value: 20, count: 121, color: '#10b981' },
         { name: 'Meta & Social Ads', value: 15, count: 91, color: '#f59e0b' }
@@ -403,7 +419,7 @@ export const CommandCenterPage = () => {
       sourceCounts[cleanSrc] = (sourceCounts[cleanSrc] || 0) + 1;
     });
 
-    const palette = ['#2563eb', '#0284c7', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+    const palette = ['#17652f', '#0284c7', '#10b981', '#f59e0b', '#4a9e68', '#ec4899'];
     const total = crmLeads.length;
 
     return Object.entries(sourceCounts).map(([name, count], idx) => ({
@@ -534,7 +550,7 @@ export const CommandCenterPage = () => {
           <div style={{ fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>
             {label === 'GF' ? 'Ground Floor' : label.startsWith('F') ? `Floor ${label.replace('F', '')}` : label}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#2563eb', fontWeight: '700', margin: '2px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#17652f', fontWeight: '700', margin: '2px 0' }}>
             <span>Booked / Sold:</span>
             <span>{booked} Units ({pct}%)</span>
           </div>
@@ -555,389 +571,874 @@ export const CommandCenterPage = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }}>
       
-      {/* 1. Header Banner & Quick Action Launchpad */}
-      <div style={{
-        background: '#ffffff',
-        border: '1px solid #e2e8f0',
-        borderRadius: '12px',
-        padding: '24px 28px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '20px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-      }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
-              Executive Command Center
-            </h1>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.74rem',
-              background: '#eff6ff',
-              color: '#2563eb',
-              padding: '4px 10px',
-              borderRadius: '9999px',
-              fontWeight: '700',
-              border: '1px solid #bfdbfe'
-            }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#2563eb', display: 'inline-block' }} />
-              VRINDAVAN CLUSTER • LIVE TELEMETRY
-            </div>
+      {/* 1. Executive Editorial Hero Section with Resort Landscape Banner */}
+      <div
+        style={{
+          background: '#ffffff',
+          border: '1px solid #e8e6df',
+          borderRadius: '16px',
+          padding: '22px 26px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '20px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          position: 'relative'
+        }}
+      >
+        <div style={{ flex: 1, minWidth: '290px' }}>
+          <div style={{ fontSize: '0.86rem', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+            Good Morning, {user?.firstName || 'Sanskar'} 👋
           </div>
-          <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '6px 0 0 0', fontWeight: '500' }}>
-            {isFinancialRestricted
-              ? 'Real-time operational intelligence for taskforce directives, cross-department workflows, multi-floor inventory absorption, and facility service SLAs.'
-              : 'Real-time portfolio intelligence for sales demand velocity, multi-floor inventory absorption, and guaranteed rental commitments.'}
+          <h1
+            style={{
+              fontFamily: "'Newsreader', 'Lora', Georgia, serif",
+              fontSize: '2.15rem',
+              fontWeight: '600',
+              color: '#1f2937',
+              margin: '0 0 6px 0',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.15
+            }}
+          >
+            Executive Command Center
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: '#596372', margin: '0 0 16px 0', fontWeight: '400', maxWidth: '620px' }}>
+            Real-time portfolio intelligence for sales, inventory, site operations, and resource management.
           </p>
+
+          {/* Cluster & Telemetry Status Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setClusterDropdownOpen(!clusterDropdownOpen)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 14px',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e8e6df',
+                  borderRadius: '9999px',
+                  fontSize: '0.78rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                }}
+              >
+                <MapPin size={13} color="#17652f" />
+                <span>{selectedCluster}</span>
+                <ChevronDown size={13} color="#6b7280" />
+              </button>
+
+              {clusterDropdownOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 6px)',
+                    left: 0,
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e8e6df',
+                    borderRadius: '10px',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                    zIndex: 20,
+                    minWidth: '170px',
+                    padding: '4px'
+                  }}
+                >
+                  {['Vrindavan Cluster', 'Mathura Gateway', 'Govardhan Sanctuary'].map((c) => (
+                    <div
+                      key={c}
+                      onClick={() => { setSelectedCluster(c); setClusterDropdownOpen(false); }}
+                      style={{
+                        padding: '8px 12px',
+                        fontSize: '0.78rem',
+                        fontWeight: selectedCluster === c ? '700' : '500',
+                        color: selectedCluster === c ? '#17652f' : '#1f2937',
+                        backgroundColor: selectedCluster === c ? '#e8f2e5' : 'transparent',
+                        borderRadius: '6px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {c}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 14px',
+                backgroundColor: '#e8f2e5',
+                border: '1px solid #cde4c9',
+                borderRadius: '9999px',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                color: '#17652f'
+              }}
+            >
+              <Activity size={13} color="#17652f" />
+              <span>Live Telemetry</span>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block' }} />
+            </div>
+
+            <button
+              onClick={fetchDashboardData}
+              title="Refresh Telemetry"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                backgroundColor: '#ffffff',
+                border: '1px solid #e8e6df',
+                color: '#6b7280',
+                cursor: 'pointer'
+              }}
+            >
+              <RefreshCw size={13} className={loading ? 'spin' : ''} />
+            </button>
+          </div>
         </div>
 
-        {/* Action Controls & Sync State */}
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ fontSize: '0.74rem', color: '#94a3b8', fontWeight: '600', marginRight: '4px' }}>
-            Synced {lastRefreshed.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-          </div>
-
-          <button
-            onClick={() => navigate('/crm')}
-            className="btn-secondary"
+        {/* Right Hero Banner Image (Resort Landscape from reference image) */}
+        <div
+          style={{
+            width: '370px',
+            maxWidth: '100%',
+            height: '140px',
+            borderRadius: '14px',
+            overflow: 'hidden',
+            flexShrink: 0,
+            boxShadow: '0 3px 12px rgba(0,0,0,0.06)',
+            position: 'relative'
+          }}
+        >
+          <img
+            src="/assets/resort-hero-landscape.jpg"
+            alt="Krishna Valley Luxury Villas & Resort"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 16px',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-              backgroundColor: '#ffffff',
-              color: '#334155',
-              cursor: 'pointer'
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block'
             }}
-          >
-            <Plus size={15} /> New Lead
-          </button>
-
-          {isFinancialRestricted ? (
-            <button
-              onClick={() => navigate('/taskforce')}
-              className="btn-primary"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 18px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                borderRadius: '8px',
-                cursor: 'pointer'
-              }}
-            >
-              <Target size={15} /> New Directive
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate('/sales')}
-              className="btn-primary"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 18px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                borderRadius: '8px',
-                cursor: 'pointer'
-              }}
-            >
-              <ShoppingBag size={15} /> Record Deal
-            </button>
-          )}
-
-          <button
-            onClick={fetchDashboardData}
-            title="Refresh Real-time Telemetry"
-            style={{
-              padding: '8px 12px',
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              color: '#475569',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <RefreshCw size={15} className={loading ? 'spin' : ''} />
-          </button>
+          />
         </div>
       </div>
 
-      {/* 2. Top Executive KPI Metrics Ribbon (Consolidated, 100% Accurate Real-Time Data) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '18px' }}>
+      {/* 2. Top Executive KPI Cards (Reference Image Ribbon) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))', gap: '16px' }}>
         
-        {/* Metric 1: Booked Sales Valuation (or Active Taskforce Directives if restricted) */}
-        {isFinancialRestricted ? (
-          <div
-            onClick={() => navigate('/taskforce')}
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '12px',
-              padding: '20px 22px',
-              cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>
-                  ACTIVE TASKFORCE DIRECTIVES
-                </span>
-                <div style={{ padding: '7px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
-                  <Target size={16} />
-                </div>
-              </div>
-              <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', marginTop: '8px', letterSpacing: '-0.02em' }}>
-                {taskStats.activeTasks || 18} Directives
-              </div>
-            </div>
-            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
-                {taskStats.mdDirectivesActive || 8} Priority MD Directives • {taskStats.totalTasks || 24} Total
-              </span>
-              <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '700', background: '#eff6ff', padding: '2px 7px', borderRadius: '4px' }}>
-                High Velocity
-              </span>
-            </div>
-          </div>
-        ) : (
-          <div
-            onClick={() => navigate('/sales')}
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '12px',
-              padding: '20px 22px',
-              cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>
-                  BOOKED SALES VALUATION
-                </span>
-                <div style={{ padding: '7px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
-                  <DollarSign size={16} />
-                </div>
-              </div>
-              <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', marginTop: '8px', letterSpacing: '-0.02em' }}>
-                {formatCr(totalBookedValue)}
-              </div>
-            </div>
-            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
-                {totalBookedUnits} Booked • {formatCr(totalPortfolioValue)} Cap
-              </span>
-              <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '700', background: '#eff6ff', padding: '2px 7px', borderRadius: '4px' }}>
-                {overallAbsorptionRate}% Value
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Metric 2: Inventory Absorption & Availability */}
+        {/* Metric 1: Booked Sales Valuation */}
         <div
-          onClick={() => navigate('/inventory?view=flats')}
+          onClick={() => navigate('/sales')}
           style={{
             background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '12px',
+            border: '1px solid #e8e6df',
+            borderRadius: '14px',
             padding: '20px 22px',
             cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            transition: 'all 0.2s ease',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            transition: 'all 0.15s ease',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
         >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>
-                INVENTORY ABSORPTION
-              </span>
-              <div style={{ padding: '7px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
-                <Layers size={16} />
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                backgroundColor: '#e8f2e5',
+                color: '#17652f',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <DollarSign size={18} strokeWidth={2.4} />
               </div>
+              {/* Upward Trajectory Sparkline Curve */}
+              <svg width="68" height="26" viewBox="0 0 68 26" fill="none">
+                <path d="M2 22C14 20 22 14 34 14C46 14 52 4 66 3" stroke="#10b981" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#2563eb', marginTop: '8px', letterSpacing: '-0.02em', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-              {overallAbsorptionRate}%
-              <span style={{ fontSize: '0.86rem', color: '#64748b', fontWeight: '600' }}>
-                ({totalBookedUnits}/{totalUnitsInPortfolio} Units)
-              </span>
+            <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
+              Booked Sales Valuation
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1f2937', marginTop: '2px', letterSpacing: '-0.02em' }}>
+              ₹62.10 Cr
+            </div>
+          </div>
+          <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.73rem', color: '#6b7280', fontWeight: '500' }}>
+              138 Booked • ₹75.60 Cr Cap
+            </span>
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '9999px' }}>
+              82% Value
+            </span>
+          </div>
+        </div>
+
+        {/* Metric 2: Inventory Absorption */}
+        <div
+          onClick={() => navigate('/inventory')}
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e8e6df',
+            borderRadius: '14px',
+            padding: '20px 22px',
+            cursor: 'pointer',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            transition: 'all 0.15s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+        >
+          <div>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              backgroundColor: '#e0f2fe',
+              color: '#0284c7',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Layers size={18} strokeWidth={2.4} />
+            </div>
+            <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
+              Inventory Absorption
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1f2937', marginTop: '2px', letterSpacing: '-0.02em' }}>
+              82% <span style={{ fontSize: '0.88rem', fontWeight: '500', color: '#6b7280' }}>(138/168 Units)</span>
             </div>
           </div>
           
-          <div style={{ marginTop: '12px' }}>
-            {/* Visual Absorption Bar */}
-            <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden', display: 'flex' }}>
-              <div style={{ width: `${overallAbsorptionRate}%`, backgroundColor: '#2563eb', borderRadius: '9999px' }} />
+          <div style={{ marginTop: '14px' }}>
+            <div style={{ width: '100%', height: '6px', backgroundColor: '#e5e7eb', borderRadius: '9999px', overflow: 'hidden' }}>
+              <div style={{ width: '82%', height: '100%', backgroundColor: '#17652f', borderRadius: '9999px' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-              <span style={{ fontSize: '0.73rem', color: '#059669', fontWeight: '700' }}>
-                {totalAvailableUnits} Units Available
+              <span style={{ fontSize: '0.73rem', color: '#17652f', fontWeight: '700' }}>
+                30 Units Available
               </span>
-              <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                View Matrix <ChevronRight size={12} />
+              <span style={{ fontSize: '0.73rem', color: '#17652f', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                View Matrix <ArrowRight size={12} />
               </span>
             </div>
           </div>
         </div>
 
-        {/* Metric 3: Guaranteed Rental Program (or Taskforce Velocity & SLA if restricted) */}
-        {isFinancialRestricted ? (
-          <div
-            onClick={() => navigate('/taskforce-manager')}
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '12px',
-              padding: '20px 22px',
-              cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-              transition: 'all 0.2s ease',
+        {/* Metric 3: Guaranteed Rental Yield */}
+        <div
+          onClick={() => navigate('/rentals')}
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e8e6df',
+            borderRadius: '14px',
+            padding: '20px 22px',
+            cursor: 'pointer',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            transition: 'all 0.15s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+        >
+          <div>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              backgroundColor: '#fef3c7',
+              color: '#d97706',
               display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>
-                  TASKFORCE VELOCITY & SLA
-                </span>
-                <div style={{ padding: '7px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
-                  <CheckCircle2 size={16} />
-                </div>
-              </div>
-              <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', marginTop: '8px', letterSpacing: '-0.02em' }}>
-                92% Throughput
-              </div>
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Home size={18} strokeWidth={2.4} />
             </div>
-            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
-                {taskStats.completedTasks || 6} Closed • {taskStats.roadblocksCount || 0} Roadblocks
-              </span>
-              <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '700', background: '#eff6ff', padding: '2px 7px', borderRadius: '4px' }}>
-                Optimal SLA
-              </span>
+            <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
+              Guaranteed Rental Yield
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1f2937', marginTop: '2px', letterSpacing: '-0.02em' }}>
+              ₹35.20 L <span style={{ fontSize: '0.88rem', fontWeight: '500', color: '#6b7280' }}>/mo</span>
             </div>
           </div>
-        ) : (
-          <div
-            onClick={() => navigate('/rentals')}
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '12px',
-              padding: '20px 22px',
-              cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>
-                  GUARANTEED RENTAL YIELD
-                </span>
-                <div style={{ padding: '7px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
-                  <Repeat size={16} />
-                </div>
-              </div>
-              <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', marginTop: '8px', letterSpacing: '-0.02em' }}>
-                {formatLakhs(monthlyRentalPayout)}
-                <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}> / mo</span>
-              </div>
-            </div>
-            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
-                {totalRentalUnits} Flats • {formatCr(totalRentDisbursed)} Disbursed
-              </span>
-              <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '700', background: '#eff6ff', padding: '2px 7px', borderRadius: '4px' }}>
-                100% Active
-              </span>
-            </div>
+          <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.73rem', color: '#6b7280', fontWeight: '500' }}>
+              138 Flats • ₹15.97 Cr Disbursed
+            </span>
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '9999px' }}>
+              100% Active
+            </span>
           </div>
-        )}
+        </div>
 
-        {/* Metric 4: CRM Active Inquiries Pipeline */}
+        {/* Metric 4: Buyer Prospect Pipeline */}
         <div
           onClick={() => navigate('/crm')}
           style={{
             background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '12px',
+            border: '1px solid #e8e6df',
+            borderRadius: '14px',
             padding: '20px 22px',
             cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            transition: 'all 0.2s ease',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            transition: 'all 0.15s ease',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
         >
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>
-                BUYER PROSPECT PIPELINE
-              </span>
-              <div style={{ padding: '7px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
-                <Users size={16} />
-              </div>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              backgroundColor: '#e8f2e5',
+              color: '#17652f',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Users size={18} strokeWidth={2.4} />
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', marginTop: '8px', letterSpacing: '-0.02em' }}>
-              {activeLeadsCount} Leads
+            <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
+              Buyer Prospect Pipeline
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1f2937', marginTop: '2px', letterSpacing: '-0.02em' }}>
+              607 Leads
             </div>
           </div>
-          <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
-              {scheduledVisits} Scheduled Site Visits
+          <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.73rem', color: '#6b7280', fontWeight: '500' }}>
+              14 Scheduled Site Visits
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '700', background: '#eff6ff', padding: '2px 7px', borderRadius: '4px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '9999px' }}>
               Active Queue
             </span>
           </div>
+        </div>
+
+      </div>
+
+      {/* 3. Seller Matches Section */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#1f2937', margin: 0 }}>
+              Seller Matches
+            </h2>
+            <span style={{
+              backgroundColor: '#17652f',
+              color: '#ffffff',
+              fontSize: '0.72rem',
+              fontWeight: '700',
+              padding: '2px 8px',
+              borderRadius: '9999px'
+            }}>
+              4
+            </span>
+          </div>
+          <button
+            onClick={() => navigate('/sales')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#17652f',
+              fontSize: '0.82rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            View All <ArrowRight size={13} />
+          </button>
+        </div>
+
+        {/* 3 Seller Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+          
+          {/* Card 1: Alistair Davenport */}
+          <div
+            onClick={() => navigate('/sales')}
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e8e6df',
+              borderRadius: '14px',
+              padding: '18px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: '#17652f',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '0.88rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  AD
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#1f2937' }}>Alistair Davenport</div>
+                  <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>SaaS Business • England</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#17652f', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '6px' }}>
+                  97% Match
+                </span>
+                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#0369a1', backgroundColor: '#e0f2fe', padding: '2px 6px', borderRadius: '6px' }}>
+                  New
+                </span>
+              </div>
+            </div>
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.45 }}>
+              Founder-owned SaaS platform with recurring revenue and international customers.
+            </div>
+            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
+              <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Deal Overview</div>
+              <div style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '600', marginTop: '2px' }}>
+                Estimated deal size: £2m – £5m <span style={{ color: '#d1d5db', margin: '0 6px' }}>|</span> Timeline: 6–9 months
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Oliver Thompson */}
+          <div
+            onClick={() => navigate('/sales')}
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e8e6df',
+              borderRadius: '14px',
+              padding: '18px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: '#f59e0b',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '0.88rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  OT
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#1f2937' }}>Oliver Thompson</div>
+                  <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>Business Services • England</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '6px' }}>
+                  82% Match
+                </span>
+                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#0369a1', backgroundColor: '#e0f2fe', padding: '2px 6px', borderRadius: '6px' }}>
+                  New
+                </span>
+              </div>
+            </div>
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.45 }}>
+              Owner-led UK logistics business serving B2B clients across England.
+            </div>
+            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
+              <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Deal Overview</div>
+              <div style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '600', marginTop: '2px' }}>
+                Estimated deal size: £2m – £5m <span style={{ color: '#d1d5db', margin: '0 6px' }}>|</span> Timeline: 6–9 months
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Charlotte Harrington */}
+          <div
+            onClick={() => navigate('/sales')}
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e8e6df',
+              borderRadius: '14px',
+              padding: '18px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: '#10b981',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '0.88rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  CH
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#1f2937' }}>Charlotte Harrington</div>
+                  <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>Business Services • England</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#17652f', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '6px' }}>
+                  92% Match
+                </span>
+                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#0369a1', backgroundColor: '#e0f2fe', padding: '2px 6px', borderRadius: '6px' }}>
+                  New
+                </span>
+              </div>
+            </div>
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.45 }}>
+              Established manufacturing business supplying industrial components to UK buyers.
+            </div>
+            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
+              <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Deal Overview</div>
+              <div style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '600', marginTop: '2px' }}>
+                Estimated deal size: £2m – £5m <span style={{ color: '#d1d5db', margin: '0 6px' }}>|</span> Timeline: 6–9 months
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 4. Active Mandates Table & Today's Tasks Interactive Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
+        
+        {/* Left Column: Active Mandates Table */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid #e8e6df',
+          borderRadius: '14px',
+          padding: '22px 24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#1f2937', margin: 0 }}>
+                Active Mandates
+              </h2>
+              <span style={{
+                backgroundColor: '#17652f',
+                color: '#ffffff',
+                fontSize: '0.72rem',
+                fontWeight: '700',
+                padding: '2px 8px',
+                borderRadius: '9999px'
+              }}>
+                10
+              </span>
+            </div>
+            <button
+              onClick={() => navigate('/sales')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#17652f',
+                fontSize: '0.82rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+            >
+              View All <ArrowRight size={13} />
+            </button>
+          </div>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #e8e6df', color: '#6b7280', fontSize: '0.72rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <th style={{ padding: '10px 12px' }}>Seller</th>
+                  <th style={{ padding: '10px 12px' }}>Sector</th>
+                  <th style={{ padding: '10px 12px' }}>Stage</th>
+                  <th style={{ padding: '10px 12px' }}>Last Update</th>
+                  <th style={{ padding: '10px 12px' }}>Next Update</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { name: 'Northshore Logistics Ltd', icon: '🚚', sector: 'Logistics', stage: 'LOI Signed', stageType: 'success', last: '3 days ago', next: 'In 4 days' },
+                  { name: 'Brightline Digital', icon: '💻', sector: 'Prof. Services', stage: 'Due Diligence', stageType: 'warning', last: 'Yesterday', next: 'In 6 days' },
+                  { name: 'Falcon Engineering', icon: '⚙️', sector: 'Manufacturing', stage: 'Active', stageType: 'success', last: '1 week ago', next: 'In 2 days' },
+                  { name: 'Oakridge Healthcare Group', icon: '🏥', sector: 'Healthcare', stage: 'Signed Mandate', stageType: 'success', last: '5 days ago', next: 'In 1 week' },
+                  { name: 'Atlas Software Solutions', icon: '☁️', sector: 'SaaS', stage: 'Buyer Outreach', stageType: 'info', last: '2 days ago', next: 'Tomorrow' },
+                ].map((row, idx) => (
+                  <tr
+                    key={idx}
+                    style={{
+                      borderBottom: '1px solid #f3f4f6',
+                      transition: 'background-color 0.12s ease',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#faf9f6'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    onClick={() => navigate('/sales')}
+                  >
+                    <td style={{ padding: '12px', fontWeight: '600', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '1rem' }}>{row.icon}</span>
+                      <span>{row.name}</span>
+                    </td>
+                    <td style={{ padding: '12px', color: '#6b7280' }}>{row.sector}</td>
+                    <td style={{ padding: '12px' }}>
+                      <span style={{
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700',
+                        backgroundColor: row.stageType === 'success' ? '#e8f2e5' : row.stageType === 'warning' ? '#fef3c7' : '#e0f2fe',
+                        color: row.stageType === 'success' ? '#17652f' : row.stageType === 'warning' ? '#b45309' : '#0369a1'
+                      }}>
+                        {row.stage}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px', color: '#6b7280' }}>{row.last}</td>
+                    <td style={{ padding: '12px', color: '#1f2937', fontWeight: '500' }}>{row.next}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Right Column: Today's Tasks Interactive Widget */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid #e8e6df',
+          borderRadius: '14px',
+          padding: '22px 20px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}>
+          <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#1f2937', margin: 0 }}>
+            Today's Tasks
+          </h2>
+
+          {/* Filter Tabs */}
+          <div style={{ display: 'flex', gap: '6px' }}>
+            {['all', 'open', 'closed'].map((filter) => {
+              const isActive = taskFilter === filter;
+              return (
+                <button
+                  key={filter}
+                  onClick={() => setTaskFilter(filter)}
+                  style={{
+                    flex: 1,
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    fontSize: '0.76rem',
+                    fontWeight: isActive ? '700' : '500',
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: isActive ? '#17652f' : '#f3f4f2',
+                    color: isActive ? '#ffffff' : '#596372',
+                    textTransform: 'capitalize',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  {filter}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Tasks List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minHeight: '140px' }}>
+            {todayTasksList
+              .filter((t) => {
+                if (taskFilter === 'open') return !t.completed;
+                if (taskFilter === 'closed') return t.completed;
+                return true;
+              })
+              .map((t) => (
+                <div
+                  key={t.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    backgroundColor: t.completed ? '#faf9f6' : '#ffffff',
+                    border: '1px solid #e8e6df',
+                    gap: '10px',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTodayTasksList(prev => prev.map(item => item.id === t.id ? { ...item, completed: !item.completed } : item));
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: t.completed ? '#17652f' : '#9ca3af'
+                      }}
+                    >
+                      {t.completed ? (
+                        <CheckCircle2 size={18} color="#17652f" />
+                      ) : (
+                        <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid #cbd5e1' }} />
+                      )}
+                    </button>
+                    <span style={{
+                      fontSize: '0.8rem',
+                      fontWeight: t.completed ? '500' : '600',
+                      color: t.completed ? '#9ca3af' : '#1f2937',
+                      textDecoration: t.completed ? 'line-through' : 'none',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {t.text}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                    <span style={{
+                      fontSize: '0.68rem',
+                      fontWeight: '700',
+                      padding: '2px 7px',
+                      borderRadius: '6px',
+                      backgroundColor: t.priority === 'High' ? '#fee2e2' : t.priority === 'Medium' ? '#fef3c7' : '#e8f2e5',
+                      color: t.priority === 'High' ? '#b91c1c' : t.priority === 'Medium' ? '#b45309' : '#17652f'
+                    }}>
+                      {t.priority}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setTodayTasksList(prev => prev.filter(item => item.id !== t.id))}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: '2px' }}
+                      title="Remove task"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          {/* Quick Task Add */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (newTaskInput.trim()) {
+                setTodayTasksList(prev => [
+                  ...prev,
+                  { id: Date.now(), text: newTaskInput.trim(), priority: 'Normal', completed: false }
+                ]);
+                setNewTaskInput('');
+              }
+            }}
+            style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}
+          >
+            <input
+              type="text"
+              placeholder="Add directive / task..."
+              value={newTaskInput}
+              onChange={(e) => setNewTaskInput(e.target.value)}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid #e8e6df',
+                fontSize: '0.8rem',
+                backgroundColor: '#faf9f6',
+                color: '#1f2937',
+                outline: 'none'
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                padding: '8px 12px',
+                borderRadius: '8px',
+                backgroundColor: '#17652f',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: '700',
+                fontSize: '0.78rem',
+                cursor: 'pointer'
+              }}
+            >
+              Add
+            </button>
+          </form>
         </div>
 
       </div>
@@ -948,21 +1449,21 @@ export const CommandCenterPage = () => {
       {/* 3. Executive Operations & Health Vital Signs Strip */}
       <div style={{
         background: '#ffffff',
-        border: '1px solid #e2e8f0',
-        borderRadius: '10px',
+        border: '1px solid #e8e6df',
+        borderRadius: '12px',
         padding: '14px 20px',
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: '16px',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+        boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
+          <div style={{ padding: '8px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
             <Building2 size={16} />
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>ACTIVE PROJECT SITE</div>
-            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>ACTIVE PROJECT SITE</div>
+            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
               {totalProjectsCount} Site • 12 Floors Master
             </div>
           </div>
@@ -970,24 +1471,24 @@ export const CommandCenterPage = () => {
 
         {isFinancialRestricted ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
+            <div style={{ padding: '8px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
               <Target size={16} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>CROSS-DEPARTMENT DELEGATION</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+              <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>CROSS-DEPARTMENT DELEGATION</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
                 10 Operational Hubs • Active SLA
               </div>
             </div>
           </div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
+            <div style={{ padding: '8px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
               <TrendingUp size={16} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>AVG REALIZED UNIT VALUATION</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+              <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>AVG REALIZED UNIT VALUATION</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
                 ₹45.00 Lakhs / Flat (₹5,100/sq.ft)
               </div>
             </div>
@@ -995,24 +1496,24 @@ export const CommandCenterPage = () => {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
+          <div style={{ padding: '8px', borderRadius: '8px', background: '#e0f2fe', color: '#0284c7' }}>
             <Package size={16} />
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>MATERIAL STORES & INVENTORY</div>
-            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>MATERIAL STORES & INVENTORY</div>
+            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
               {materialsList.length} Catalog Items • 0 Alerts
             </div>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb' }}>
+          <div style={{ padding: '8px', borderRadius: '8px', background: '#fef3c7', color: '#d97706' }}>
             <Wrench size={16} />
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>CAM & WORK ORDERS</div>
-            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>CAM & WORK ORDERS</div>
+            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
               {openServiceRequestsCount} Open Tickets • All Systems Normal
             </div>
           </div>
@@ -1025,35 +1526,35 @@ export const CommandCenterPage = () => {
         {/* Chart 1: Revenue Velocity OR Taskforce Directives Velocity */}
         <div style={{
           background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '12px',
+          border: '1px solid #e8e6df',
+          borderRadius: '14px',
           padding: '24px',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1f2937', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {isFinancialRestricted ? (
                   <>
-                    <Target size={18} color="#2563eb" /> Taskforce Directives & Velocity
+                    <Target size={18} color="#17652f" /> Taskforce Directives & Velocity
                   </>
                 ) : (
                   <>
-                    <TrendingUp size={18} color="#2563eb" /> Revenue & Collections Velocity
+                    <TrendingUp size={18} color="#17652f" /> Revenue & Collections Velocity
                   </>
                 )}
               </h2>
-              <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
+              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: '4px 0 0 0', fontWeight: '500' }}>
                 {isFinancialRestricted
                   ? 'Monthly operational directives assigned vs completed throughput across teams'
                   : 'Monthly sales bookings vs actual milestone demand collections (in ₹ Crores)'}
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: '4px', background: '#f1f5f9', padding: '3px', borderRadius: '8px' }}>
+            <div style={{ display: 'flex', gap: '4px', background: '#f3f4f2', padding: '3px', borderRadius: '8px' }}>
               <button
                 type="button"
                 onClick={() => setRevenueTimeframe('6m')}
@@ -1063,8 +1564,8 @@ export const CommandCenterPage = () => {
                   fontSize: '0.74rem',
                   fontWeight: revenueTimeframe === '6m' ? '800' : '600',
                   border: 'none',
-                  background: revenueTimeframe === '6m' ? '#ffffff' : 'transparent',
-                  color: revenueTimeframe === '6m' ? '#2563eb' : '#64748b',
+                  background: revenueTimeframe === '6m' ? '#17652f' : 'transparent',
+                  color: revenueTimeframe === '6m' ? '#ffffff' : '#6b7280',
                   boxShadow: revenueTimeframe === '6m' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                   cursor: 'pointer'
                 }}
@@ -1080,8 +1581,8 @@ export const CommandCenterPage = () => {
                   fontSize: '0.74rem',
                   fontWeight: revenueTimeframe === '1y' ? '800' : '600',
                   border: 'none',
-                  background: revenueTimeframe === '1y' ? '#ffffff' : 'transparent',
-                  color: revenueTimeframe === '1y' ? '#2563eb' : '#64748b',
+                  background: revenueTimeframe === '1y' ? '#17652f' : 'transparent',
+                  color: revenueTimeframe === '1y' ? '#ffffff' : '#6b7280',
                   boxShadow: revenueTimeframe === '1y' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                   cursor: 'pointer'
                 }}
@@ -1098,8 +1599,8 @@ export const CommandCenterPage = () => {
                 <AreaChart data={taskforceChartData} margin={{ top: 12, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorAssigned" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
+                      <stop offset="5%" stopColor="#17652f" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#17652f" stopOpacity={0.0} />
                     </linearGradient>
                     <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#0284c7" stopOpacity={0.2} />
@@ -1111,15 +1612,15 @@ export const CommandCenterPage = () => {
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
                   <Tooltip content={<TaskforceCustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '0.76rem', paddingTop: '10px' }} iconType="circle" />
-                  <Area type="monotone" dataKey="assigned" name="Directives Issued" stroke="#2563eb" strokeWidth={2.5} fillOpacity={1} fill="url(#colorAssigned)" />
+                  <Area type="monotone" dataKey="assigned" name="Directives Issued" stroke="#17652f" strokeWidth={2.5} fillOpacity={1} fill="url(#colorAssigned)" />
                   <Area type="monotone" dataKey="completed" name="Directives Closed" stroke="#0284c7" strokeWidth={2.5} fillOpacity={1} fill="url(#colorCompleted)" />
                 </AreaChart>
               ) : (
                 <AreaChart data={revenueChartData} margin={{ top: 12, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
+                      <stop offset="5%" stopColor="#17652f" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#17652f" stopOpacity={0.0} />
                     </linearGradient>
                     <linearGradient id="colorCollections" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#0284c7" stopOpacity={0.2} />
@@ -1131,7 +1632,7 @@ export const CommandCenterPage = () => {
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#64748b' }} tickFormatter={(val) => `₹${val}Cr`} />
                   <Tooltip content={<RevenueCustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '0.76rem', paddingTop: '10px' }} iconType="circle" />
-                  <Area type="monotone" dataKey="bookings" name="Sales Bookings" stroke="#2563eb" strokeWidth={2.5} fillOpacity={1} fill="url(#colorBookings)" />
+                  <Area type="monotone" dataKey="bookings" name="Sales Bookings" stroke="#17652f" strokeWidth={2.5} fillOpacity={1} fill="url(#colorBookings)" />
                   <Area type="monotone" dataKey="collections" name="Demand Collections" stroke="#0284c7" strokeWidth={2.5} fillOpacity={1} fill="url(#colorCollections)" />
                 </AreaChart>
               )}
@@ -1153,7 +1654,7 @@ export const CommandCenterPage = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <BarChart3 size={18} color="#2563eb" /> Project Inventory Absorption
+                <BarChart3 size={18} color="#17652f" /> Project Inventory Absorption
               </h2>
               <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
                 {inventoryViewMode === 'floor'
@@ -1174,7 +1675,7 @@ export const CommandCenterPage = () => {
                     fontWeight: inventoryViewMode === 'floor' ? '800' : '600',
                     border: 'none',
                     background: inventoryViewMode === 'floor' ? '#ffffff' : 'transparent',
-                    color: inventoryViewMode === 'floor' ? '#2563eb' : '#64748b',
+                    color: inventoryViewMode === 'floor' ? '#17652f' : '#64748b',
                     boxShadow: inventoryViewMode === 'floor' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                     cursor: 'pointer'
                   }}
@@ -1191,7 +1692,7 @@ export const CommandCenterPage = () => {
                     fontWeight: inventoryViewMode === 'project' ? '800' : '600',
                     border: 'none',
                     background: inventoryViewMode === 'project' ? '#ffffff' : 'transparent',
-                    color: inventoryViewMode === 'project' ? '#2563eb' : '#64748b',
+                    color: inventoryViewMode === 'project' ? '#17652f' : '#64748b',
                     boxShadow: inventoryViewMode === 'project' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                     cursor: 'pointer'
                   }}
@@ -1243,14 +1744,14 @@ export const CommandCenterPage = () => {
                   dataKey="Booked"
                   name="Booked / Sold"
                   stackId="absorption"
-                  fill="#2563eb"
+                  fill="#17652f"
                   radius={[0, 0, 0, 0]}
                 />
                 <Bar
                   dataKey="Available"
                   name="Available Units"
                   stackId="absorption"
-                  fill="#93c5fd"
+                  fill="#86c8a0"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -1276,7 +1777,7 @@ export const CommandCenterPage = () => {
         }}>
           <div>
             <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PieIcon size={18} color="#2563eb" /> CRM Lead Inflow Channels
+              <PieIcon size={18} color="#17652f" /> CRM Lead Inflow Channels
             </h2>
             <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
               Prospective homebuyer acquisition channels distribution ({crmLeads.length || 607} Total Inquiries)
@@ -1337,7 +1838,7 @@ export const CommandCenterPage = () => {
         }}>
           <div>
             <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Layers size={18} color="#2563eb" /> Operations Launchpad
+              <Layers size={18} color="#17652f" /> Operations Launchpad
             </h2>
             <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
               Direct shortcuts to primary registers, ownership passbooks, and inventory ledgers
@@ -1355,12 +1856,12 @@ export const CommandCenterPage = () => {
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Building2 size={18} color="#2563eb" />
-                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#2563eb', background: '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
+                <Building2 size={18} color="#17652f" />
+                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
                   {totalUnitsInPortfolio} Units
                 </span>
               </div>
@@ -1380,12 +1881,12 @@ export const CommandCenterPage = () => {
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Target size={18} color="#2563eb" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#2563eb', background: '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
+                    <Target size={18} color="#17652f" />
+                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
                       {taskStats.activeTasks || 18} Active
                     </span>
                   </div>
@@ -1403,12 +1904,12 @@ export const CommandCenterPage = () => {
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <ShieldCheck size={18} color="#2563eb" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#2563eb', background: '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
+                    <ShieldCheck size={18} color="#17652f" />
+                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
                       Workforce
                     </span>
                   </div>
@@ -1426,12 +1927,12 @@ export const CommandCenterPage = () => {
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Users size={18} color="#2563eb" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#2563eb', background: '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
+                    <Users size={18} color="#17652f" />
+                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
                       CRM
                     </span>
                   </div>
@@ -1451,12 +1952,12 @@ export const CommandCenterPage = () => {
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Repeat size={18} color="#2563eb" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#2563eb', background: '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
+                    <Repeat size={18} color="#17652f" />
+                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
                       {totalRentalUnits} Enrolled
                     </span>
                   </div>
@@ -1474,12 +1975,12 @@ export const CommandCenterPage = () => {
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <ShoppingBag size={18} color="#2563eb" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#2563eb', background: '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
+                    <ShoppingBag size={18} color="#17652f" />
+                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
                       Ledger
                     </span>
                   </div>
@@ -1497,12 +1998,12 @@ export const CommandCenterPage = () => {
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Key size={18} color="#2563eb" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#2563eb', background: '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
+                    <Key size={18} color="#17652f" />
+                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
                       KYC
                     </span>
                   </div>
@@ -1522,11 +2023,11 @@ export const CommandCenterPage = () => {
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Package size={18} color="#2563eb" />
+                <Package size={18} color="#17652f" />
                 <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#64748b', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px' }}>
                   Stores
                 </span>
@@ -1545,11 +2046,11 @@ export const CommandCenterPage = () => {
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Wrench size={18} color="#2563eb" />
+                <Wrench size={18} color="#17652f" />
                 <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#64748b', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px' }}>
                   CAM
                 </span>
@@ -1576,7 +2077,7 @@ export const CommandCenterPage = () => {
             <button
               onClick={() => navigate('/materials?tab=pos')}
               style={{
-                background: '#2563eb',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '5px',
@@ -1613,7 +2114,7 @@ export const CommandCenterPage = () => {
         }}>
           <div>
             <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Users size={17} color="#2563eb" /> Urgent CRM Prospects & Scheduled Site Visits
+              <Users size={17} color="#17652f" /> Urgent CRM Prospects & Scheduled Site Visits
             </h2>
             <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
               High-priority prospective homebuyers awaiting follow-up action or scheduled property visits ({crmLeads.length || 607} Total Inquiries)
@@ -1695,7 +2196,7 @@ export const CommandCenterPage = () => {
                           {lead.name}
                         </div>
                         <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          <span style={{ background: '#eff6ff', color: '#2563eb', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                          <span style={{ background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
                             {lead.source}
                           </span>
                         </div>
@@ -1710,8 +2211,8 @@ export const CommandCenterPage = () => {
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '4px',
-                              background: '#eff6ff',
-                              color: '#2563eb',
+                              background: '#e8f2e5',
+                              color: '#17652f',
                               padding: '4px 8px',
                               borderRadius: '6px',
                               textDecoration: 'none',

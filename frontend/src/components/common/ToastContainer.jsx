@@ -9,10 +9,10 @@ export const ToastContainer = ({ toasts, onDismiss }) => {
       case 'success':
         return {
           icon: CheckCircle2,
-          bg: '#eff6ff',
-          border: '#bfdbfe',
-          color: '#1e40af',
-          iconColor: '#2563eb'
+          bg: '#e8f2e5',
+          border: '#cde4c9',
+          color: '#17652f',
+          iconColor: '#17652f'
         };
       case 'error':
         return {
@@ -33,10 +33,10 @@ export const ToastContainer = ({ toasts, onDismiss }) => {
       default:
         return {
           icon: Info,
-          bg: '#eff6ff',
-          border: '#bfdbfe',
-          color: '#1e40af',
-          iconColor: '#2563eb'
+          bg: '#e8f2e5',
+          border: '#cde4c9',
+          color: '#17652f',
+          iconColor: '#17652f'
         };
     }
   };

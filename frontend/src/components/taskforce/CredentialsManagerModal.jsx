@@ -275,14 +275,14 @@ export const CredentialsManagerModal = ({
               <div style={{ fontSize: '18px', fontWeight: 800, color: '#155e75' }}>{stats.heads}</div>
             </div>
 
-            <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#eef2ff', border: '1px solid #c7d2fe' }}>
-              <span style={{ fontSize: '11px', color: '#4338ca', fontWeight: 600 }}>Site Supervisors</span>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#3730a3' }}>{stats.supervisors}</div>
+            <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#e8f2e5', border: '1px solid #c7d2fe' }}>
+              <span style={{ fontSize: '11px', color: '#17652f', fontWeight: 600 }}>Site Supervisors</span>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: '#17652f' }}>{stats.supervisors}</div>
             </div>
 
-            <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-              <span style={{ fontSize: '11px', color: '#1d4ed8', fontWeight: 600 }}>Field Helpers</span>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#1e40af' }}>{stats.helpers}</div>
+            <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#e8f2e5', border: '1px solid #cde4c9' }}>
+              <span style={{ fontSize: '11px', color: '#17652f', fontWeight: 600 }}>Field Helpers</span>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: '#17652f' }}>{stats.helpers}</div>
             </div>
 
             {stats.unlinked > 0 && (
@@ -421,8 +421,8 @@ export const CredentialsManagerModal = ({
                     const cleanUsername = person.username || person.name.toLowerCase().trim().replace(/[^a-z0-9_]/g, '_');
                     const isCopied = copiedId === person.id;
 
-                    const tierBg = isHead ? '#ecfeff' : isSupervisor ? '#eef2ff' : '#eff6ff';
-                    const tierColor = isHead ? '#0e7490' : isSupervisor ? '#4338ca' : '#1d4ed8';
+                    const tierBg = isHead ? '#ecfeff' : isSupervisor ? '#e8f2e5' : '#e8f2e5';
+                    const tierColor = isHead ? '#0e7490' : isSupervisor ? '#17652f' : '#17652f';
 
                     return (
                       <tr

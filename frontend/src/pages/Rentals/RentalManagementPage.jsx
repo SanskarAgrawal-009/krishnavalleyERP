@@ -525,37 +525,37 @@ export const RentalManagementPage = () => {
             width: '46px',
             height: '46px',
             borderRadius: '13px',
-            background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+            background: '#17652f',
             color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.28)'
+            boxShadow: '0 4px 12px rgba(23, 101, 47, 0.25)'
           }}>
             <Repeat size={22} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+              <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: 700, color: '#1f2937', margin: 0, letterSpacing: '-0.02em' }}>
                 Rental Management Hub
               </h1>
               <span style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '5px',
-                background: '#eff6ff',
-                color: '#2563eb',
-                border: '1px solid #bfdbfe',
+                background: '#e8f2e5',
+                color: '#17652f',
+                border: '1px solid #cde4c9',
                 fontSize: '0.72rem',
                 fontWeight: '700',
                 padding: '2px 8px',
                 borderRadius: '12px'
               }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#17652f', display: 'inline-block' }} />
                 Live Register
               </span>
             </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: '#64748b', fontWeight: '500' }}>
+            <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: '#596372', fontWeight: '500' }}>
               Guaranteed Rental Program • Minimum 3-Year Fixed Tenure • Multi-Owner Resale Trail &amp; Document Vault
             </p>
           </div>
@@ -573,17 +573,17 @@ export const RentalManagementPage = () => {
                 gap: '6px',
                 padding: '8px 16px',
                 borderRadius: '9px',
-                background: '#2563eb',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.82rem',
-                fontWeight: '700',
+                fontWeight: '600',
                 cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(37, 99, 235, 0.28)',
+                boxShadow: '0 2px 8px rgba(23, 101, 47, 0.25)',
                 transition: 'background 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#1d4ed8'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#2563eb'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#125225'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#17652f'; }}
             >
               <Plus size={16} />
               <span>Manual Rental Entry</span>
@@ -601,17 +601,17 @@ export const RentalManagementPage = () => {
                 padding: '8px 14px',
                 borderRadius: '9px',
                 background: '#ffffff',
-                border: '1px solid #cbd5e1',
-                color: '#1e40af',
+                border: '1px solid #e8e6df',
+                color: '#17652f',
                 fontSize: '0.82rem',
-                fontWeight: '700',
+                fontWeight: '600',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#93c5fd'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#faf9f6'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
             >
-              <FileSpreadsheet size={15} color="#2563eb" />
+              <FileSpreadsheet size={15} color="#17652f" />
               <span>Import by Excel</span>
             </button>
           )}
@@ -626,20 +626,19 @@ export const RentalManagementPage = () => {
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '9px',
-                background: '#eff6ff',
-                border: '1.5px solid #93c5fd',
-                color: '#1d4ed8',
+                background: '#e8f2e5',
+                border: '1px solid #cde4c9',
+                color: '#17652f',
                 fontSize: '0.82rem',
-                fontWeight: '700',
+                fontWeight: '600',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
-                boxShadow: '0 1px 3px rgba(37, 99, 235, 0.1)'
               }}
               title="Bulk Upload Registry Documents (Sale Deed) and Rent Agreements"
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#dbeafe'; e.currentTarget.style.borderColor = '#60a5fa'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#93c5fd'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#d9ebdc'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#e8f2e5'; }}
             >
-              <Upload size={15} color="#2563eb" />
+              <Upload size={15} color="#17652f" />
               <span>Bulk Docs Upload</span>
             </button>
           )}
@@ -656,16 +655,16 @@ export const RentalManagementPage = () => {
                 borderRadius: '9px',
                 background: '#f8fafc',
                 border: '1px solid #cbd5e1',
-                color: '#4338ca',
+                color: '#17652f',
                 fontSize: '0.82rem',
                 fontWeight: '700',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#eef2ff'; e.currentTarget.style.borderColor = '#c7d2fe'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#e8f2e5'; e.currentTarget.style.borderColor = '#c7d2fe'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
             >
-              <BookOpen size={15} color="#4f46e5" />
+              <BookOpen size={15} color="#17652f" />
               <span>Passbook Ledgers Hub</span>
             </button>
           )}
@@ -740,7 +739,7 @@ export const RentalManagementPage = () => {
           borderRadius: '14px',
           padding: '16px 18px',
           border: '1px solid #e2e8f0',
-          borderTop: '2.5px solid #2563eb',
+          borderTop: '2.5px solid #17652f',
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 10px rgba(0, 0, 0, 0.02)',
           display: 'flex',
           flexDirection: 'column',
@@ -749,14 +748,14 @@ export const RentalManagementPage = () => {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>ENROLLED FLATS</span>
-            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Building2 size={15} color="#2563eb" />
+            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: '#e8f2e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Building2 size={15} color="#17652f" />
             </div>
           </div>
           <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '4px 0 2px' }}>
             {kpis.totalUnits} <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#64748b' }}>Units</span>
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>
             Active under 3-Yr Rent-Back
           </span>
         </div>
@@ -767,7 +766,7 @@ export const RentalManagementPage = () => {
           borderRadius: '14px',
           padding: '16px 18px',
           border: '1px solid #e2e8f0',
-          borderTop: '2.5px solid #4f46e5',
+          borderTop: '2.5px solid #17652f',
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 10px rgba(0, 0, 0, 0.02)',
           display: 'flex',
           flexDirection: 'column',
@@ -776,14 +775,14 @@ export const RentalManagementPage = () => {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>MONTHLY GROSS YIELD</span>
-            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <DollarSign size={15} color="#4f46e5" />
+            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: '#e8f2e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DollarSign size={15} color="#17652f" />
             </div>
           </div>
           <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1e293b', margin: '4px 0 2px' }}>
             {formatINR(kpis.totalMonthlyGross)}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#4f46e5', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>
             Total scheduled monthly payout
           </span>
         </div>
@@ -821,7 +820,7 @@ export const RentalManagementPage = () => {
           borderRadius: '14px',
           padding: '16px 18px',
           border: '1px solid #e2e8f0',
-          borderTop: '2.5px solid #7c3aed',
+          borderTop: '2.5px solid #17652f',
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 10px rgba(0, 0, 0, 0.02)',
           display: 'flex',
           flexDirection: 'column',
@@ -831,13 +830,13 @@ export const RentalManagementPage = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', letterSpacing: '0.04em' }}>TOTAL DISBURSED</span>
             <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: '#faf5ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp size={15} color="#7c3aed" />
+              <TrendingUp size={15} color="#17652f" />
             </div>
           </div>
           <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#581c87', margin: '4px 0 2px' }}>
             {formatINR(kpis.totalDisbursed)}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#7c3aed', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>
             Cumulative to current owners
           </span>
         </div>
@@ -875,14 +874,14 @@ export const RentalManagementPage = () => {
         display: 'flex',
         alignItems: 'center',
         gap: '10px',
-        background: '#eff6ff',
-        border: '1px solid #bfdbfe',
+        background: '#e8f2e5',
+        border: '1px solid #cde4c9',
         borderRadius: '10px',
         padding: '10px 16px',
         fontSize: '0.8rem',
-        color: '#1e40af'
+        color: '#17652f'
       }}>
-        <Info size={16} color="#2563eb" style={{ flexShrink: 0 }} />
+        <Info size={16} color="#17652f" style={{ flexShrink: 0 }} />
         <span>
           <strong>Quick Guide:</strong> Type any flat number (e.g. <strong>001</strong>) or owner name in the search bar below. Click <strong>Edit</strong> on any row to modify rent terms or dates, and click <strong>Docs</strong> to view agreement files.
         </span>
@@ -893,7 +892,7 @@ export const RentalManagementPage = () => {
       {/* ========================================================================= */}
       <div style={{
         background: '#ffffff',
-        border: '1px solid #e2e8f0',
+        border: '1px solid #e8e6df',
         borderRadius: '14px',
         padding: '12px 16px',
         display: 'flex',
@@ -913,7 +912,8 @@ export const RentalManagementPage = () => {
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
-            background: '#f1f5f9',
+            background: '#faf9f6',
+            border: '1px solid #e8e6df',
             padding: '3px',
             borderRadius: '9px',
             gap: '3px'
@@ -928,24 +928,24 @@ export const RentalManagementPage = () => {
                 padding: '7px 16px',
                 borderRadius: '7px',
                 border: 'none',
-                background: activeTab === 'active' ? '#ffffff' : 'transparent',
-                color: activeTab === 'active' ? '#0f172a' : '#64748b',
-                fontWeight: '700',
+                background: activeTab === 'active' ? '#17652f' : 'transparent',
+                color: activeTab === 'active' ? '#ffffff' : '#596372',
+                fontWeight: '600',
                 fontSize: '0.84rem',
                 cursor: 'pointer',
-                boxShadow: activeTab === 'active' ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
+                boxShadow: activeTab === 'active' ? '0 1px 3px rgba(23, 101, 47, 0.2)' : 'none',
                 transition: 'all 0.15s ease'
               }}
             >
-              <Building2 size={15} color={activeTab === 'active' ? '#2563eb' : '#64748b'} />
+              <Building2 size={15} color={activeTab === 'active' ? '#ffffff' : '#596372'} />
               <span>Active Rentals</span>
               <span style={{
                 fontSize: '0.72rem',
-                fontWeight: '800',
+                fontWeight: '700',
                 padding: '1px 8px',
                 borderRadius: '10px',
-                background: activeTab === 'active' ? '#eff6ff' : '#e2e8f0',
-                color: activeTab === 'active' ? '#2563eb' : '#64748b'
+                background: activeTab === 'active' ? '#e8f2e5' : '#e8e6df',
+                color: activeTab === 'active' ? '#17652f' : '#596372'
               }}>
                 {activeRentals.length}
               </span>
@@ -961,24 +961,24 @@ export const RentalManagementPage = () => {
                 padding: '7px 16px',
                 borderRadius: '7px',
                 border: 'none',
-                background: activeTab === 'history' ? '#ffffff' : 'transparent',
-                color: activeTab === 'history' ? '#0f172a' : '#64748b',
-                fontWeight: '700',
+                background: activeTab === 'history' ? '#17652f' : 'transparent',
+                color: activeTab === 'history' ? '#ffffff' : '#596372',
+                fontWeight: '600',
                 fontSize: '0.84rem',
                 cursor: 'pointer',
-                boxShadow: activeTab === 'history' ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
+                boxShadow: activeTab === 'history' ? '0 1px 3px rgba(23, 101, 47, 0.2)' : 'none',
                 transition: 'all 0.15s ease'
               }}
             >
-              <History size={15} color={activeTab === 'history' ? '#2563eb' : '#64748b'} />
+              <History size={15} color={activeTab === 'history' ? '#ffffff' : '#596372'} />
               <span>Past Owners History</span>
               <span style={{
                 fontSize: '0.72rem',
-                fontWeight: '800',
+                fontWeight: '700',
                 padding: '1px 8px',
                 borderRadius: '10px',
-                background: activeTab === 'history' ? '#eff6ff' : '#e2e8f0',
-                color: activeTab === 'history' ? '#2563eb' : '#64748b'
+                background: activeTab === 'history' ? '#e8f2e5' : '#e8e6df',
+                color: activeTab === 'history' ? '#17652f' : '#596372'
               }}>
                 {historyRecords.length}
               </span>
@@ -1019,7 +1019,7 @@ export const RentalManagementPage = () => {
                 background: '#f8fafc',
                 color: '#0f172a'
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.background = '#ffffff'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#17652f'; e.currentTarget.style.background = '#ffffff'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = '#f8fafc'; }}
             />
             {searchQuery && (
@@ -1057,8 +1057,8 @@ export const RentalManagementPage = () => {
                 borderRadius: '8px',
                 border: '1px solid #cbd5e1',
                 fontSize: '0.82rem',
-                background: tenureFilter !== 'all' ? '#eff6ff' : '#ffffff',
-                color: tenureFilter !== 'all' ? '#1d4ed8' : '#334155',
+                background: tenureFilter !== 'all' ? '#e8f2e5' : '#ffffff',
+                color: tenureFilter !== 'all' ? '#17652f' : '#334155',
                 fontWeight: '600',
                 outline: 'none',
                 cursor: 'pointer',
@@ -1084,8 +1084,8 @@ export const RentalManagementPage = () => {
                 borderRadius: '8px',
                 border: '1px solid #cbd5e1',
                 fontSize: '0.82rem',
-                background: sortOrder !== 'default' ? '#eff6ff' : '#ffffff',
-                color: sortOrder !== 'default' ? '#1d4ed8' : '#334155',
+                background: sortOrder !== 'default' ? '#e8f2e5' : '#ffffff',
+                color: sortOrder !== 'default' ? '#17652f' : '#334155',
                 fontWeight: '600',
                 outline: 'none',
                 cursor: 'pointer',
@@ -1143,7 +1143,7 @@ export const RentalManagementPage = () => {
               onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
             >
-              {sortOrder === 'desc' ? <ArrowDown size={14} color="#2563eb" /> : <ArrowUp size={14} color="#2563eb" />}
+              {sortOrder === 'desc' ? <ArrowDown size={14} color="#17652f" /> : <ArrowUp size={14} color="#17652f" />}
             </button>
           </div>
 
@@ -1235,7 +1235,7 @@ export const RentalManagementPage = () => {
                     <th style={{ padding: '14px 16px', fontWeight: '800' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <span>Documents</span>
-                        <span style={{ fontSize: '0.62rem', background: '#eff6ff', color: '#1e40af', padding: '1px 5px', borderRadius: '4px' }}>
+                        <span style={{ fontSize: '0.62rem', background: '#e8f2e5', color: '#17652f', padding: '1px 5px', borderRadius: '4px' }}>
                           REGISTRY
                         </span>
                       </div>
@@ -1345,7 +1345,7 @@ export const RentalManagementPage = () => {
                               background: 'none',
                               border: 'none',
                               padding: 0,
-                              color: '#2563eb',
+                              color: '#17652f',
                               fontWeight: '800',
                               fontSize: '0.92rem',
                               cursor: 'pointer',
@@ -1388,11 +1388,11 @@ export const RentalManagementPage = () => {
                                   gap: '4px',
                                   fontSize: '0.7rem',
                                   fontWeight: '700',
-                                  background: '#eff6ff',
-                                  color: '#1e40af',
+                                  background: '#e8f2e5',
+                                  color: '#17652f',
                                   padding: '2px 8px',
                                   borderRadius: '6px',
-                                  border: '1px solid #dbeafe',
+                                  border: '1px solid #e8f2e5',
                                   textDecoration: 'none',
                                   width: 'fit-content'
                                 }}
@@ -1438,11 +1438,11 @@ export const RentalManagementPage = () => {
                                   gap: '4px',
                                   fontSize: '0.7rem',
                                   fontWeight: '700',
-                                  background: '#eff6ff',
-                                  color: '#1d4ed8',
+                                  background: '#e8f2e5',
+                                  color: '#17652f',
                                   padding: '2px 8px',
                                   borderRadius: '6px',
-                                  border: '1px solid #bfdbfe',
+                                  border: '1px solid #cde4c9',
                                   textDecoration: 'none',
                                   width: 'fit-content'
                                 }}
@@ -1492,9 +1492,9 @@ export const RentalManagementPage = () => {
                             <span style={{
                               display: 'inline-block',
                               fontSize: '0.64rem',
-                              color: '#1d4ed8',
-                              background: '#eff6ff',
-                              border: '1px solid #bfdbfe',
+                              color: '#17652f',
+                              background: '#e8f2e5',
+                              border: '1px solid #cde4c9',
                               padding: '1px 6px',
                               borderRadius: '4px',
                               fontWeight: '700',
@@ -1531,9 +1531,9 @@ export const RentalManagementPage = () => {
                         </td>
 
                         {/* 7. Net Amount */}
-                        <td style={{ padding: '14px 14px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: '#1e40af' }}>
+                        <td style={{ padding: '14px 14px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: '#17652f' }}>
                           {formatINR(r.netAmount)}
-                          <span style={{ display: 'block', fontSize: '0.68rem', color: '#1a73e8', fontWeight: '500' }}>Net /mo</span>
+                          <span style={{ display: 'block', fontSize: '0.68rem', color: '#17652f', fontWeight: '500' }}>Net /mo</span>
                         </td>
 
                         {/* 8. Starting Date */}
@@ -1543,7 +1543,7 @@ export const RentalManagementPage = () => {
 
                         {/* 9. Ending Date */}
                         <td style={{ padding: '14px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <span style={{ color: '#1e3a8a', fontWeight: '700' }}>
+                          <span style={{ color: '#17652f', fontWeight: '700' }}>
                             {formatDate(r.endDate)}
                           </span>
                         </td>
@@ -1551,8 +1551,8 @@ export const RentalManagementPage = () => {
                         {/* 10. Tenure (Months) */}
                         <td style={{ padding: '14px 14px', verticalAlign: 'middle', textAlign: 'center' }}>
                           <span style={{
-                            background: '#e0e7ff',
-                            color: '#3730a3',
+                            background: '#e8f2e5',
+                            color: '#17652f',
                             fontSize: '0.75rem',
                             fontWeight: '800',
                             padding: '3px 8px',
@@ -1563,7 +1563,7 @@ export const RentalManagementPage = () => {
                         </td>
 
                         {/* 11. Total Paid */}
-                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: '#1a73e8' }}>
+                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: '#17652f' }}>
                           {formatINR(r.totalPaid)}
                           <span style={{ display: 'block', fontSize: '0.68rem', color: '#64748b', fontWeight: '500' }}>
                             {r.paidMonthsCount} mos paid
@@ -1571,7 +1571,7 @@ export const RentalManagementPage = () => {
                         </td>
 
                         {/* 12. Amount Outstanding */}
-                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: r.amountOutstanding > 0 ? '#0f172a' : '#1a73e8' }}>
+                        <td style={{ padding: '14px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: r.amountOutstanding > 0 ? '#0f172a' : '#17652f' }}>
                           {formatINR(r.amountOutstanding)}
                           <span style={{ display: 'block', fontSize: '0.68rem', color: '#64748b', fontWeight: '500' }}>
                             {r.remainingMonths} mos left
@@ -1593,9 +1593,9 @@ export const RentalManagementPage = () => {
                                   gap: '4px',
                                   padding: '6px 10px',
                                   borderRadius: '7px',
-                                  border: '1.5px solid #93c5fd',
-                                  background: '#eff6ff',
-                                  color: '#1d4ed8',
+                                  border: '1.5px solid #86c8a0',
+                                  background: '#e8f2e5',
+                                  color: '#17652f',
                                   fontSize: '0.74rem',
                                   fontWeight: '700',
                                   cursor: 'pointer'
@@ -1614,9 +1614,9 @@ export const RentalManagementPage = () => {
                               style={{
                                 padding: '6px 8px',
                                 borderRadius: '7px',
-                                border: '1px solid #bfdbfe',
-                                background: hasRegistryDoc ? '#eff6ff' : '#eff6ff',
-                                color: hasRegistryDoc ? '#1a73e8' : '#2563eb',
+                                border: '1px solid #cde4c9',
+                                background: hasRegistryDoc ? '#e8f2e5' : '#e8f2e5',
+                                color: hasRegistryDoc ? '#17652f' : '#17652f',
                                 cursor: 'pointer'
                               }}
                             >
@@ -1632,9 +1632,9 @@ export const RentalManagementPage = () => {
                                 style={{
                                   padding: '6px 8px',
                                   borderRadius: '7px',
-                                  border: '1px solid #bfdbfe',
-                                  background: '#eff6ff',
-                                  color: '#1a73e8',
+                                  border: '1px solid #cde4c9',
+                                  background: '#e8f2e5',
+                                  color: '#17652f',
                                   cursor: 'pointer'
                                 }}
                               >
@@ -1652,8 +1652,8 @@ export const RentalManagementPage = () => {
                                   padding: '6px 8px',
                                   borderRadius: '7px',
                                   border: '1px solid #c7d2fe',
-                                  background: '#eff6ff',
-                                  color: '#4f46e5',
+                                  background: '#e8f2e5',
+                                  color: '#17652f',
                                   cursor: 'pointer'
                                 }}
                               >
@@ -1717,11 +1717,11 @@ export const RentalManagementPage = () => {
                 width: '32px',
                 height: '32px',
                 borderRadius: '8px',
-                background: '#eff6ff',
+                background: '#e8f2e5',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#1e40af'
+                color: '#17652f'
               }}>
                 <History size={18} />
               </div>
@@ -1734,7 +1734,7 @@ export const RentalManagementPage = () => {
                 </span>
               </div>
             </div>
-            <span style={{ fontSize: '0.74rem', color: '#1e40af', background: '#eff6ff', border: '1px solid #dbeafe', padding: '3px 10px', borderRadius: '12px', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.74rem', color: '#17652f', background: '#e8f2e5', border: '1px solid #e8f2e5', padding: '3px 10px', borderRadius: '12px', fontWeight: '700' }}>
               {sortedHistoryRecords.length} Historical Records
             </span>
           </div>
@@ -1797,8 +1797,8 @@ export const RentalManagementPage = () => {
                       {/* Sequence */}
                       <td style={{ padding: '14px 14px', verticalAlign: 'middle' }}>
                         <span style={{
-                          background: '#eff6ff',
-                          color: '#1e40af',
+                          background: '#e8f2e5',
+                          color: '#17652f',
                           fontSize: '0.72rem',
                           fontWeight: '800',
                           padding: '3px 8px',
@@ -1827,9 +1827,9 @@ export const RentalManagementPage = () => {
                               gap: '4px',
                               fontSize: '0.7rem',
                               fontWeight: '700',
-                              color: '#1e40af',
-                              background: '#eff6ff',
-                              border: '1px solid #dbeafe',
+                              color: '#17652f',
+                              background: '#e8f2e5',
+                              border: '1px solid #e8f2e5',
                               padding: '2px 8px',
                               borderRadius: '6px',
                               textDecoration: 'none'
@@ -1864,7 +1864,7 @@ export const RentalManagementPage = () => {
                       </td>
 
                       {/* Net Rent */}
-                      <td style={{ padding: '14px 14px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: '#1e40af' }}>
+                      <td style={{ padding: '14px 14px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: '#17652f' }}>
                         {formatINR(h.netAmount)}
                       </td>
 
@@ -1874,7 +1874,7 @@ export const RentalManagementPage = () => {
                       </td>
 
                       {/* Transfer Date */}
-                      <td style={{ padding: '14px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap', color: '#1e40af', fontWeight: '700' }}>
+                      <td style={{ padding: '14px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap', color: '#17652f', fontWeight: '700' }}>
                         {formatDate(h.transferDate)}
                       </td>
 
@@ -1886,14 +1886,14 @@ export const RentalManagementPage = () => {
                       </td>
 
                       {/* Total Rent Disbursed */}
-                      <td style={{ padding: '14px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: '#1a73e8' }}>
+                      <td style={{ padding: '14px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: '800', color: '#17652f' }}>
                         {formatINR(h.totalRentPaid)}
                       </td>
 
                       {/* Transferred To */}
                       <td style={{ padding: '14px 16px', verticalAlign: 'middle' }}>
-                        <span style={{ fontWeight: '700', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <ArrowRight size={12} color="#2563eb" />
+                        <span style={{ fontWeight: '700', color: '#17652f', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <ArrowRight size={12} color="#17652f" />
                           <span>{renderCellData(h.transferredTo)}</span>
                         </span>
                       </td>

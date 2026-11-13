@@ -169,9 +169,9 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
                 style={{
                   padding: '8px 4px',
                   borderRadius: 'var(--radius-sm)',
-                  border: channel === 'sms' ? '1px solid #3b82f6' : '1px solid var(--border-subtle)',
+                  border: channel === 'sms' ? '1px solid #17652f' : '1px solid var(--border-subtle)',
                   background: channel === 'sms' ? 'rgba(59, 130, 246, 0.15)' : 'var(--bg-card)',
-                  color: channel === 'sms' ? '#60a5fa' : 'var(--text-secondary)',
+                  color: channel === 'sms' ? '#4a9e68' : 'var(--text-secondary)',
                   fontSize: '0.75rem',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -211,9 +211,9 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
                 style={{
                   padding: '8px 4px',
                   borderRadius: 'var(--radius-sm)',
-                  border: channel === 'push' ? '1px solid #1e40af' : '1px solid var(--border-subtle)',
+                  border: channel === 'push' ? '1px solid #17652f' : '1px solid var(--border-subtle)',
                   background: channel === 'push' ? 'rgba(236, 72, 153, 0.15)' : 'var(--bg-card)',
-                  color: channel === 'push' ? '#60a5fa' : 'var(--text-secondary)',
+                  color: channel === 'push' ? '#4a9e68' : 'var(--text-secondary)',
                   fontSize: '0.75rem',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -305,14 +305,14 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
           {result && (
             <div style={{
               background: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid #1a73e8',
+              border: '1px solid #17652f',
               borderRadius: 'var(--radius-md)',
               padding: '12px 14px',
               display: 'flex',
               flexDirection: 'column',
               gap: '6px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1a73e8', fontWeight: '700', fontSize: '0.82rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#17652f', fontWeight: '700', fontSize: '0.82rem' }}>
                 <CheckCircle size={16} />
                 {result.message}
               </div>

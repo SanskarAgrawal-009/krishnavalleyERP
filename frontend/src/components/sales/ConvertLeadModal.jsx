@@ -134,11 +134,11 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
                 <User size={15} color="var(--primary-500)" /> {lead.name}
               </div>
               <div style={{ fontSize: '0.8rem', color: '#374151', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Phone size={13} color="#1a73e8" /> {lead.mobileNo} {lead.email ? `• ${lead.email}` : ''}
+                <Phone size={13} color="#17652f" /> {lead.mobileNo} {lead.email ? `• ${lead.email}` : ''}
               </div>
             </div>
 
-            <span style={{ fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.15)', color: '#1a73e8', padding: '4px 8px', borderRadius: '4px', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.15)', color: '#17652f', padding: '4px 8px', borderRadius: '4px', fontWeight: '700' }}>
               Ready for Booking
             </span>
           </div>
@@ -153,7 +153,7 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
             gap: '10px'
           }}>
             <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <User size={15} color="#1a73e8" /> Buyer Contact Dossier
+              <User size={15} color="#17652f" /> Buyer Contact Dossier
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               <div>
@@ -232,7 +232,7 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
           {selectedProjectId && (
             <div>
               <label style={{ fontSize: '0.75rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '3px' }}>
-                <Layers size={13} color="#60a5fa" /> Select Building / Tower *
+                <Layers size={13} color="#4a9e68" /> Select Building / Tower *
               </label>
               <select
                 required
@@ -257,7 +257,7 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
           {selectedBuildingId && (
             <div>
               <label style={{ fontSize: '0.78rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontWeight: '700' }}>
-                <Home size={13} color="#2563eb" /> Select Flat / Unit *
+                <Home size={13} color="#17652f" /> Select Flat / Unit *
               </label>
               <select
                 required
@@ -283,15 +283,15 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
                   <div style={{
                     marginTop: '8px',
                     padding: '10px 14px',
-                    background: '#eff6ff',
-                    border: '1px solid #dbeafe',
+                    background: '#e8f2e5',
+                    border: '1px solid #e8f2e5',
                     borderRadius: '6px',
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
                     gap: '12px',
                     fontSize: '0.78rem',
-                    color: '#1e40af'
+                    color: '#17652f'
                   }}>
                     <div><strong>Floor:</strong> Floor {matchedFlat.floor || 1}</div>
                     <div>•</div>
@@ -368,7 +368,7 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
         <div style={{
           fontSize: '0.75rem',
           color: '#414754',
-          background: '#e8f0fe',
+          background: '#e8f2e5',
           padding: '10px 14px',
           borderRadius: '6px',
           border: '1px solid #d2e3fc',
@@ -390,7 +390,7 @@ export const ConvertLeadModal = ({ isOpen, onClose, onConvert, lead = null }) =>
             type="submit"
             style={{
               padding: '8px 20px',
-              background: 'linear-gradient(135deg, #1a73e8, var(--primary-700))',
+              background: 'linear-gradient(135deg, #17652f, var(--primary-700))',
               color: '#111827',
               fontWeight: '700',
               borderRadius: 'var(--radius-sm)',

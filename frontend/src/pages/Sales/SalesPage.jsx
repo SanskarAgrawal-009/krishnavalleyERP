@@ -342,16 +342,17 @@ export const SalesPage = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '20px'
+        gap: '20px',
+        border: '1px solid #e8e6df'
       }}>
         <div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: '700', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '12px' }}>
             Property Sales & Deal Lifecycle
-            <span style={{ fontSize: '0.74rem', background: '#eff6ff', color: '#1a73e8', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
               ALLOTMENT PIPELINE
             </span>
           </div>
-          <div style={{ fontSize: '0.88rem', color: '#4b5563', marginTop: '4px', fontWeight: '500' }}>
+          <div style={{ fontSize: '0.88rem', color: '#596372', marginTop: '4px', fontWeight: '500' }}>
             Manage buyer bookings, legal agreements, milestone demand letters, collection receipts, and possession handovers.
           </div>
         </div>
@@ -367,18 +368,20 @@ export const SalesPage = () => {
                 padding: '9px 18px',
                 borderRadius: '8px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #1a73e8, #1e40af)',
+                background: '#17652f',
                 color: '#ffffff',
-                fontWeight: '700',
+                fontWeight: '600',
                 fontSize: '0.85rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 2px 4px rgba(26, 115, 232, 0.25)',
+                boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap'
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#125225'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#17652f'; }}
             >
               <Plus size={16} /> + New Booking / Convert Lead
             </button>
@@ -386,10 +389,10 @@ export const SalesPage = () => {
 
           <div style={{
             display: 'flex',
-            background: '#f3f4f5',
+            background: '#faf9f6',
             padding: '4px',
             borderRadius: '8px',
-            border: '1px solid #dadce0',
+            border: '1px solid #e8e6df',
             gap: '6px',
             overflowX: 'auto',
             maxWidth: '100%',
@@ -405,14 +408,15 @@ export const SalesPage = () => {
                 padding: '8px 16px',
                 borderRadius: '6px',
                 border: 'none',
-                background: salesViewTab === 'pipeline' ? '#1a73e8' : 'transparent',
-                color: salesViewTab === 'pipeline' ? '#ffffff' : '#4b5563',
-                fontWeight: salesViewTab === 'pipeline' ? '800' : '600',
+                background: salesViewTab === 'pipeline' ? '#17652f' : 'transparent',
+                color: salesViewTab === 'pipeline' ? '#ffffff' : '#596372',
+                fontWeight: salesViewTab === 'pipeline' ? '700' : '500',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
+                boxShadow: salesViewTab === 'pipeline' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap'
               }}
@@ -430,14 +434,15 @@ export const SalesPage = () => {
                 padding: '8px 16px',
                 borderRadius: '6px',
                 border: 'none',
-                background: salesViewTab === 'lifecycle' ? '#1a73e8' : 'transparent',
-                color: salesViewTab === 'lifecycle' ? '#ffffff' : '#4b5563',
-                fontWeight: salesViewTab === 'lifecycle' ? '800' : '600',
+                background: salesViewTab === 'lifecycle' ? '#17652f' : 'transparent',
+                color: salesViewTab === 'lifecycle' ? '#ffffff' : '#596372',
+                fontWeight: salesViewTab === 'lifecycle' ? '700' : '500',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
+                boxShadow: salesViewTab === 'lifecycle' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap'
               }}
@@ -455,14 +460,15 @@ export const SalesPage = () => {
                 padding: '8px 16px',
                 borderRadius: '6px',
                 border: 'none',
-                background: salesViewTab === 'resale' ? '#1a73e8' : 'transparent',
-                color: salesViewTab === 'resale' ? '#ffffff' : '#4b5563',
-                fontWeight: salesViewTab === 'resale' ? '800' : '600',
+                background: salesViewTab === 'resale' ? '#17652f' : 'transparent',
+                color: salesViewTab === 'resale' ? '#ffffff' : '#596372',
+                fontWeight: salesViewTab === 'resale' ? '700' : '500',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
+                boxShadow: salesViewTab === 'resale' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap'
               }}
@@ -480,7 +486,7 @@ export const SalesPage = () => {
                 padding: '8px 16px',
                 borderRadius: '6px',
                 border: 'none',
-                background: salesViewTab === 'messaging' ? '#1a73e8' : 'transparent',
+                background: salesViewTab === 'messaging' ? '#17652f' : 'transparent',
                 color: salesViewTab === 'messaging' ? '#ffffff' : '#4b5563',
                 fontWeight: salesViewTab === 'messaging' ? '800' : '600',
                 fontSize: '0.82rem',
@@ -517,7 +523,7 @@ export const SalesPage = () => {
           <button
             onClick={fetchSalesLeads}
             style={{
-              background: '#0f172a',
+              background: '#17652f',
               color: '#ffffff',
               border: 'none',
               borderRadius: '4px',
@@ -539,7 +545,7 @@ export const SalesPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL CONVERTED</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <ShoppingBag size={16} />
                 </div>
               </div>
@@ -550,22 +556,22 @@ export const SalesPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>BOOKED & ALLOTTED</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <CheckCircle size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>{bookedCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{bookedCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Token confirmed</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>IN PAYMENT PROGRESS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <CreditCard size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>{inPaymentCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{inPaymentCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active milestone demands</span>
             </div>
 
@@ -583,7 +589,7 @@ export const SalesPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>SALES PORTFOLIO VALUE</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <TrendingUp size={16} />
                 </div>
               </div>
@@ -623,7 +629,7 @@ export const SalesPage = () => {
               </div>
               <button
                 type="submit"
-                style={{ padding: '8px 14px', background: '#1a73e8', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer' }}
+                style={{ padding: '8px 14px', background: '#17652f', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer' }}
               >
                 Search
               </button>
@@ -712,8 +718,8 @@ export const SalesPage = () => {
 
                     {/* Property Details */}
                     <div style={{
-                      background: '#eff6ff',
-                      border: '1px solid #dbeafe',
+                      background: '#e8f2e5',
+                      border: '1px solid #e8f2e5',
                       padding: '8px 10px',
                       borderRadius: '6px',
                       display: 'flex',
@@ -721,14 +727,14 @@ export const SalesPage = () => {
                       justifyContent: 'space-between',
                       fontSize: '0.78rem'
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2563eb', fontWeight: '700' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#17652f', fontWeight: '700' }}>
                         <Home size={14} />
                         <span>Flat {sl.flatId?.flatNumber || 'N/A'}</span>
                         {sl.projectId?.projectName && (
                           <span style={{ color: '#4b5563', fontWeight: '600' }}>• {sl.projectId.projectName}</span>
                         )}
                       </div>
-                      <span style={{ fontSize: '0.72rem', color: '#00285c', fontWeight: '700' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
                         {sl.agreement?.agreementNumber ? `AGR: ${sl.agreement.agreementNumber}` : 'Agreement Pending'}
                       </span>
                     </div>
@@ -751,8 +757,8 @@ export const SalesPage = () => {
                           justifyContent: 'center',
                           gap: '5px',
                           padding: '5px',
-                          background: '#e8f0fe',
-                          color: '#1a73e8',
+                          background: '#e8f2e5',
+                          color: '#17652f',
                           borderRadius: '4px',
                           textDecoration: 'none',
                           fontSize: '0.78rem',
@@ -773,8 +779,8 @@ export const SalesPage = () => {
                           justifyContent: 'center',
                           gap: '4px',
                           padding: '5px 10px',
-                          background: '#eff6ff',
-                          color: '#1a73e8',
+                          background: '#e8f2e5',
+                          color: '#17652f',
                           borderRadius: '4px',
                           textDecoration: 'none',
                           fontSize: '0.78rem',
@@ -805,7 +811,7 @@ export const SalesPage = () => {
                         <div style={{
                           width: `${payPercent}%`,
                           height: '100%',
-                          background: '#1a73e8',
+                          background: '#17652f',
                           borderRadius: '9999px',
                           transition: 'width 0.4s ease'
                         }} />
@@ -834,9 +840,9 @@ export const SalesPage = () => {
                         }}
                         style={{
                           padding: '6px 12px',
-                          background: '#eff6ff',
-                          border: '1px solid #bfdbfe',
-                          color: '#1a73e8',
+                          background: '#e8f2e5',
+                          border: '1px solid #cde4c9',
+                          color: '#17652f',
                           fontWeight: '700',
                           borderRadius: '6px',
                           fontSize: '0.76rem',
@@ -878,7 +884,7 @@ export const SalesPage = () => {
                           }}
                           style={{
                             padding: '6px 14px',
-                            background: '#1a73e8',
+                            background: '#17652f',
                             color: '#ffffff',
                             fontWeight: '700',
                             borderRadius: '6px',
@@ -910,7 +916,7 @@ export const SalesPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL ACTIVE DEALS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <ShoppingBag size={16} />
                 </div>
               </div>
@@ -921,12 +927,12 @@ export const SalesPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL PORTFOLIO VALUE</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <DollarSign size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>{formatINR(totalPortfolioValue)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#1a73e8', fontWeight: '700' }}>Total agreed property value</span>
+              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{formatINR(totalPortfolioValue)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '700' }}>Total agreed property value</span>
             </div>
 
             <div className="stat-card">
@@ -943,11 +949,11 @@ export const SalesPage = () => {
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>POSSESSION READY</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#2563eb' }}>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <Building2 size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>{possessedCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{possessedCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Handover completed</span>
             </div>
           </div>
@@ -965,7 +971,7 @@ export const SalesPage = () => {
             }}>
               <div>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <DollarSign size={18} color="#1a73e8" /> Milestone Demands & Construction Linked Payment Register ({salesLeads.length})
+                  <DollarSign size={18} color="#17652f" /> Milestone Demands & Construction Linked Payment Register ({salesLeads.length})
                 </h3>
                 <p style={{ fontSize: '0.8rem', color: '#4b5563', marginTop: '2px' }}>
                   Track construction milestone slab completion, issue official demand letters, and reconcile payment receipts.
@@ -1021,14 +1027,14 @@ export const SalesPage = () => {
                             <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>
                               {sl.customerPhone || sl.leadId?.phone || 'Phone on file'}
                             </div>
-                            <div style={{ fontSize: '0.7rem', color: '#1a73e8', fontWeight: '700', marginTop: '2px' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '700', marginTop: '2px' }}>
                               {sl.applicationNo || `ALLOT-${sl._id.slice(-6).toUpperCase()}`}
                             </div>
                           </td>
 
                           <td>
                             <div style={{ fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <Building2 size={12} color="#1a73e8" />
+                              <Building2 size={12} color="#17652f" />
                               {sl.flatId?.unitNumber || sl.flatNumber || 'Flat 101'}
                             </div>
                             <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>
@@ -1040,9 +1046,9 @@ export const SalesPage = () => {
                             {formatINR(totalAmt)}
                           </td>
 
-                          <td style={{ fontWeight: '800', color: '#1a73e8', fontSize: '0.92rem' }}>
+                          <td style={{ fontWeight: '800', color: '#17652f', fontSize: '0.92rem' }}>
                             {formatINR(bookingAmt)}
-                            <div style={{ fontSize: '0.7rem', color: '#1a73e8', fontWeight: '600' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600' }}>
                               Receipt Verified
                             </div>
                           </td>
@@ -1051,7 +1057,7 @@ export const SalesPage = () => {
                             <div style={{ fontWeight: '700', color: '#111827', fontSize: '0.82rem' }}>
                               {activeMilestone.name || 'Plinth Slab Casting'}
                             </div>
-                            <div style={{ fontSize: '0.7rem', color: '#2563eb', fontWeight: '700' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '700' }}>
                               {activeMilestone.percentage || 15}% Demand Stage
                             </div>
                           </td>
@@ -1069,7 +1075,7 @@ export const SalesPage = () => {
                               }}
                               style={{
                                 padding: '6px 12px',
-                                background: '#1a73e8',
+                                background: '#17652f',
                                 color: '#ffffff',
                                 border: 'none',
                                 borderRadius: '6px',
@@ -1110,7 +1116,7 @@ export const SalesPage = () => {
           }}>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <History size={20} color="#2563eb" /> Resale, Buybacks &amp; Ownership Title Transfers
+                <History size={20} color="#17652f" /> Resale, Buybacks &amp; Ownership Title Transfers
               </h3>
               <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
                 Track developer buybacks, secondary market resales, archived titleholders, and historical rent payouts.
@@ -1128,7 +1134,7 @@ export const SalesPage = () => {
                   style={{
                     padding: '9px 18px',
                     borderRadius: '8px',
-                    background: '#2563eb',
+                    background: '#17652f',
                     color: '#ffffff',
                     border: 'none',
                     fontSize: '0.84rem',
@@ -1196,20 +1202,20 @@ export const SalesPage = () => {
 
             return (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #2563eb' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #17652f' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>TOTAL TRANSFER AUDITS</span>
                   <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
                     {flatsWithHistory.length} Units
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#2563eb', fontWeight: '600' }}>Active in resale ledger</span>
+                  <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '600' }}>Active in resale ledger</span>
                 </div>
 
-                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #1a73e8' }}>
+                <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #17652f' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>DEVELOPER BUYBACKS</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
                     {totalBuybacks} Transactions
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#1e40af', fontWeight: '600' }}>Repurchased under MOU</span>
+                  <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '600' }}>Repurchased under MOU</span>
                 </div>
 
                 <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #0284c7' }}>
@@ -1342,7 +1348,7 @@ export const SalesPage = () => {
                         <tr key={f._id || f.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                           <td style={{ padding: '12px 16px', fontWeight: '800', color: '#0f172a' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <Building2 size={14} color="#2563eb" /> Flat {f.flatNumber}
+                              <Building2 size={14} color="#17652f" /> Flat {f.flatNumber}
                             </div>
                             <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
                               {f.buildingName || 'Tower A'}
@@ -1388,8 +1394,8 @@ export const SalesPage = () => {
                               borderRadius: '6px',
                               fontSize: '0.74rem',
                               fontWeight: '700',
-                              background: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#eff6ff' : '#e0f2fe',
-                              color: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#1e40af' : '#0369a1',
+                              background: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#e8f2e5' : '#e0f2fe',
+                              color: ['buy_back', 'buyback'].includes((f.status || '').toLowerCase()) ? '#17652f' : '#0369a1',
                               textTransform: 'uppercase'
                             }}>
                               {latestHist?.transferReason || (f.status ? f.status.replace(/_/g, ' ') : 'Allotted')}
@@ -1423,7 +1429,7 @@ export const SalesPage = () => {
                                   whiteSpace: 'nowrap'
                                 }}
                               >
-                                <RotateCcw size={12} color="#2563eb" /> Record Transfer
+                                <RotateCcw size={12} color="#17652f" /> Record Transfer
                               </button>
                             )}
                           </td>

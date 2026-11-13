@@ -339,16 +339,17 @@ export const MaintenancePage = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '20px'
+        gap: '20px',
+        border: '1px solid #e8e6df'
       }}>
         <div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: '700', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '12px' }}>
             Facility Maintenance & Operations Hub
-            <span style={{ fontSize: '0.74rem', background: '#e8f0fe', color: '#1a73e8', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
               RESIDENT SERVICES
             </span>
           </div>
-          <div style={{ fontSize: '0.88rem', color: '#4b5563', marginTop: '4px', fontWeight: '500' }}>
+          <div style={{ fontSize: '0.88rem', color: '#596372', marginTop: '4px', fontWeight: '500' }}>
             Periodic maintenance invoicing, proof & UTR verification by Accounts, technician tickets, and rule infraction fines.
           </div>
         </div>
@@ -359,7 +360,7 @@ export const MaintenancePage = () => {
           className="btn-secondary"
           style={{ padding: '9px 16px', fontSize: '0.84rem' }}
         >
-          <RefreshCw size={14} className={loading ? 'spin' : ''} />
+          <RefreshCw size={14} className={loading ? 'spin' : ''} style={{ color: '#17652f' }} />
           Refresh Data
         </button>
       </div>
@@ -368,54 +369,54 @@ export const MaintenancePage = () => {
       <div className="grid-cols-4">
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MAINTENANCE COLLECTED</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#eff6ff', color: '#1a73e8' }}>
+            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>MAINTENANCE COLLECTED</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
             {formatINR(totalMaintCollected)}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Verified & paid fees</span>
+          <span style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '600' }}>Verified & paid fees</span>
         </div>
 
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>OUTSTANDING DUES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#f1f5f9', color: '#0f172a' }}>
+            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>OUTSTANDING DUES</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: totalMaintOutstanding > 0 ? '#fef3c7' : '#e8f2e5', color: totalMaintOutstanding > 0 ? '#b45309' : '#17652f' }}>
               <Clock size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: totalMaintOutstanding > 0 ? '#b45309' : '#17652f', marginTop: '4px' }}>
             {formatINR(totalMaintOutstanding)}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Unpaid maintenance bills</span>
+          <span style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '600' }}>Unpaid maintenance bills</span>
         </div>
 
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>ACTIVE WORK ORDERS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f0fe', color: '#1a73e8' }}>
+            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>ACTIVE WORK ORDERS</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <Wrench size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a73e8', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
             {openTicketsCount}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Open service tickets</span>
+          <span style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '600' }}>Open service tickets</span>
         </div>
 
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>PENDING PENALTIES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
+            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>PENDING PENALTIES</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: activePenaltiesSum > 0 ? '#fee2e2' : '#f8f9fa', color: activePenaltiesSum > 0 ? '#b91c1c' : '#596372' }}>
               <AlertTriangle size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: activePenaltiesSum > 0 ? '#b91c1c' : '#596372', marginTop: '4px' }}>
             {formatINR(activePenaltiesSum)}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Infraction fines due</span>
+          <span style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '600' }}>Infraction fines due</span>
         </div>
       </div>
 
@@ -424,6 +425,7 @@ export const MaintenancePage = () => {
         display: 'flex',
         padding: '6px',
         gap: '6px',
+        border: '1px solid #e8e6df',
         overflowX: 'auto',
         WebkitOverflowScrolling: 'touch',
         whiteSpace: 'nowrap'
@@ -443,13 +445,14 @@ export const MaintenancePage = () => {
                 flex: '1 1 auto',
                 padding: '9px 16px',
                 borderRadius: '6px',
-                background: isSelected ? '#1a73e8' : 'transparent',
-                color: isSelected ? '#ffffff' : '#374151',
-                fontWeight: isSelected ? '800' : '600',
+                background: isSelected ? '#17652f' : 'transparent',
+                color: isSelected ? '#ffffff' : '#596372',
+                fontWeight: isSelected ? '700' : '600',
                 fontSize: '0.82rem',
                 border: 'none',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
+                boxShadow: isSelected ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                 transition: 'all 0.15s ease'
               }}
             >
@@ -472,7 +475,7 @@ export const MaintenancePage = () => {
                 type="button"
                 onClick={() => setIsBillModalOpen(true)}
                 style={{
-                  background: '#1a73e8',
+                  background: '#17652f',
                   color: '#ffffff',
                   padding: '8px 16px',
                   borderRadius: '6px',
@@ -550,7 +553,7 @@ export const MaintenancePage = () => {
                       return (
                         <tr key={b._id || b.id}>
                           <td>
-                            <strong style={{ color: '#1a73e8' }}>{b.billNumber}</strong>
+                            <strong style={{ color: '#17652f' }}>{b.billNumber}</strong>
                             <div style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '600' }}>
                               {b.billingMonth || (b.billingPeriod?.month ? `${b.billingPeriod.month} ${b.billingPeriod.year || ''}` : 'Monthly Fee')}
                             </div>
@@ -567,8 +570,8 @@ export const MaintenancePage = () => {
                           </td>
 
                           <td style={{ color: '#111827', fontWeight: '800' }}>{formatINR(b.totalAmount)}</td>
-                          <td style={{ color: '#1a73e8', fontWeight: '700' }}>{formatINR(b.paidAmount)}</td>
-                          <td style={{ color: b.balanceAmount > 0 ? '#0f172a' : '#1a73e8', fontWeight: '800' }}>
+                          <td style={{ color: '#17652f', fontWeight: '700' }}>{formatINR(b.paidAmount)}</td>
+                          <td style={{ color: b.balanceAmount > 0 ? '#0f172a' : '#17652f', fontWeight: '800' }}>
                             {formatINR(b.balanceAmount)}
                           </td>
 
@@ -584,7 +587,7 @@ export const MaintenancePage = () => {
                                     href={b.proofFileUrl}
                                     target="_blank"
                                     rel="noreferrer"
-                                    style={{ fontSize: '0.72rem', color: '#1a73e8', display: 'flex', alignItems: 'center', gap: '3px', textDecoration: 'none', fontWeight: '700' }}
+                                    style={{ fontSize: '0.72rem', color: '#17652f', display: 'flex', alignItems: 'center', gap: '3px', textDecoration: 'none', fontWeight: '700' }}
                                   >
                                     <ExternalLink size={12} /> View Bill Proof
                                   </a>
@@ -605,7 +608,7 @@ export const MaintenancePage = () => {
                               </span>
                             )}
                             {isApproved && (
-                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#eff6ff', color: '#1e40af', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <CheckCircle2 size={11} /> Verified & Paid
                               </span>
                             )}
@@ -628,7 +631,7 @@ export const MaintenancePage = () => {
                                   onClick={() => handleOpenVerify(b)}
                                   style={{
                                     padding: '5px 12px',
-                                    background: '#1a73e8',
+                                    background: '#17652f',
                                     color: '#ffffff',
                                     borderRadius: '5px',
                                     fontSize: '0.74rem',
@@ -648,7 +651,7 @@ export const MaintenancePage = () => {
                                   onClick={() => handleOpenPay(b)}
                                   style={{
                                     padding: '5px 10px',
-                                    background: '#1a73e8',
+                                    background: '#17652f',
                                     color: '#ffffff',
                                     borderRadius: '5px',
                                     fontSize: '0.74rem',
@@ -663,7 +666,7 @@ export const MaintenancePage = () => {
                                   <Upload size={12} /> Pay / Submit Proof
                                 </button>
                               ) : (
-                                <span style={{ fontSize: '0.72rem', color: '#1a73e8', fontWeight: '700' }}>Settled</span>
+                                <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>Settled</span>
                               )}
                             </div>
                           </td>
@@ -688,7 +691,7 @@ export const MaintenancePage = () => {
                 type="button"
                 onClick={() => setIsNewSrModalOpen(true)}
                 style={{
-                  background: '#1a73e8',
+                  background: '#17652f',
                   color: '#ffffff',
                   padding: '8px 16px',
                   borderRadius: '6px',
@@ -723,7 +726,7 @@ export const MaintenancePage = () => {
                 <tbody>
                   {serviceRequests.map((sr) => (
                     <tr key={sr._id || sr.id}>
-                      <td><strong style={{ color: '#1a73e8' }}>{sr.ticketNumber}</strong></td>
+                      <td><strong style={{ color: '#17652f' }}>{sr.ticketNumber}</strong></td>
                       <td>
                         <div style={{ fontWeight: '700', color: '#111827' }}>{sr.title}</div>
                         <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{sr.category}</div>
@@ -734,7 +737,7 @@ export const MaintenancePage = () => {
                       </td>
                       <td style={{ color: '#374151', fontWeight: '600' }}>{sr.assignedTo || 'Unassigned'}</td>
                       <td>
-                        <span style={{ padding: '2px 6px', borderRadius: '4px', background: sr.priority === 'urgent' ? '#f1f5f9' : '#e8f0fe', color: sr.priority === 'urgent' ? '#0f172a' : '#1a73e8', fontWeight: '800', fontSize: '0.72rem' }}>
+                        <span style={{ padding: '2px 6px', borderRadius: '4px', background: sr.priority === 'urgent' ? '#f1f5f9' : '#e8f2e5', color: sr.priority === 'urgent' ? '#0f172a' : '#17652f', fontWeight: '800', fontSize: '0.72rem' }}>
                           {sr.priority?.toUpperCase()}
                         </span>
                       </td>
@@ -781,7 +784,7 @@ export const MaintenancePage = () => {
                 type="button"
                 onClick={() => setIsNewPenaltyModalOpen(true)}
                 style={{
-                  background: '#0f172a',
+                  background: '#17652f',
                   color: '#ffffff',
                   padding: '8px 16px',
                   borderRadius: '6px',
@@ -855,7 +858,7 @@ export const MaintenancePage = () => {
                             onClick={() => handleSettlePenalty(p._id, 'paid')}
                             style={{
                               padding: '4px 10px',
-                              background: '#1a73e8',
+                              background: '#17652f',
                               color: '#ffffff',
                               borderRadius: '4px',
                               fontSize: '0.75rem',
@@ -968,7 +971,7 @@ export const MaintenancePage = () => {
             />
             {selectedBillForPay?.proofFileUrl && (
               <div style={{ marginTop: '4px', fontSize: '0.72rem' }}>
-                Existing proof: <a href={selectedBillForPay.proofFileUrl} target="_blank" rel="noreferrer" style={{ color: '#1a73e8', fontWeight: '700' }}>View Uploaded File</a>
+                Existing proof: <a href={selectedBillForPay.proofFileUrl} target="_blank" rel="noreferrer" style={{ color: '#17652f', fontWeight: '700' }}>View Uploaded File</a>
               </div>
             )}
           </div>
@@ -997,7 +1000,7 @@ export const MaintenancePage = () => {
               disabled={submittingPay}
               style={{
                 padding: '8px 18px',
-                background: '#1a73e8',
+                background: '#17652f',
                 color: '#ffffff',
                 borderRadius: '6px',
                 fontWeight: '700',
@@ -1031,11 +1034,11 @@ export const MaintenancePage = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Paid Amount:</span>
-              <strong style={{ fontSize: '0.92rem', color: '#1e40af' }}>{formatINR(selectedBillForVerify?.paidAmount || selectedBillForVerify?.totalAmount)}</strong>
+              <strong style={{ fontSize: '0.92rem', color: '#17652f' }}>{formatINR(selectedBillForVerify?.paidAmount || selectedBillForVerify?.totalAmount)}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Bank UTR / Txn Reference:</span>
-              <strong style={{ fontSize: '0.84rem', color: '#1a73e8', fontFamily: 'monospace' }}>{selectedBillForVerify?.utrNumber || 'N/A'}</strong>
+              <strong style={{ fontSize: '0.84rem', color: '#17652f', fontFamily: 'monospace' }}>{selectedBillForVerify?.utrNumber || 'N/A'}</strong>
             </div>
           </div>
 
@@ -1052,7 +1055,7 @@ export const MaintenancePage = () => {
                   rel="noreferrer"
                   style={{
                     padding: '4px 10px',
-                    background: '#1a73e8',
+                    background: '#17652f',
                     color: '#ffffff',
                     borderRadius: '4px',
                     fontSize: '0.74rem',
@@ -1116,7 +1119,7 @@ export const MaintenancePage = () => {
               onClick={() => handleExecuteVerification('approve')}
               style={{
                 padding: '8px 18px',
-                background: '#1e40af',
+                background: '#17652f',
                 color: '#ffffff',
                 borderRadius: '6px',
                 fontWeight: '800',

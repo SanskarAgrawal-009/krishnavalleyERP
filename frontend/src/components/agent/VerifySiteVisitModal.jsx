@@ -63,7 +63,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
             <div style={{ fontWeight: '800', color: '#1e293b', fontSize: '0.88rem' }}>
               {siteVisit.agentName}
             </div>
-            <div style={{ display: 'inline-block', marginTop: '2px', padding: '1px 6px', background: '#e0e7ff', color: '#3730a3', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '800', fontFamily: 'monospace' }}>
+            <div style={{ display: 'inline-block', marginTop: '2px', padding: '1px 6px', background: '#e8f2e5', color: '#17652f', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '800', fontFamily: 'monospace' }}>
               CODE: {siteVisit.agentCode}
             </div>
             <div style={{ fontSize: '0.74rem', color: '#475569', marginTop: '4px' }}>
@@ -79,7 +79,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
             <div style={{ fontWeight: '800', color: '#1e293b', fontSize: '0.88rem' }}>
               {siteVisit.partyName}
             </div>
-            <div style={{ fontSize: '0.76rem', color: '#1a73e8', fontWeight: '700', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.76rem', color: '#17652f', fontWeight: '700', marginTop: '2px' }}>
               {siteVisit.partyMobile}
             </div>
             {siteVisit.partyEmail && (
@@ -144,8 +144,8 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
                 style={{ width: '130px', height: '110px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }}
               />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <CheckCircle2 size={14} color="#1a73e8" /> Photo Proof Attached
+                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#17652f', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <CheckCircle2 size={14} color="#17652f" /> Photo Proof Attached
                 </div>
                 <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '4px 0 8px' }}>
                   Click below to open the high-resolution original image in a separate tab for full inspection.
@@ -159,7 +159,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
                     alignItems: 'center',
                     gap: '4px',
                     padding: '4px 10px',
-                    background: '#1a73e8',
+                    background: '#17652f',
                     color: '#ffffff',
                     borderRadius: '4px',
                     fontSize: '0.72rem',
@@ -207,7 +207,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
         </div>
 
         {/* AUTOMATION NOTICE BANNER */}
-        <div style={{ background: '#eff6ff', padding: '10px 12px', borderRadius: '6px', border: '1px solid #dbeafe', fontSize: '0.74rem', color: '#1e40af', lineHeight: '1.4' }}>
+        <div style={{ background: '#e8f2e5', padding: '10px 12px', borderRadius: '6px', border: '1px solid #e8f2e5', fontSize: '0.74rem', color: '#17652f', lineHeight: '1.4' }}>
           <strong>Automated Commission Rule:</strong> Approving this site visit links the visiting party to Agent <strong>{siteVisit.agentCode}</strong>. Once this customer confirms a flat booking in Sales, the agent's commission will be <strong>automatically calculated and credited</strong> to their wallet!
         </div>
 
@@ -257,7 +257,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
             onClick={() => handleAction('approve')}
             style={{
               padding: '8px 18px',
-              background: '#1e40af',
+              background: '#17652f',
               border: 'none',
               borderRadius: '6px',
               fontWeight: '800',

@@ -103,7 +103,7 @@ export const DigitalSignatureModal = ({
     const rect = canvas.getBoundingClientRect();
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
-    ctx.strokeStyle = '#1a73e8';
+    ctx.strokeStyle = '#17652f';
     ctx.beginPath();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -192,7 +192,7 @@ export const DigitalSignatureModal = ({
             <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', marginTop: '2px' }}>
               {activeDoc.documentTitle || activeDoc.agreementNumber || 'Agreement Document'}
             </div>
-            <div style={{ fontSize: '0.76rem', color: '#1a73e8', marginTop: '2px', fontWeight: '600' }}>
+            <div style={{ fontSize: '0.76rem', color: '#17652f', marginTop: '2px', fontWeight: '600' }}>
               Party: {activeDoc.buyerName || activeDoc.tenantName || activeDoc.partyName || 'Authorized Signer'} • Flat: {activeDoc.flatNumber || 'N/A'}
             </div>
           </div>
@@ -312,7 +312,7 @@ export const DigitalSignatureModal = ({
           </div>
         </div>
 
-        <div style={{ background: '#e8f0fe', padding: '10px 14px', borderRadius: '6px', fontSize: '0.76rem', color: '#1e40af', border: '1px solid #bfdbfe' }}>
+        <div style={{ background: '#e8f2e5', padding: '10px 14px', borderRadius: '6px', fontSize: '0.76rem', color: '#17652f', border: '1px solid #cde4c9' }}>
           <strong>SHA-256 Cryptographic Assurance:</strong> Confirming will issue an immutable timestamp certificate, attach an SHA-256 verification hash, and register in the audit ledger.
         </div>
 
@@ -320,7 +320,7 @@ export const DigitalSignatureModal = ({
           <button type="button" onClick={onClose} style={{ padding: '8px 16px', background: '#f8f9fa', color: '#374151', borderRadius: '6px', border: '1px solid #dadce0', cursor: 'pointer' }}>
             Cancel
           </button>
-          <button type="submit" style={{ padding: '8px 20px', background: 'linear-gradient(135deg, #1a73e8, #1e40af)', color: '#ffffff', fontWeight: '700', borderRadius: '6px', cursor: 'pointer', border: 'none' }}>
+          <button type="submit" style={{ padding: '8px 20px', background: 'linear-gradient(135deg, #17652f, #17652f)', color: '#ffffff', fontWeight: '700', borderRadius: '6px', cursor: 'pointer', border: 'none' }}>
             Apply Signature & Issue Certificate
           </button>
         </div>

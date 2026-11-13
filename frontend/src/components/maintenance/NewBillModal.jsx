@@ -151,7 +151,7 @@ export const NewBillModal = ({ isOpen, onClose, onCreateSingle, onGenerateBatch,
             style={{
               padding: '9px',
               borderRadius: '6px',
-              background: mode === 'batch' ? '#1a73e8' : 'transparent',
+              background: mode === 'batch' ? '#17652f' : 'transparent',
               color: mode === 'batch' ? '#ffffff' : '#374151',
               fontWeight: '700',
               fontSize: '0.84rem',
@@ -169,7 +169,7 @@ export const NewBillModal = ({ isOpen, onClose, onCreateSingle, onGenerateBatch,
             style={{
               padding: '9px',
               borderRadius: '6px',
-              background: mode === 'single' ? '#1a73e8' : 'transparent',
+              background: mode === 'single' ? '#17652f' : 'transparent',
               color: mode === 'single' ? '#ffffff' : '#374151',
               fontWeight: '700',
               fontSize: '0.84rem',
@@ -234,7 +234,7 @@ export const NewBillModal = ({ isOpen, onClose, onCreateSingle, onGenerateBatch,
               </div>
             </div>
 
-            <div style={{ background: '#e8f0fe', padding: '12px 14px', borderRadius: '6px', fontSize: '0.78rem', color: '#1a73e8', border: '1px solid #d2e3fc', lineHeight: '1.5' }}>
+            <div style={{ background: '#e8f2e5', padding: '12px 14px', borderRadius: '6px', fontSize: '0.78rem', color: '#17652f', border: '1px solid #d2e3fc', lineHeight: '1.5' }}>
               <strong>Dynamic Occupancy Billing Rules for {billingMonth}:</strong>
               <ul style={{ margin: '6px 0 0 16px', padding: 0, display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 <li><strong>Owner-Occupied Units:</strong> Billed to registered property buyers/owners.</li>
@@ -252,7 +252,7 @@ export const NewBillModal = ({ isOpen, onClose, onCreateSingle, onGenerateBatch,
                 disabled={submitting}
                 style={{
                   padding: '8px 20px',
-                  background: '#1a73e8',
+                  background: '#17652f',
                   color: '#ffffff',
                   fontWeight: '700',
                   borderRadius: '6px',
@@ -371,7 +371,7 @@ export const NewBillModal = ({ isOpen, onClose, onCreateSingle, onGenerateBatch,
                 disabled={submitting}
                 style={{
                   padding: '8px 20px',
-                  background: '#1a73e8',
+                  background: '#17652f',
                   color: '#ffffff',
                   fontWeight: '700',
                   borderRadius: '6px',

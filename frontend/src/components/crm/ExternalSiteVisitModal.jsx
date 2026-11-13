@@ -227,8 +227,8 @@ export const ExternalSiteVisitModal = ({
         {/* Lead Context Banner */}
         {lead ? (
           <div style={{
-            background: 'linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)',
-            border: '1px solid #dbeafe',
+            background: 'linear-gradient(135deg, #e8f2e5 0%, #e0f2fe 100%)',
+            border: '1px solid #e8f2e5',
             borderRadius: '10px',
             padding: '12px 16px',
             display: 'flex',
@@ -238,12 +238,12 @@ export const ExternalSiteVisitModal = ({
             gap: '10px'
           }}>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: '800', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '800', textTransform: 'uppercase' }}>
                 Existing CRM Prospect
               </div>
               <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {lead.name}
-                <span style={{ fontSize: '0.72rem', background: '#eff6ff', color: '#1e40af', padding: '2px 8px', borderRadius: '12px', fontWeight: '700' }}>
+                <span style={{ fontSize: '0.72rem', background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '12px', fontWeight: '700' }}>
                   {lead.status?.replace(/_/g, ' ')}
                 </span>
               </div>
@@ -260,7 +260,7 @@ export const ExternalSiteVisitModal = ({
           /* Walk-in Visitor Info Inputs */
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px 16px' }}>
             <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <User size={14} color="#1a73e8" /> Visitor Information (Walk-in Lead)
+              <User size={14} color="#17652f" /> Visitor Information (Walk-in Lead)
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
@@ -353,9 +353,9 @@ export const ExternalSiteVisitModal = ({
                   borderRadius: '6px',
                   fontSize: '0.8rem',
                   fontWeight: '800',
-                  border: !isScheduledOnly ? '2px solid #1a73e8' : '1px solid #cbd5e1',
-                  background: !isScheduledOnly ? '#eff6ff' : '#ffffff',
-                  color: !isScheduledOnly ? '#1e40af' : '#475569',
+                  border: !isScheduledOnly ? '2px solid #17652f' : '1px solid #cbd5e1',
+                  background: !isScheduledOnly ? '#e8f2e5' : '#ffffff',
+                  color: !isScheduledOnly ? '#17652f' : '#475569',
                   cursor: 'pointer'
                 }}
               >
@@ -370,9 +370,9 @@ export const ExternalSiteVisitModal = ({
                   borderRadius: '6px',
                   fontSize: '0.8rem',
                   fontWeight: '800',
-                  border: isScheduledOnly ? '2px solid #2563eb' : '1px solid #cbd5e1',
-                  background: isScheduledOnly ? '#dbeafe' : '#ffffff',
-                  color: isScheduledOnly ? '#1d4ed8' : '#475569',
+                  border: isScheduledOnly ? '2px solid #17652f' : '1px solid #cbd5e1',
+                  background: isScheduledOnly ? '#e8f2e5' : '#ffffff',
+                  color: isScheduledOnly ? '#17652f' : '#475569',
                   cursor: 'pointer'
                 }}
               >
@@ -454,17 +454,17 @@ export const ExternalSiteVisitModal = ({
           border: '1px solid #cbd5e1',
           borderRadius: '8px',
           padding: '12px 16px',
-          background: isCabProvided ? '#eff6ff' : '#f8fafc',
+          background: isCabProvided ? '#e8f2e5' : '#f8fafc',
           transition: 'all 0.2s ease'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Car size={16} color={isCabProvided ? '#2563eb' : '#64748b'} />
+              <Car size={16} color={isCabProvided ? '#17652f' : '#64748b'} />
               <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>
                 Cab & Transportation Assistance
               </span>
             </div>
-            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '700', color: '#1e40af' }}>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '700', color: '#17652f' }}>
               <input
                 type="checkbox"
                 checked={isCabProvided}
@@ -569,7 +569,7 @@ export const ExternalSiteVisitModal = ({
             </div>
           </div>
         ) : (
-          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '10px 14px', fontSize: '0.8rem', color: '#1d4ed8', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '10px', padding: '10px 14px', fontSize: '0.8rem', color: '#17652f', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar size={15} />
             <span>This site visit is scheduled for the future. The client's rating will be recorded after the tour is completed.</span>
           </div>
@@ -624,8 +624,8 @@ export const ExternalSiteVisitModal = ({
               borderRadius: '8px',
               border: 'none',
               background: isScheduledOnly
-                ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
-                : 'linear-gradient(135deg, #1a73e8 0%, #1e40af 100%)',
+                ? 'linear-gradient(135deg, #17652f 0%, #17652f 100%)'
+                : 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
               color: '#ffffff',
               fontWeight: '800',
               fontSize: '0.88rem',

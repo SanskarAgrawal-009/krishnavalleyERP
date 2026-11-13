@@ -202,7 +202,7 @@ export const TaskforcePage = () => {
   // Kanban Columns Definition
   const kanbanColumns = [
     { key: 'pending', title: 'Pending / Allocated', color: '#64748b', bg: '#f8fafc', badge: '#e2e8f0', text: '#334155' },
-    { key: 'in_progress', title: 'In Execution', color: '#005bbf', bg: '#eff6ff', badge: '#bfdbfe', text: '#1d4ed8' },
+    { key: 'in_progress', title: 'In Execution', color: '#17652f', bg: '#e8f2e5', badge: '#cde4c9', text: '#17652f' },
     { key: 'under_review', title: 'Under MD Review', color: '#ca8a04', bg: '#fefce8', badge: '#fef08a', text: '#854d0e' },
     { key: 'delayed', title: 'Roadblocks & Blocked', color: '#dc2626', bg: '#fef2f2', badge: '#fca5a5', text: '#991b1b' },
     { key: 'completed', title: 'Completed', color: '#16a34a', bg: '#f0fdf4', badge: '#bbf7d0', text: '#15803d' },
@@ -316,9 +316,9 @@ export const TaskforcePage = () => {
           fontWeight: 600,
           padding: '2px 8px',
           borderRadius: '12px',
-          backgroundColor: '#eff6ff',
-          color: '#1d4ed8',
-          border: '1px solid #bfdbfe',
+          backgroundColor: '#e8f2e5',
+          color: '#17652f',
+          border: '1px solid #cde4c9',
           display: 'inline-flex',
           alignItems: 'center',
           gap: '4px',
@@ -476,7 +476,7 @@ export const TaskforcePage = () => {
         {/* Checkpoints Status (If checkpoints exist) */}
         {totalCheckpoints > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#475569' }}>
-            <ListTodo size={12} color="#005bbf" />
+            <ListTodo size={12} color="#17652f" />
             <span>
               <strong>{completedCheckpoints}/{totalCheckpoints}</strong> steps completed
             </span>
@@ -499,7 +499,7 @@ export const TaskforcePage = () => {
                     ? '#16a34a'
                     : task.roadblockAlert?.hasRoadblock
                     ? '#dc2626'
-                    : '#005bbf',
+                    : '#17652f',
                 transition: 'width 0.3s ease',
               }}
             />
@@ -532,7 +532,7 @@ export const TaskforcePage = () => {
                     width: '24px',
                     height: '24px',
                     borderRadius: '50%',
-                    backgroundColor: '#005bbf',
+                    backgroundColor: '#17652f',
                     color: '#ffffff',
                     fontSize: '10px',
                     fontWeight: 700,
@@ -605,9 +605,9 @@ export const TaskforcePage = () => {
                 fontWeight: 700,
                 padding: '3px 10px',
                 borderRadius: '12px',
-                backgroundColor: '#eff6ff',
-                color: '#1d4ed8',
-                border: '1px solid #bfdbfe',
+                backgroundColor: '#e8f2e5',
+                color: '#17652f',
+                border: '1px solid #cde4c9',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '5px',
@@ -616,7 +616,7 @@ export const TaskforcePage = () => {
               <Target size={13} /> Executive Command
             </span>
           </div>
-          <p style={{ fontSize: '13px', color: '#64748b', marginTop: '6px', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: '#596372', marginTop: '6px', margin: 0 }}>
             MD Directives, cross-department works, multiple staff allocation, and systematic follow-up management.
           </p>
         </div>
@@ -651,10 +651,10 @@ export const TaskforcePage = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                backgroundColor: '#ca8a04',
+                backgroundColor: '#17652f',
                 color: '#ffffff',
                 borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(202, 138, 4, 0.3)',
+                boxShadow: '0 2px 8px rgba(23, 101, 47, 0.25)',
               }}
             >
               <Plus size={16} />
@@ -676,17 +676,17 @@ export const TaskforcePage = () => {
             borderRadius: '12px',
             cursor: 'pointer',
             backgroundColor: '#ffffff',
-            border: '1px solid #dadce0',
+            border: '1px solid #e8e6df',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>Total Directives</span>
-            <Layers size={18} color="#005bbf" />
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#596372' }}>Total Directives</span>
+            <Layers size={18} color="#17652f" />
           </div>
-          <div style={{ fontSize: '26px', fontWeight: 700, color: '#0f172a', margin: '4px 0' }}>
+          <div style={{ fontSize: '26px', fontWeight: 700, color: '#1f2937', margin: '4px 0' }}>
             {stats?.totalTasks || 0}
           </div>
-          <div style={{ fontSize: '11px', color: '#64748b' }}>All allocated tasks</div>
+          <div style={{ fontSize: '11px', color: '#596372' }}>All allocated tasks</div>
         </div>
 
         {/* Follow-ups Due Today */}
@@ -697,16 +697,16 @@ export const TaskforcePage = () => {
             padding: '16px',
             borderRadius: '12px',
             cursor: 'pointer',
-            border: filterDueTodayOnly ? '2px solid #ca8a04' : '1px solid #fef08a',
+            border: filterDueTodayOnly ? '2px solid #b45309' : '1px solid #fef08a',
             backgroundColor: '#fefce8',
-            boxShadow: filterDueTodayOnly ? '0 3px 10px rgba(202, 138, 4, 0.2)' : 'none',
+            boxShadow: filterDueTodayOnly ? '0 3px 10px rgba(180, 83, 9, 0.2)' : 'none',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#854d0e' }}>Follow-ups Due Today</span>
-            <Clock size={18} color="#ca8a04" />
+            <Clock size={18} color="#b45309" />
           </div>
-          <div style={{ fontSize: '26px', fontWeight: 700, color: '#ca8a04', margin: '4px 0' }}>
+          <div style={{ fontSize: '26px', fontWeight: 700, color: '#b45309', margin: '4px 0' }}>
             {stats?.followUpsDueToday || 0}
           </div>
           <div style={{ fontSize: '11px', color: '#854d0e', fontWeight: 600 }}>
@@ -722,16 +722,16 @@ export const TaskforcePage = () => {
             padding: '16px',
             borderRadius: '12px',
             cursor: 'pointer',
-            border: filterMDOnly ? '2px solid #ca8a04' : '1px solid #fed7aa',
+            border: filterMDOnly ? '2px solid #b45309' : '1px solid #fed7aa',
             backgroundColor: '#fffbeb',
-            boxShadow: filterMDOnly ? '0 3px 10px rgba(202, 138, 4, 0.2)' : 'none',
+            boxShadow: filterMDOnly ? '0 3px 10px rgba(180, 83, 9, 0.2)' : 'none',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#b45309' }}>MD Directives</span>
-            <Sparkles size={18} color="#ca8a04" />
+            <Sparkles size={18} color="#b45309" />
           </div>
-          <div style={{ fontSize: '26px', fontWeight: 700, color: '#ca8a04', margin: '4px 0' }}>
+          <div style={{ fontSize: '26px', fontWeight: 700, color: '#b45309', margin: '4px 0' }}>
             {stats?.mdDirectivesActive || 0}
           </div>
           <div style={{ fontSize: '11px', color: '#b45309', fontWeight: 600 }}>
@@ -746,17 +746,17 @@ export const TaskforcePage = () => {
             padding: '16px',
             borderRadius: '12px',
             backgroundColor: '#ffffff',
-            border: '1px solid #dadce0',
+            border: '1px solid #e8e6df',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>In Execution</span>
-            <TrendingUp size={18} color="#005bbf" />
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#596372' }}>In Execution</span>
+            <TrendingUp size={18} color="#17652f" />
           </div>
-          <div style={{ fontSize: '26px', fontWeight: 700, color: '#005bbf', margin: '4px 0' }}>
+          <div style={{ fontSize: '26px', fontWeight: 700, color: '#17652f', margin: '4px 0' }}>
             {stats?.activeTasks || 0}
           </div>
-          <div style={{ fontSize: '11px', color: '#64748b' }}>Active ongoing tasks</div>
+          <div style={{ fontSize: '11px', color: '#596372' }}>Active ongoing tasks</div>
         </div>
 
         {/* Roadblocks & Obstacles */}
@@ -820,10 +820,10 @@ export const TaskforcePage = () => {
           flexWrap: 'wrap',
           gap: '12px',
           backgroundColor: '#ffffff',
-          border: '1px solid #dadce0',
+          border: '1px solid #e8e6df',
           borderRadius: '12px',
           padding: '12px 18px',
-          boxShadow: '0 1px 3px rgba(60, 64, 67, 0.06)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
         }}
       >
         {/* Left: View Modes Switcher */}
@@ -833,9 +833,10 @@ export const TaskforcePage = () => {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '4px',
-            backgroundColor: '#f1f5f9',
+            backgroundColor: '#faf9f6',
             padding: '4px',
             borderRadius: '8px',
+            border: '1px solid #e8e6df',
             overflowX: 'auto',
             WebkitOverflowScrolling: 'touch',
             maxWidth: '100%'
@@ -855,9 +856,9 @@ export const TaskforcePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: viewMode === 'kanban' ? '#ffffff' : 'transparent',
-              color: viewMode === 'kanban' ? '#005bbf' : '#64748b',
-              boxShadow: viewMode === 'kanban' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              backgroundColor: viewMode === 'kanban' ? '#17652f' : 'transparent',
+              color: viewMode === 'kanban' ? '#ffffff' : '#596372',
+              boxShadow: viewMode === 'kanban' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
               cursor: 'pointer',
               border: 'none',
             }}
@@ -879,9 +880,9 @@ export const TaskforcePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: viewMode === 'radar' ? '#ffffff' : 'transparent',
-              color: viewMode === 'radar' ? '#ca8a04' : '#64748b',
-              boxShadow: viewMode === 'radar' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              backgroundColor: viewMode === 'radar' ? '#17652f' : 'transparent',
+              color: viewMode === 'radar' ? '#ffffff' : '#596372',
+              boxShadow: viewMode === 'radar' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
               cursor: 'pointer',
               border: 'none',
             }}
@@ -903,9 +904,9 @@ export const TaskforcePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: viewMode === 'list' ? '#ffffff' : 'transparent',
-              color: viewMode === 'list' ? '#005bbf' : '#64748b',
-              boxShadow: viewMode === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              backgroundColor: viewMode === 'list' ? '#17652f' : 'transparent',
+              color: viewMode === 'list' ? '#ffffff' : '#596372',
+              boxShadow: viewMode === 'list' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
               cursor: 'pointer',
               border: 'none',
             }}
@@ -928,9 +929,9 @@ export const TaskforcePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: viewMode === 'team' ? '#ffffff' : 'transparent',
-              color: viewMode === 'team' ? '#059669' : '#64748b',
-              boxShadow: viewMode === 'team' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              backgroundColor: viewMode === 'team' ? '#17652f' : 'transparent',
+              color: viewMode === 'team' ? '#ffffff' : '#596372',
+              boxShadow: viewMode === 'team' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
               cursor: 'pointer',
               border: 'none',
             }}
@@ -952,9 +953,9 @@ export const TaskforcePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: viewMode === 'meetings' ? '#ffffff' : 'transparent',
-              color: viewMode === 'meetings' ? '#b45309' : '#64748b',
-              boxShadow: viewMode === 'meetings' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              backgroundColor: viewMode === 'meetings' ? '#17652f' : 'transparent',
+              color: viewMode === 'meetings' ? '#ffffff' : '#596372',
+              boxShadow: viewMode === 'meetings' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
               cursor: 'pointer',
               border: 'none',
             }}
@@ -977,7 +978,7 @@ export const TaskforcePage = () => {
               alignItems: 'center',
               gap: '6px',
               backgroundColor: viewMode === 'reports' ? '#ffffff' : 'transparent',
-              color: viewMode === 'reports' ? '#4f46e5' : '#64748b',
+              color: viewMode === 'reports' ? '#17652f' : '#64748b',
               boxShadow: viewMode === 'reports' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
               cursor: 'pointer',
               border: 'none',
@@ -1042,11 +1043,11 @@ export const TaskforcePage = () => {
                 height: '36px',
                 padding: '0 10px',
                 borderRadius: '8px',
-                border: selectedDept !== 'all' ? '1.5px solid #005bbf' : '1px solid #dadce0',
+                border: selectedDept !== 'all' ? '1.5px solid #17652f' : '1px solid #dadce0',
                 fontSize: '12px',
                 fontWeight: 500,
-                backgroundColor: selectedDept !== 'all' ? '#eff6ff' : '#ffffff',
-                color: selectedDept !== 'all' ? '#005bbf' : '#334155',
+                backgroundColor: selectedDept !== 'all' ? '#e8f2e5' : '#ffffff',
+                color: selectedDept !== 'all' ? '#17652f' : '#334155',
                 display: 'inline-block',
                 cursor: 'pointer',
                 boxSizing: 'border-box',
@@ -1083,11 +1084,11 @@ export const TaskforcePage = () => {
                 height: '36px',
                 padding: '0 10px',
                 borderRadius: '8px',
-                border: selectedPriority !== 'all' ? '1.5px solid #005bbf' : '1px solid #dadce0',
+                border: selectedPriority !== 'all' ? '1.5px solid #17652f' : '1px solid #dadce0',
                 fontSize: '12px',
                 fontWeight: 500,
-                backgroundColor: selectedPriority !== 'all' ? '#eff6ff' : '#ffffff',
-                color: selectedPriority !== 'all' ? '#005bbf' : '#334155',
+                backgroundColor: selectedPriority !== 'all' ? '#e8f2e5' : '#ffffff',
+                color: selectedPriority !== 'all' ? '#17652f' : '#334155',
                 display: 'inline-block',
                 cursor: 'pointer',
                 boxSizing: 'border-box',
@@ -1109,9 +1110,9 @@ export const TaskforcePage = () => {
               height: '36px',
               padding: '0 12px',
               borderRadius: '8px',
-              border: filterMyTasks ? '1.5px solid #005bbf' : '1px solid #dadce0',
-              backgroundColor: filterMyTasks ? '#eff6ff' : '#ffffff',
-              color: filterMyTasks ? '#005bbf' : '#334155',
+              border: filterMyTasks ? '1.5px solid #17652f' : '1px solid #dadce0',
+              backgroundColor: filterMyTasks ? '#e8f2e5' : '#ffffff',
+              color: filterMyTasks ? '#17652f' : '#334155',
               fontSize: '12px',
               fontWeight: 600,
               display: 'inline-flex',
@@ -1349,7 +1350,7 @@ export const TaskforcePage = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Calendar size={18} color="#005bbf" />
+                <Calendar size={18} color="#17652f" />
                 <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
                   Upcoming Scheduled Follow-ups ({radar.upcoming.length})
                 </h3>
@@ -1469,7 +1470,7 @@ export const TaskforcePage = () => {
                                     width: '24px',
                                     height: '24px',
                                     borderRadius: '50%',
-                                    backgroundColor: '#005bbf',
+                                    backgroundColor: '#17652f',
                                     color: '#ffffff',
                                     fontSize: '10px',
                                     fontWeight: 700,
@@ -1525,7 +1526,7 @@ export const TaskforcePage = () => {
                                 style={{
                                   width: `${task.progress || 0}%`,
                                   height: '100%',
-                                  backgroundColor: task.progress === 100 ? '#16a34a' : '#005bbf',
+                                  backgroundColor: task.progress === 100 ? '#16a34a' : '#17652f',
                                 }}
                               />
                             </div>
@@ -1548,7 +1549,7 @@ export const TaskforcePage = () => {
                                 task.status === 'completed'
                                   ? '#dcfce7'
                                   : task.status === 'in_progress'
-                                  ? '#eff6ff'
+                                  ? '#e8f2e5'
                                   : task.status === 'delayed'
                                   ? '#fee2e2'
                                   : '#f1f5f9',
@@ -1556,7 +1557,7 @@ export const TaskforcePage = () => {
                                 task.status === 'completed'
                                   ? '#15803d'
                                   : task.status === 'in_progress'
-                                  ? '#1d4ed8'
+                                  ? '#17652f'
                                   : task.status === 'delayed'
                                   ? '#b91c1c'
                                   : '#475569',

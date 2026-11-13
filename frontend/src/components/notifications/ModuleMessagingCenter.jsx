@@ -290,8 +290,8 @@ export const ModuleMessagingCenter = ({
             height: '48px',
             borderRadius: '12px',
             background: module === 'sales'
-              ? 'linear-gradient(135deg, #1a73e8, #1e40af)'
-              : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+              ? 'linear-gradient(135deg, #17652f, #17652f)'
+              : 'linear-gradient(135deg, #17652f, #17652f)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -502,9 +502,9 @@ export const ModuleMessagingCenter = ({
 
                   <div style={{ display: 'flex', gap: '4px' }}>
                     {tpl.channels?.whatsapp && <span title="WhatsApp"><MessageSquare size={12} color="#0f172a" /></span>}
-                    {tpl.channels?.sms && <span title="SMS"><Smartphone size={12} color="#60a5fa" /></span>}
+                    {tpl.channels?.sms && <span title="SMS"><Smartphone size={12} color="#4a9e68" /></span>}
                     {tpl.channels?.email && <span title="Email"><Mail size={12} color="#cbd5e1" /></span>}
-                    {tpl.channels?.push && <span title="Push"><Bell size={12} color="#60a5fa" /></span>}
+                    {tpl.channels?.push && <span title="Push"><Bell size={12} color="#4a9e68" /></span>}
                   </div>
                 </div>
               ))}
@@ -579,7 +579,7 @@ export const ModuleMessagingCenter = ({
 
               <label style={{
                 background: channels.sms ? 'rgba(59, 130, 246, 0.15)' : 'var(--bg-card)',
-                border: channels.sms ? '1px solid #3b82f6' : '1px solid var(--border-subtle)',
+                border: channels.sms ? '1px solid #17652f' : '1px solid var(--border-subtle)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '8px',
                 display: 'flex',
@@ -588,13 +588,13 @@ export const ModuleMessagingCenter = ({
                 cursor: 'pointer',
                 fontSize: '0.78rem',
                 fontWeight: '700',
-                color: channels.sms ? '#60a5fa' : 'var(--text-secondary)'
+                color: channels.sms ? '#4a9e68' : 'var(--text-secondary)'
               }}>
                 <input
                   type="checkbox"
                   checked={channels.sms}
                   onChange={(e) => setChannels({ ...channels, sms: e.target.checked })}
-                  style={{ accentColor: '#3b82f6' }}
+                  style={{ accentColor: '#17652f' }}
                 />
                 <Smartphone size={14} /> SMS
               </label>
@@ -623,7 +623,7 @@ export const ModuleMessagingCenter = ({
 
               <label style={{
                 background: channels.push ? 'rgba(236, 72, 153, 0.15)' : 'var(--bg-card)',
-                border: channels.push ? '1px solid #1e40af' : '1px solid var(--border-subtle)',
+                border: channels.push ? '1px solid #17652f' : '1px solid var(--border-subtle)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '8px',
                 display: 'flex',
@@ -632,13 +632,13 @@ export const ModuleMessagingCenter = ({
                 cursor: 'pointer',
                 fontSize: '0.78rem',
                 fontWeight: '700',
-                color: channels.push ? '#60a5fa' : 'var(--text-secondary)'
+                color: channels.push ? '#4a9e68' : 'var(--text-secondary)'
               }}>
                 <input
                   type="checkbox"
                   checked={channels.push}
                   onChange={(e) => setChannels({ ...channels, push: e.target.checked })}
-                  style={{ accentColor: '#1e40af' }}
+                  style={{ accentColor: '#17652f' }}
                 />
                 <Bell size={14} /> Push
               </label>
@@ -649,10 +649,10 @@ export const ModuleMessagingCenter = ({
           {dispatchResult && (
             <div style={{
               background: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid #1a73e8',
+              border: '1px solid #17652f',
               borderRadius: 'var(--radius-sm)',
               padding: '10px 14px',
-              color: '#1a73e8',
+              color: '#17652f',
               fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
@@ -687,8 +687,8 @@ export const ModuleMessagingCenter = ({
             style={{
               padding: '12px 24px',
               background: module === 'sales'
-                ? 'linear-gradient(135deg, #1a73e8, #1e40af)'
-                : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                ? 'linear-gradient(135deg, #17652f, #17652f)'
+                : 'linear-gradient(135deg, #17652f, #17652f)',
               border: 'none',
               borderRadius: 'var(--radius-sm)',
               color: '#111827',
@@ -740,7 +740,7 @@ export const ModuleMessagingCenter = ({
                   padding: '4px 10px',
                   borderRadius: '4px',
                   border: 'none',
-                  background: activeChannelPreview === 'whatsapp' ? '#0f172a' : 'var(--bg-card)',
+                  background: activeChannelPreview === 'whatsapp' ? '#17652f' : 'var(--bg-card)',
                   color: activeChannelPreview === 'whatsapp' ? '#000' : 'var(--text-secondary)',
                   fontSize: '0.74rem',
                   fontWeight: '700',
@@ -757,7 +757,7 @@ export const ModuleMessagingCenter = ({
                   padding: '4px 10px',
                   borderRadius: '4px',
                   border: 'none',
-                  background: activeChannelPreview === 'sms' ? '#3b82f6' : 'var(--bg-card)',
+                  background: activeChannelPreview === 'sms' ? '#17652f' : 'var(--bg-card)',
                   color: activeChannelPreview === 'sms' ? '#fff' : 'var(--text-secondary)',
                   fontSize: '0.74rem',
                   fontWeight: '700',
@@ -791,7 +791,7 @@ export const ModuleMessagingCenter = ({
                   padding: '4px 10px',
                   borderRadius: '4px',
                   border: 'none',
-                  background: activeChannelPreview === 'push' ? '#1e40af' : 'var(--bg-card)',
+                  background: activeChannelPreview === 'push' ? '#17652f' : 'var(--bg-card)',
                   color: activeChannelPreview === 'push' ? '#fff' : 'var(--text-secondary)',
                   fontSize: '0.74rem',
                   fontWeight: '700',
@@ -881,7 +881,7 @@ export const ModuleMessagingCenter = ({
                   VK-KVALEY
                 </div>
                 <div style={{
-                  background: '#2563eb',
+                  background: '#17652f',
                   color: '#111827',
                   borderRadius: '12px',
                   padding: '10px 12px',
@@ -1017,8 +1017,8 @@ export const ModuleMessagingCenter = ({
                           log.channel === 'email' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(236, 72, 153, 0.12)',
                         color:
                           log.channel === 'whatsapp' ? '#0f172a' :
-                          log.channel === 'sms' ? '#60a5fa' :
-                          log.channel === 'email' ? '#cbd5e1' : '#60a5fa'
+                          log.channel === 'sms' ? '#4a9e68' :
+                          log.channel === 'email' ? '#cbd5e1' : '#4a9e68'
                       }}>
                         {log.channel.toUpperCase()}
                       </span>
@@ -1040,7 +1040,7 @@ export const ModuleMessagingCenter = ({
                         fontSize: '0.68rem',
                         fontWeight: '700',
                         background: log.status === 'delivered' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                        color: log.status === 'delivered' ? '#1a73e8' : '#0f172a'
+                        color: log.status === 'delivered' ? '#17652f' : '#0f172a'
                       }}>
                         {log.status.toUpperCase()}
                       </span>
