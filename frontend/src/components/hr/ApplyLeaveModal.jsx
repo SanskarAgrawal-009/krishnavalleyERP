@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal.jsx';
-import { Calendar, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 
 export const ApplyLeaveModal = ({ isOpen, onClose, employees, onSubmit }) => {
   const [selectedEmpId, setSelectedEmpId] = useState('');
@@ -10,7 +9,7 @@ export const ApplyLeaveModal = ({ isOpen, onClose, employees, onSubmit }) => {
   const [isHalfDay, setIsHalfDay] = useState(false);
   const [numberOfDays, setNumberOfDays] = useState(1);
   const [reason, setReason] = useState('Personal family event');
-  const [status, setStatus] = useState('approved'); // Default: immediate HR approval
+  const [status, setStatus] = useState('approved');
 
   const selectedEmployee = employees.find((e) => e._id === selectedEmpId || e.id === selectedEmpId);
   const leaveBalance = selectedEmployee?.leaveBalance || {
@@ -65,226 +64,242 @@ export const ApplyLeaveModal = ({ isOpen, onClose, employees, onSubmit }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Record Staff Leave (HR Central Administration)"
-      maxWidth="580px"
+      title="Record staff leave"
+      maxWidth="540px"
     >
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        <div>
-          <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-            Staff Member *
-          </label>
-          <select
-            required
-            value={selectedEmpId}
-            onChange={(e) => {
-              setSelectedEmpId(e.target.value);
-            }}
-            style={{ width: '100%', fontSize: '0.85rem' }}
-          >
-            <option value="">-- Choose Staff Member --</option>
-            {employees.map((e) => (
-              <option key={e._id || e.id} value={e._id || e.id}>
-                {e.firstName} {e.lastName} ({e.employeeCode}) • {e.departmentName || e.department || 'Staff'}
-              </option>
-            ))}
-          </select>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        
+        {/* Staff Member Card */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Staff member *</span>
+          </div>
+          <div className="form-card-input-row">
+            <select
+              required
+              value={selectedEmpId}
+              onChange={(e) => setSelectedEmpId(e.target.value)}
+              className="form-card-input"
+              style={{ cursor: 'pointer' }}
+            >
+              <option value="">-- Choose staff member --</option>
+              {employees.map((e) => (
+                <option key={e._id || e.id} value={e._id || e.id}>
+                  {e.firstName} {e.lastName} ({e.employeeCode}) • {e.departmentName || e.department || 'Staff'}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Live Employee Leave Balance Meter */}
+        {/* Live Employee Leave Balance Card */}
         {selectedEmployee && (
-          <div
-            style={{
-              padding: '10px 14px',
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px'
-            }}
-          >
+          <div style={{
+            padding: '12px 14px',
+            backgroundColor: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '10px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Annual Leave Quotas & Remaining Balances
+              <span style={{ fontSize: '0.72rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase' }}>
+                Remaining leave quotas
               </span>
-              <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
-                Total Used: {((leaveBalance.casualLeave?.used || 0) + (leaveBalance.sickLeave?.used || 0) + (leaveBalance.earnedLeave?.used || 0))} Days
+              <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                Used: {((leaveBalance.casualLeave?.used || 0) + (leaveBalance.sickLeave?.used || 0) + (leaveBalance.earnedLeave?.used || 0))} days
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginTop: '2px' }}>
-              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#e8f2e5', border: '1px solid #cde4c9' }}>
-                <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#17652f', display: 'block' }}>CASUAL (CL)</span>
-                <strong style={{ fontSize: '0.92rem', color: clRemaining > 0 ? '#17652f' : '#0f172a' }}>
-                  {clRemaining} <span style={{ fontSize: '0.65rem', fontWeight: '500', color: '#64748b' }}>/ {leaveBalance.casualLeave?.total || 12}</span>
-                </strong>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#e8f2e5', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.66rem', fontWeight: '700', color: '#17652f', display: 'block' }}>CASUAL</span>
+                <strong style={{ fontSize: '0.94rem', color: '#17652f' }}>{clRemaining}</strong>
               </div>
 
-              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#f1f5f9', border: '1px solid #cbd5e1' }}>
-                <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#334155', display: 'block' }}>SICK (SL)</span>
-                <strong style={{ fontSize: '0.92rem', color: slRemaining > 0 ? '#334155' : '#0f172a' }}>
-                  {slRemaining} <span style={{ fontSize: '0.65rem', fontWeight: '500', color: '#64748b' }}>/ {leaveBalance.sickLeave?.total || 10}</span>
-                </strong>
+              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#f1f5f9', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.66rem', fontWeight: '700', color: '#475569', display: 'block' }}>SICK</span>
+                <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>{slRemaining}</strong>
               </div>
 
-              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#e8f2e5', border: '1px solid #cde4c9' }}>
-                <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#17652f', display: 'block' }}>EARNED (EL)</span>
-                <strong style={{ fontSize: '0.92rem', color: elRemaining > 0 ? '#17652f' : '#0f172a' }}>
-                  {elRemaining} <span style={{ fontSize: '0.65rem', fontWeight: '500', color: '#64748b' }}>/ {leaveBalance.earnedLeave?.total || 15}</span>
-                </strong>
+              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#e8f2e5', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.66rem', fontWeight: '700', color: '#17652f', display: 'block' }}>EARNED</span>
+                <strong style={{ fontSize: '0.94rem', color: '#17652f' }}>{elRemaining}</strong>
               </div>
 
-              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#f1f5f9', border: '1px solid #cbd5e1' }}>
-                <span style={{ fontSize: '0.62rem', fontWeight: '700', color: '#475569', display: 'block' }}>LWP (UNPAID)</span>
-                <strong style={{ fontSize: '0.92rem', color: '#0f172a' }}>
-                  {leaveBalance.unpaidLeave?.used || 0} <span style={{ fontSize: '0.65rem', fontWeight: '500', color: '#64748b' }}>Days</span>
-                </strong>
+              <div style={{ padding: '6px 8px', borderRadius: '6px', background: '#f1f5f9', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.66rem', fontWeight: '700', color: '#475569', display: 'block' }}>UNPAID</span>
+                <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>{leaveBalance.unpaidLeave?.used || 0}</strong>
               </div>
             </div>
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '14px' }}>
-          <div>
-            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              Leave Category *
-            </label>
+        {/* Leave Category Card */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Leave category *</span>
+          </div>
+          <div className="form-card-input-row">
             <select
               value={leaveType}
               onChange={(e) => setLeaveType(e.target.value)}
-              style={{ width: '100%', fontSize: '0.85rem' }}
+              className="form-card-input"
+              style={{ cursor: 'pointer' }}
             >
               <option value="casual">Casual Leave (CL - Paid)</option>
               <option value="sick">Sick / Medical Leave (SL - Paid)</option>
               <option value="earned">Earned / Privilege Leave (EL - Paid)</option>
-              <option value="unpaid">Leave Without Pay (LWP - Salary Deducted)</option>
+              <option value="unpaid">Leave Without Pay (LWP - Unpaid)</option>
               <option value="maternity">Maternity / Paternity Leave</option>
               <option value="other">Compassionate / Other</option>
             </select>
           </div>
+        </div>
 
-          <div>
-            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              Leave Duration & Half-Day
+        {/* Half Day Option Card */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Is this a half-day leave?</span>
+            <span className="form-card-badge">{numberOfDays} {numberOfDays === 1 ? 'day' : 'days'} total</span>
+          </div>
+          <div className="form-card-choices">
+            <label className="form-card-choice" onClick={() => {
+              setIsHalfDay(true);
+              handleDatesChange(fromDate, toDate, true);
+            }}>
+              <input
+                type="radio"
+                name="isHalfDay"
+                checked={isHalfDay === true}
+                onChange={() => {
+                  setIsHalfDay(true);
+                  handleDatesChange(fromDate, toDate, true);
+                }}
+                style={{ accentColor: '#17652f' }}
+              />
+              <span>Yes, half-day (0.5 day)</span>
             </label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '36px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={isHalfDay}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    setIsHalfDay(checked);
-                    handleDatesChange(fromDate, toDate, checked);
-                  }}
-                />
-                Half-Day (0.5)
-              </label>
+            <label className="form-card-choice" onClick={() => {
+              setIsHalfDay(false);
+              handleDatesChange(fromDate, toDate, false);
+            }}>
+              <input
+                type="radio"
+                name="isHalfDay"
+                checked={isHalfDay === false}
+                onChange={() => {
+                  setIsHalfDay(false);
+                  handleDatesChange(fromDate, toDate, false);
+                }}
+                style={{ accentColor: '#17652f' }}
+              />
+              <span>Full day</span>
+            </label>
+          </div>
+        </div>
 
-              <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '4px 10px', borderRadius: '4px' }}>
-                Total: {numberOfDays} Day{numberOfDays > 1 ? 's' : ''}
-              </div>
+        {/* Date Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>From date *</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="date"
+                required
+                className="form-card-input"
+                value={fromDate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setFromDate(val);
+                  if (toDate < val || isHalfDay) setToDate(val);
+                  handleDatesChange(val, isHalfDay ? val : toDate);
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>To date *</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="date"
+                required
+                disabled={isHalfDay}
+                className="form-card-input"
+                value={isHalfDay ? fromDate : toDate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setToDate(val);
+                  handleDatesChange(fromDate, val);
+                }}
+                style={{ opacity: isHalfDay ? 0.6 : 1 }}
+              />
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-          <div>
-            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              From Date *
-            </label>
-            <input
-              type="date"
-              required
-              value={fromDate}
-              onChange={(e) => {
-                const val = e.target.value;
-                setFromDate(val);
-                if (toDate < val || isHalfDay) setToDate(val);
-                handleDatesChange(val, isHalfDay ? val : toDate);
-              }}
-              style={{ width: '100%', fontSize: '0.85rem' }}
-            />
+        {/* Reason / Remarks */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Reason or remarks</span>
           </div>
-
-          <div>
-            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              To Date *
-            </label>
-            <input
-              type="date"
-              required
-              disabled={isHalfDay}
-              value={isHalfDay ? fromDate : toDate}
-              onChange={(e) => {
-                const val = e.target.value;
-                setToDate(val);
-                handleDatesChange(fromDate, val);
-              }}
-              style={{ width: '100%', fontSize: '0.85rem', opacity: isHalfDay ? 0.6 : 1 }}
-            />
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '14px' }}>
-          <div>
-            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              HR Action Status *
-            </label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              style={{ width: '100%', fontSize: '0.85rem', fontWeight: '700', color: status === 'approved' ? '#17652f' : '#334155' }}
-            >
-              <option value="approved">Approved by HR (Immediate)</option>
-              <option value="pending">Mark Pending / Verification Required</option>
-            </select>
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.78rem', color: '#374151', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-              Reason / Remarks for Leave
-            </label>
+          <div className="form-card-input-row">
             <input
               type="text"
-              placeholder="e.g. Urgent personal site leave, medical rest..."
+              placeholder="e.g. Personal family event, medical rest..."
+              className="form-card-input"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              style={{ width: '100%', fontSize: '0.85rem' }}
             />
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
+        {/* Footer */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '10px',
+          paddingTop: '16px',
+          borderTop: '1px solid #f1f5f9'
+        }}>
           <button
             type="button"
             onClick={onClose}
             style={{
-              padding: '9px 18px',
-              background: '#f3f4f6',
-              color: '#374151',
-              border: '1px solid #dadce0',
-              borderRadius: '6px',
+              padding: '9px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#f1f5f9',
+              color: '#475569',
               fontWeight: '600',
+              fontSize: '0.86rem',
               cursor: 'pointer'
             }}
           >
             Cancel
           </button>
+
           <button
             type="submit"
             style={{
-              padding: '9px 22px',
-              background: 'linear-gradient(135deg, #17652f, #17652f)',
-              color: '#ffffff',
+              padding: '9px 24px',
+              borderRadius: '8px',
               border: 'none',
-              borderRadius: '6px',
+              background: '#17652f',
+              color: '#ffffff',
               fontWeight: '700',
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(30, 64, 175, 0.3)'
+              fontSize: '0.86rem',
+              cursor: 'pointer'
             }}
           >
-            Record & Save Staff Leave
+            Record staff leave
           </button>
         </div>
       </form>

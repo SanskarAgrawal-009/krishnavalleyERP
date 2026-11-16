@@ -338,74 +338,28 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {/* STEPPER BAR */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: '#f8fafc',
-          padding: '12px 16px',
-          borderRadius: '10px',
-          border: '1px solid #e2e8f0',
-          position: 'relative'
-        }}>
+        <div className="form-stepper-header" style={{ marginBottom: '14px' }}>
           {STEPS.map((step, idx) => {
-            const Icon = step.icon;
             const isActive = currentStep === step.id;
             const isCompleted = currentStep > step.id;
 
             return (
               <React.Fragment key={step.id}>
-                <div
+                <button
+                  type="button"
                   onClick={() => {
                     if (isCompleted) setCurrentStep(step.id);
                   }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    cursor: isCompleted ? 'pointer' : 'default',
-                    opacity: currentStep < step.id ? 0.6 : 1
-                  }}
+                  className="form-stepper-item"
                 >
-                  <div style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: isCompleted ? '#17652f' : isActive ? '#17652f' : '#e2e8f0',
-                    color: isCompleted || isActive ? '#ffffff' : '#64748b',
-                    fontSize: '0.8rem',
-                    fontWeight: '800',
-                    transition: 'all 0.2s ease',
-                    boxShadow: isActive ? '0 0 0 3px rgba(37, 99, 235, 0.2)' : 'none'
-                  }}>
-                    {isCompleted ? <Check size={16} strokeWidth={3} /> : <Icon size={16} />}
+                  <div className={`form-stepper-circle ${isCompleted ? 'completed' : isActive ? 'active' : 'upcoming'}`}>
+                    {isCompleted ? <Check size={12} strokeWidth={3} /> : step.id}
                   </div>
-                  <div>
-                    <div style={{
-                      fontSize: '0.78rem',
-                      fontWeight: isActive ? '800' : '600',
-                      color: isActive ? '#0f172a' : isCompleted ? '#17652f' : '#64748b',
-                      lineHeight: 1.2
-                    }}>
-                      {step.title}
-                    </div>
-                    <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>
-                      {step.subtitle}
-                    </div>
-                  </div>
-                </div>
-
-                {idx < STEPS.length - 1 && (
-                  <div style={{
-                    flex: 1,
-                    height: '2px',
-                    margin: '0 12px',
-                    background: currentStep > idx + 1 ? '#17652f' : '#e2e8f0'
-                  }} />
-                )}
+                  <span className={`form-stepper-label ${isActive ? 'active' : ''}`}>
+                    {step.title}
+                  </span>
+                </button>
+                {idx < STEPS.length - 1 && <div className="form-stepper-line" />}
               </React.Fragment>
             );
           })}
@@ -435,61 +389,33 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
 
           {/* STEP 1: PROPERTY & OWNER */}
           {currentStep === 1 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fadeIn 0.2s ease' }}>
-              <div style={{
-                background: '#e8f2e5',
-                border: '1px solid #cde4c9',
-                borderRadius: '8px',
-                padding: '12px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
-                <div style={{ background: '#e8f2e5', padding: '8px', borderRadius: '50%', color: '#17652f' }}>
-                  <Home size={18} />
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#17652f', margin: 0 }}>
-                    Step 1: Property Unit & Registered Owner
-                  </h4>
-                  <p style={{ fontSize: '0.74rem', color: '#17652f', margin: '2px 0 0' }}>
-                    Select the unit to enroll into the 3-Year Guaranteed Rent-Back Scheme.
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '4px' }}>
-                    Flat Unit *
-                  </label>
-                  <select
-                    required
-                    value={selectedFlatId}
-                    onChange={(e) => handleFlatSelect(e.target.value)}
-                    style={{
-                      width: '100%',
-                      fontSize: '0.84rem',
-                      padding: '9px 12px',
-                      borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
-                      background: '#ffffff'
-                    }}
-                  >
-                    <option value="">-- Choose Flat Unit --</option>
-                    {flats.map((f) => (
-                      <option key={f._id} value={f._id}>
-                        Flat {f.flatNumber} ({f.buildingId?.buildingName || 'Tower A'}) — {f.status?.toUpperCase() || 'AVAILABLE'}
-                      </option>
-                    ))}
-                  </select>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.2s ease' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>Flat unit *</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <select
+                      required
+                      value={selectedFlatId}
+                      onChange={(e) => handleFlatSelect(e.target.value)}
+                      className="form-card-input"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <option value="">Choose flat unit</option>
+                      {flats.map((f) => (
+                        <option key={f._id} value={f._id}>
+                          Flat {f.flatNumber} ({f.buildingId?.buildingName || 'Tower A'}) — {f.status?.toUpperCase() || 'AVAILABLE'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#334155', display: 'block' }}>
-                      Property Owner *
-                    </label>
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>Property owner *</span>
                     <button
                       type="button"
                       onClick={() => setIsAddingNewOwner(!isAddingNewOwner)}
@@ -498,73 +424,68 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                         border: 'none',
                         color: '#17652f',
                         fontSize: '0.74rem',
-                        fontWeight: '700',
+                        fontWeight: '600',
                         cursor: 'pointer'
                       }}
                     >
                       {isAddingNewOwner ? '← Choose Existing' : '+ Quick-Add Owner'}
                     </button>
                   </div>
-
-                  {!isAddingNewOwner ? (
-                    <select
-                      required
-                      value={selectedOwnerId}
-                      onChange={(e) => {
-                        setSelectedOwnerId(e.target.value);
-                        const o = owners.find(x => x._id === e.target.value);
-                        setFetchedOwnerInfo(o || null);
-                      }}
-                      style={{
-                        width: '100%',
-                        fontSize: '0.84rem',
-                        padding: '9px 12px',
-                        borderRadius: '8px',
-                        border: '1px solid #cbd5e1',
-                        background: '#ffffff'
-                      }}
-                    >
-                      <option value="">-- Choose Registered Owner --</option>
-                      {owners.map((o) => (
-                        <option key={o._id} value={o._id}>
-                          {o.name} ({o.mobileNo})
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr auto', gap: '6px' }}>
-                      <input
-                        type="text"
-                        placeholder="Owner Name"
-                        value={newOwnerName}
-                        onChange={(e) => setNewOwnerName(e.target.value)}
-                        style={{ padding: '8px 10px', fontSize: '0.82rem', borderRadius: '6px', border: '1px solid #17652f' }}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Mobile"
-                        value={newOwnerPhone}
-                        onChange={(e) => setNewOwnerPhone(e.target.value)}
-                        style={{ padding: '8px 10px', fontSize: '0.82rem', borderRadius: '6px', border: '1px solid #17652f' }}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleCreateNewOwner}
-                        style={{
-                          padding: '8px 14px',
-                          background: '#17652f',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '6px',
-                          fontSize: '0.78rem',
-                          fontWeight: '700',
-                          cursor: 'pointer'
+                  <div className="form-card-input-row">
+                    {!isAddingNewOwner ? (
+                      <select
+                        required
+                        value={selectedOwnerId}
+                        onChange={(e) => {
+                          setSelectedOwnerId(e.target.value);
+                          const o = owners.find(x => x._id === e.target.value);
+                          setFetchedOwnerInfo(o || null);
                         }}
+                        className="form-card-input"
+                        style={{ cursor: 'pointer' }}
                       >
-                        Save
-                      </button>
-                    </div>
-                  )}
+                        <option value="">Choose registered owner</option>
+                        {owners.map((o) => (
+                          <option key={o._id} value={o._id}>
+                            {o.name} ({o.mobileNo})
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr auto', gap: '6px', width: '100%' }}>
+                        <input
+                          type="text"
+                          placeholder="Owner Name"
+                          value={newOwnerName}
+                          onChange={(e) => setNewOwnerName(e.target.value)}
+                          className="form-card-input"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Mobile"
+                          value={newOwnerPhone}
+                          onChange={(e) => setNewOwnerPhone(e.target.value)}
+                          className="form-card-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleCreateNewOwner}
+                          style={{
+                            padding: '4px 10px',
+                            background: '#17652f',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '0.74rem',
+                            fontWeight: '600',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -576,7 +497,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
               )}
 
               {fetchedOwnerInfo && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.8rem', color: '#17652f', background: '#e8f2e5', border: '1px solid #e8f2e5', padding: '10px 14px', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.8rem', color: '#17652f', background: '#e8f2e5', border: '1px solid #cde4c9', padding: '10px 14px', borderRadius: '8px' }}>
                   <CheckCircle2 size={18} color="#17652f" />
                   <div>
                     <strong>{fetchedOwnerInfo.name}</strong> • Mobile: {fetchedOwnerInfo.mobileNo || 'N/A'} {fetchedOwnerInfo.email ? `• ${fetchedOwnerInfo.email}` : ''}
@@ -591,111 +512,72 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
 
           {/* STEP 2: RENT & TDS */}
           {currentStep === 2 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fadeIn 0.2s ease' }}>
-              <div style={{
-                background: '#e8f2e5',
-                border: '1px solid #cde4c9',
-                borderRadius: '8px',
-                padding: '12px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
-                <div style={{ background: '#e8f2e5', padding: '8px', borderRadius: '50%', color: '#17652f' }}>
-                  <Repeat size={18} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.2s ease' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>Agreement / MOU number *</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <input
+                      type="text"
+                      required
+                      value={rentBackForm.agreementNumber}
+                      onChange={(e) => setRentBackForm({ ...rentBackForm, agreementNumber: e.target.value })}
+                      className="form-card-input"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#001a41', margin: 0 }}>
-                    Step 2: Guaranteed Rent-Back Financial Terms
-                  </h4>
-                  <p style={{ fontSize: '0.74rem', color: '#17652f', margin: '2px 0 0' }}>
-                    Configure monthly rent amount, TDS deductions, and auto-disbursement.
-                  </p>
+
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>Gross monthly rent (₹) *</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <input
+                      type="number"
+                      required
+                      value={rentBackForm.monthlyRent}
+                      onChange={(e) => setRentBackForm({ ...rentBackForm, monthlyRent: e.target.value })}
+                      className="form-card-input"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                <div>
-                  <label style={{ fontSize: '0.78rem', color: '#334155', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-                    Agreement / MOU Number *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={rentBackForm.agreementNumber}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, agreementNumber: e.target.value })}
-                    style={{ width: '100%', fontSize: '0.84rem', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.78rem', color: '#334155', display: 'block', marginBottom: '4px', fontWeight: '700' }}>
-                    Gross Monthly Rent (₹) *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={rentBackForm.monthlyRent}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, monthlyRent: e.target.value })}
-                    style={{ width: '100%', fontSize: '0.9rem', fontWeight: '800', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
-                </div>
-              </div>
-
-              <div style={{
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                padding: '14px',
-                display: 'grid',
-                gridTemplateColumns: '1.2fr 1fr',
-                gap: '16px',
-                alignItems: 'center'
-              }}>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', cursor: 'pointer' }}>
+              {/* TDS Configuration Card */}
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Deduct TDS (Section 194-IB / 194-I)</span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.78rem', color: '#17652f', fontWeight: '600' }}>
                     <input
                       type="checkbox"
                       checked={rentBackForm.applyTds}
                       onChange={(e) => setRentBackForm({ ...rentBackForm, applyTds: e.target.checked })}
-                      style={{ width: '16px', height: '16px' }}
+                      style={{ accentColor: '#17652f' }}
                     />
-                    Deduct TDS (Section 194-IB / 194-I)
+                    Enable TDS
                   </label>
-                  <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '4px 0 0 24px' }}>
-                    TDS is legally withheld and remitted against owner PAN.
-                  </p>
                 </div>
-
-                <div>
-                  <label style={{ fontSize: '0.74rem', color: '#475569', display: 'block', marginBottom: '3px', fontWeight: '700' }}>
-                    TDS Deduction Percentage
-                  </label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {rentBackForm.applyTds && (
+                  <div className="form-card-input-row" style={{ marginTop: '6px' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Withholding rate (%):</span>
                     <input
                       type="number"
-                      disabled={!rentBackForm.applyTds}
                       value={rentBackForm.tdsPercentage}
                       onChange={(e) => setRentBackForm({ ...rentBackForm, tdsPercentage: e.target.value })}
-                      placeholder="10"
-                      style={{
-                        width: '100%',
-                        fontSize: '0.84rem',
-                        padding: '7px 10px',
-                        borderRadius: '6px',
-                        border: '1px solid #cbd5e1',
-                        background: rentBackForm.applyTds ? '#fff' : '#f1f5f9'
-                      }}
+                      className="form-card-input"
+                      style={{ width: '80px', textAlign: 'right' }}
                     />
-                    <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#64748b' }}>%</span>
+                    <span className="form-card-badge">%</span>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Real-Time Calculation Preview Card */}
               <div style={{
                 background: '#ffffff',
-                border: '1.5px solid #e8f2e5',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
                 padding: '12px 16px',
                 display: 'grid',
@@ -703,24 +585,24 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                 gap: '12px'
               }}>
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Gross Rent</span>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#334155' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Gross rent</span>
+                  <div style={{ fontSize: '1rem', fontWeight: '600', color: '#334155' }}>
                     {formatINR(grossRent)} / mo
                   </div>
                 </div>
 
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: isTds ? '#0f172a' : '#17652f', fontWeight: '700', textTransform: 'uppercase' }}>
-                    {isTds ? `TDS (${tdsPct}%)` : 'TDS Withheld'}
+                  <span style={{ fontSize: '0.7rem', color: isTds ? '#0f172a' : '#17652f', fontWeight: '600', textTransform: 'uppercase' }}>
+                    {isTds ? `TDS (${tdsPct}%)` : 'TDS withheld'}
                   </span>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '800', color: isTds ? '#0f172a' : '#17652f' }}>
-                    {isTds ? `- ${formatINR(tdsAmount)}` : '₹0 (100% Payout)'}
+                  <div style={{ fontSize: '1rem', fontWeight: '600', color: isTds ? '#0f172a' : '#17652f' }}>
+                    {isTds ? `- ${formatINR(tdsAmount)}` : '₹0'}
                   </div>
                 </div>
 
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '700', textTransform: 'uppercase' }}>Net Monthly to Owner</span>
-                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600', textTransform: 'uppercase' }}>Net monthly to owner</span>
+                  <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f' }}>
                     {formatINR(netMonthlyPayout)} / mo
                   </div>
                 </div>
@@ -730,101 +612,91 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
 
           {/* STEP 3: TENURE, DATES & REVIEW */}
           {currentStep === 3 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fadeIn 0.2s ease' }}>
-              <div style={{
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                padding: '12px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
-                <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '50%', color: '#334155' }}>
-                  <Calendar size={18} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.2s ease' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>Rental start date *</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <input
+                      type="date"
+                      required
+                      value={rentBackForm.startDate}
+                      onChange={(e) => setRentBackForm({ ...rentBackForm, startDate: e.target.value })}
+                      className="form-card-input"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#1e293b', margin: 0 }}>
-                    Step 3: Agreement Tenure & Payout Schedule
-                  </h4>
-                  <p style={{ fontSize: '0.74rem', color: '#334155', margin: '2px 0 0' }}>
-                    Set agreement start/end dates, monthly disbursement day, and banking notes.
-                  </p>
+
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>Rental end date *</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <input
+                      type="date"
+                      required
+                      value={rentBackForm.endDate}
+                      onChange={(e) => setRentBackForm({ ...rentBackForm, endDate: e.target.value })}
+                      className="form-card-input"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ fontSize: '0.74rem', color: '#334155', display: 'block', marginBottom: '3px', fontWeight: '700' }}>
-                    Rental Start Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={rentBackForm.startDate}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, startDate: e.target.value })}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>Payout day of month *</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <input
+                      type="number"
+                      min="1"
+                      max="31"
+                      required
+                      value={rentBackForm.rentDueDay}
+                      onChange={(e) => setRentBackForm({ ...rentBackForm, rentDueDay: e.target.value })}
+                      className="form-card-input"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label style={{ fontSize: '0.74rem', color: '#334155', display: 'block', marginBottom: '3px', fontWeight: '700' }}>
-                    Rental End Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={rentBackForm.endDate}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, endDate: e.target.value })}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.74rem', color: '#334155', display: 'block', marginBottom: '3px', fontWeight: '700' }}>
-                    NEFT Payout Day *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="31"
-                    required
-                    value={rentBackForm.rentDueDay}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, rentDueDay: e.target.value })}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.74rem', color: '#334155', display: 'block', marginBottom: '3px', fontWeight: '700' }}>
-                    Tenure (Months)
-                  </label>
-                  <input
-                    type="number"
-                    value={rentBackForm.tenureMonths}
-                    onChange={(e) => setRentBackForm({ ...rentBackForm, tenureMonths: e.target.value })}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>Tenure (months)</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <input
+                      type="number"
+                      value={rentBackForm.tenureMonths}
+                      onChange={(e) => setRentBackForm({ ...rentBackForm, tenureMonths: e.target.value })}
+                      className="form-card-input"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.74rem', color: '#334155', display: 'block', marginBottom: '3px', fontWeight: '700' }}>
-                  Contract Notes / Banking Remarks
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Disbursed via PNB A/C: 0983000100182033, IFSC: PUNB0098300 (PAN: ABCDE1234F)"
-                  value={remarks}
-                  onChange={(e) => setRemarks(e.target.value)}
-                  style={{ width: '100%', fontSize: '0.82rem', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                />
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Banking remarks / notes</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="e.g. Disbursed via PNB A/C: 0983000100182033"
+                    value={remarks}
+                    onChange={(e) => setRemarks(e.target.value)}
+                    className="form-card-input"
+                  />
+                </div>
               </div>
 
               {/* Final Summary Card */}
               <div style={{
                 background: '#f8fafc',
-                border: '1px solid #cbd5e1',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
                 padding: '12px 16px',
                 display: 'grid',
@@ -832,10 +704,10 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                 gap: '12px'
               }}>
                 <div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>
-                    Unit & Owner
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>
+                    Unit & owner
                   </div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#0f172a' }}>
                     Flat {selectedFlatObj?.flatNumber || 'N/A'}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -844,10 +716,10 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>
-                    Monthly Net
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>
+                    Monthly net
                   </div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
+                  <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#17652f' }}>
                     {formatINR(netMonthlyPayout)} / mo
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -856,10 +728,10 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>
-                    36-Month Commitment
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>
+                    36-month commitment
                   </div>
-                  <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f' }}>
+                  <div style={{ fontSize: '1rem', fontWeight: '600', color: '#17652f' }}>
                     {formatINR(totalCommitment)}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
@@ -877,27 +749,27 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
             alignItems: 'center',
             marginTop: 'auto',
             paddingTop: '16px',
-            borderTop: '1px solid #e2e8f0'
+            borderTop: '1px solid #f1f5f9'
           }}>
             {currentStep > 1 ? (
               <button
                 type="button"
                 onClick={handlePrev}
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
+                  padding: '9px 24px',
+                  borderRadius: '8px',
                   background: '#f1f5f9',
-                  border: '1px solid #cbd5e1',
+                  border: 'none',
                   color: '#475569',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  cursor: 'pointer'
+                  fontSize: '0.86rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s ease'
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e2e8f0'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
               >
-                <ArrowLeft size={15} /> Previous
+                Back
               </button>
             ) : (
               <button
@@ -905,13 +777,12 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                 onClick={onClose}
                 disabled={submitting}
                 style={{
-                  padding: '8px 16px',
-                  background: '#f8fafc',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '6px',
-                  color: '#475569',
-                  fontWeight: '700',
-                  fontSize: '0.82rem',
+                  padding: '9px 20px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#64748b',
+                  fontWeight: '500',
+                  fontSize: '0.86rem',
                   cursor: submitting ? 'not-allowed' : 'pointer'
                 }}
               >
@@ -925,20 +796,21 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                   type="button"
                   onClick={handleNext}
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 18px',
-                    borderRadius: '6px',
+                    padding: '9px 28px',
+                    borderRadius: '8px',
                     background: '#17652f',
                     border: 'none',
                     color: '#ffffff',
-                    fontSize: '0.82rem',
-                    fontWeight: '700',
-                    cursor: 'pointer'
+                    fontSize: '0.86rem',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
+                    transition: 'background-color 0.15s ease'
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#134e26'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#17652f'}
                 >
-                  Continue to Next Step <ChevronRight size={15} />
+                  Continue
                 </button>
               ) : (
                 <LoadingButton
@@ -947,7 +819,7 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                   loadingText={activeContract ? 'Saving Agreement...' : 'Initializing Rent-Back...'}
                   variant="success"
                 >
-                  {activeContract ? 'Save Agreement Changes' : 'Initialize Rent-Back Agreement'}
+                  {activeContract ? 'Save changes' : 'Confirm enrollment'}
                 </LoadingButton>
               )}
             </div>

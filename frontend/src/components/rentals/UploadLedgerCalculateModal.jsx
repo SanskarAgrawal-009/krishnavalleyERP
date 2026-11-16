@@ -362,7 +362,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
               <Calculator size={22} color="#ffffff" />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '600' }}>
                 Upload Passbook Excel & Auto-Calculate Ledgers
               </h2>
               <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: '#cde4c9' }}>
@@ -431,7 +431,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                 fontSize: '0.82rem',
                 fontWeight: '700',
                 cursor: 'pointer',
-                boxShadow: '0 1px 3px rgba(37, 99, 235, 0.1)'
+                boxShadow: '0 1px 3px rgba(23, 101, 47, 0.1)'
               }}
             >
               <Download size={15} /> Download Sample Excel Template
@@ -492,7 +492,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: '600', color: '#0f172a' }}>
                     Calculation Preview ({parsedRows.length} properties detected)
                   </h4>
                   <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#64748b' }}>
@@ -553,7 +553,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                           backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc'
                         }}
                       >
-                        <td style={{ padding: '10px 12px', fontWeight: '800', color: '#1e293b' }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600', color: '#1e293b' }}>
                           {row.flatNumber || 'Missing'}
                         </td>
                         <td style={{ padding: '10px 12px', color: '#334155' }}>
@@ -596,7 +596,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                               borderRadius: '6px',
                               background: '#e8f2e5',
                               color: '#17652f',
-                              fontWeight: '800'
+                              fontWeight: '600'
                             }}
                           >
                             <CheckCircle2 size={12} /> {row.paidMonths} Months Paid
@@ -643,7 +643,7 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                 <CheckCircle2 size={24} color="#17652f" />
-                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#001a41' }}>
+                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '600', color: '#001a41' }}>
                   Passbook Generation Completed!
                 </h4>
               </div>
@@ -710,9 +710,9 @@ export const UploadLedgerCalculateModal = ({ isOpen, onClose, onSuccess }) => {
                   backgroundColor: submitting ? '#86c8a0' : '#17652f',
                   color: '#ffffff',
                   fontSize: '0.84rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   cursor: submitting ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 2px 6px rgba(37, 99, 235, 0.3)'
+                  boxShadow: '0 2px 6px rgba(23, 101, 47, 0.3)'
                 }}
               >
                 <Sparkles size={16} />

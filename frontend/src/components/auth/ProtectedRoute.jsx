@@ -45,7 +45,7 @@ export const ProtectedRoute = ({
             justifyContent: 'center',
             fontSize: '1.5rem',
             fontWeight: '700',
-            boxShadow: '0 4px 16px rgba(26,115,232,0.3)',
+            boxShadow: '0 4px 16px rgba(23, 101, 47,0.3)',
           }}
         >
           KV
@@ -126,42 +126,27 @@ export const ProtectedRoute = ({
         >
           <div
             style={{
-              width: '64px',
-              height: '64px',
+              width: '56px',
+              height: '56px',
               borderRadius: '50%',
               backgroundColor: '#f1f5f9',
-              color: '#0f172a',
+              color: '#475569',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 20px',
+              margin: '0 auto 16px',
             }}
           >
-            <Lock size={32} />
+            <Lock size={26} />
           </div>
 
-          <h2 style={{ margin: '0 0 8px', fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>
-            Access Restricted
+          <h2 style={{ margin: '0 0 8px', fontSize: '1.25rem', fontWeight: '600', color: '#0f172a' }}>
+            No access
           </h2>
 
-          <p style={{ margin: '0 0 20px', fontSize: '0.92rem', color: '#64748b', lineHeight: 1.5 }}>
-            Your role (<strong>{user?.role?.roleName || (typeof user?.role === 'string' ? user?.role : 'Current Role')}</strong>) does not have authorization to view this ERP module.
+          <p style={{ margin: '0 0 24px', fontSize: '0.92rem', color: '#64748b', lineHeight: 1.5 }}>
+            You don't have access to this page. Ask your admin to enable it.
           </p>
-
-          <div
-            style={{
-              display: 'inline-block',
-              padding: '8px 16px',
-              borderRadius: '10px',
-              backgroundColor: '#f1f5f9',
-              color: '#475569',
-              fontSize: '0.82rem',
-              fontWeight: '600',
-              marginBottom: '24px',
-            }}
-          >
-            Required Privilege: <code>{permission || permissions.join(' or ') || role || roles.join(', ')}</code>
-          </div>
 
           <div>
             <button
@@ -171,17 +156,17 @@ export const ProtectedRoute = ({
                 alignItems: 'center',
                 gap: '8px',
                 padding: '10px 20px',
-                borderRadius: '10px',
+                borderRadius: '8px',
                 backgroundColor: '#17652f',
                 color: '#ffffff',
                 border: 'none',
-                fontSize: '0.9rem',
-                fontWeight: '700',
+                fontSize: '0.88rem',
+                fontWeight: '600',
                 cursor: 'pointer',
               }}
             >
               <ArrowLeft size={16} />
-              <span>Back to Command Center</span>
+              <span>Return home</span>
             </button>
           </div>
         </div>

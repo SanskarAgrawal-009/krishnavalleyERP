@@ -664,26 +664,12 @@ export const LeadsPage = ({ onNavigateToSales }) => {
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: 700, color: '#1f2937', margin: 0, letterSpacing: '-0.02em' }}>
-              CRM Leads Hub
+            <h2 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: 600, color: '#1f2937', margin: 0, letterSpacing: '-0.015em' }}>
+              Leads
             </h2>
-            <span style={{
-              fontSize: '0.70rem',
-              fontWeight: '800',
-              background: '#e8f2e5',
-              color: '#17652f',
-              padding: '2px 8px',
-              borderRadius: '20px',
-              border: '1px solid #cde4c9',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <Zap size={11} color="#17652f" /> Auto Round-Robin
-            </span>
           </div>
           <p style={{ fontSize: '0.82rem', color: '#596372', margin: '4px 0 0 0' }}>
-            Direct Meta Ads Ingestion, 1-by-1 Sequential Distribution, and Sales Follow-ups
+            Manage inquiries, lead assignments, site visits, and follow-ups.
           </p>
         </div>
 
@@ -716,7 +702,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               title="Log an external lead or walk-in site visit"
             >
               <Car size={14} color="#17652f" />
-              Log Site Visit
+              Log visit
             </button>
           )}
 
@@ -733,19 +719,19 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   background: '#ffffff',
                   color: '#334155',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                  boxShadow: 'none',
                   transition: 'all 0.15s ease'
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
               >
                 <Sliders size={14} color="#64748b" />
-                Actions & Tools
+                Actions
                 <ChevronDown size={14} color="#64748b" style={{ transform: isActionsDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
               </button>
 
@@ -955,14 +941,13 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
                 transition: 'all 0.15s ease'
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = '#125225'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = '#17652f'; }}
             >
               <UserPlus size={15} />
-              + Add New Lead
+              Add lead
             </button>
           )}
         </div>
@@ -996,10 +981,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               borderRadius: '7px',
               border: 'none',
               fontSize: '0.82rem',
-              fontWeight: activeWindow === 'all' ? '700' : '500',
+              fontWeight: activeWindow === 'all' ? '600' : '500',
               background: activeWindow === 'all' ? '#17652f' : 'transparent',
               color: activeWindow === 'all' ? '#ffffff' : '#596372',
-              boxShadow: activeWindow === 'all' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+              boxShadow: 'none',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
@@ -1008,12 +993,12 @@ export const LeadsPage = ({ onNavigateToSales }) => {
             }}
           >
             <Users size={14} color={activeWindow === 'all' ? '#ffffff' : '#596372'} />
-            <span>All Leads</span>
+            <span>All leads</span>
             <span style={{
               fontSize: '0.70rem',
               padding: '1px 6px',
               borderRadius: '10px',
-              fontWeight: '700',
+              fontWeight: '600',
               background: activeWindow === 'all' ? '#e8f2e5' : '#e8e6df',
               color: activeWindow === 'all' ? '#17652f' : '#596372'
             }}>
@@ -1030,10 +1015,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               borderRadius: '7px',
               border: 'none',
               fontSize: '0.82rem',
-              fontWeight: activeWindow === 'assigned_to_me' ? '700' : '500',
+              fontWeight: activeWindow === 'assigned_to_me' ? '600' : '500',
               background: activeWindow === 'assigned_to_me' ? '#17652f' : 'transparent',
               color: activeWindow === 'assigned_to_me' ? '#ffffff' : '#596372',
-              boxShadow: activeWindow === 'assigned_to_me' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+              boxShadow: 'none',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
@@ -1042,12 +1027,12 @@ export const LeadsPage = ({ onNavigateToSales }) => {
             }}
           >
             <UserCheck size={14} color={activeWindow === 'assigned_to_me' ? '#ffffff' : '#596372'} />
-            <span>Assigned to Me</span>
+            <span>My leads</span>
             <span style={{
               fontSize: '0.70rem',
               padding: '1px 6px',
               borderRadius: '10px',
-              fontWeight: '700',
+              fontWeight: '600',
               background: activeWindow === 'assigned_to_me' ? '#e8f2e5' : '#e8e6df',
               color: activeWindow === 'assigned_to_me' ? '#17652f' : '#596372'
             }}>
@@ -1064,10 +1049,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               borderRadius: '7px',
               border: 'none',
               fontSize: '0.82rem',
-              fontWeight: activeWindow === 'site_visits' ? '800' : '600',
-              background: activeWindow === 'site_visits' ? '#ffffff' : 'transparent',
-              color: activeWindow === 'site_visits' ? '#17652f' : '#64748b',
-              boxShadow: activeWindow === 'site_visits' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              fontWeight: activeWindow === 'site_visits' ? '600' : '500',
+              background: activeWindow === 'site_visits' ? '#17652f' : 'transparent',
+              color: activeWindow === 'site_visits' ? '#ffffff' : '#596372',
+              boxShadow: 'none',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
@@ -1075,13 +1060,13 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               transition: 'all 0.15s ease'
             }}
           >
-            <Car size={14} color={activeWindow === 'site_visits' ? '#17652f' : '#64748b'} />
-            <span>Site Visits</span>
+            <Car size={14} color={activeWindow === 'site_visits' ? '#ffffff' : '#596372'} />
+            <span>Site visits</span>
             <span style={{
               fontSize: '0.70rem',
               padding: '1px 6px',
               borderRadius: '10px',
-              fontWeight: '800',
+              fontWeight: '600',
               background: activeWindow === 'site_visits' ? '#e8f2e5' : '#e2e8f0',
               color: activeWindow === 'site_visits' ? '#17652f' : '#475569'
             }}>
@@ -1120,10 +1105,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <Car size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Total Site Visits
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                Total visits
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#0f172a' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#0f172a' }}>
                 {allSiteVisits.length}
               </div>
             </div>
@@ -1149,10 +1134,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <Calendar size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Scheduled & Upcoming
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                Scheduled
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: scheduledVisitsCount > 0 ? '#17652f' : '#0f172a' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: scheduledVisitsCount > 0 ? '#17652f' : '#0f172a' }}>
                 {scheduledVisitsCount}
               </div>
             </div>
@@ -1178,10 +1163,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <CheckCircle2 size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Completed Tours
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                Completed
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#17652f' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#17652f' }}>
                 {completedVisitsCount}
               </div>
             </div>
@@ -1207,10 +1192,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <Star size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                High Interest Leads
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                High interest
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#334155' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#334155' }}>
                 {highInterestVisitsCount}
               </div>
             </div>
@@ -1236,10 +1221,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <Compass size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Cab Assisted Tours
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                Cab assisted
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#0369a1' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#0369a1' }}>
                 {cabVisitsCount}
               </div>
             </div>
@@ -1257,10 +1242,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <Users size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                {activeWindow === 'assigned_to_me' ? 'My Active Leads' : 'Total Active Pipeline'}
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                {activeWindow === 'assigned_to_me' ? 'My active leads' : 'Active leads'}
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#0f172a' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#0f172a' }}>
                 {totalLeads}
               </div>
             </div>
@@ -1272,10 +1257,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <Zap size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                {activeWindow === 'assigned_to_me' ? 'My Portfolio Share' : 'Next Up in Queue'}
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                {activeWindow === 'assigned_to_me' ? 'My portfolio share' : 'Next in rotation'}
               </div>
-              <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {activeWindow === 'assigned_to_me'
                   ? `${leads.length > 0 ? Math.round((myLeads.length / leads.length) * 100) : 0}% of CRM`
                   : `@${salesTeamOverview?.nextInQueue?.userId?.username || 'sales_head'}`}
@@ -1290,10 +1275,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                 <UserX size={20} />
               </div>
               <div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Unassigned Queue
+                <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                  Unassigned
                 </div>
-                <div style={{ fontSize: '1.35rem', fontWeight: '900', color: unassignedCount > 0 ? '#334155' : '#0f172a' }}>
+                <div style={{ fontSize: '1.35rem', fontWeight: '600', color: unassignedCount > 0 ? '#334155' : '#0f172a' }}>
                   {unassignedCount}
                 </div>
               </div>
@@ -1309,14 +1294,13 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   border: 'none',
                   borderRadius: '6px',
                   fontSize: '0.72rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '4px',
-                  boxShadow: '0 2px 5px rgba(22,163,74,0.3)'
                 }}
-                title="Equally divide unassigned leads 1-by-1 across active sales team"
+                title="Equally divide unassigned leads across active team"
               >
                 <Zap size={11} /> Distribute
               </button>
@@ -1329,10 +1313,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <Calendar size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Pending Action
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                Follow-ups due
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#0f172a' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#0f172a' }}>
                 {pendingFollowUps}
               </div>
             </div>
@@ -1344,10 +1328,10 @@ export const LeadsPage = ({ onNavigateToSales }) => {
               <Globe size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Meta Ads Inflow
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                Meta ads leads
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#0284c7' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#0284c7' }}>
                 {metaLeadsCount}
               </div>
             </div>
@@ -1416,7 +1400,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                 <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                 <input
                   type="text"
-                  placeholder="Search leads by name, phone, city, state, requirement..."
+                  placeholder="e.g. Rahul, 98765, or 2BHK"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
@@ -1433,7 +1417,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#17652f';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(26,115,232,0.12)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(23, 101, 47,0.12)';
                   }}
                   onBlur={(e) => {
                     e.target.style.borderColor = '#cbd5e1';
@@ -1444,7 +1428,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   <button
                     type="button"
                     onClick={() => setSearchTerm('')}
-                    title="Clear Search"
+                    title="Clear search"
                     style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center' }}
                   >
                     <X size={15} />
@@ -1476,7 +1460,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       boxSizing: 'border-box',
                       fontSize: '0.80rem',
                       color: selectedRepFilter !== 'all' ? '#17652f' : '#1e293b',
-                      fontWeight: selectedRepFilter !== 'all' ? '700' : '600',
+                      fontWeight: selectedRepFilter !== 'all' ? '600' : '500',
                       borderRadius: '8px',
                       border: selectedRepFilter !== 'all' ? '1.5px solid #17652f' : '1px solid #cbd5e1',
                       background: selectedRepFilter !== 'all' ? '#e8f2e5' : '#ffffff',
@@ -1484,7 +1468,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     }}
                     title="Filter by assigned sales representative"
                   >
-                    <option value="all">All Sales Reps ({leads.filter(l => l.status !== 'converted').length})</option>
+                    <option value="all">All sales reps ({leads.filter(l => l.status !== 'converted').length})</option>
                     {(salesTeamOverview?.teamMembers || []).map((member) => {
                       const u = member.userId;
                       if (!u) return null;
@@ -1492,11 +1476,11 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       const repLeadCount = leads.filter(l => (l.assignedTo?._id?.toString() || l.assignedTo?.toString()) === repId && l.status !== 'converted').length;
                       return (
                         <option key={repId} value={repId}>
-                          {member.isActiveInRoundRobin ? '' : ''} {u.firstName || u.username} ({repLeadCount})
+                          {u.firstName || u.username} ({repLeadCount})
                         </option>
                       );
                     })}
-                    <option value="unassigned">Unassigned Only ({unassignedCount})</option>
+                    <option value="unassigned">Unassigned only ({unassignedCount})</option>
                   </select>
                 )}
 
@@ -1514,25 +1498,25 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                     margin: 0,
                     boxSizing: 'border-box',
                     fontSize: '0.80rem',
-                    color: stageFilter ? '#0f172a' : '#1e293b',
-                    fontWeight: '700',
+                    color: '#1e293b',
+                    fontWeight: '500',
                     borderRadius: '8px',
                     border: stageFilter ? '1.5px solid #17652f' : '1px solid #cbd5e1',
                     background: stageFilter ? '#f1f5f9' : '#ffffff',
                     cursor: 'pointer'
                   }}
-                  title="Filter by CRM pipeline stage"
+                  title="Filter by pipeline stage"
                 >
-                  <option value="">All Pipeline Stages</option>
-                  <option value="new">New Prospect</option>
+                  <option value="">All stages</option>
+                  <option value="new">New</option>
                   <option value="contacted">Contacted</option>
-                  <option value="in_discussion">In Discussion</option>
-                  <option value="followup_scheduled">Follow-Up Scheduled</option>
-                  <option value="site_visit_scheduled">Visit Scheduled</option>
-                  <option value="site_visit_completed">Site Visit Done</option>
+                  <option value="in_discussion">In discussion</option>
+                  <option value="followup_scheduled">Follow-up scheduled</option>
+                  <option value="site_visit_scheduled">Visit scheduled</option>
+                  <option value="site_visit_completed">Visit completed</option>
                   <option value="negotiation">Negotiation</option>
-                  <option value="lost">Lost / Dropped</option>
-                  <option value="converted">Converted Deal</option>
+                  <option value="lost">Lost</option>
+                  <option value="converted">Converted</option>
                 </select>
 
                 {/* Contextual Bulk Delete for the selected stage */}
@@ -1551,7 +1535,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
                       color: '#ffffff',
                       fontSize: '0.78rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -1673,7 +1657,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                 borderTop: '1px dashed #e2e8f0',
                 flexWrap: 'wrap'
               }}>
-                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   More Filters:
                 </span>
 
@@ -1765,7 +1749,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           alignItems: 'center',
           scrollbarWidth: 'none'
         }}>
-          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', marginRight: '4px', flexShrink: 0 }}>
+          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em', marginRight: '4px', flexShrink: 0 }}>
             Pipeline:
           </span>
 
@@ -1798,14 +1782,14 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                   gap: '6px',
                   flexShrink: 0,
                   transition: 'all 0.15s ease',
-                  boxShadow: isActive ? '0 1px 2px rgba(26,115,232,0.15)' : 'none'
+                  boxShadow: isActive ? '0 1px 2px rgba(23, 101, 47,0.15)' : 'none'
                 }}
               >
                 {Icon && <Icon size={12} color={isActive ? '#17652f' : (tab.color || '#64748b')} />}
                 <span>{tab.label}</span>
                 <span style={{
                   fontSize: '0.68rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   padding: '1px 6px',
                   borderRadius: '10px',
                   background: isActive ? '#17652f' : '#f1f5f9',
@@ -1827,7 +1811,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
       {displayedLeads.length === 0 ? (
         <div className="g-card" style={{ textAlign: 'center', padding: '60px 24px', borderRadius: '12px' }}>
           <Users size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#17652f' }} />
-          <h3 style={{ color: '#111827', marginBottom: '8px', fontWeight: '800', fontSize: '1.2rem' }}>
+          <h3 style={{ color: '#111827', marginBottom: '8px', fontWeight: '600', fontSize: '1.2rem' }}>
             No Leads Found
           </h3>
           <p style={{ fontSize: '0.86rem', color: '#64748b', marginBottom: '20px', fontWeight: '500', maxWidth: '440px', margin: '0 auto 20px' }}>
@@ -1867,19 +1851,19 @@ export const LeadsPage = ({ onNavigateToSales }) => {
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                <th style={{ padding: '14px 18px', width: '28%', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 18px', width: '28%', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   PROSPECT
                 </th>
-                <th style={{ padding: '14px 16px', width: '20%', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 16px', width: '20%', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   ASSIGNED TO
                 </th>
-                <th style={{ padding: '14px 16px', width: '16%', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 16px', width: '16%', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   STAGE
                 </th>
-                <th style={{ padding: '14px 16px', width: '24%', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 16px', width: '24%', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   UNIT & SCHEDULED TASK
                 </th>
-                <th style={{ padding: '14px 18px', width: '12%', textAlign: 'right', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 18px', width: '12%', textAlign: 'right', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   ACTION
                 </th>
               </tr>
@@ -1925,7 +1909,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           fontSize: '0.92rem',
                           flexShrink: 0,
                           border: isAssignedToCurrentUser ? '2px solid #cde4c9' : '1px solid #d2e3fc',
@@ -1951,7 +1935,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
 
                         <div style={{ minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                            <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.92rem' }}>
+                            <span style={{ fontWeight: '600', color: '#0f172a', fontSize: '0.92rem' }}>
                               {lead.name}
                             </span>
 
@@ -1959,7 +1943,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               <span
                                 style={{
                                   fontSize: '0.66rem',
-                                  fontWeight: '800',
+                                  fontWeight: '600',
                                   backgroundColor: '#e0f2fe',
                                   color: '#0369a1',
                                   padding: '1px 6px',
@@ -1979,7 +1963,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               <span
                                 style={{
                                   fontSize: '0.66rem',
-                                  fontWeight: '800',
+                                  fontWeight: '600',
                                   backgroundColor: '#e8f2e5',
                                   color: '#17652f',
                                   padding: '1px 6px',
@@ -1998,7 +1982,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                               <span
                                 style={{
                                   fontSize: '0.66rem',
-                                  fontWeight: '800',
+                                  fontWeight: '600',
                                   backgroundColor: '#e8f2e5',
                                   color: '#17652f',
                                   padding: '1px 6px',
@@ -2064,20 +2048,20 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '0.75rem',
-                            fontWeight: '800',
+                            fontWeight: '600',
                             flexShrink: 0
                           }}>
                             {assignee.firstName ? assignee.firstName.charAt(0).toUpperCase() : (assignee.username?.charAt(0).toUpperCase() || 'S')}
                           </div>
                           <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                              <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.86rem' }}>
+                              <span style={{ fontWeight: '600', color: '#0f172a', fontSize: '0.86rem' }}>
                                 {assignee.firstName ? `${assignee.firstName} ${assignee.lastName || ''}` : (assignee.username || 'Sales Rep')}
                               </span>
                               {isAssignedToCurrentUser && (
                                 <span style={{
                                   fontSize: '0.64rem',
-                                  fontWeight: '800',
+                                  fontWeight: '600',
                                   background: '#e8f2e5',
                                   color: '#17652f',
                                   padding: '1px 5px',
@@ -2107,7 +2091,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           color: '#334155',
                           border: '1px dashed #475569',
                           fontSize: '0.74rem',
-                          fontWeight: '800'
+                          fontWeight: '600'
                         }}>
                           <UserX size={12} /> Unassigned
                         </span>
@@ -2119,7 +2103,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       <span
                         style={{
                           fontSize: '0.74rem',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           textTransform: 'capitalize',
                           padding: '4px 10px',
                           borderRadius: '6px',
@@ -2149,7 +2133,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           marginBottom: '4px'
                         }}>
                           <Home size={11} color="#17652f" />
-                          <span style={{ fontWeight: '800', color: '#17652f', fontSize: '0.74rem' }}>
+                          <span style={{ fontWeight: '600', color: '#17652f', fontSize: '0.74rem' }}>
                             Flat {assignedFlat.flatNumber}
                           </span>
                           {assignedFlat.projectId?.projectName && (
@@ -2167,7 +2151,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                             {lead.budget && (
                               <span style={{
                                 fontSize: '0.67rem',
-                                fontWeight: '800',
+                                fontWeight: '600',
                                 color: '#17652f',
                                 background: '#e8f2e5',
                                 padding: '1px 6px',
@@ -2197,7 +2181,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                       {/* Scheduled Task Pill */}
                       {pendingFollowUp && pendingFollowUp.nextFollowUpDate ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <div style={{ fontSize: '0.72rem', color: isScheduledByHead ? '#17652f' : '#334155', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div style={{ fontSize: '0.72rem', color: isScheduledByHead ? '#17652f' : '#334155', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {isScheduledByHead ? (
                               <span style={{ background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '1px 5px', borderRadius: '4px', fontSize: '0.65rem' }}>
                                 Head Task
@@ -2242,12 +2226,12 @@ export const LeadsPage = ({ onNavigateToSales }) => {
                           background: '#e8f2e5',
                           color: '#17652f',
                           fontSize: '0.78rem',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           cursor: 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '5px',
-                          boxShadow: '0 1px 2px rgba(29,78,216,0.08)',
+                          boxShadow: '0 1px 2px rgba(23, 101, 47,0.08)',
                           transition: 'all 0.15s ease'
                         }}
                         onMouseEnter={(e) => {
@@ -2283,7 +2267,7 @@ export const LeadsPage = ({ onNavigateToSales }) => {
             fontWeight: '600'
           }}>
             <div>
-              Showing <span style={{ color: '#0f172a', fontWeight: '800' }}>{displayedLeads.length}</span> of {totalLeads} CRM Leads {activeWindow === 'assigned_to_me' ? '(Window: Assigned to Me)' : '(Window: All Pipeline Leads)'}
+              Showing <span style={{ color: '#0f172a', fontWeight: '600' }}>{displayedLeads.length}</span> of {totalLeads} CRM Leads {activeWindow === 'assigned_to_me' ? '(Window: Assigned to Me)' : '(Window: All Pipeline Leads)'}
             </div>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
               <span>Meta Ads: <strong style={{ color: '#0284c7' }}>{metaLeadsCount}</strong></span>

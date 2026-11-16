@@ -245,7 +245,7 @@ export const MetaAdsIntegrationModal = ({
 
             {/* Section 1: Standard Client Fields */}
             <div>
-              <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#1e293b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 1. Standard Prospect Details
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginTop: '6px' }}>
@@ -283,7 +283,7 @@ export const MetaAdsIntegrationModal = ({
 
             {/* Section 2: Location Data */}
             <div>
-              <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#1e293b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 2. Client Geographic Location
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginTop: '6px' }}>
@@ -319,7 +319,7 @@ export const MetaAdsIntegrationModal = ({
 
             {/* Section 3: Meta Instant Form Custom Questions */}
             <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <HelpCircle size={14} color="#0284c7" />
                 3. Meta Ad Form Questions & Answers (Stored in Custom Questions Box)
               </span>
@@ -400,7 +400,7 @@ export const MetaAdsIntegrationModal = ({
               gap: '10px',
             }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>
                   Meta Webhook Callback URL (Paste in Meta Developer App)
                 </label>
                 <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
@@ -422,7 +422,7 @@ export const MetaAdsIntegrationModal = ({
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>
                   Webhook Verify Token (Hub Challenge Token)
                 </label>
                 <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>

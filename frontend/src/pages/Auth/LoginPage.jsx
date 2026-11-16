@@ -23,6 +23,47 @@ import {
   ChevronUp
 } from 'lucide-react';
 
+const getFirstPermittedModule = (userRes, fromPath = '/dashboard') => {
+  if (fromPath && fromPath !== '/dashboard' && fromPath !== '/login') {
+    return fromPath;
+  }
+
+  const user = userRes?.user || userRes;
+  const role = (
+    user?.role?.roleCode ||
+    user?.roleCode ||
+    (typeof user?.role === 'string' ? user?.role : '') ||
+    ''
+  ).toLowerCase();
+
+  const isSuper = ['super_admin', 'superadmin', 'admin', 'director', 'system_admin'].includes(role);
+  if (isSuper) return '/dashboard';
+
+  const rawPerms = Array.isArray(user?.permissions) ? user.permissions : [];
+  const perms = new Set(
+    rawPerms.map((p) => (typeof p === 'string' ? p : (p?.permissionCode || p?.code))).filter(Boolean)
+  );
+
+  if (role === 'agent') return '/agent-portal';
+  if (role === 'taskforce_manager' || role === 'taskforce_mgr') return '/taskforce-dashboard';
+  if (perms.has('dashboard:view')) return '/dashboard';
+  if (perms.has('crm:view') || perms.has('crm:manage')) return '/crm';
+  if (perms.has('sales:view') || perms.has('sales:manage')) return '/sales';
+  if (perms.has('rentals:view') || perms.has('rentals:manage')) return '/rentals';
+  if (perms.has('inventory:view') || perms.has('inventory:manage')) return '/inventory';
+  if (perms.has('materials:view') || perms.has('materials:manage')) return '/materials';
+  if (perms.has('maintenance:view') || perms.has('maintenance:manage')) return '/maintenance';
+  if (perms.has('hr:view') || perms.has('hr:manage')) return '/hr';
+  if (perms.has('documents:view') || perms.has('documents:manage')) return '/documents';
+  if (perms.has('reports:view') || perms.has('reports:manage')) return '/reports';
+  if (perms.has('tasks:view') || perms.has('tasks:manage')) return '/taskforce-dashboard';
+  if (perms.has('agent:leads') || perms.has('agent:manage')) return '/agent-portal';
+  if (perms.has('users:view') || perms.has('users:manage')) return '/users';
+  if (perms.has('settings:view') || perms.has('settings:manage')) return '/settings';
+
+  return '/dashboard';
+};
+
 export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -55,14 +96,7 @@ export const LoginPage = () => {
     try {
       const userRes = await login(identifier.trim(), password);
       setSuccessMessage('Authentication successful! Opening Krishna Valley ERP...');
-      const roleCode = userRes?.role?.roleCode || userRes?.user?.role?.roleCode;
-      const targetPath = roleCode === 'agent'
-        ? '/agent-portal'
-        : (roleCode === 'hr_manager' && from === '/dashboard'
-          ? '/hr'
-          : (roleCode === 'taskforce_manager' && from === '/dashboard'
-            ? '/taskforce-dashboard'
-            : from));
+      const targetPath = getFirstPermittedModule(userRes, from);
       setTimeout(() => {
         navigate(targetPath, { replace: true });
       }, 400);
@@ -84,14 +118,7 @@ export const LoginPage = () => {
     try {
       const userRes = await login(username, pass);
       setSuccessMessage(`Signed in as ${roleLabel}! Redirecting...`);
-      const roleCode = userRes?.role?.roleCode || userRes?.user?.role?.roleCode;
-      const targetPath = roleCode === 'agent'
-        ? '/agent-portal'
-        : (roleCode === 'hr_manager' && from === '/dashboard'
-          ? '/hr'
-          : (roleCode === 'taskforce_manager' && from === '/dashboard'
-            ? '/taskforce-dashboard'
-            : from));
+      const targetPath = getFirstPermittedModule(userRes, from);
       setTimeout(() => {
         navigate(targetPath, { replace: true });
       }, 400);
@@ -196,7 +223,7 @@ export const LoginPage = () => {
             <h1
               style={{
                 fontSize: 'clamp(2.4rem, 4.2vw, 3.4rem)',
-                fontWeight: '800',
+                fontWeight: '600',
                 lineHeight: 1.1,
                 color: '#0e3d2a',
                 margin: 0,

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { hrService } from '../../services/hrService.js';
-import { User, Phone, Mail, Building2, Briefcase, DollarSign, Calendar } from 'lucide-react';
 import { sanitizeAlphabetsOnly, sanitizePhone, sanitizeEmail, sanitizeDigitsOnly, isValidEmail } from '../../utils/inputValidators.js';
 
 export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
@@ -40,7 +39,6 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
   const [emergencyPhone, setEmergencyPhone] = useState('');
   const [emergencyRel, setEmergencyRel] = useState('Family');
 
-  // Initial Master Data Fetch
   useEffect(() => {
     if (isOpen) {
       hrService.getMaster().then((res) => {
@@ -54,7 +52,6 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
             const firstDept = depts[0];
             setDepartmentId(firstDept._id);
 
-            // Filter roles for the first department
             const matchedRoles = rls.filter(
               (r) => r.departmentCode === firstDept.departmentCode ||
                      r.departmentName?.toLowerCase() === firstDept.departmentName?.toLowerCase()
@@ -87,7 +84,6 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
     }
   }, [isOpen]);
 
-  // Dynamically filter roles whenever departmentId changes
   const handleDepartmentChange = (newDeptId) => {
     setDepartmentId(newDeptId);
     const selectedDept = departments.find((d) => d._id === newDeptId);
@@ -158,137 +154,146 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Onboard New Employee"
+      title="Onboard new employee"
       maxWidth="680px"
     >
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        
+        {/* Basic Identity */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1.2fr', gap: '10px' }}>
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Emp Code *</label>
-            <input
-              type="text"
-              required
-              value={employeeCode}
-              onChange={(e) => setEmployeeCode(e.target.value)}
-              style={{ width: '100%', fontSize: '0.8rem' }}
-            />
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Employee code *</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                required
+                className="form-card-input"
+                value={employeeCode}
+                onChange={(e) => setEmployeeCode(e.target.value)}
+              />
+            </div>
           </div>
 
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>First Name * (Alphabets only)</label>
-            <input
-              type="text"
-              required
-              placeholder="e.g. Vikram"
-              value={firstName}
-              onChange={(e) => setFirstName(sanitizeAlphabetsOnly(e.target.value))}
-              style={{ width: '100%', fontSize: '0.8rem' }}
-            />
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>First name *</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                required
+                placeholder="e.g. Vikram"
+                className="form-card-input"
+                value={firstName}
+                onChange={(e) => setFirstName(sanitizeAlphabetsOnly(e.target.value))}
+              />
+            </div>
           </div>
 
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Last Name (Alphabets only)</label>
-            <input
-              type="text"
-              placeholder="e.g. Chauhan"
-              value={lastName}
-              onChange={(e) => setLastName(sanitizeAlphabetsOnly(e.target.value))}
-              style={{ width: '100%', fontSize: '0.8rem' }}
-            />
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr 1fr', gap: '10px' }}>
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Mobile Phone * (Numbers only)</label>
-            <input
-              type="tel"
-              required
-              placeholder="+91 98765 43210"
-              value={mobileNo}
-              onChange={(e) => setMobileNo(sanitizePhone(e.target.value))}
-              style={{ width: '100%', fontSize: '0.8rem' }}
-            />
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Email</label>
-            <input
-              type="email"
-              placeholder="vikram@krishnavalley.com"
-              value={email}
-              onChange={(e) => setEmail(sanitizeEmail(e.target.value))}
-              style={{ width: '100%', fontSize: '0.8rem' }}
-            />
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Gender</label>
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              style={{ width: '100%', fontSize: '0.8rem' }}
-            >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px', fontWeight: '700' }}>Blood Group</label>
-            <select
-              value={bloodGroup}
-              onChange={(e) => setBloodGroup(e.target.value)}
-              style={{ width: '100%', fontSize: '0.8rem', borderColor: '#0f172a' }}
-            >
-              {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
-                <option key={bg} value={bg}>{bg}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Joining Date</label>
-            <input
-              type="date"
-              value={joiningDate}
-              onChange={(e) => setJoiningDate(e.target.value)}
-              style={{ width: '100%', fontSize: '0.8rem' }}
-            />
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Last name</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                placeholder="e.g. Chauhan"
+                className="form-card-input"
+                value={lastName}
+                onChange={(e) => setLastName(sanitizeAlphabetsOnly(e.target.value))}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Organizational Position */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Organizational Placement & Compensation</h4>
+        {/* Contact & Demographics */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Mobile phone *</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="tel"
+                required
+                placeholder="e.g. 9876543210"
+                className="form-card-input"
+                value={mobileNo}
+                onChange={(e) => setMobileNo(sanitizePhone(e.target.value))}
+              />
+            </div>
+          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px', fontWeight: '700' }}>Department *</label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Email address</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="email"
+                placeholder="e.g. vikram@example.com"
+                className="form-card-input"
+                value={email}
+                onChange={(e) => setEmail(sanitizeEmail(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Gender</span>
+            </div>
+            <div className="form-card-input-row">
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="form-card-input"
+                style={{ cursor: 'pointer' }}
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Department & Role */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Department *</span>
+            </div>
+            <div className="form-card-input-row">
               <select
                 required
                 value={departmentId}
                 onChange={(e) => handleDepartmentChange(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem', borderColor: '#17652f' }}
+                className="form-card-input"
+                style={{ cursor: 'pointer' }}
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
-                    {d.departmentName} ({d.departmentCode})
+                    {d.departmentName}
                   </option>
                 ))}
               </select>
             </div>
+          </div>
 
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px', fontWeight: '700' }}>
-                Designation / Role *
-              </label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Designation / Role *</span>
+            </div>
+            <div className="form-card-input-row">
               <select
                 required
                 value={roleId}
                 onChange={(e) => setRoleId(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
+                className="form-card-input"
+                style={{ cursor: 'pointer' }}
               >
                 {departmentRoles.length === 0 ? (
                   <option value="">No roles defined</option>
@@ -301,13 +306,18 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
                 )}
               </select>
             </div>
+          </div>
 
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Employment Type</label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Employment type</span>
+            </div>
+            <div className="form-card-input-row">
               <select
                 value={employmentType}
                 onChange={(e) => setEmploymentType(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
+                className="form-card-input"
+                style={{ cursor: 'pointer' }}
               >
                 <option value="full_time">Full-Time Staff</option>
                 <option value="contract">Site Contract</option>
@@ -316,153 +326,196 @@ export const NewEmployeeModal = ({ isOpen, onClose, onSubmit }) => {
               </select>
             </div>
           </div>
+        </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Work Location / Site Office</label>
-              <input
-                type="text"
-                placeholder="e.g. Tower A Site Office, Mathura"
-                value={workLocation}
-                onChange={(e) => setWorkLocation(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
+        {/* Salary & Location */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Base monthly salary</span>
+              <span className="form-card-badge">Monthly</span>
             </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Base Monthly Salary (₹)</label>
+            <div className="form-card-input-row">
+              <span style={{ color: '#64748b', fontWeight: '600' }}>₹</span>
               <input
                 type="text"
                 placeholder="e.g. 45000"
+                className="form-card-input"
                 value={initialSalary}
                 onChange={(e) => setInitialSalary(sanitizeDigitsOnly(e.target.value))}
-                style={{ width: '100%', fontSize: '0.8rem' }}
+              />
+            </div>
+          </div>
+
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Work location</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                placeholder="e.g. Head Office - Krishna Valley"
+                className="form-card-input"
+                value={workLocation}
+                onChange={(e) => setWorkLocation(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Joining date</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="date"
+                className="form-card-input"
+                value={joiningDate}
+                onChange={(e) => setJoiningDate(e.target.value)}
               />
             </div>
           </div>
         </div>
 
-        {/* Identity & Regulatory Details */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Government Identity & Badging (Staff ID)</h4>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Aadhaar Number (12 Digits)</label>
+        {/* KYC details */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Aadhaar number</span>
+              <span className="form-card-badge">KYC</span>
+            </div>
+            <div className="form-card-input-row">
               <input
                 type="text"
-                placeholder="xxxx xxxx xxxx"
+                placeholder="12-digit number"
+                className="form-card-input"
                 value={aadhaarNumber}
                 onChange={(e) => setAadhaarNumber(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>
+          </div>
 
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>PAN Card Number</label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>PAN number</span>
+              <span className="form-card-badge">KYC</span>
+            </div>
+            <div className="form-card-input-row">
               <input
                 type="text"
                 placeholder="ABCDE1234F"
+                className="form-card-input"
                 value={panNumber}
                 onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>
+          </div>
 
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>UAN / PF Number</label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>UAN / PF number</span>
+              <span className="form-card-badge">Optional</span>
+            </div>
+            <div className="form-card-input-row">
               <input
                 type="text"
-                placeholder="Optional UAN"
+                placeholder="UAN number"
+                className="form-card-input"
                 value={uanNumber}
                 onChange={(e) => setUanNumber(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>
           </div>
         </div>
 
-        {/* Bank & Emergency Details */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Bank Wire & Emergency Contact</h4>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Bank Name</label>
+        {/* Bank account */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Salary bank name</span>
+            </div>
+            <div className="form-card-input-row">
               <input
                 type="text"
                 placeholder="e.g. HDFC Bank, SBI"
+                className="form-card-input"
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Bank Account Number</label>
-              <input
-                type="text"
-                placeholder="Account number"
-                value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>IFSC Code</label>
-              <input
-                type="text"
-                placeholder="HDFC0001234"
-                value={ifscCode}
-                onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
-                style={{ width: '100%', fontSize: '0.8rem' }}
               />
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Emergency Contact Name</label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Account number</span>
+            </div>
+            <div className="form-card-input-row">
               <input
                 type="text"
-                placeholder="e.g. Ramesh Sharma"
-                value={emergencyName}
-                onChange={(e) => setEmergencyName(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
+                placeholder="Account number"
+                className="form-card-input"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
               />
             </div>
+          </div>
 
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Relationship</label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>IFSC code</span>
+            </div>
+            <div className="form-card-input-row">
               <input
                 type="text"
-                placeholder="e.g. Spouse, Father"
-                value={emergencyRel}
-                onChange={(e) => setEmergencyRel(e.target.value)}
-                style={{ width: '100%', fontSize: '0.8rem' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#374151', display: 'block', marginBottom: '2px' }}>Emergency Contact Phone</label>
-              <input
-                type="tel"
-                placeholder="+91 98765 00000"
-                value={emergencyPhone}
-                onChange={(e) => setEmergencyPhone(sanitizePhone(e.target.value))}
-                style={{ width: '100%', fontSize: '0.8rem' }}
+                placeholder="e.g. HDFC0001234"
+                className="form-card-input"
+                value={ifscCode}
+                onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
               />
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-          <button type="button" onClick={onClose} style={{ padding: '7px 14px', background: '#f8f9fa', color: '#374151', borderRadius: '4px' }}>
+        {/* Footer */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '10px',
+          paddingTop: '16px',
+          borderTop: '1px solid #f1f5f9'
+        }}>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding: '9px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#f1f5f9',
+              color: '#475569',
+              fontWeight: '600',
+              fontSize: '0.86rem',
+              cursor: 'pointer'
+            }}
+          >
             Cancel
           </button>
-          <button type="submit" style={{ padding: '7px 18px', background: 'linear-gradient(135deg, #17652f, #17652f)', color: '#111827', fontWeight: '700', borderRadius: '4px', cursor: 'pointer' }}>
-            Onboard Employee & Issue Staff ID
+
+          <button
+            type="submit"
+            style={{
+              padding: '9px 24px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#17652f',
+              color: '#ffffff',
+              fontWeight: '700',
+              fontSize: '0.86rem',
+              cursor: 'pointer'
+            }}
+          >
+            Onboard employee
           </button>
         </div>
       </form>

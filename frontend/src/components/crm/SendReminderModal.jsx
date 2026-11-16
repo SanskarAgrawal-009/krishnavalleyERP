@@ -153,10 +153,10 @@ export const SendReminderModal = ({
         <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>
                 {targetType === 'client' ? 'Client Recipient (Site Visit)' : 'Sales Team Recipient'}
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>
+              <div style={{ fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>
                 {lead.name}
               </div>
               <div style={{ fontSize: '0.78rem', color: '#475569', display: 'flex', gap: '10px', marginTop: '2px' }}>
@@ -174,7 +174,7 @@ export const SendReminderModal = ({
                   padding: '6px 12px',
                   borderRadius: '6px',
                   fontSize: '0.75rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   border: targetType === 'client' ? '2px solid #17652f' : '1px solid #cbd5e1',
                   background: targetType === 'client' ? '#e8f2e5' : '#ffffff',
                   color: targetType === 'client' ? '#17652f' : '#475569',
@@ -190,7 +190,7 @@ export const SendReminderModal = ({
                   padding: '6px 12px',
                   borderRadius: '6px',
                   fontSize: '0.75rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   border: targetType === 'team' ? '2px solid #17652f' : '1px solid #cbd5e1',
                   background: targetType === 'team' ? '#e8f2e5' : '#ffffff',
                   color: targetType === 'team' ? '#17652f' : '#475569',
@@ -213,7 +213,7 @@ export const SendReminderModal = ({
 
         {/* Channel Selector */}
         <div>
-          <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '800', color: '#475569', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '600', color: '#475569', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Select Dispatch Channel
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
@@ -231,7 +231,7 @@ export const SendReminderModal = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.82rem'
               }}
             >
@@ -253,7 +253,7 @@ export const SendReminderModal = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.82rem'
               }}
             >
@@ -275,7 +275,7 @@ export const SendReminderModal = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.82rem'
               }}
             >
@@ -288,7 +288,7 @@ export const SendReminderModal = ({
         {/* Message Content Preview / Editor */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-            <label style={{ fontSize: '0.76rem', fontWeight: '800', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <label style={{ fontSize: '0.76rem', fontWeight: '600', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Reminder Message Preview & Customization
             </label>
             <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
@@ -326,7 +326,7 @@ export const SendReminderModal = ({
                 background: '#17652f',
                 color: '#ffffff',
                 textDecoration: 'none',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.82rem',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -363,7 +363,7 @@ export const SendReminderModal = ({
                   ? 'linear-gradient(135deg, #17652f 0%, #17652f 100%)'
                   : 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.84rem',
                 cursor: sending ? 'not-allowed' : 'pointer',
                 display: 'inline-flex',

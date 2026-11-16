@@ -1042,7 +1042,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                       <span
                         style={{
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           padding: '1px 6px',
                           borderRadius: '10px',
                           backgroundColor: isSelected ? theme.color : '#e2e8f0',
@@ -1368,7 +1368,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>
                   Assigned Team ({totalSelectedCount})
                 </span>
                 {totalSelectedCount > 0 && (
@@ -1423,7 +1423,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '10px',
-                            fontWeight: 800,
+                            fontWeight: 600,
                           }}
                         >
                           {details.initials}
@@ -1497,7 +1497,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '10px',
-                            fontWeight: 800,
+                            fontWeight: 600,
                           }}
                         >
                           {details.initials}
@@ -1711,13 +1711,13 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                           }}
                         >
                           <i className={tier.faIcon} style={{ fontSize: '13px', color: tier.color }} />
-                          <span style={{ fontSize: '12px', fontWeight: 800, color: '#0f172a' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>
                             {tier.title}
                           </span>
                           <span
                             style={{
                               fontSize: '10px',
-                              fontWeight: 800,
+                              fontWeight: 600,
                               padding: '1px 6px',
                               borderRadius: '8px',
                               backgroundColor: tier.badgeBg,
@@ -1772,7 +1772,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                                       alignItems: 'center',
                                       justifyContent: 'center',
                                       fontSize: '12px',
-                                      fontWeight: 800,
+                                      fontWeight: 600,
                                       flexShrink: 0,
                                     }}
                                   >
@@ -1911,7 +1911,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '12px',
-                            fontWeight: 800,
+                            fontWeight: 600,
                             flexShrink: 0,
                           }}
                         >
@@ -2482,7 +2482,7 @@ export const NewTaskModal = ({ isOpen, onClose, onTaskCreated, initialData = nul
                   padding: '10px 26px',
                   fontSize: '13px',
                   backgroundColor: isMDDirective ? '#ca8a04' : '#17652f',
-                  fontWeight: 800,
+                  fontWeight: 600,
                   boxShadow: isMDDirective
                     ? '0 2px 8px rgba(202, 138, 4, 0.3)'
                     : '0 2px 8px rgba(0, 91, 191, 0.25)',

@@ -130,7 +130,7 @@ export const ReviewSiteVisitModal = ({ isOpen, onClose, lead, onApprovalSuccess 
 
           <div>
             <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Commission Payable</span>
-            <div style={{ fontWeight: '800', color: '#17652f', fontSize: '1rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <div style={{ fontWeight: '600', color: '#17652f', fontSize: '1rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '2px' }}>
               ₹{estimatedCommission.toLocaleString('en-IN')}
             </div>
           </div>

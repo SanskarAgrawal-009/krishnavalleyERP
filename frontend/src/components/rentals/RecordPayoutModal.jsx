@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, DollarSign, Receipt, CheckCircle } from 'lucide-react';
+import { X, Receipt, CheckCircle } from 'lucide-react';
 import { rentalService } from '../../services/rentalService.js';
 import { useToast } from '../../context/ToastContext.jsx';
 
@@ -38,7 +38,7 @@ export const RecordPayoutModal = ({ isOpen, onClose, rental, onUpdated }) => {
     try {
       const res = await rentalService.recordRentalPayout(rental._id, form);
       if (res.success) {
-        toast.showSuccess(res.message || 'Payout recorded successfully!');
+        toast.showSuccess(res.message || 'Payout recorded successfully');
         if (onUpdated) onUpdated();
         onClose();
       } else {
@@ -55,8 +55,8 @@ export const RecordPayoutModal = ({ isOpen, onClose, rental, onUpdated }) => {
     <div style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(15, 23, 42, 0.7)',
-      backdropFilter: 'blur(4px)',
+      background: 'rgba(15, 23, 42, 0.45)',
+      backdropFilter: 'blur(3px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -67,220 +67,180 @@ export const RecordPayoutModal = ({ isOpen, onClose, rental, onUpdated }) => {
         background: '#ffffff',
         borderRadius: '16px',
         width: '100%',
-        maxWidth: '540px',
-        overflow: 'hidden',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+        maxWidth: '520px',
+        position: 'relative',
+        boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.18)',
+        padding: '28px 32px'
       }}>
-        {/* Header */}
+        {/* Minimal Close Button */}
+        <button
+          onClick={onClose}
+          type="button"
+          aria-label="Close"
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'transparent',
+            border: 'none',
+            color: '#94a3b8',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '6px'
+          }}
+        >
+          <X size={20} />
+        </button>
+
+        {/* Centered Heading */}
+        <div style={{ textAlign: 'center', marginBottom: '22px' }}>
+          <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: '#0f172a' }}>
+            Record rental payout
+          </h2>
+          <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+            Flat {rental.flatNumber} • Owner: <strong>{rental.ownerName || 'Current Owner'}</strong>
+          </p>
+        </div>
+
+        {/* Summary Card */}
         <div style={{
-          padding: '18px 24px',
-          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
-          color: '#ffffff',
+          background: '#f8fafc',
+          border: '1px solid #e2e8f0',
+          borderRadius: '10px',
+          padding: '12px 16px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottom: '1px solid #334155'
+          marginBottom: '18px'
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.2rem', fontWeight: '800' }}>Record Rental Payout</span>
-              <span style={{
-                background: '#17652f',
-                color: '#ffffff',
-                fontSize: '0.72rem',
-                fontWeight: '700',
-                padding: '2px 8px',
-                borderRadius: '6px'
-              }}>
-                Flat {rental.flatNumber}
-              </span>
-            </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
-              Owner: <strong>{rental.ownerName || 'Current Owner'}</strong>
-            </p>
+            <span style={{ color: '#64748b', display: 'block', fontSize: '0.72rem', fontWeight: '600', textTransform: 'uppercase' }}>Total paid to date</span>
+            <strong style={{ color: '#17652f', fontSize: '0.98rem' }}>{formatINR(rental.totalPaid)}</strong>
           </div>
-
-          <button
-            onClick={onClose}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              borderRadius: '8px',
-              color: '#94a3b8',
-              cursor: 'pointer',
-              padding: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <X size={18} />
-          </button>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ color: '#64748b', display: 'block', fontSize: '0.72rem', fontWeight: '600', textTransform: 'uppercase' }}>Outstanding balance</span>
+            <strong style={{ color: '#0f172a', fontSize: '0.98rem' }}>{formatINR(rental.amountOutstanding)}</strong>
+          </div>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* Form Body with Boxed Input Cards */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           
-          {/* Quick Stats Pill */}
-          <div style={{
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            borderRadius: '10px',
-            padding: '12px 16px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '0.8rem'
-          }}>
-            <div>
-              <span style={{ color: '#64748b', display: 'block', fontSize: '0.72rem' }}>TOTAL PAID TO DATE</span>
-              <strong style={{ color: '#17652f', fontSize: '1rem' }}>{formatINR(rental.totalPaid)}</strong>
+          {/* Card: Payout Amount */}
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Payout disbursement amount</span>
+              <span className="form-card-badge">Net Payout</span>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <span style={{ color: '#64748b', display: 'block', fontSize: '0.72rem' }}>OUTSTANDING BALANCE</span>
-              <strong style={{ color: '#0f172a', fontSize: '1rem' }}>{formatINR(rental.amountOutstanding)}</strong>
-            </div>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '6px' }}>
-              PAYOUT DISBURSEMENT AMOUNT (₹)
-            </label>
-            <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: '700', color: '#64748b' }}>₹</span>
+            <div className="form-card-input-row">
+              <span style={{ color: '#64748b', fontWeight: '600', fontSize: '1.05rem' }}>₹</span>
               <input
                 type="number"
                 min="1"
                 required
+                className="form-card-input"
+                style={{ fontSize: '1.1rem', fontWeight: '700' }}
                 value={form.amount}
                 onChange={(e) => setForm({ ...form, amount: Number(e.target.value) })}
-                style={{
-                  width: '100%',
-                  padding: '9px 12px 9px 28px',
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  fontSize: '0.95rem',
-                  fontWeight: '800',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
               />
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '6px' }}>
-                PAYMENT DATE
-              </label>
+          {/* Row: Date + Mode */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="form-card-box">
+              <div className="form-card-prompt">
+                <span>Payment date</span>
+              </div>
+              <div className="form-card-input-row">
+                <input
+                  type="date"
+                  required
+                  className="form-card-input"
+                  value={form.paymentDate}
+                  onChange={(e) => setForm({ ...form, paymentDate: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="form-card-box">
+              <div className="form-card-prompt">
+                <span>Payment mode</span>
+              </div>
+              <div className="form-card-input-row">
+                <select
+                  value={form.paymentMode}
+                  onChange={(e) => setForm({ ...form, paymentMode: e.target.value })}
+                  className="form-card-input"
+                  style={{ cursor: 'pointer' }}
+                >
+                  <option value="NEFT">NEFT Bank Transfer</option>
+                  <option value="RTGS">RTGS High-Value</option>
+                  <option value="IMPS">IMPS Instant</option>
+                  <option value="CMS">Corporate CMS Batch</option>
+                  <option value="Cheque">Cheque</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Card: UTR Reference */}
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>UTR or transaction reference number</span>
+            </div>
+            <div className="form-card-input-row">
               <input
-                type="date"
+                type="text"
                 required
-                value={form.paymentDate}
-                onChange={(e) => setForm({ ...form, paymentDate: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '9px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  fontSize: '0.85rem',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
+                placeholder="e.g. CMS-NEFT-A006-202609"
+                className="form-card-input"
+                value={form.referenceNumber}
+                onChange={(e) => setForm({ ...form, referenceNumber: e.target.value })}
               />
             </div>
+          </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '6px' }}>
-                PAYMENT MODE
-              </label>
-              <select
-                value={form.paymentMode}
-                onChange={(e) => setForm({ ...form, paymentMode: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '9px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  fontSize: '0.85rem',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  background: '#ffffff'
-                }}
-              >
-                <option value="NEFT">NEFT Bank Transfer</option>
-                <option value="RTGS">RTGS High-Value</option>
-                <option value="IMPS">IMPS Instant</option>
-                <option value="CMS">Corporate CMS Batch</option>
-                <option value="Cheque">Cheque</option>
-              </select>
+          {/* Card: Notes / Remarks */}
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Notes or remarks (optional)</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                placeholder="e.g. Cleared via HDFC Bank"
+                className="form-card-input"
+                value={form.remarks}
+                onChange={(e) => setForm({ ...form, remarks: e.target.value })}
+              />
             </div>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '6px' }}>
-              UTR / TRANSACTION REFERENCE NUMBER
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="e.g. CMS-NEFT-A006-202609"
-              value={form.referenceNumber}
-              onChange={(e) => setForm({ ...form, referenceNumber: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '9px 12px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.85rem',
-                outline: 'none',
-                boxSizing: 'border-box'
-              }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '6px' }}>
-              NOTES / REMARKS
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Month 19 Payout cleared via HDFC"
-              value={form.remarks}
-              onChange={(e) => setForm({ ...form, remarks: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '9px 12px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.85rem',
-                outline: 'none',
-                boxSizing: 'border-box'
-              }}
-            />
-          </div>
-
-          {/* Modal Footer */}
+          {/* Action Footer */}
           <div style={{
             display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '12px',
-            borderTop: '1px solid #e2e8f0',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '12px',
             paddingTop: '16px',
-            marginTop: '8px'
+            borderTop: '1px solid #f1f5f9'
           }}>
             <button
               type="button"
               onClick={onClose}
               disabled={saving}
               style={{
-                padding: '9px 18px',
+                padding: '9px 20px',
                 borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                background: '#ffffff',
+                border: 'none',
+                background: '#f1f5f9',
                 color: '#475569',
                 fontWeight: '600',
-                fontSize: '0.82rem',
+                fontSize: '0.86rem',
                 cursor: 'pointer'
               }}
             >
@@ -294,15 +254,14 @@ export const RecordPayoutModal = ({ isOpen, onClose, rental, onUpdated }) => {
                 padding: '9px 24px',
                 borderRadius: '8px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #17652f, #17652f)',
+                background: '#17652f',
                 color: '#ffffff',
                 fontWeight: '700',
-                fontSize: '0.82rem',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                boxShadow: '0 2px 6px rgba(22, 163, 74, 0.3)'
+                fontSize: '0.86rem',
+                cursor: saving ? 'not-allowed' : 'pointer'
               }}
             >
-              {saving ? 'Recording...' : 'Disburse & Update Ledger'}
+              {saving ? 'Recording...' : 'Disburse & update ledger'}
             </button>
           </div>
 

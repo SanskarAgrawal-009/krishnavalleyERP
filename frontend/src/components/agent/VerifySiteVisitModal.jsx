@@ -57,13 +57,13 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
           
           {/* AGENT CARD */}
           <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', marginBottom: '4px' }}>
               Channel Partner / Agent
             </div>
-            <div style={{ fontWeight: '800', color: '#1e293b', fontSize: '0.88rem' }}>
+            <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '0.88rem' }}>
               {siteVisit.agentName}
             </div>
-            <div style={{ display: 'inline-block', marginTop: '2px', padding: '1px 6px', background: '#e8f2e5', color: '#17652f', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '800', fontFamily: 'monospace' }}>
+            <div style={{ display: 'inline-block', marginTop: '2px', padding: '1px 6px', background: '#e8f2e5', color: '#17652f', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '600', fontFamily: 'monospace' }}>
               CODE: {siteVisit.agentCode}
             </div>
             <div style={{ fontSize: '0.74rem', color: '#475569', marginTop: '4px' }}>
@@ -73,10 +73,10 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
 
           {/* PARTY CARD */}
           <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', marginBottom: '4px' }}>
               Customer / Visiting Party
             </div>
-            <div style={{ fontWeight: '800', color: '#1e293b', fontSize: '0.88rem' }}>
+            <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '0.88rem' }}>
               {siteVisit.partyName}
             </div>
             <div style={{ fontSize: '0.76rem', color: '#17652f', fontWeight: '700', marginTop: '2px' }}>
@@ -132,7 +132,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
 
         {/* PARTY SELFIE / SITE VISIT PROOF */}
         <div>
-          <label style={{ fontSize: '0.76rem', color: '#334155', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+          <label style={{ fontSize: '0.76rem', color: '#334155', fontWeight: '600', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
             Party Selfie & On-Site Verification Proof:
           </label>
 
@@ -260,7 +260,7 @@ export const VerifySiteVisitModal = ({ isOpen, onClose, siteVisit, onVerificatio
               background: '#17652f',
               border: 'none',
               borderRadius: '6px',
-              fontWeight: '800',
+              fontWeight: '600',
               color: '#ffffff',
               fontSize: '0.84rem',
               cursor: processing ? 'not-allowed' : 'pointer',

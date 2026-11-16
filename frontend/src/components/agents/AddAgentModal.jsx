@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {
-  X, User, Phone, Mail, MapPin, Building2, Shield, Star,
-  DollarSign, Hash, ChevronRight, ArrowLeft, CheckCircle2,
-  Briefcase, CreditCard, Sparkles, UserPlus
-} from 'lucide-react';
+import { X, CheckCircle2 } from 'lucide-react';
 import { authService } from '../../services/authService.js';
 import { agentService } from '../../services/agentService.js';
 
 const STEPS = [
-  { id: 1, title: 'Basic Info', subtitle: 'Name & Login', icon: User, color: '#17652f' },
-  { id: 2, title: 'Agent Profile', subtitle: 'Agency & Commission', icon: Briefcase, color: '#17652f' },
-  { id: 3, title: 'Bank Details', subtitle: 'Payment Info', icon: CreditCard, color: '#17652f' },
+  { id: 1, title: 'Basic info' },
+  { id: 2, title: 'Partner profile' },
+  { id: 3, title: 'Bank details' },
 ];
 
 const CITIES = [
@@ -26,14 +22,12 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
   const [agentRoleId, setAgentRoleId] = useState(null);
 
   const [form, setForm] = useState({
-    // Step 1 - Basic Info
     firstName: '',
     lastName: '',
     email: '',
     mobileNo: '',
     username: '',
     password: '',
-    // Step 2 - Agent Profile
     agentCode: '',
     agencyName: '',
     tier: 'Standard',
@@ -41,7 +35,6 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
     reraNumber: '',
     commissionType: 'percentage',
     commissionRate: 2,
-    // Step 3 - Bank Details
     accountHolder: '',
     accountNumber: '',
     ifscCode: '',
@@ -49,7 +42,6 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
     upiId: '',
   });
 
-  // Fetch agent role ID on mount
   useEffect(() => {
     if (isOpen) {
       (async () => {
@@ -59,9 +51,7 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
             const agentRole = res.data.find(r =>
               r.roleCode === 'agent' || r.roleName?.toLowerCase().includes('agent') || r.roleName?.toLowerCase().includes('channel')
             );
-            if (agentRole) {
-              setAgentRoleId(agentRole._id);
-            }
+            if (agentRole) setAgentRoleId(agentRole._id);
           }
         } catch (err) {
           console.error('Failed to fetch roles:', err);
@@ -79,7 +69,6 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
     }
   }, [isOpen]);
 
-  // Auto-generate username from name
   useEffect(() => {
     if (form.firstName && !form.username) {
       const base = `${form.firstName}${form.lastName ? '.' + form.lastName : ''}`.toLowerCase().replace(/\s+/g, '').slice(0, 20);
@@ -89,48 +78,19 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
 
   if (!isOpen) return null;
 
-  const inputStyle = {
-    width: '100%',
-    padding: '10px 12px',
-    borderRadius: '8px',
-    border: '1.5px solid #e2e8f0',
-    fontSize: '0.88rem',
-    outline: 'none',
-    boxSizing: 'border-box',
-    transition: 'border-color 0.2s, box-shadow 0.2s',
-    fontFamily: "'Inter', sans-serif",
-    background: '#ffffff',
-  };
-
-  const inputFocusStyle = {
-    borderColor: '#17652f',
-    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
-  };
-
-  const labelStyle = {
-    display: 'block',
-    fontSize: '0.72rem',
-    fontWeight: '700',
-    color: '#64748b',
-    marginBottom: '6px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-  };
-
   const validateStep = (step) => {
     switch (step) {
       case 1:
         return form.firstName.trim() && form.email.trim() && form.username.trim() && form.password.length >= 4;
       case 2:
-        return true; // Optional fields
       case 3:
-        return true; // Optional fields
       default:
         return true;
     }
   };
 
-  const goNext = () => {
+  const goNext = (e) => {
+    if (e) e.preventDefault();
     if (currentStep < STEPS.length && validateStep(currentStep)) {
       setCurrentStep(s => s + 1);
     }
@@ -142,56 +102,49 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
     }
   };
 
-  const goToStep = (step) => {
-    if (step < currentStep || validateStep(currentStep)) {
-      setCurrentStep(step);
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!validateStep(1)) {
+      setError('Please fill in required fields on Step 1');
+      setCurrentStep(1);
+      return;
     }
-  };
 
-  const handleSubmit = async () => {
     setSaving(true);
     setError('');
+
     try {
-      const userData = {
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        email: form.email.trim().toLowerCase(),
-        mobileNo: form.mobileNo.trim(),
-        username: form.username.trim().toLowerCase(),
+      const payload = {
+        name: `${form.firstName} ${form.lastName}`.trim(),
+        username: form.username,
+        email: form.email,
         password: form.password,
-        roleId: agentRoleId,
-        status: 'active',
+        mobile: form.mobileNo,
+        role: agentRoleId || 'agent',
         agentProfile: {
-          agentCode: form.agentCode.trim().toUpperCase() || undefined,
-          agencyName: form.agencyName.trim() || undefined,
+          agentCode: form.agentCode || undefined,
+          agencyName: form.agencyName || undefined,
           tier: form.tier,
           city: form.city || undefined,
-          reraNumber: form.reraNumber.trim() || undefined,
+          reraNumber: form.reraNumber || undefined,
           commissionType: form.commissionType,
           commissionRate: Number(form.commissionRate) || 2,
           bankDetails: {
-            accountHolder: form.accountHolder.trim() || undefined,
-            accountNumber: form.accountNumber.trim() || undefined,
-            ifscCode: form.ifscCode.trim().toUpperCase() || undefined,
-            bankName: form.bankName.trim() || undefined,
-            upiId: form.upiId.trim() || undefined,
+            accountHolder: form.accountHolder || undefined,
+            accountNumber: form.accountNumber || undefined,
+            ifscCode: form.ifscCode || undefined,
+            bankName: form.bankName || undefined,
+            upiId: form.upiId || undefined,
           },
         },
       };
 
-      let res;
-      try {
-        res = await agentService.createAgent(userData);
-      } catch (agentErr) {
-        // Fallback to authService.createUser
-        res = await authService.createUser(userData);
-      }
-
-      if (res && res.success) {
+      const res = await agentService.createAgent(payload);
+      if (res.success) {
         if (onAgentAdded) onAgentAdded(res.data);
         onClose();
       } else {
-        setError(res?.message || 'Failed to create agent');
+        setError(res.message || 'Failed to create agent');
       }
     } catch (err) {
       setError(err.message || 'Server error creating agent');
@@ -200,594 +153,581 @@ export const AddAgentModal = ({ isOpen, onClose, onAgentAdded }) => {
     }
   };
 
-  // ==========================================
-  // STEP 1: Basic Info
-  // ==========================================
-  const renderStep1 = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', animation: 'stepFadeIn 0.35s ease' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-        <div style={{
-          width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #17652f, #17652f)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <User size={16} color="#fff" />
-        </div>
-        <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Basic Information</h3>
-          <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Agent personal details & login credentials</p>
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-        <div>
-          <label style={labelStyle}>First Name *</label>
-          <input
-            type="text"
-            required
-            value={form.firstName}
-            onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-            placeholder="e.g. Rajesh"
-            style={inputStyle}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-        <div>
-          <label style={labelStyle}>Last Name</label>
-          <input
-            type="text"
-            value={form.lastName}
-            onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-            placeholder="e.g. Sharma"
-            style={inputStyle}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-        <div>
-          <label style={labelStyle}>Email Address *</label>
-          <input
-            type="email"
-            required
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            placeholder="agent@example.com"
-            style={inputStyle}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-        <div>
-          <label style={labelStyle}>Mobile Number</label>
-          <input
-            type="text"
-            value={form.mobileNo}
-            onChange={(e) => setForm({ ...form, mobileNo: e.target.value })}
-            placeholder="9876543210"
-            style={inputStyle}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-      </div>
-
+  return (
+    <div style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(15, 23, 42, 0.45)',
+      backdropFilter: 'blur(3px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1100,
+      padding: '16px'
+    }}>
       <div style={{
-        padding: '16px', background: '#f8fafc', borderRadius: '12px',
-        border: '1px solid #e2e8f0',
+        background: '#ffffff',
+        borderRadius: '16px',
+        width: '100%',
+        maxWidth: '580px',
+        position: 'relative',
+        boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.18)',
+        padding: '28px 32px'
       }}>
-        <h4 style={{ margin: '0 0 12px', fontSize: '0.82rem', fontWeight: '700', color: '#334155' }}>
-          Login Credentials
-        </h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-          <div>
-            <label style={labelStyle}>Username *</label>
-            <input
-              type="text"
-              required
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase().replace(/\s/g, '') })}
-              placeholder="rajesh.sharma"
-              style={{ ...inputStyle, fontFamily: 'monospace' }}
-              onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Password * (min 4 chars)</label>
-            <input
-              type="password"
-              required
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="••••••••"
-              style={inputStyle}
-              onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+        {/* Minimal Close Button */}
+        <button
+          onClick={onClose}
+          type="button"
+          aria-label="Close"
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'transparent',
+            border: 'none',
+            color: '#94a3b8',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '6px'
+          }}
+        >
+          <X size={20} />
+        </button>
 
-  // ==========================================
-  // STEP 2: Agent Profile
-  // ==========================================
-  const renderStep2 = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', animation: 'stepFadeIn 0.35s ease' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-        <div style={{
-          width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #17652f, #17652f)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <Briefcase size={16} color="#fff" />
+        {/* Centered Heading */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: '#0f172a' }}>
+            Register channel partner
+          </h2>
+          <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+            Step {currentStep} of {STEPS.length} — {STEPS[currentStep - 1].title}
+          </p>
         </div>
-        <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Agent Profile</h3>
-          <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Agency details, tier, and commission setup</p>
-        </div>
-      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-        <div>
-          <label style={labelStyle}>Agent Code</label>
-          <input
-            type="text"
-            value={form.agentCode}
-            onChange={(e) => setForm({ ...form, agentCode: e.target.value.toUpperCase() })}
-            placeholder="e.g. AGT-101"
-            style={{ ...inputStyle, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-        <div>
-          <label style={labelStyle}>Agency Name</label>
-          <input
-            type="text"
-            value={form.agencyName}
-            onChange={(e) => setForm({ ...form, agencyName: e.target.value })}
-            placeholder="e.g. Sharma Real Estate"
-            style={inputStyle}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-        <div>
-          <label style={labelStyle}>Tier</label>
-          <select
-            value={form.tier}
-            onChange={(e) => setForm({ ...form, tier: e.target.value })}
-            style={{ ...inputStyle, cursor: 'pointer' }}
-          >
-            <option value="Standard">Standard</option>
-            <option value="Silver">Silver</option>
-            <option value="Gold">Gold</option>
-            <option value="Platinum">Platinum</option>
-          </select>
-        </div>
-        <div>
-          <label style={labelStyle}>City</label>
-          <select
-            value={form.city}
-            onChange={(e) => setForm({ ...form, city: e.target.value })}
-            style={{ ...inputStyle, cursor: 'pointer' }}
-          >
-            <option value="">Select City...</option>
-            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label style={labelStyle}>RERA Number</label>
-        <input
-          type="text"
-          value={form.reraNumber}
-          onChange={(e) => setForm({ ...form, reraNumber: e.target.value })}
-          placeholder="e.g. UPRERAPRJ12345"
-          style={inputStyle}
-          onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-          onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-        />
-      </div>
-
-      {/* Commission Setup */}
-      <div style={{
-        padding: '16px', background: '#e8f2e5', borderRadius: '12px',
-        border: '1.5px solid #cde4c9',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-          <DollarSign size={15} color="#17652f" />
-          <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#17652f' }}>Commission Setup</span>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-          <div>
-            <label style={labelStyle}>Commission Type</label>
-            <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: '8px', padding: '3px', gap: '2px' }}>
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, commissionType: 'percentage' })}
-                style={{
-                  flex: 1, padding: '6px 12px', fontSize: '0.78rem', fontWeight: '700',
-                  borderRadius: '6px', border: 'none', cursor: 'pointer',
-                  background: form.commissionType === 'percentage' ? '#17652f' : 'transparent',
-                  color: form.commissionType === 'percentage' ? '#ffffff' : '#475569',
-                  transition: 'all 0.2s',
-                }}
-              >% Percentage</button>
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, commissionType: 'flat' })}
-                style={{
-                  flex: 1, padding: '6px 12px', fontSize: '0.78rem', fontWeight: '700',
-                  borderRadius: '6px', border: 'none', cursor: 'pointer',
-                  background: form.commissionType === 'flat' ? '#17652f' : 'transparent',
-                  color: form.commissionType === 'flat' ? '#ffffff' : '#475569',
-                  transition: 'all 0.2s',
-                }}
-              >₹ Flat Amount</button>
-            </div>
-          </div>
-          <div>
-            <label style={labelStyle}>
-              Commission Rate {form.commissionType === 'percentage' ? '(%)' : '(₹)'}
-            </label>
-            <input
-              type="number"
-              min="0"
-              step={form.commissionType === 'percentage' ? '0.5' : '1000'}
-              value={form.commissionRate}
-              onChange={(e) => setForm({ ...form, commissionRate: Number(e.target.value) })}
-              style={{ ...inputStyle, fontWeight: '800', fontSize: '1rem' }}
-              onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // ==========================================
-  // STEP 3: Bank Details
-  // ==========================================
-  const renderStep3 = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', animation: 'stepFadeIn 0.35s ease' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-        <div style={{
-          width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #17652f, #17652f)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <CreditCard size={16} color="#fff" />
-        </div>
-        <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Bank & Payment Details</h3>
-          <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>For commission payouts (can be updated later)</p>
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-        <div>
-          <label style={labelStyle}>Account Holder Name</label>
-          <input
-            type="text"
-            value={form.accountHolder}
-            onChange={(e) => setForm({ ...form, accountHolder: e.target.value })}
-            placeholder="As per bank records"
-            style={inputStyle}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-        <div>
-          <label style={labelStyle}>Bank Name</label>
-          <input
-            type="text"
-            value={form.bankName}
-            onChange={(e) => setForm({ ...form, bankName: e.target.value })}
-            placeholder="e.g. HDFC Bank"
-            style={inputStyle}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-        <div>
-          <label style={labelStyle}>Account Number</label>
-          <input
-            type="text"
-            value={form.accountNumber}
-            onChange={(e) => setForm({ ...form, accountNumber: e.target.value })}
-            placeholder="e.g. 1234567890123"
-            style={{ ...inputStyle, letterSpacing: '0.1em' }}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-        <div>
-          <label style={labelStyle}>IFSC Code</label>
-          <input
-            type="text"
-            value={form.ifscCode}
-            onChange={(e) => setForm({ ...form, ifscCode: e.target.value.toUpperCase() })}
-            placeholder="e.g. HDFC0001234"
-            style={{ ...inputStyle, textTransform: 'uppercase', letterSpacing: '0.1em' }}
-            onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-            onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-          />
-        </div>
-      </div>
-
-      <div>
-        <label style={labelStyle}>UPI ID</label>
-        <input
-          type="text"
-          value={form.upiId}
-          onChange={(e) => setForm({ ...form, upiId: e.target.value })}
-          placeholder="e.g. rajesh@upi"
-          style={inputStyle}
-          onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-          onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-        />
-      </div>
-
-      {/* Summary Preview */}
-      <div style={{
-        padding: '16px 18px', background: '#f8fafc',
-        borderRadius: '12px', border: '1px solid #e2e8f0',
-      }}>
-        <h4 style={{ margin: '0 0 10px', fontSize: '0.82rem', fontWeight: '800', color: '#334155' }}>
-          Agent Summary
-        </h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.82rem' }}>
-          {[
-            { label: 'Name', value: `${form.firstName} ${form.lastName}`.trim() || '—' },
-            { label: 'Username', value: form.username || '—' },
-            { label: 'Email', value: form.email || '—' },
-            { label: 'Mobile', value: form.mobileNo || '—' },
-            { label: 'Agent Code', value: form.agentCode || 'Auto-generated' },
-            { label: 'Agency', value: form.agencyName || '—' },
-            { label: 'Tier', value: form.tier },
-            { label: 'Commission', value: form.commissionType === 'percentage' ? `${form.commissionRate}%` : `₹${form.commissionRate}` },
-          ].map((item, i) => (
-            <div key={i} style={{
-              display: 'flex', justifyContent: 'space-between',
-              padding: '5px 10px', borderRadius: '6px',
-              background: i % 2 === 0 ? '#ffffff' : '#f1f5f9',
-            }}>
-              <span style={{ color: '#64748b', fontWeight: '600' }}>{item.label}</span>
-              <span style={{ color: '#0f172a', fontWeight: '700' }}>{item.value}</span>
-            </div>
+        {/* Stepper Progress */}
+        <div className="form-stepper-header" style={{ marginBottom: '22px' }}>
+          {STEPS.map((s, idx) => (
+            <React.Fragment key={s.id}>
+              <div
+                className={`form-stepper-item ${currentStep === s.id ? 'active' : ''} ${currentStep > s.id ? 'completed' : ''}`}
+                onClick={() => { if (s.id < currentStep || validateStep(currentStep)) setCurrentStep(s.id); }}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="form-stepper-circle">
+                  {currentStep > s.id ? '✓' : s.id}
+                </div>
+                <span className="form-stepper-label">{s.title}</span>
+              </div>
+              {idx < STEPS.length - 1 && <div className={`form-stepper-line ${currentStep > s.id ? 'completed' : ''}`} />}
+            </React.Fragment>
           ))}
         </div>
-      </div>
-    </div>
-  );
 
-  const renderCurrentStep = () => {
-    switch (currentStep) {
-      case 1: return renderStep1();
-      case 2: return renderStep2();
-      case 3: return renderStep3();
-      default: return null;
-    }
-  };
-
-  return (
-    <div
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(15, 23, 42, 0.7)',
-        backdropFilter: 'blur(8px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        zIndex: 1100, padding: '16px',
-      }}
-    >
-      <div
-        style={{
-          background: '#ffffff', borderRadius: '20px',
-          width: '100%', maxWidth: '640px', maxHeight: '92vh',
-          display: 'flex', flexDirection: 'column',
-          boxShadow: '0 25px 60px -12px rgba(0, 0, 0, 0.3)',
-          overflow: 'hidden',
-        }}
-      >
-        {/* HEADER */}
-        <div style={{
-          padding: '18px 24px',
-          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
-          color: '#ffffff',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <UserPlus size={20} />
-              <span style={{ fontSize: '1.15rem', fontWeight: '800' }}>Add New Agent</span>
-            </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: '#86c8a0' }}>
-              Step {currentStep} of {STEPS.length} — {STEPS[currentStep - 1].subtitle}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)', border: 'none',
-              borderRadius: '8px', color: '#94a3b8', cursor: 'pointer',
-              padding: '8px', display: 'flex', alignItems: 'center',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* STEPPER */}
-        <div style={{
-          display: 'flex', alignItems: 'center',
-          padding: '14px 24px', background: '#f8fafc',
-          borderBottom: '1px solid #e2e8f0',
-        }}>
-          {STEPS.map((step, idx) => {
-            const isActive = currentStep === step.id;
-            const isCompleted = currentStep > step.id;
-            const StepIcon = step.icon;
-            return (
-              <React.Fragment key={step.id}>
-                <button
-                  type="button"
-                  onClick={() => goToStep(step.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 14px', borderRadius: '10px', border: 'none',
-                    cursor: 'pointer',
-                    background: isActive ? '#ffffff' : 'transparent',
-                    boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-                    transition: 'all 0.2s ease', flex: 1,
-                  }}
-                >
-                  <div style={{
-                    width: '30px', height: '30px', borderRadius: '8px',
-                    background: isCompleted
-                      ? 'linear-gradient(135deg, #17652f, #17652f)'
-                      : isActive
-                        ? `linear-gradient(135deg, ${step.color}, ${step.color}dd)`
-                        : '#e2e8f0',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.3s ease', flexShrink: 0,
-                  }}>
-                    {isCompleted ? (
-                      <CheckCircle2 size={14} color="#fff" />
-                    ) : (
-                      <StepIcon size={14} color={isActive ? '#fff' : '#94a3b8'} />
-                    )}
-                  </div>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{
-                      fontSize: '0.72rem', fontWeight: '800',
-                      color: isActive ? '#0f172a' : isCompleted ? '#17652f' : '#94a3b8',
-                    }}>{step.title}</div>
-                  </div>
-                </button>
-                {idx < STEPS.length - 1 && (
-                  <div style={{
-                    width: '20px', height: '2px', flexShrink: 0,
-                    background: isCompleted ? '#17652f' : '#e2e8f0',
-                    borderRadius: '1px',
-                  }} />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
-
-        {/* CONTENT */}
-        <div style={{ padding: '22px 24px', overflowY: 'auto', flex: 1 }}>
-          {renderCurrentStep()}
-        </div>
-
-        {/* Error */}
         {error && (
           <div style={{
-            margin: '0 24px 12px', padding: '10px 14px',
-            background: '#f1f5f9', border: '1px solid #cbd5e1',
-            borderRadius: '8px', fontSize: '0.82rem', color: '#0f172a', fontWeight: '600',
-          }}>{error}
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            color: '#991b1b',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            fontSize: '0.82rem',
+            marginBottom: '14px'
+          }}>
+            {error}
           </div>
         )}
 
-        {/* FOOTER */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '14px 24px', borderTop: '1px solid #e2e8f0',
-          background: '#ffffff',
-        }}>
-          <button
-            type="button"
-            onClick={currentStep === 1 ? onClose : goPrev}
-            style={{
-              padding: '10px 20px', borderRadius: '10px',
-              border: '1px solid #e2e8f0', background: '#ffffff',
-              color: '#475569', fontSize: '0.84rem', fontWeight: '700',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-              transition: 'all 0.2s',
-            }}
-          >
-            {currentStep === 1 ? 'Cancel' : <><ArrowLeft size={15} /> Back</>}
-          </button>
+        {/* STEP 1: Basic Info */}
+        {currentStep === 1 && (
+          <form onSubmit={goNext} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>First name *</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Rajesh"
+                    className="form-card-input"
+                    value={form.firstName}
+                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  />
+                </div>
+              </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {STEPS.map((step) => (
-              <div
-                key={step.id}
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Last name</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="e.g. Sharma"
+                    className="form-card-input"
+                    value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Email address *</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="email"
+                    required
+                    placeholder="partner@example.com"
+                    className="form-card-input"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Mobile number</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="tel"
+                    placeholder="9876543210"
+                    className="form-card-input"
+                    value={form.mobileNo}
+                    onChange={(e) => setForm({ ...form, mobileNo: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Portal username *</span>
+                  <span className="form-card-badge">Login ID</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    required
+                    placeholder="rajesh.sharma"
+                    className="form-card-input"
+                    value={form.username}
+                    onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase().replace(/\s/g, '') })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Password * (min 4 chars)</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    className="form-card-input"
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '12px',
+              paddingTop: '16px',
+              borderTop: '1px solid #f1f5f9'
+            }}>
+              <button
+                type="button"
+                onClick={onClose}
                 style={{
-                  width: currentStep === step.id ? '24px' : '8px',
-                  height: '8px', borderRadius: '4px',
-                  background: currentStep >= step.id
-                    ? 'linear-gradient(135deg, #17652f, #17652f)' : '#e2e8f0',
-                  transition: 'all 0.3s ease',
+                  padding: '9px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  fontWeight: '600',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer'
                 }}
-              />
-            ))}
-          </div>
+              >
+                Cancel
+              </button>
 
-          {currentStep < STEPS.length ? (
-            <button
-              type="button"
-              onClick={goNext}
-              disabled={!validateStep(currentStep)}
-              style={{
-                padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: validateStep(currentStep)
-                  ? 'linear-gradient(135deg, #17652f, #17652f)' : '#e2e8f0',
-                color: validateStep(currentStep) ? '#ffffff' : '#94a3b8',
-                fontSize: '0.84rem', fontWeight: '800',
-                cursor: validateStep(currentStep) ? 'pointer' : 'not-allowed',
-                display: 'flex', alignItems: 'center', gap: '6px',
-                boxShadow: validateStep(currentStep) ? '0 4px 12px rgba(37,99,235,0.35)' : 'none',
-              }}
-            >
-              Next <ChevronRight size={16} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={saving || !validateStep(1)}
-              style={{
-                padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg, #17652f, #17652f)',
-                color: '#ffffff', fontSize: '0.84rem', fontWeight: '800',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                boxShadow: '0 4px 12px rgba(22,163,74,0.35)',
-                display: 'flex', alignItems: 'center', gap: '8px',
-              }}
-            >
-              <UserPlus size={16} />
-              {saving ? 'Creating...' : 'Create Agent'}
-            </button>
-          )}
-        </div>
+              <button
+                type="submit"
+                disabled={!validateStep(1)}
+                style={{
+                  padding: '9px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: validateStep(1) ? '#17652f' : '#cbd5e1',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '0.86rem',
+                  cursor: validateStep(1) ? 'pointer' : 'not-allowed'
+                }}
+              >
+                Continue
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* STEP 2: Profile */}
+        {currentStep === 2 && (
+          <form onSubmit={goNext} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Partner code</span>
+                  <span className="form-card-badge">Optional</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="e.g. AGT-101"
+                    className="form-card-input"
+                    value={form.agentCode}
+                    onChange={(e) => setForm({ ...form, agentCode: e.target.value.toUpperCase() })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Agency or firm name</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="e.g. Sharma Real Estate"
+                    className="form-card-input"
+                    value={form.agencyName}
+                    onChange={(e) => setForm({ ...form, agencyName: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Partner tier</span>
+                </div>
+                <div className="form-card-input-row">
+                  <select
+                    value={form.tier}
+                    onChange={(e) => setForm({ ...form, tier: e.target.value })}
+                    className="form-card-input"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <option value="Standard">Standard</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Platinum">Platinum</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Operating city</span>
+                </div>
+                <div className="form-card-input-row">
+                  <select
+                    value={form.city}
+                    onChange={(e) => setForm({ ...form, city: e.target.value })}
+                    className="form-card-input"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <option value="">Select city...</option>
+                    {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-card-box">
+              <div className="form-card-prompt">
+                <span>RERA registration number</span>
+                <span className="form-card-badge">Compliance</span>
+              </div>
+              <div className="form-card-input-row">
+                <input
+                  type="text"
+                  placeholder="e.g. UPRERAPRJ12345"
+                  className="form-card-input"
+                  value={form.reraNumber}
+                  onChange={(e) => setForm({ ...form, reraNumber: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {/* Commission choices */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Commission type</span>
+                </div>
+                <div className="form-card-choices">
+                  <label className="form-card-choice" onClick={() => setForm({ ...form, commissionType: 'percentage' })}>
+                    <input
+                      type="radio"
+                      name="commissionType"
+                      checked={form.commissionType === 'percentage'}
+                      onChange={() => setForm({ ...form, commissionType: 'percentage' })}
+                      style={{ accentColor: '#17652f' }}
+                    />
+                    <span>Percentage (%)</span>
+                  </label>
+                  <label className="form-card-choice" onClick={() => setForm({ ...form, commissionType: 'flat' })}>
+                    <input
+                      type="radio"
+                      name="commissionType"
+                      checked={form.commissionType === 'flat'}
+                      onChange={() => setForm({ ...form, commissionType: 'flat' })}
+                      style={{ accentColor: '#17652f' }}
+                    />
+                    <span>Flat (₹)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Commission rate {form.commissionType === 'percentage' ? '(%)' : '(₹)'}</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="number"
+                    min="0"
+                    step={form.commissionType === 'percentage' ? '0.5' : '1000'}
+                    className="form-card-input"
+                    value={form.commissionRate}
+                    onChange={(e) => setForm({ ...form, commissionRate: Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '12px',
+              paddingTop: '16px',
+              borderTop: '1px solid #f1f5f9'
+            }}>
+              <button
+                type="button"
+                onClick={goPrev}
+                style={{
+                  padding: '9px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  fontWeight: '600',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Back
+              </button>
+
+              <button
+                type="submit"
+                style={{
+                  padding: '9px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#17652f',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Continue
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* STEP 3: Bank Details */}
+        {currentStep === 3 && (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Account holder name</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="As per bank passbook"
+                    className="form-card-input"
+                    value={form.accountHolder}
+                    onChange={(e) => setForm({ ...form, accountHolder: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Bank name</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="e.g. HDFC Bank"
+                    className="form-card-input"
+                    value={form.bankName}
+                    onChange={(e) => setForm({ ...form, bankName: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Account number</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="e.g. 123456789012"
+                    className="form-card-input"
+                    value={form.accountNumber}
+                    onChange={(e) => setForm({ ...form, accountNumber: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>IFSC code</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="e.g. HDFC0001234"
+                    className="form-card-input"
+                    value={form.ifscCode}
+                    onChange={(e) => setForm({ ...form, ifscCode: e.target.value.toUpperCase() })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="form-card-box">
+              <div className="form-card-prompt">
+                <span>UPI ID (optional)</span>
+              </div>
+              <div className="form-card-input-row">
+                <input
+                  type="text"
+                  placeholder="e.g. name@upi"
+                  className="form-card-input"
+                  value={form.upiId}
+                  onChange={(e) => setForm({ ...form, upiId: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {/* Summary Preview */}
+            <div style={{
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '10px',
+              padding: '10px 14px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              fontSize: '0.82rem'
+            }}>
+              <div>
+                <span style={{ color: '#64748b', fontSize: '0.72rem', display: 'block' }}>Partner</span>
+                <strong style={{ color: '#0f172a' }}>{`${form.firstName} ${form.lastName}`.trim() || '—'}</strong>
+              </div>
+              <div>
+                <span style={{ color: '#64748b', fontSize: '0.72rem', display: 'block' }}>Username</span>
+                <strong style={{ color: '#0f172a' }}>{form.username || '—'}</strong>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ color: '#64748b', fontSize: '0.72rem', display: 'block' }}>Commission</span>
+                <strong style={{ color: '#17652f' }}>
+                  {form.commissionType === 'percentage' ? `${form.commissionRate}%` : `₹${form.commissionRate}`}
+                </strong>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '12px',
+              paddingTop: '16px',
+              borderTop: '1px solid #f1f5f9'
+            }}>
+              <button
+                type="button"
+                onClick={goPrev}
+                disabled={saving}
+                style={{
+                  padding: '9px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  fontWeight: '600',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Back
+              </button>
+
+              <button
+                type="submit"
+                disabled={saving || !validateStep(1)}
+                style={{
+                  padding: '9px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#17652f',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '0.86rem',
+                  cursor: saving ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {saving ? 'Registering...' : 'Register partner'}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
-
-      <style>{`
-        @keyframes stepFadeIn {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

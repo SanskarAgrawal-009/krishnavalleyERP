@@ -131,13 +131,13 @@ export const SiteVisitsWindow = ({
                 border: 'none',
                 background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: '0 2px 5px rgba(37,99,235,0.25)',
+                boxShadow: '0 2px 5px rgba(23, 101, 47,0.25)',
                 transition: 'all 0.15s ease'
               }}
               onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.06)'}
@@ -158,7 +158,7 @@ export const SiteVisitsWindow = ({
                 border: 'none',
                 background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
@@ -186,7 +186,7 @@ export const SiteVisitsWindow = ({
           alignItems: 'center',
           scrollbarWidth: 'none'
         }}>
-          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', marginRight: '4px', flexShrink: 0 }}>
+          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em', marginRight: '4px', flexShrink: 0 }}>
             Show:
           </span>
 
@@ -222,7 +222,7 @@ export const SiteVisitsWindow = ({
                 <span>{tab.label}</span>
                 <span style={{
                   fontSize: '0.68rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   padding: '1px 6px',
                   borderRadius: '10px',
                   background: isActive ? tab.color : '#f1f5f9',
@@ -268,7 +268,7 @@ export const SiteVisitsWindow = ({
       {displayedSiteVisits.length === 0 ? (
         <div className="g-card" style={{ textAlign: 'center', padding: '60px 24px', borderRadius: '12px' }}>
           <Car size={48} style={{ opacity: 0.25, margin: '0 auto 16px', color: '#17652f' }} />
-          <h3 style={{ color: '#111827', marginBottom: '8px', fontWeight: '800', fontSize: '1.2rem' }}>
+          <h3 style={{ color: '#111827', marginBottom: '8px', fontWeight: '600', fontSize: '1.2rem' }}>
             No Site Visits Found
           </h3>
           <p style={{ fontSize: '0.86rem', color: '#64748b', marginBottom: '20px', fontWeight: '500', maxWidth: '440px', margin: '0 auto 20px' }}>
@@ -296,7 +296,7 @@ export const SiteVisitsWindow = ({
                 border: 'none',
                 background: '#17652f',
                 color: '#ffffff',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.84rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
@@ -313,19 +313,19 @@ export const SiteVisitsWindow = ({
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                <th style={{ padding: '14px 18px', width: '25%', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 18px', width: '25%', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   VISITOR / PROSPECT
                 </th>
-                <th style={{ padding: '14px 16px', width: '27%', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 16px', width: '27%', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   SCHEDULE & STATUS
                 </th>
-                <th style={{ padding: '14px 16px', width: '18%', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 16px', width: '18%', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   UNIT INSPECTED
                 </th>
-                <th style={{ padding: '14px 16px', width: '18%', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 16px', width: '18%', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   EXECUTIVE & CAB LOGISTICS
                 </th>
-                <th style={{ padding: '14px 18px', width: '12%', textAlign: 'right', fontSize: '0.74rem', color: '#475569', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <th style={{ padding: '14px 18px', width: '12%', textAlign: 'right', fontSize: '0.74rem', color: '#475569', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   ACTION
                 </th>
               </tr>
@@ -355,12 +355,12 @@ export const SiteVisitsWindow = ({
                     {/* Column 1: VISITOR / PROSPECT */}
                     <td style={{ padding: '14px 18px', verticalAlign: 'top' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: '800', fontSize: '0.94rem', color: '#0f172a' }}>
+                        <span style={{ fontWeight: '600', fontSize: '0.94rem', color: '#0f172a' }}>
                           {visit.visitorName}
                         </span>
                         <span style={{
                           fontSize: '0.66rem',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           padding: '1px 6px',
                           borderRadius: '4px',
                           background: visit.source === 'Site Visit Log' ? '#e8f2e5' : (visit.source === 'Scheduled Follow-Up' ? '#e8f2e5' : '#f1f5f9'),
@@ -398,19 +398,19 @@ export const SiteVisitsWindow = ({
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
                         {isScheduled ? (
                           isPastDue ? (
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#f1f5f9', color: '#0f172a', border: '1px solid #e2e8f0', padding: '2px 7px', borderRadius: '5px' }}>Tour Due
+                            <span style={{ fontSize: '0.7rem', fontWeight: '600', background: '#f1f5f9', color: '#0f172a', border: '1px solid #e2e8f0', padding: '2px 7px', borderRadius: '5px' }}>Tour Due
                             </span>
                           ) : isToday ? (
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '2px 7px', borderRadius: '5px' }}>
+                            <span style={{ fontSize: '0.7rem', fontWeight: '600', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '2px 7px', borderRadius: '5px' }}>
                               Today's Visit
                             </span>
                           ) : (
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '2px 7px', borderRadius: '5px' }}>
+                            <span style={{ fontSize: '0.7rem', fontWeight: '600', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '2px 7px', borderRadius: '5px' }}>
                               Upcoming Visit
                             </span>
                           )
                         ) : (
-                          <span style={{ fontSize: '0.7rem', fontWeight: '800', background: '#e8f2e5', color: '#17652f', border: '1px solid #e8f2e5', padding: '2px 7px', borderRadius: '5px' }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: '600', background: '#e8f2e5', color: '#17652f', border: '1px solid #e8f2e5', padding: '2px 7px', borderRadius: '5px' }}>
                             Tour Completed
                           </span>
                         )}
@@ -436,7 +436,7 @@ export const SiteVisitsWindow = ({
                               />
                             ))}
                           </div>
-                          <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#334155' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: '600', color: '#334155' }}>
                             ({visit.interestRating}/5 {visit.interestRating >= 4 ? 'High Interest' : ''})
                           </span>
                         </div>
@@ -468,7 +468,7 @@ export const SiteVisitsWindow = ({
                         marginBottom: '4px'
                       }}>
                         <Home size={12} color="#17652f" />
-                        <span style={{ fontWeight: '800', color: '#17652f', fontSize: '0.76rem' }}>
+                        <span style={{ fontWeight: '600', color: '#17652f', fontSize: '0.76rem' }}>
                           {visit.flatNumber ? `Flat ${visit.flatNumber}` : (visit.flatLabel || 'Project Tour')}
                         </span>
                       </div>
@@ -490,7 +490,7 @@ export const SiteVisitsWindow = ({
                       {/* Cab Logistics */}
                       {visit.isCabProvided ? (
                         <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', padding: '4px 7px', fontSize: '0.72rem' }}>
-                          <div style={{ fontWeight: '800', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div style={{ fontWeight: '600', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <Car size={11} />
                             <span>Cab: {visit.cabDetails?.cabNumber || 'Arranged'}</span>
                           </div>
@@ -530,7 +530,7 @@ export const SiteVisitsWindow = ({
                                 background: '#f8fafc',
                                 color: '#334155',
                                 fontSize: '0.72rem',
-                                fontWeight: '800',
+                                fontWeight: '600',
                                 cursor: 'pointer',
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -556,7 +556,7 @@ export const SiteVisitsWindow = ({
                                 background: '#17652f',
                                 color: '#ffffff',
                                 fontSize: '0.72rem',
-                                fontWeight: '800',
+                                fontWeight: '600',
                                 cursor: 'pointer',
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -622,7 +622,7 @@ export const SiteVisitsWindow = ({
             gap: '10px'
           }}>
             <div>
-              Showing <span style={{ color: '#0f172a', fontWeight: '800' }}>{displayedSiteVisits.length}</span> of {allSiteVisits.length} Site Visits (Window 3: Site Visits)
+              Showing <span style={{ color: '#0f172a', fontWeight: '600' }}>{displayedSiteVisits.length}</span> of {allSiteVisits.length} Site Visits (Window 3: Site Visits)
             </div>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
               <span>Scheduled: <strong style={{ color: '#17652f' }}>{scheduledVisitsCount}</strong></span>

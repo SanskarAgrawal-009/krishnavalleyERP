@@ -228,7 +228,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
         
         {/* Section 1: Basic Identity */}
         <div>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <User size={14} /> Personal & Contact Information
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
@@ -308,7 +308,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
 
         {/* Section 2: Department & Designation */}
         <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Building2 size={14} /> Department, Role & Placement
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
@@ -381,7 +381,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
 
         {/* Section 2B: ID & Regulatory Identification */}
         <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <ShieldCheck size={14} /> Staff ID & Government Identity Proofs
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
@@ -430,7 +430,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
 
         {/* Section 2C: Bank Details */}
         <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <DollarSign size={14} /> Bank Account & Wire Details
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
@@ -479,7 +479,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
 
         {/* Section 2D: Annual Leave Quotas (HR Managed) */}
         <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Calendar size={14} /> Annual Leave Quotas (HR Managed)
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
@@ -518,7 +518,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
 
         {/* Section 3: Salary Structure */}
         <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <DollarSign size={14} /> Monthly Salary Structure (INR)
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
@@ -561,7 +561,7 @@ export const EditEmployeeModal = ({ isOpen, onClose, employee, onUpdated, master
 
         {/* Section 4: Location & Emergency Contact */}
         <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
-          <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <HeartHandshake size={14} /> Location & Emergency Contact
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>

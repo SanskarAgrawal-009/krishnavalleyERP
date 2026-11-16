@@ -346,14 +346,11 @@ export const SalesPage = () => {
         border: '1px solid #e8e6df'
       }}>
         <div>
-          <div style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: '700', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            Property Sales & Deal Lifecycle
-            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
-              ALLOTMENT PIPELINE
-            </span>
+          <div style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: 600, color: '#1f2937', letterSpacing: '-0.015em', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            Sales
           </div>
-          <div style={{ fontSize: '0.88rem', color: '#596372', marginTop: '4px', fontWeight: '500' }}>
-            Manage buyer bookings, legal agreements, milestone demand letters, collection receipts, and possession handovers.
+          <div style={{ fontSize: '0.88rem', color: '#596372', marginTop: '4px', fontWeight: 400 }}>
+            Manage unit bookings, agreements, payment milestones, and possession handovers.
           </div>
         </div>
 
@@ -376,14 +373,11 @@ export const SalesPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#125225'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#17652f'; }}
             >
-              <Plus size={16} /> + New Booking / Convert Lead
+              <Plus size={16} /> New booking
             </button>
           )}
 
@@ -392,7 +386,7 @@ export const SalesPage = () => {
             background: '#faf9f6',
             padding: '4px',
             borderRadius: '8px',
-            border: '1px solid #e8e6df',
+            border: '1px solid #e5e7eb',
             gap: '6px',
             overflowX: 'auto',
             maxWidth: '100%',
@@ -410,18 +404,18 @@ export const SalesPage = () => {
                 border: 'none',
                 background: salesViewTab === 'pipeline' ? '#17652f' : 'transparent',
                 color: salesViewTab === 'pipeline' ? '#ffffff' : '#596372',
-                fontWeight: salesViewTab === 'pipeline' ? '700' : '500',
+                fontWeight: salesViewTab === 'pipeline' ? '600' : '500',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: salesViewTab === 'pipeline' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+                boxShadow: 'none',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap'
               }}
             >
-              <ShoppingBag size={14} /> Deals Pipeline ({salesLeads.length})
+              <ShoppingBag size={14} /> Bookings ({salesLeads.length})
             </button>
 
             <button
@@ -436,18 +430,18 @@ export const SalesPage = () => {
                 border: 'none',
                 background: salesViewTab === 'lifecycle' ? '#17652f' : 'transparent',
                 color: salesViewTab === 'lifecycle' ? '#ffffff' : '#596372',
-                fontWeight: salesViewTab === 'lifecycle' ? '700' : '500',
+                fontWeight: salesViewTab === 'lifecycle' ? '600' : '500',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: salesViewTab === 'lifecycle' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+                boxShadow: 'none',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap'
               }}
             >
-              <DollarSign size={14} /> Milestone Demands ({salesLeads.length})
+              <DollarSign size={14} /> Payment milestones ({salesLeads.length})
             </button>
 
             <button
@@ -462,18 +456,18 @@ export const SalesPage = () => {
                 border: 'none',
                 background: salesViewTab === 'resale' ? '#17652f' : 'transparent',
                 color: salesViewTab === 'resale' ? '#ffffff' : '#596372',
-                fontWeight: salesViewTab === 'resale' ? '700' : '500',
+                fontWeight: salesViewTab === 'resale' ? '600' : '500',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: salesViewTab === 'resale' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+                boxShadow: 'none',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap'
               }}
             >
-              <History size={14} /> Resale &amp; History
+              <History size={14} /> Resale history
             </button>
 
             <button
@@ -488,7 +482,7 @@ export const SalesPage = () => {
                 border: 'none',
                 background: salesViewTab === 'messaging' ? '#17652f' : 'transparent',
                 color: salesViewTab === 'messaging' ? '#ffffff' : '#4b5563',
-                fontWeight: salesViewTab === 'messaging' ? '800' : '600',
+                fontWeight: salesViewTab === 'messaging' ? '600' : '500',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
@@ -498,7 +492,7 @@ export const SalesPage = () => {
                 whiteSpace: 'nowrap'
               }}
             >
-              <MessageSquare size={14} /> Buyer Messaging Hub
+              <MessageSquare size={14} /> Messages
             </button>
           </div>
         </div>
@@ -544,57 +538,57 @@ export const SalesPage = () => {
           <div className="grid-cols-5">
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL CONVERTED</span>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Total bookings</span>
                 <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <ShoppingBag size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>{totalSales}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>In Sales Pipeline</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>{totalSales}</div>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563' }}>All active deals</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>BOOKED & ALLOTTED</span>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Booked</span>
                 <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <CheckCircle size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{bookedCount}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Token confirmed</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>{bookedCount}</div>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563' }}>Token confirmed</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>IN PAYMENT PROGRESS</span>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Payment in progress</span>
                 <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <CreditCard size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{inPaymentCount}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active milestone demands</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>{inPaymentCount}</div>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563' }}>Active installments</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>POSSESSION COMPLETED</span>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Handed over</span>
                 <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
                   <Key size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>{possessedCount}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Keys handed over</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: '600', color: '#475569', marginTop: '4px' }}>{possessedCount}</div>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563' }}>Possession complete</span>
             </div>
 
             <div className="stat-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>SALES PORTFOLIO VALUE</span>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Total sales value</span>
                 <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
                   <TrendingUp size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>{formatINR(totalPortfolioValue)}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Contracted deals</span>
+              <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>{formatINR(totalPortfolioValue)}</div>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563' }}>All contracted deals</span>
             </div>
           </div>
 
@@ -612,24 +606,23 @@ export const SalesPage = () => {
                 <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#4b5563' }} />
                 <input
                   type="text"
-                  placeholder="Search by buyer name, phone, email..."
+                  placeholder="e.g. Rahul or Flat 101"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '8px 12px 8px 36px',
-                    background: '#f8f9fa',
+                    background: '#ffffff',
                     border: '1px solid #dadce0',
                     borderRadius: '6px',
                     color: '#111827',
-                    fontWeight: '600',
                     fontSize: '0.85rem'
                   }}
                 />
               </div>
               <button
                 type="submit"
-                style={{ padding: '8px 14px', background: '#17652f', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer' }}
+                style={{ padding: '8px 14px', background: '#17652f', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer' }}
               >
                 Search
               </button>
@@ -639,15 +632,15 @@ export const SalesPage = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                style={{ padding: '8px 12px', background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '6px', color: '#111827', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer' }}
+                style={{ padding: '8px 12px', background: '#ffffff', border: '1px solid #dadce0', borderRadius: '6px', color: '#111827', fontSize: '0.82rem', cursor: 'pointer' }}
               >
-                <option value="">All Deal Stages</option>
-                <option value="booked">Booked (Token Received)</option>
-                <option value="agreement_signed">Agreement Signed</option>
-                <option value="payment_in_progress">Payment In Progress</option>
-                <option value="fully_paid">Fully Paid</option>
-                <option value="possession_ready">Possession Ready</option>
-                <option value="possessed">Possession Handed Over</option>
+                <option value="">All stages</option>
+                <option value="booked">Booked</option>
+                <option value="agreement_signed">Agreement signed</option>
+                <option value="payment_in_progress">Payment in progress</option>
+                <option value="fully_paid">Fully paid</option>
+                <option value="possession_ready">Possession ready</option>
+                <option value="possessed">Possession handed over</option>
                 <option value="cancelled">Cancelled</option>
                 <option value="refunded">Refunded</option>
               </select>
@@ -666,9 +659,9 @@ export const SalesPage = () => {
           {salesLeads.length === 0 ? (
             <div className="g-card" style={{ textAlign: 'center', padding: '50px 20px' }}>
               <ShoppingBag size={40} style={{ opacity: 0.3, margin: '0 auto 12px', color: '#4b5563' }} />
-              <h3 style={{ color: '#111827', marginBottom: '6px', fontWeight: '800' }}>No Sales Records Found</h3>
-              <p style={{ fontSize: '0.85rem', color: '#4b5563', marginBottom: '16px', fontWeight: '500' }}>
-                Go to the <strong>CRM Leads</strong> tab and click <strong>"Convert to Sales"</strong> on any qualified lead to bring them into the sales pipeline.
+              <h3 style={{ color: '#111827', marginBottom: '6px', fontWeight: '600' }}>No sales records found</h3>
+              <p style={{ fontSize: '0.85rem', color: '#4b5563', marginBottom: '16px', fontWeight: '400' }}>
+                Click "New booking" above or convert a qualified lead from CRM to create a booking.
               </p>
             </div>
           ) : (
@@ -707,7 +700,7 @@ export const SalesPage = () => {
                     {/* Header: Buyer Name & Status */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827' }}>{sl.name}</h3>
+                        <h3 style={{ fontSize: '1.15rem', fontWeight: '600', color: '#111827' }}>{sl.name}</h3>
                         <div style={{ fontSize: '0.74rem', color: '#4b5563', marginTop: '2px', fontWeight: '500' }}>
                           Converted: {(sl.convertedAt || sl.booking?.bookingDate || sl.createdAt) ? new Date(sl.convertedAt || sl.booking?.bookingDate || sl.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                         </div>
@@ -920,7 +913,7 @@ export const SalesPage = () => {
                   <ShoppingBag size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>{totalSales}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>{totalSales}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Booking & Allotment pool</span>
             </div>
 
@@ -931,7 +924,7 @@ export const SalesPage = () => {
                   <DollarSign size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{formatINR(totalPortfolioValue)}</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>{formatINR(totalPortfolioValue)}</div>
               <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '700' }}>Total agreed property value</span>
             </div>
 
@@ -942,7 +935,7 @@ export const SalesPage = () => {
                   <CheckCircle size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>{inPaymentCount || bookedCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '600', color: '#475569', marginTop: '4px' }}>{inPaymentCount || bookedCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active construction demands</span>
             </div>
 
@@ -953,7 +946,7 @@ export const SalesPage = () => {
                   <Building2 size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{possessedCount}</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>{possessedCount}</div>
               <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Handover completed</span>
             </div>
           </div>
@@ -970,11 +963,11 @@ export const SalesPage = () => {
               gap: '10px'
             }}>
               <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <DollarSign size={18} color="#17652f" /> Milestone Demands & Construction Linked Payment Register ({salesLeads.length})
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <DollarSign size={18} color="#17652f" /> Payment milestones register ({salesLeads.length})
                 </h3>
                 <p style={{ fontSize: '0.8rem', color: '#4b5563', marginTop: '2px' }}>
-                  Track construction milestone slab completion, issue official demand letters, and reconcile payment receipts.
+                  Track construction milestone completion, issue demand letters, and record receipts.
                 </p>
               </div>
 
@@ -983,7 +976,7 @@ export const SalesPage = () => {
                 onClick={fetchSalesLeads}
                 style={{ padding: '6px 12px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                <RefreshCw size={13} className={loading ? 'spin' : ''} /> Refresh Demands
+                <RefreshCw size={13} className={loading ? 'spin' : ''} /> Refresh
               </button>
             </div>
 
@@ -991,12 +984,12 @@ export const SalesPage = () => {
               <table style={{ minWidth: '720px' }}>
                 <thead>
                   <tr>
-                    <th>Buyer & Allotment</th>
-                    <th>Flat & Project</th>
-                    <th>Total Deal Value</th>
-                    <th>Booking Paid</th>
-                    <th>Current Milestone Stage</th>
-                    <th>Stage Status</th>
+                    <th>Buyer</th>
+                    <th>Unit and project</th>
+                    <th>Total price</th>
+                    <th>Booking amount</th>
+                    <th>Current milestone</th>
+                    <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -1042,11 +1035,11 @@ export const SalesPage = () => {
                             </div>
                           </td>
 
-                          <td style={{ fontWeight: '800', color: '#111827', fontSize: '0.92rem' }}>
+                          <td style={{ fontWeight: '600', color: '#111827', fontSize: '0.92rem' }}>
                             {formatINR(totalAmt)}
                           </td>
 
-                          <td style={{ fontWeight: '800', color: '#17652f', fontSize: '0.92rem' }}>
+                          <td style={{ fontWeight: '600', color: '#17652f', fontSize: '0.92rem' }}>
                             {formatINR(bookingAmt)}
                             <div style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600' }}>
                               Receipt Verified
@@ -1115,11 +1108,11 @@ export const SalesPage = () => {
             gap: '16px'
           }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <History size={20} color="#17652f" /> Resale, Buybacks &amp; Ownership Title Transfers
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '600', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <History size={20} color="#17652f" /> Resale and ownership history
               </h3>
               <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
-                Track developer buybacks, secondary market resales, archived titleholders, and historical rent payouts.
+                Track unit buybacks, secondary resales, and previous owner records.
               </p>
             </div>
 
@@ -1138,15 +1131,14 @@ export const SalesPage = () => {
                     color: '#ffffff',
                     border: 'none',
                     fontSize: '0.84rem',
-                    fontWeight: '700',
+                    fontWeight: '600',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    boxShadow: '0 2px 6px rgba(37, 99, 235, 0.3)'
                   }}
                 >
-                  <RotateCcw size={16} /> + Record Buyback / Resale
+                  <RotateCcw size={16} /> Record transfer
                 </button>
               )}
 
@@ -1203,35 +1195,35 @@ export const SalesPage = () => {
             return (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                 <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #17652f' }}>
-                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>TOTAL TRANSFER AUDITS</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
-                    {flatsWithHistory.length} Units
+                  <span style={{ fontSize: '0.74rem', fontWeight: '600', color: '#64748b' }}>Units with transfers</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#0f172a', marginTop: '4px' }}>
+                    {flatsWithHistory.length}
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '600' }}>Active in resale ledger</span>
+                  <span style={{ fontSize: '0.74rem', color: '#17652f' }}>Transfer records</span>
                 </div>
 
                 <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #17652f' }}>
-                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>DEVELOPER BUYBACKS</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
-                    {totalBuybacks} Transactions
+                  <span style={{ fontSize: '0.74rem', fontWeight: '600', color: '#64748b' }}>Buybacks</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
+                    {totalBuybacks}
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '600' }}>Repurchased under MOU</span>
+                  <span style={{ fontSize: '0.74rem', color: '#17652f' }}>Repurchased units</span>
                 </div>
 
                 <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #0284c7' }}>
-                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>SECONDARY RESALES</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0284c7', marginTop: '4px' }}>
-                    {totalResales} Units
+                  <span style={{ fontSize: '0.74rem', fontWeight: '600', color: '#64748b' }}>Resales</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#0284c7', marginTop: '4px' }}>
+                    {totalResales}
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#0369a1', fontWeight: '600' }}>Title transferred to buyer B</span>
+                  <span style={{ fontSize: '0.74rem', color: '#0369a1' }}>Transferred to new buyer</span>
                 </div>
 
                 <div className="g-card" style={{ padding: '16px 20px', borderLeft: '4px solid #334155' }}>
-                  <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>RENT PAID TO PRIOR OWNERS</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#334155', marginTop: '4px' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '600', color: '#64748b' }}>Rent paid to prior owners</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#334155', marginTop: '4px' }}>
                     {formatINR(totalRentPaidToPrior)}
                   </div>
-                  <span style={{ fontSize: '0.74rem', color: '#334155', fontWeight: '600' }}>Archived payout ledger</span>
+                  <span style={{ fontSize: '0.74rem', color: '#334155' }}>Past rent payouts</span>
                 </div>
               </div>
             );
@@ -1243,7 +1235,7 @@ export const SalesPage = () => {
               <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
-                placeholder="Search flat number, tower, owner name..."
+                placeholder="e.g. 101 or Tower A"
                 value={resaleSearchTerm}
                 onChange={(e) => setResaleSearchTerm(e.target.value)}
                 style={{
@@ -1346,7 +1338,7 @@ export const SalesPage = () => {
 
                       return (
                         <tr key={f._id || f.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#0f172a' }}>
+                          <td style={{ padding: '12px 16px', fontWeight: '600', color: '#0f172a' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <Building2 size={14} color="#17652f" /> Flat {f.flatNumber}
                             </div>
@@ -1365,7 +1357,7 @@ export const SalesPage = () => {
                           </td>
 
                           <td style={{ padding: '12px 16px' }}>
-                            <div style={{ fontWeight: '800', color: '#1e293b' }}>
+                            <div style={{ fontWeight: '600', color: '#1e293b' }}>
                               {f.currentOwner?.name || latestHist?.currentOwnerName || 'Unassigned / Developer'}
                             </div>
                             <div style={{ fontSize: '0.74rem', color: '#64748b' }}>

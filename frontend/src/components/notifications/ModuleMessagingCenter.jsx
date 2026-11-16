@@ -274,7 +274,7 @@ export const ModuleMessagingCenter = ({
       <div style={{
         background: module === 'sales'
           ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(17, 24, 39, 0.95) 100%)'
-          : 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(17, 24, 39, 0.95) 100%)',
+          : 'linear-gradient(135deg, rgba(23, 101, 47, 0.2) 0%, rgba(17, 24, 39, 0.95) 100%)',
         border: '1px solid #dadce0',
         borderRadius: 'var(--radius-lg)',
         padding: '22px 26px',
@@ -301,7 +301,7 @@ export const ModuleMessagingCenter = ({
             <MessageSquare size={24} />
           </div>
           <div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
               {module === 'sales' ? 'Buyer Messaging & Milestone Demands' : 'Tenant & Owner Messaging Hub'}
               <span style={{
                 fontSize: '0.72rem',
@@ -578,7 +578,7 @@ export const ModuleMessagingCenter = ({
               </label>
 
               <label style={{
-                background: channels.sms ? 'rgba(59, 130, 246, 0.15)' : 'var(--bg-card)',
+                background: channels.sms ? 'rgba(23, 101, 47, 0.15)' : 'var(--bg-card)',
                 border: channels.sms ? '1px solid #17652f' : '1px solid var(--border-subtle)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '8px',
@@ -693,7 +693,7 @@ export const ModuleMessagingCenter = ({
               borderRadius: 'var(--radius-sm)',
               color: '#111827',
               fontSize: '0.92rem',
-              fontWeight: '800',
+              fontWeight: '600',
               cursor: 'pointer',
               boxShadow: 'var(--shadow-glow)',
               display: 'flex',
@@ -1013,7 +1013,7 @@ export const ModuleMessagingCenter = ({
                         fontWeight: '700',
                         background:
                           log.channel === 'whatsapp' ? 'rgba(37, 211, 102, 0.12)' :
-                          log.channel === 'sms' ? 'rgba(59, 130, 246, 0.12)' :
+                          log.channel === 'sms' ? 'rgba(23, 101, 47, 0.12)' :
                           log.channel === 'email' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(236, 72, 153, 0.12)',
                         color:
                           log.channel === 'whatsapp' ? '#0f172a' :

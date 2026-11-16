@@ -200,7 +200,7 @@ export const NewMaterialModal = ({ isOpen, onClose, onSubmit }) => {
               borderRadius: '6px',
               fontWeight: '700',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(26, 115, 232, 0.3)'
+              boxShadow: '0 2px 6px rgba(23, 101, 47, 0.3)'
             }}
           >
             Save Material Item

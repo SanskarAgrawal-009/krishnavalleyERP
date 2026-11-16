@@ -79,13 +79,19 @@ export const AuthProvider = ({ children }) => {
   const userRole = extractRoleCode(user);
 
   // Permission and role checking helpers
-  const isSuperAdmin = userRole === 'super_admin' || userRole === 'admin';
+  const isSuperAdmin = ['super_admin', 'superadmin', 'admin', 'director', 'system_admin'].includes(userRole);
 
   const hasPermission = (permissionCode) => {
     if (!user) return false;
     if (isSuperAdmin) return true;
-    const userCodes = user.permissionCodes || (user.permissions || []).map((p) => (typeof p === 'string' ? p : p.permissionCode));
-    return userCodes.includes(permissionCode);
+    const userCodes = user.permissionCodes || (user.permissions || []).map((p) => (typeof p === 'string' ? p : p?.permissionCode)).filter(Boolean);
+    if (userCodes.includes(permissionCode)) return true;
+    // Any *:manage permission automatically satisfies *:view for that module
+    if (typeof permissionCode === 'string' && permissionCode.endsWith(':view')) {
+      const mod = permissionCode.split(':')[0];
+      if (userCodes.includes(`${mod}:manage`)) return true;
+    }
+    return false;
   };
 
   const hasRole = (roleCode) => {
@@ -104,16 +110,14 @@ export const AuthProvider = ({ children }) => {
     if (!user) return false;
     if (isSuperAdmin) return true;
     if (!permissionCodes || permissionCodes.length === 0) return true;
-    const userCodes = user.permissionCodes || (user.permissions || []).map((p) => (typeof p === 'string' ? p : p.permissionCode));
-    return permissionCodes.some((code) => userCodes.includes(code));
+    return permissionCodes.some((code) => hasPermission(code));
   };
 
   const hasAllPermissions = (permissionCodes = []) => {
     if (!user) return false;
     if (isSuperAdmin) return true;
     if (!permissionCodes || permissionCodes.length === 0) return true;
-    const userCodes = user.permissionCodes || (user.permissions || []).map((p) => (typeof p === 'string' ? p : p.permissionCode));
-    return permissionCodes.every((code) => userCodes.includes(code));
+    return permissionCodes.every((code) => hasPermission(code));
   };
 
   const can = (module, action) => {

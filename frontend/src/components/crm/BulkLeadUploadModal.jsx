@@ -420,7 +420,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '0.75rem',
-                fontWeight: '800'
+                fontWeight: '600'
               }}>
                 {step > 1 ? '' : '1'}
               </span>
@@ -442,7 +442,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '0.75rem',
-                fontWeight: '800'
+                fontWeight: '600'
               }}>
                 {step > 2 ? '' : '2'}
               </span>
@@ -464,7 +464,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '0.75rem',
-                fontWeight: '800'
+                fontWeight: '600'
               }}>
                 3
               </span>
@@ -530,7 +530,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
                 {parsing ? <RefreshCw size={26} className="spin" /> : <FileSpreadsheet size={28} />}
               </div>
 
-              <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginBottom: '6px' }}>
                 {parsing ? 'Parsing Spreadsheet Data...' : 'Drop your Excel or CSV file here, or click to browse'}
               </div>
 
@@ -569,35 +569,35 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>First Name *</div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>First Name *</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b' }}>e.g. Rajesh or Rajesh Sharma</div>
                 </div>
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>Number *</div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>Number *</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b' }}>10-digit mobile number</div>
                 </div>
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>Email Address</div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>Email Address</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Valid client email</div>
                 </div>
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>City</div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>City</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b' }}>e.g. Mumbai, Pune, Delhi</div>
                 </div>
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>Budget</div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>Budget</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b' }}>4500000 or "45 Lakhs"</div>
                 </div>
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>What they are looking for</div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>What they are looking for</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b' }}>2BHK, 3BHK, Penthouse, Villa</div>
                 </div>
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>When they are planning to do</div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>When they are planning to do</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Immediate, Within 30 Days, 1-3 M</div>
                 </div>
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>Remarks</div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '600', color: '#0f172a' }}>Remarks</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Discussion notes / preferences</div>
                 </div>
               </div>
@@ -631,11 +631,11 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
                 <span style={{ fontSize: '0.8rem', color: '#334155' }}>
                   Total Rows: <strong style={{ color: '#0f172a' }}>{mappedLeads.length}</strong>
                 </span>
-                <span style={{ fontSize: '0.78rem', background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '12px', fontWeight: '800' }}>
+                <span style={{ fontSize: '0.78rem', background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '12px', fontWeight: '600' }}>
                   {validCount} Valid
                 </span>
                 {invalidCount > 0 && (
-                  <span style={{ fontSize: '0.78rem', background: '#f1f5f9', color: '#0f172a', padding: '2px 8px', borderRadius: '12px', fontWeight: '800' }}>
+                  <span style={{ fontSize: '0.78rem', background: '#f1f5f9', color: '#0f172a', padding: '2px 8px', borderRadius: '12px', fontWeight: '600' }}>
                     {invalidCount} Invalid/Missing Mobile
                   </span>
                 )}
@@ -675,7 +675,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
             }}>
               {/* Sales Rep Assignment */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '600', color: '#334155', marginBottom: '4px' }}>
                   Sales Representative Assignment
                 </label>
                 <select
@@ -692,7 +692,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
               {/* Specific Rep Dropdown (if rep chosen) */}
               {assignmentStrategy === 'rep' && (
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                  <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '600', color: '#334155', marginBottom: '4px' }}>
                     Choose Representative
                   </label>
                   <select
@@ -716,7 +716,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
 
               {/* Duplicate Handling */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '600', color: '#334155', marginBottom: '4px' }}>
                   Duplicate Mobile Number Handling
                 </label>
                 <select
@@ -731,7 +731,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
 
               {/* Lead Source */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: '600', color: '#334155', marginBottom: '4px' }}>
                   Attributed Lead Source
                 </label>
                 <select
@@ -782,11 +782,11 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
                       <td style={{ padding: '7px 10px', color: '#64748b' }}>{row.rowNumber}</td>
                       <td style={{ padding: '7px 10px' }}>
                         {row.isValid ? (
-                          <span style={{ color: '#17652f', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <span style={{ color: '#17652f', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }}>
                             <CheckCircle2 size={12} /> Ready
                           </span>
                         ) : (
-                          <span style={{ color: '#0f172a', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '3px' }} title={row.validationError}>
+                          <span style={{ color: '#0f172a', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }} title={row.validationError}>
                             <XCircle size={12} /> Error
                           </span>
                         )}
@@ -854,12 +854,12 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
                   background: '#17652f',
                   color: '#ffffff',
                   fontSize: '0.82rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   cursor: uploading || validCount === 0 ? 'not-allowed' : 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
-                  boxShadow: '0 2px 4px rgba(26,115,232,0.25)'
+                  boxShadow: '0 2px 4px rgba(23, 101, 47,0.25)'
                 }}
               >
                 {uploading ? (
@@ -894,7 +894,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
                 <CheckCircle2 size={26} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f', margin: '0 0 6px 0' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f', margin: '0 0 6px 0' }}>
                 Bulk Lead Import Successful!
               </h3>
               <p style={{ fontSize: '0.82rem', color: '#17652f', margin: 0 }}>
@@ -906,19 +906,19 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
               <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
                 <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>TOTAL PROCESSED</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#0f172a', marginTop: '2px' }}>{uploadResult.totalReceived}</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#0f172a', marginTop: '2px' }}>{uploadResult.totalReceived}</div>
               </div>
               <div style={{ background: '#e8f2e5', border: '1px solid #e8f2e5', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
                 <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#17652f' }}>NEW LEADS ADDED</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#17652f', marginTop: '2px' }}>{uploadResult.insertedCount}</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#17652f', marginTop: '2px' }}>{uploadResult.insertedCount}</div>
               </div>
               <div style={{ background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
                 <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#17652f' }}>LEADS UPDATED</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#17652f', marginTop: '2px' }}>{uploadResult.updatedCount}</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#17652f', marginTop: '2px' }}>{uploadResult.updatedCount}</div>
               </div>
               <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
                 <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#334155' }}>DUPLICATES SKIPPED</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#334155', marginTop: '2px' }}>{uploadResult.skippedCount}</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#334155', marginTop: '2px' }}>{uploadResult.skippedCount}</div>
               </div>
             </div>
 
@@ -969,7 +969,7 @@ export const BulkLeadUploadModal = ({ isOpen, onClose, onSuccess, salesTeam = []
                   background: '#17652f',
                   color: '#ffffff',
                   fontSize: '0.82rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   cursor: 'pointer'
                 }}
               >

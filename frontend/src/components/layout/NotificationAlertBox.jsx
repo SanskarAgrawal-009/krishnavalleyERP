@@ -344,7 +344,7 @@ export const NotificationAlertBox = ({ isOpen, onClose, onCountChange, activeRem
             <Bell size={16} />
           </div>
           <div>
-            <span style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0f172a' }}>
+            <span style={{ fontSize: '0.92rem', fontWeight: '600', color: '#0f172a' }}>
               Notifications & Alerts
             </span>
             {unreadCount > 0 && (

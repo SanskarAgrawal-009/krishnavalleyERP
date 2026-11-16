@@ -66,7 +66,7 @@ export const TopLoadingBar = () => {
           height: '100%',
           background: 'linear-gradient(90deg, #17652f, #17652f, #4a9e68, #86c8a0)',
           backgroundSize: '200% 100%',
-          boxShadow: '0 0 10px rgba(59, 130, 246, 0.8), 0 0 4px rgba(96, 165, 250, 0.6)',
+          boxShadow: '0 0 10px rgba(23, 101, 47, 0.8), 0 0 4px rgba(74, 158, 104, 0.6)',
           transition: progress === 100 ? 'width 0.15s ease-out, opacity 0.25s ease 0.15s' : 'width 0.35s ease-out',
           opacity: progress === 100 ? 0 : 1,
           animation: 'topBarGlow 1.5s linear infinite'

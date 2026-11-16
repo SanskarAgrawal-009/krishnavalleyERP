@@ -107,7 +107,7 @@ export const ManualBuildingModal = ({ isOpen, onClose, onSubmit, projectName }) 
             justifyContent: 'center'
           }}>
             <span style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '700' }}>ESTIMATED TOTAL UNITS</span>
-            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#17652f' }}>{totalEstimatedFlats} Flats</span>
+            <span style={{ fontSize: '1.2rem', fontWeight: '600', color: '#17652f' }}>{totalEstimatedFlats} Flats</span>
           </div>
 
           <div>
@@ -146,7 +146,7 @@ export const ManualBuildingModal = ({ isOpen, onClose, onSubmit, projectName }) 
               borderRadius: '6px',
               fontWeight: '700',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(26, 115, 232, 0.3)'
+              boxShadow: '0 2px 6px rgba(23, 101, 47, 0.3)'
             }}
           >
             Add Building

@@ -141,13 +141,13 @@ export const CustomerDetailModal = ({
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827' }}>{customer.name}</span>
+              <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827' }}>{customer.name}</span>
               <span style={{
                 fontSize: '0.72rem',
                 fontWeight: '700',
                 padding: '2px 8px',
                 borderRadius: '4px',
-                background: isOwner ? 'rgba(168, 85, 247, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+                background: isOwner ? 'rgba(168, 85, 247, 0.2)' : 'rgba(23, 101, 47, 0.2)',
                 color: isOwner ? '#86c8a0' : '#4a9e68',
                 textTransform: 'uppercase'
               }}>
@@ -174,7 +174,7 @@ export const CustomerDetailModal = ({
 
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '0.7rem', color: '#4b5563' }}>ALLOTTED HOLDINGS</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#111827' }}>
               {isOwner ? `${customer.ownerDetails?.propertyIds?.length || 0} Properties` : (customer.tenantDetails?.rentalDetails?.flatId?.flatNumber ? `Flat ${customer.tenantDetails.rentalDetails.flatId.flatNumber}` : '1 Leased Unit')}
             </div>
           </div>
@@ -232,7 +232,7 @@ export const CustomerDetailModal = ({
             {/* Owner Properties Breakdown */}
             {isOwner && (
               <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#86c8a0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: '600', color: '#86c8a0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Key size={15} /> Owned Flats & Property Portfolios
                 </h4>
 
@@ -247,7 +247,7 @@ export const CustomerDetailModal = ({
                         padding: '10px 12px'
                       }}
                     >
-                      <div style={{ fontSize: '1rem', fontWeight: '800', color: '#111827' }}>
+                      <div style={{ fontSize: '1rem', fontWeight: '600', color: '#111827' }}>
                         Flat {flat.flatNumber || 'Unit'}
                       </div>
                       <div style={{ fontSize: '0.72rem', color: '#374151', marginTop: '2px' }}>
@@ -275,7 +275,7 @@ export const CustomerDetailModal = ({
                       flexDirection: 'column',
                       gap: '8px'
                     }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '600', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <CreditCard size={14} color="#17652f" /> Banking &amp; Assured Payout Account
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '0.8rem', color: '#001a41' }}>
@@ -300,7 +300,7 @@ export const CustomerDetailModal = ({
                   flexDirection: 'column',
                   gap: '8px'
                 }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#334155', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: '600', color: '#334155', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <ShieldCheck size={14} color="#0284c7" /> KYC &amp; Verification Profile
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '0.8rem', color: '#475569' }}>
@@ -316,14 +316,14 @@ export const CustomerDetailModal = ({
             {/* Tenant Lease & Profile Overview */}
             {isTenant && (
               <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#4a9e68', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4a9e68', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Home size={15} /> Leased Flat & Tenant Identification
                 </h4>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   <div style={{ background: '#f8f9fa', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid #dadce0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>Leased Residence</div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', marginTop: '2px' }}>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#111827', marginTop: '2px' }}>
                       Flat {customer.tenantDetails?.rentalDetails?.flatId?.flatNumber || 'Allotted Unit'}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#374151' }}>
@@ -333,7 +333,7 @@ export const CustomerDetailModal = ({
 
                   <div style={{ background: '#f8f9fa', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid #dadce0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>Monthly Rent & Status</div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
                       {formatINR(customer.tenantDetails?.rentalDetails?.monthlyRent || 0)} / mo
                     </div>
                     <span style={{ fontSize: '0.7rem', color: '#4a9e68', textTransform: 'uppercase', fontWeight: '700' }}>
@@ -359,7 +359,7 @@ export const CustomerDetailModal = ({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Upload Box */}
             <form onSubmit={handleDocSubmit} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Upload size={15} color="var(--primary-500)" /> Upload KYC / Property Document to S3
               </h4>
 
@@ -528,7 +528,7 @@ export const CustomerDetailModal = ({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Quick Log Form */}
             <form onSubmit={handleCommSubmit} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Mic size={15} color="#17652f" /> Log Customer Interaction & Call Recording
               </h4>
 
@@ -656,7 +656,7 @@ export const CustomerDetailModal = ({
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontWeight: '800', color: '#111827', fontSize: '0.85rem' }}>{comm.subject}</span>
+                        <span style={{ fontWeight: '600', color: '#111827', fontSize: '0.85rem' }}>{comm.subject}</span>
                         <span style={{ fontSize: '0.7rem', padding: '1px 6px', borderRadius: '4px', background: '#f8f9fa', color: 'var(--primary-500)', textTransform: 'capitalize', fontWeight: '700' }}>
                           {comm.direction} {comm.mode}
                         </span>
@@ -716,7 +716,7 @@ export const CustomerDetailModal = ({
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
                       <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>TOTAL AGREEMENT VALUE</span>
-                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
                           {formatINR(totalDealVal)}
                         </div>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>Agreed Sale Consideration</span>
@@ -724,7 +724,7 @@ export const CustomerDetailModal = ({
 
                       <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>TOKEN / PAID AMOUNT</span>
-                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
                           {formatINR(paidVal)}
                         </div>
                         <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
@@ -734,7 +734,7 @@ export const CustomerDetailModal = ({
 
                       <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>BALANCE OUTSTANDING</span>
-                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: balanceVal === 0 ? '#17652f' : '#475569', marginTop: '4px' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '600', color: balanceVal === 0 ? '#17652f' : '#475569', marginTop: '4px' }}>
                           {formatINR(balanceVal)}
                         </div>
                         <span style={{ fontSize: '0.72rem', color: balanceVal === 0 ? '#17652f' : '#475569', fontWeight: '600' }}>
@@ -744,7 +744,7 @@ export const CustomerDetailModal = ({
 
                       <div style={{ background: '#f8f9fa', border: '1px solid #dadce0', borderRadius: '8px', padding: '14px' }}>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>ALLOTMENT STATUS</span>
-                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f', marginTop: '4px', textTransform: 'capitalize' }}>
+                        <div style={{ fontSize: '1rem', fontWeight: '600', color: '#17652f', marginTop: '4px', textTransform: 'capitalize' }}>
                           {sStatus.replace(/_/g, ' ')}
                         </div>
                         <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>Sales Registry Synced</span>
@@ -756,7 +756,7 @@ export const CustomerDetailModal = ({
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <FileText size={16} color="#17652f" />
-                          <span style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>
+                          <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#111827' }}>
                             Sales Agreement & Title Allotment
                           </span>
                         </div>
@@ -808,7 +808,7 @@ export const CustomerDetailModal = ({
                     {/* Payment Receipts Box */}
                     <div style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '8px', overflow: 'hidden' }}>
                       <div style={{ padding: '12px 16px', background: '#f8f9fa', borderBottom: '1px solid #dadce0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <DollarSign size={15} color="#17652f" /> Payment Receipts & Deposit Ledger ({receipts.length + receiptDocs.length})
                         </span>
                         <button
@@ -843,7 +843,7 @@ export const CustomerDetailModal = ({
                                 <td style={{ padding: '10px 14px', color: '#111827' }}>
                                   Booking Token / Property Allotment Inflow
                                 </td>
-                                <td style={{ padding: '10px 14px', fontWeight: '800', color: '#17652f' }}>
+                                <td style={{ padding: '10px 14px', fontWeight: '600', color: '#17652f' }}>
                                   {formatINR(rec.amount || paidVal)}
                                 </td>
                                 <td style={{ padding: '10px 14px' }}>
@@ -874,7 +874,7 @@ export const CustomerDetailModal = ({
                                 <td style={{ padding: '10px 14px', color: '#111827' }}>
                                   {rd.documentName || 'Payment Proof Attachment'}
                                 </td>
-                                <td style={{ padding: '10px 14px', fontWeight: '800', color: '#17652f' }}>
+                                <td style={{ padding: '10px 14px', fontWeight: '600', color: '#17652f' }}>
                                   {formatINR(paidVal)}
                                 </td>
                                 <td style={{ padding: '10px 14px' }}>

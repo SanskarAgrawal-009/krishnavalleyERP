@@ -334,106 +334,103 @@ export const MaintenancePage = () => {
       
       {/* Header Banner */}
       <div className="g-card" style={{
-        padding: '24px 28px',
+        padding: '20px 24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '20px',
-        border: '1px solid #e8e6df'
+        gap: '16px',
+        border: '1px solid #e5e7eb'
       }}>
         <div>
-          <div style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: '700', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            Facility Maintenance & Operations Hub
-            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
-              RESIDENT SERVICES
-            </span>
-          </div>
-          <div style={{ fontSize: '0.88rem', color: '#596372', marginTop: '4px', fontWeight: '500' }}>
-            Periodic maintenance invoicing, proof & UTR verification by Accounts, technician tickets, and rule infraction fines.
-          </div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', margin: 0 }}>
+            Maintenance
+          </h1>
+          <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '4px 0 0 0' }}>
+            Periodic billing, payment verification, technician tickets, and penalties.
+          </p>
         </div>
 
         <button
           type="button"
           onClick={loadAll}
           className="btn-secondary"
-          style={{ padding: '9px 16px', fontSize: '0.84rem' }}
+          style={{ padding: '8px 14px', fontSize: '0.84rem' }}
         >
-          <RefreshCw size={14} className={loading ? 'spin' : ''} style={{ color: '#17652f' }} />
-          Refresh Data
+          <RefreshCw size={14} className={loading ? 'spin' : ''} />
+          Refresh
         </button>
       </div>
 
       {/* Top Metrics Ribbon */}
       <div className="grid-cols-4">
-        <div className="stat-card">
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>MAINTENANCE COLLECTED</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Maintenance collected</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
             {formatINR(totalMaintCollected)}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '600' }}>Verified & paid fees</span>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Verified payments</span>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>OUTSTANDING DUES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: totalMaintOutstanding > 0 ? '#fef3c7' : '#e8f2e5', color: totalMaintOutstanding > 0 ? '#b45309' : '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Outstanding dues</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: totalMaintOutstanding > 0 ? '#fef3c7' : '#f0fdf4', color: totalMaintOutstanding > 0 ? '#d97706' : '#17652f' }}>
               <Clock size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: totalMaintOutstanding > 0 ? '#b45309' : '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: totalMaintOutstanding > 0 ? '#d97706' : '#17652f', marginTop: '4px' }}>
             {formatINR(totalMaintOutstanding)}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '600' }}>Unpaid maintenance bills</span>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Unpaid maintenance bills</span>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>ACTIVE WORK ORDERS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Active tickets</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
               <Wrench size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
             {openTicketsCount}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '600' }}>Open service tickets</span>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Open service tickets</span>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>PENDING PENALTIES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: activePenaltiesSum > 0 ? '#fee2e2' : '#f8f9fa', color: activePenaltiesSum > 0 ? '#b91c1c' : '#596372' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Pending penalties</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: activePenaltiesSum > 0 ? '#fee2e2' : '#f9fafb', color: activePenaltiesSum > 0 ? '#dc2626' : '#6b7280' }}>
               <AlertTriangle size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: activePenaltiesSum > 0 ? '#b91c1c' : '#596372', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: activePenaltiesSum > 0 ? '#dc2626' : '#111827', marginTop: '4px' }}>
             {formatINR(activePenaltiesSum)}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '600' }}>Infraction fines due</span>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Infraction fines due</span>
         </div>
       </div>
 
       {/* Sub-Tab Navigation Header */}
       <div className="g-card no-scrollbar" style={{
         display: 'flex',
-        padding: '6px',
-        gap: '6px',
-        border: '1px solid #e8e6df',
+        padding: '4px',
+        gap: '4px',
+        border: '1px solid #e5e7eb',
         overflowX: 'auto',
         WebkitOverflowScrolling: 'touch',
         whiteSpace: 'nowrap'
       }}>
         {[
-          { id: 'bills', label: `Maintenance Invoices (${bills.length})` },
-          { id: 'services', label: `Service Requests (${serviceRequests.length})` },
-          { id: 'penalties', label: `Rule Infractions & Penalties (${penalties.length})` }
+          { id: 'bills', label: `Invoices (${bills.length})` },
+          { id: 'services', label: `Service tickets (${serviceRequests.length})` },
+          { id: 'penalties', label: `Penalties (${penalties.length})` }
         ].map((tab) => {
           const isSelected = activeTab === tab.id;
           return (
@@ -443,16 +440,15 @@ export const MaintenancePage = () => {
               onClick={() => handleTabChange(tab.id)}
               style={{
                 flex: '1 1 auto',
-                padding: '9px 16px',
+                padding: '8px 16px',
                 borderRadius: '6px',
                 background: isSelected ? '#17652f' : 'transparent',
-                color: isSelected ? '#ffffff' : '#596372',
-                fontWeight: isSelected ? '700' : '600',
+                color: isSelected ? '#ffffff' : '#6b7280',
+                fontWeight: isSelected ? '600' : '500',
                 fontSize: '0.82rem',
                 border: 'none',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
-                boxShadow: isSelected ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                 transition: 'all 0.15s ease'
               }}
             >
@@ -467,39 +463,28 @@ export const MaintenancePage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Maintenance Invoices Register</h3>
-              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>All payments require mandatory UTR and proof document verification by Accounts.</p>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', margin: 0 }}>Maintenance invoices</h3>
+              <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '2px 0 0 0' }}>All payments require UTR and proof document verification.</p>
             </div>
             {canCreateBill && (
               <button
                 type="button"
                 onClick={() => setIsBillModalOpen(true)}
-                style={{
-                  background: '#17652f',
-                  color: '#ffffff',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
+                className="btn-primary"
+                style={{ padding: '8px 16px', fontSize: '0.84rem' }}
               >
-                <Plus size={15} /> Issue Maintenance Bill / Batch
+                <Plus size={15} /> New invoice
               </button>
             )}
           </div>
 
           {/* Filter Bar */}
-          <div className="g-card" style={{ padding: '12px 16px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="g-card" style={{ padding: '12px 16px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', border: '1px solid #e5e7eb' }}>
             <div style={{ flex: '1 1 240px', position: 'relative' }}>
               <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
               <input
                 type="text"
-                placeholder="Search invoice number, flat, resident, or UTR..."
+                placeholder="e.g. INV-101, Flat 101, or Rahul"
                 value={billSearch}
                 onChange={(e) => setBillSearch(e.target.value)}
                 style={{ width: '100%', paddingLeft: '30px', fontSize: '0.82rem' }}
@@ -512,36 +497,36 @@ export const MaintenancePage = () => {
                 onChange={(e) => setBillStatusFilter(e.target.value)}
                 style={{ width: '100%', fontSize: '0.82rem' }}
               >
-                <option value="">All Payment Statuses</option>
+                <option value="">All statuses</option>
                 <option value="unpaid">Unpaid</option>
-                <option value="pending_approval">Pending Approval</option>
-                <option value="partially_paid">Partially Paid</option>
-                <option value="paid">Paid & Verified</option>
+                <option value="pending_approval">Pending approval</option>
+                <option value="partially_paid">Partially paid</option>
+                <option value="paid">Paid</option>
                 <option value="rejected">Rejected</option>
               </select>
             </div>
           </div>
 
-          <div className="g-card" style={{ overflow: 'hidden' }}>
+          <div className="g-card" style={{ overflow: 'hidden', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
             <div className="table-responsive">
-              <table style={{ minWidth: '820px' }}>
+              <table style={{ minWidth: '820px', width: '100%' }}>
                 <thead>
-                  <tr>
-                    <th>Invoice No & Month</th>
-                    <th>Property & Billed Payer</th>
-                    <th>Total Billed</th>
-                    <th>Paid</th>
-                    <th>Balance Due</th>
-                    <th>Payment UTR & Proof</th>
-                    <th>Verification Status</th>
-                    <th>Action</th>
+                  <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Invoice</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Property and resident</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Total amount</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Paid</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Balance due</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>UTR and proof</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Status</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredBills.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#6b7280', fontWeight: '500' }}>
-                        No maintenance bills found matching your criteria. Click "Issue Maintenance Bill" to generate invoices.
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#6b7280', fontWeight: '400' }}>
+                        No maintenance bills found. Click "New invoice" to generate invoices.
                       </td>
                     </tr>
                   ) : (
@@ -551,35 +536,35 @@ export const MaintenancePage = () => {
                       const isRejected = b.paymentStatus === 'rejected' || b.verificationStatus === 'rejected';
 
                       return (
-                        <tr key={b._id || b.id}>
-                          <td>
+                        <tr key={b._id || b.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                          <td style={{ padding: '12px 16px' }}>
                             <strong style={{ color: '#17652f' }}>{b.billNumber}</strong>
-                            <div style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '600' }}>
-                              {b.billingMonth || (b.billingPeriod?.month ? `${b.billingPeriod.month} ${b.billingPeriod.year || ''}` : 'Monthly Fee')}
+                            <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                              {b.billingMonth || (b.billingPeriod?.month ? `${b.billingPeriod.month} ${b.billingPeriod.year || ''}` : 'Monthly fee')}
                             </div>
                           </td>
 
-                          <td>
-                            <div style={{ fontWeight: '700', color: '#111827' }}>
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: 600, color: '#111827' }}>
                               Flat {b.flatId?.flatNumber || 'Unit'}
                             </div>
-                            <div style={{ fontSize: '0.72rem', color: '#374151' }}>
-                              {b.payerType === 'owner' ? '[Owner] ' : '[Tenant] '}
+                            <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                              {b.payerType === 'owner' ? 'Owner • ' : 'Tenant • '}
                               {b.payerId?.name || 'Resident'}
                             </div>
                           </td>
 
-                          <td style={{ color: '#111827', fontWeight: '800' }}>{formatINR(b.totalAmount)}</td>
-                          <td style={{ color: '#17652f', fontWeight: '700' }}>{formatINR(b.paidAmount)}</td>
-                          <td style={{ color: b.balanceAmount > 0 ? '#0f172a' : '#17652f', fontWeight: '800' }}>
+                          <td style={{ padding: '12px 16px', color: '#111827', fontWeight: 500 }}>{formatINR(b.totalAmount)}</td>
+                          <td style={{ padding: '12px 16px', color: '#17652f', fontWeight: 600 }}>{formatINR(b.paidAmount)}</td>
+                          <td style={{ padding: '12px 16px', color: b.balanceAmount > 0 ? '#b45309' : '#17652f', fontWeight: 500 }}>
                             {formatINR(b.balanceAmount)}
                           </td>
 
                           {/* UTR & PROOF */}
-                          <td>
+                          <td style={{ padding: '12px 16px' }}>
                             {b.utrNumber ? (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                <span style={{ fontSize: '0.74rem', fontFamily: 'monospace', fontWeight: '700', color: '#111827', background: '#f3f4f6', padding: '1px 5px', borderRadius: '3px' }}>
+                                <span style={{ fontSize: '0.74rem', fontFamily: 'monospace', fontWeight: 600, color: '#111827', background: '#f3f4f6', padding: '1px 5px', borderRadius: '3px', width: 'fit-content' }}>
                                   UTR: {b.utrNumber}
                                 </span>
                                 {b.proofFileUrl ? (
@@ -587,34 +572,34 @@ export const MaintenancePage = () => {
                                     href={b.proofFileUrl}
                                     target="_blank"
                                     rel="noreferrer"
-                                    style={{ fontSize: '0.72rem', color: '#17652f', display: 'flex', alignItems: 'center', gap: '3px', textDecoration: 'none', fontWeight: '700' }}
+                                    style={{ fontSize: '0.72rem', color: '#17652f', display: 'flex', alignItems: 'center', gap: '3px', textDecoration: 'none', fontWeight: 500 }}
                                   >
-                                    <ExternalLink size={12} /> View Bill Proof
+                                    <ExternalLink size={12} /> View proof
                                   </a>
                                 ) : (
-                                  <span style={{ fontSize: '0.68rem', color: '#9ca3af' }}>No file uploaded</span>
+                                  <span style={{ fontSize: '0.68rem', color: '#9ca3af' }}>No file</span>
                                 )}
                               </div>
                             ) : (
-                              <span style={{ fontSize: '0.72rem', color: '#9ca3af', fontStyle: 'italic' }}>Pending submission</span>
+                              <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Pending</span>
                             )}
                           </td>
 
                           {/* VERIFICATION BADGE */}
-                          <td>
+                          <td style={{ padding: '12px 16px' }}>
                             {isPendingReview && (
-                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#334155', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                <Clock size={11} /> Pending Review
+                              <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#fef3c7', color: '#d97706', fontWeight: 500, fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <Clock size={11} /> Pending review
                               </span>
                             )}
                             {isApproved && (
-                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                <CheckCircle2 size={11} /> Verified & Paid
+                              <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#f0fdf4', color: '#17652f', fontWeight: 500, fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <CheckCircle2 size={11} /> Paid
                               </span>
                             )}
                             {isRejected && (
-                              <span title={b.rejectionReason} style={{ padding: '3px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#0f172a', fontWeight: '800', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'help' }}>
-                                <AlertCircle size={11} /> Proof Rejected
+                              <span title={b.rejectionReason} style={{ padding: '3px 8px', borderRadius: '4px', background: '#fee2e2', color: '#dc2626', fontWeight: 500, fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'help' }}>
+                                <AlertCircle size={11} /> Rejected
                               </span>
                             )}
                             {!isPendingReview && !isApproved && !isRejected && (
@@ -623,50 +608,28 @@ export const MaintenancePage = () => {
                           </td>
 
                           {/* ACTION BUTTONS */}
-                          <td>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: '6px', alignItems: 'center' }}>
                               {isPendingReview && canVerifyPayments ? (
                                 <button
                                   type="button"
                                   onClick={() => handleOpenVerify(b)}
-                                  style={{
-                                    padding: '5px 12px',
-                                    background: '#17652f',
-                                    color: '#ffffff',
-                                    borderRadius: '5px',
-                                    fontSize: '0.74rem',
-                                    fontWeight: '800',
-                                    cursor: 'pointer',
-                                    border: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px'
-                                  }}
+                                  className="btn-primary"
+                                  style={{ padding: '5px 10px', fontSize: '0.74rem' }}
                                 >
-                                  <ShieldCheck size={13} /> Review & Approve
+                                  <ShieldCheck size={13} /> Review
                                 </button>
                               ) : b.paymentStatus !== 'paid' ? (
                                 <button
                                   type="button"
                                   onClick={() => handleOpenPay(b)}
-                                  style={{
-                                    padding: '5px 10px',
-                                    background: '#17652f',
-                                    color: '#ffffff',
-                                    borderRadius: '5px',
-                                    fontSize: '0.74rem',
-                                    fontWeight: '700',
-                                    cursor: 'pointer',
-                                    border: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px'
-                                  }}
+                                  className="btn-primary"
+                                  style={{ padding: '5px 10px', fontSize: '0.74rem' }}
                                 >
-                                  <Upload size={12} /> Pay / Submit Proof
+                                  <Upload size={12} /> Submit payment
                                 </button>
                               ) : (
-                                <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>Settled</span>
+                                <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: 500 }}>Settled</span>
                               )}
                             </div>
                           </td>
@@ -685,84 +648,65 @@ export const MaintenancePage = () => {
       {activeTab === 'services' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Resident Service Tickets ({serviceRequests.length})</h3>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', margin: 0 }}>Service tickets ({serviceRequests.length})</h3>
             {canCreateServiceRequest && (
               <button
                 type="button"
                 onClick={() => setIsNewSrModalOpen(true)}
-                style={{
-                  background: '#17652f',
-                  color: '#ffffff',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
+                className="btn-primary"
+                style={{ padding: '8px 16px', fontSize: '0.84rem' }}
               >
-                <Plus size={15} /> Log Service Request
+                <Plus size={15} /> New ticket
               </button>
             )}
           </div>
 
-          <div className="g-card" style={{ overflow: 'hidden' }}>
+          <div className="g-card" style={{ overflow: 'hidden', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
             <div className="table-responsive">
-              <table style={{ minWidth: '780px' }}>
+              <table style={{ minWidth: '780px', width: '100%' }}>
                 <thead>
-                  <tr>
-                    <th>Ticket Code</th>
-                    <th>Title & Category</th>
-                    <th>Property Unit</th>
-                    <th>Technician</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                  <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Ticket</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Title and category</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Property</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Technician</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Priority</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Status</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {serviceRequests.map((sr) => (
-                    <tr key={sr._id || sr.id}>
-                      <td><strong style={{ color: '#17652f' }}>{sr.ticketNumber}</strong></td>
-                      <td>
-                        <div style={{ fontWeight: '700', color: '#111827' }}>{sr.title}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{sr.category}</div>
+                    <tr key={sr._id || sr.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                      <td style={{ padding: '12px 16px' }}><strong style={{ color: '#17652f' }}>{sr.ticketNumber}</strong></td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ fontWeight: 600, color: '#111827' }}>{sr.title}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>{sr.category}</div>
                       </td>
-                      <td>
-                        <div style={{ color: '#111827', fontWeight: '600' }}>Flat {sr.flatId?.flatNumber || 'Unit'}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{sr.projectId?.projectName}</div>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ color: '#111827', fontWeight: 500 }}>Flat {sr.flatId?.flatNumber || 'Unit'}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>{sr.projectId?.projectName}</div>
                       </td>
-                      <td style={{ color: '#374151', fontWeight: '600' }}>{sr.assignedTo || 'Unassigned'}</td>
-                      <td>
-                        <span style={{ padding: '2px 6px', borderRadius: '4px', background: sr.priority === 'urgent' ? '#f1f5f9' : '#e8f2e5', color: sr.priority === 'urgent' ? '#0f172a' : '#17652f', fontWeight: '800', fontSize: '0.72rem' }}>
-                          {sr.priority?.toUpperCase()}
+                      <td style={{ padding: '12px 16px', color: '#374151', fontWeight: 500 }}>{sr.assignedTo || 'Unassigned'}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ padding: '2px 6px', borderRadius: '4px', background: sr.priority === 'urgent' ? '#fee2e2' : '#f0fdf4', color: sr.priority === 'urgent' ? '#dc2626' : '#17652f', fontWeight: 500, fontSize: '0.72rem', textTransform: 'capitalize' }}>
+                          {sr.priority || 'Normal'}
                         </span>
                       </td>
-                      <td>
+                      <td style={{ padding: '12px 16px' }}>
                         <StatusBadge status={sr.status} />
                       </td>
-                      <td>
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                         <button
                           type="button"
                           onClick={() => {
                             setSelectedSr(sr);
                             setIsSrDetailModalOpen(true);
                           }}
-                          style={{
-                            padding: '4px 10px',
-                            background: '#f3f4f5',
-                            border: '1px solid #dadce0',
-                            color: '#111827',
-                            borderRadius: '4px',
-                            fontSize: '0.75rem',
-                            fontWeight: '700',
-                            cursor: 'pointer'
-                          }}
+                          className="btn-secondary"
+                          style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                         >
-                          Manage Ticket
+                          Manage
                         </button>
                       </td>
                     </tr>
@@ -778,57 +722,46 @@ export const MaintenancePage = () => {
       {activeTab === 'penalties' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Rule Infractions & Penalties ({penalties.length})</h3>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', margin: 0 }}>Penalties ({penalties.length})</h3>
             {canIssuePenalty && (
               <button
                 type="button"
                 onClick={() => setIsNewPenaltyModalOpen(true)}
-                style={{
-                  background: '#17652f',
-                  color: '#ffffff',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
+                className="btn-primary"
+                style={{ padding: '8px 16px', fontSize: '0.84rem' }}
               >
-                <AlertTriangle size={15} /> Issue Fine / Penalty
+                <Plus size={15} /> New penalty
               </button>
             )}
           </div>
 
-          <div className="g-card" style={{ overflow: 'hidden' }}>
+          <div className="g-card" style={{ overflow: 'hidden', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
             <div className="table-responsive">
-              <table style={{ minWidth: '740px' }}>
+              <table style={{ minWidth: '740px', width: '100%' }}>
                 <thead>
-                  <tr>
-                    <th>Penalty Code</th>
-                    <th>Property Unit</th>
-                    <th>Infraction Reason</th>
-                    <th>Fine Amount</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                  <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Penalty</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Property</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Reason</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Amount</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Status</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {penalties.map((p) => (
-                    <tr key={p._id || p.id}>
-                      <td>
-                        <strong style={{ color: '#0f172a', letterSpacing: '0.5px' }}>
+                    <tr key={p._id || p.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <strong style={{ color: '#111827' }}>
                           {p.penaltyNumber || p.penaltyCode || (p._id ? `PEN-${p._id.slice(-6).toUpperCase()}` : 'PEN-NOTICE')}
                         </strong>
                       </td>
-                      <td>
-                        <div style={{ fontWeight: '700', color: '#111827' }}>Flat {p.flatId?.flatNumber || 'Unit'}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{p.projectId?.projectName || 'Krishna Valley'}</div>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ fontWeight: 600, color: '#111827' }}>Flat {p.flatId?.flatNumber || 'Unit'}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>{p.projectId?.projectName || 'Krishna Valley'}</div>
                       </td>
-                      <td>
-                        <div style={{ color: '#1e293b', fontWeight: '600', fontSize: '0.82rem' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ color: '#111827', fontWeight: 500, fontSize: '0.82rem' }}>
                           {p.description || p.reason || 'Infraction penalty fine levied'}
                         </div>
                         {p.violationType && (
@@ -836,10 +769,10 @@ export const MaintenancePage = () => {
                             display: 'inline-block',
                             marginTop: '3px',
                             fontSize: '0.68rem',
-                            fontWeight: '700',
+                            fontWeight: 500,
                             textTransform: 'capitalize',
-                            color: '#334155',
-                            backgroundColor: '#f1f5f9',
+                            color: '#4b5563',
+                            backgroundColor: '#f3f4f6',
                             padding: '1px 6px',
                             borderRadius: '4px'
                           }}>
@@ -847,27 +780,19 @@ export const MaintenancePage = () => {
                           </span>
                         )}
                       </td>
-                      <td style={{ color: '#0f172a', fontWeight: '800' }}>{formatINR(p.penaltyAmount)}</td>
-                      <td>
+                      <td style={{ padding: '12px 16px', color: '#111827', fontWeight: 600 }}>{formatINR(p.penaltyAmount)}</td>
+                      <td style={{ padding: '12px 16px' }}>
                         <StatusBadge status={p.paymentStatus} />
                       </td>
-                      <td>
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                         {p.paymentStatus !== 'paid' && canSettlePenalty && (
                           <button
                             type="button"
                             onClick={() => handleSettlePenalty(p._id, 'paid')}
-                            style={{
-                              padding: '4px 10px',
-                              background: '#17652f',
-                              color: '#ffffff',
-                              borderRadius: '4px',
-                              fontSize: '0.75rem',
-                              fontWeight: '700',
-                              cursor: 'pointer',
-                              border: 'none'
-                            }}
+                            className="btn-primary"
+                            style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                           >
-                            Mark Paid
+                            Mark paid
                           </button>
                         )}
                       </td>
@@ -928,172 +853,166 @@ export const MaintenancePage = () => {
             </div>
 
             <div>
-              <label style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Payment Method *</label>
+              <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: 500, display: 'block', marginBottom: '4px' }}>Payment method *</label>
               <select
                 value={payMethod}
                 onChange={(e) => setPayMethod(e.target.value)}
                 style={{ width: '100%' }}
               >
-                <option value="upi">UPI / Online Gateway</option>
-                <option value="bank_transfer">Bank Transfer (NEFT / RTGS)</option>
-                <option value="cheque">Cheque / Demand Draft</option>
-                <option value="card">Debit / Credit Card</option>
-                <option value="cash">Cash Receipt</option>
+                <option value="upi">UPI / Online</option>
+                <option value="bank_transfer">Bank transfer (NEFT / RTGS)</option>
+                <option value="cheque">Cheque</option>
+                <option value="card">Card</option>
+                <option value="cash">Cash</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
-              Bank UTR Number / Transaction ID *
+            <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: 500, display: 'block', marginBottom: '4px' }}>
+              Bank UTR or transaction reference *
             </label>
             <input
               type="text"
               required
-              placeholder="e.g. UTR1234567890 / TXN-987654"
+              placeholder="e.g. UTR1234567890"
               value={utrNumber}
               onChange={(e) => setUtrNumber(e.target.value)}
-              style={{ width: '100%', fontFamily: 'monospace', fontWeight: '700' }}
+              style={{ width: '100%', fontFamily: 'monospace' }}
             />
-            <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>Mandatory for confirmation and audit verification.</span>
           </div>
 
           <div>
-            <label style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
-              Upload Payment Bill Proof (Image / PDF) *
+            <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: 500, display: 'block', marginBottom: '4px' }}>
+              Payment proof (image or PDF) *
             </label>
             <input
               type="file"
               accept="image/png, image/jpeg, image/jpg, application/pdf"
               onChange={(e) => setProofFile(e.target.files?.[0] || null)}
               required={!selectedBillForPay?.proofFileUrl}
-              style={{ width: '100%', fontSize: '0.8rem', padding: '6px', border: '1px dashed #94a3b8', borderRadius: '6px' }}
+              style={{ width: '100%', fontSize: '0.8rem', padding: '6px', border: '1px dashed #d1d5db', borderRadius: '6px' }}
             />
             {selectedBillForPay?.proofFileUrl && (
               <div style={{ marginTop: '4px', fontSize: '0.72rem' }}>
-                Existing proof: <a href={selectedBillForPay.proofFileUrl} target="_blank" rel="noreferrer" style={{ color: '#17652f', fontWeight: '700' }}>View Uploaded File</a>
+                Existing file: <a href={selectedBillForPay.proofFileUrl} target="_blank" rel="noreferrer" style={{ color: '#17652f', fontWeight: 500 }}>View proof</a>
               </div>
             )}
           </div>
 
           <div>
-            <label style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Remarks / Notes (Optional)</label>
+            <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: 500, display: 'block', marginBottom: '4px' }}>Remarks (optional)</label>
             <input
               type="text"
-              placeholder="e.g. Paid via GooglePay, August maintenance"
+              placeholder="e.g. Paid via Google Pay"
               value={paymentRemarks}
               onChange={(e) => setPaymentRemarks(e.target.value)}
               style={{ width: '100%' }}
             />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '10px' }}>
             <button
               type="button"
               onClick={() => setPayModalOpen(false)}
-              style={{ padding: '8px 14px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', color: '#111827', fontWeight: '700', cursor: 'pointer' }}
+              className="btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '0.84rem' }}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submittingPay}
+              className="btn-primary"
               style={{
-                padding: '8px 18px',
-                background: '#17652f',
-                color: '#ffffff',
-                borderRadius: '6px',
-                fontWeight: '700',
-                border: 'none',
-                cursor: submittingPay ? 'not-allowed' : 'pointer',
+                padding: '8px 16px',
+                fontSize: '0.84rem',
                 opacity: submittingPay ? 0.7 : 1
               }}
             >
-              {submittingPay ? 'Submitting...' : 'Submit Payment Proof'}
+              {submittingPay ? 'Submitting...' : 'Submit payment'}
             </button>
           </div>
         </form>
       </Modal>
 
       {/* ADMIN / ACCOUNTANT PAYMENT VERIFICATION MODAL */}
-      <Modal isOpen={verifyModalOpen} onClose={() => setVerifyModalOpen(false)} title="Accountant Review: Verify Maintenance Payment">
+      <Modal isOpen={verifyModalOpen} onClose={() => setVerifyModalOpen(false)} title="Verify payment">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           
-          <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '6px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ background: '#f9fafb', padding: '14px', borderRadius: '6px', border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Invoice Number:</span>
-              <strong style={{ fontSize: '0.84rem', color: '#1e293b' }}>{selectedBillForVerify?.billNumber}</strong>
+              <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>Invoice number:</span>
+              <strong style={{ fontSize: '0.84rem', color: '#111827' }}>{selectedBillForVerify?.billNumber}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Property Unit:</span>
-              <strong style={{ fontSize: '0.84rem', color: '#1e293b' }}>Flat {selectedBillForVerify?.flatId?.flatNumber || ''}</strong>
+              <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>Property:</span>
+              <strong style={{ fontSize: '0.84rem', color: '#111827' }}>Flat {selectedBillForVerify?.flatId?.flatNumber || ''}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Billed Payer:</span>
-              <strong style={{ fontSize: '0.84rem', color: '#1e293b' }}>{selectedBillForVerify?.payerId?.name || 'Resident'}</strong>
+              <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>Resident:</span>
+              <strong style={{ fontSize: '0.84rem', color: '#111827' }}>{selectedBillForVerify?.payerId?.name || 'Resident'}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Paid Amount:</span>
+              <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>Paid amount:</span>
               <strong style={{ fontSize: '0.92rem', color: '#17652f' }}>{formatINR(selectedBillForVerify?.paidAmount || selectedBillForVerify?.totalAmount)}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Bank UTR / Txn Reference:</span>
+              <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>Bank UTR / reference:</span>
               <strong style={{ fontSize: '0.84rem', color: '#17652f', fontFamily: 'monospace' }}>{selectedBillForVerify?.utrNumber || 'N/A'}</strong>
             </div>
           </div>
 
           <div>
-            <label style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
-              Payment Receipt / Screenshot Proof:
+            <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: 500, display: 'block', marginBottom: '4px' }}>
+              Payment proof:
             </label>
             {selectedBillForVerify?.proofFileUrl ? (
-              <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '6px', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>Attached Proof Document</span>
+              <div style={{ padding: '10px', background: '#f9fafb', borderRadius: '6px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.78rem', color: '#4b5563' }}>Attached proof document</span>
                 <a
                   href={selectedBillForVerify.proofFileUrl}
                   target="_blank"
                   rel="noreferrer"
+                  className="btn-secondary"
                   style={{
                     padding: '4px 10px',
-                    background: '#17652f',
-                    color: '#ffffff',
-                    borderRadius: '4px',
                     fontSize: '0.74rem',
-                    fontWeight: '700',
                     textDecoration: 'none',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px'
                   }}
                 >
-                  <ExternalLink size={12} /> Open & Inspect Proof
+                  <ExternalLink size={12} /> Open proof
                 </a>
               </div>
             ) : (
-              <div style={{ padding: '10px', color: '#0f172a', background: '#f1f5f9', borderRadius: '6px', fontSize: '0.76rem' }}>
-                No file proof attached to this payment record.
+              <div style={{ padding: '10px', color: '#6b7280', background: '#f9fafb', borderRadius: '6px', fontSize: '0.76rem', border: '1px solid #e5e7eb' }}>
+                No file proof attached.
               </div>
             )}
           </div>
 
           <div>
-            <label style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
-              Rejection Reason (Required only if rejecting):
+            <label style={{ fontSize: '0.78rem', color: '#374151', fontWeight: 500, display: 'block', marginBottom: '4px' }}>
+              Rejection reason (required only if rejecting):
             </label>
             <input
               type="text"
-              placeholder="e.g. UTR number not matching bank statement, invalid amount"
+              placeholder="e.g. UTR number does not match statement"
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               style={{ width: '100%', fontSize: '0.8rem' }}
             />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '10px' }}>
             <button
               type="button"
               onClick={() => setVerifyModalOpen(false)}
-              style={{ padding: '8px 14px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', color: '#111827', fontWeight: '700', cursor: 'pointer' }}
+              className="btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '0.84rem' }}
             >
               Cancel
             </button>
@@ -1102,32 +1021,30 @@ export const MaintenancePage = () => {
               disabled={verifying}
               onClick={() => handleExecuteVerification('reject')}
               style={{
-                padding: '8px 16px',
-                background: '#f1f5f9',
-                color: '#0f172a',
-                border: '1px solid #e2e8f0',
+                padding: '8px 14px',
+                background: '#ffffff',
+                color: '#dc2626',
+                border: '1px solid #fee2e2',
                 borderRadius: '6px',
-                fontWeight: '700',
+                fontWeight: 500,
+                fontSize: '0.84rem',
                 cursor: verifying ? 'not-allowed' : 'pointer'
               }}
             >
-              Reject Proof
+              Reject
             </button>
             <button
               type="button"
               disabled={verifying}
               onClick={() => handleExecuteVerification('approve')}
+              className="btn-primary"
               style={{
-                padding: '8px 18px',
-                background: '#17652f',
-                color: '#ffffff',
-                borderRadius: '6px',
-                fontWeight: '800',
-                border: 'none',
+                padding: '8px 16px',
+                fontSize: '0.84rem',
                 cursor: verifying ? 'not-allowed' : 'pointer'
               }}
             >
-              {verifying ? 'Approving...' : 'Approve & Confirm Payment'}
+              {verifying ? 'Approving...' : 'Approve payment'}
             </button>
           </div>
         </div>

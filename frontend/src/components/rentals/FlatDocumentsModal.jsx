@@ -203,17 +203,17 @@ export const FlatDocumentsModal = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.4)'
+              boxShadow: '0 4px 12px rgba(23, 101, 47, 0.4)'
             }}>
               <FileText size={22} color="#ffffff" />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.01em' }}>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '600', letterSpacing: '-0.01em' }}>
                   Flat {flatNumber} Documents
                 </h2>
                 <span style={{
-                  background: 'rgba(59, 130, 246, 0.2)',
+                  background: 'rgba(23, 101, 47, 0.2)',
                   color: '#86c8a0',
                   border: '1px solid rgba(147, 197, 253, 0.3)',
                   fontSize: '0.72rem',
@@ -308,12 +308,12 @@ export const FlatDocumentsModal = ({
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <h3 style={{ margin: 0, fontSize: '0.96rem', fontWeight: '800', color: '#0f172a' }}>
+                    <h3 style={{ margin: 0, fontSize: '0.96rem', fontWeight: '600', color: '#0f172a' }}>
                       Owner Registry Document
                     </h3>
                     <span style={{
                       fontSize: '0.68rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       padding: '2px 8px',
                       borderRadius: '10px',
                       background: registryDoc ? '#e8f2e5' : '#f1f5f9',
@@ -466,12 +466,12 @@ export const FlatDocumentsModal = ({
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <h3 style={{ margin: 0, fontSize: '0.96rem', fontWeight: '800', color: '#0f172a' }}>
+                    <h3 style={{ margin: 0, fontSize: '0.96rem', fontWeight: '600', color: '#0f172a' }}>
                       Rental Agreement Contract
                     </h3>
                     <span style={{
                       fontSize: '0.68rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       padding: '2px 8px',
                       borderRadius: '10px',
                       background: agreementDoc ? '#e8f2e5' : '#f1f5f9',
@@ -557,7 +557,7 @@ export const FlatDocumentsModal = ({
                     fontSize: '0.78rem',
                     fontWeight: '700',
                     cursor: 'pointer',
-                    boxShadow: agreementDoc ? 'none' : '0 2px 6px rgba(37, 99, 235, 0.3)'
+                    boxShadow: agreementDoc ? 'none' : '0 2px 6px rgba(23, 101, 47, 0.3)'
                   }}
                 >
                   {uploadingAgreement ? (
@@ -609,7 +609,7 @@ export const FlatDocumentsModal = ({
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <History size={16} color="#17652f" />
-                <h4 style={{ margin: 0, fontSize: '0.86rem', fontWeight: '800', color: '#581c87' }}>
+                <h4 style={{ margin: 0, fontSize: '0.86rem', fontWeight: '600', color: '#581c87' }}>
                   Historical Ownership Documents Trail ({flat.ownershipHistory.length} previous owner{flat.ownershipHistory.length > 1 ? 's' : ''})
                 </h4>
               </div>

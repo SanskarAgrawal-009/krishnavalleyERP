@@ -98,7 +98,7 @@ export const InAppReminderBanner = ({
           >
             <Bell size={13} color="#ffffff" />
           </div>
-          <span style={{ fontSize: '0.82rem', fontWeight: '800', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '0.82rem', fontWeight: '600', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
             {isMeeting
               ? (isPast ? 'Meeting in Progress!' : 'Meeting Scheduled Alert')
               : (isPast ? 'Task Due Now!' : '30-Min Reminder')}
@@ -109,7 +109,7 @@ export const InAppReminderBanner = ({
           <span
             style={{
               fontSize: '0.72rem',
-              fontWeight: '800',
+              fontWeight: '600',
               backgroundColor: isPast ? '#f1f5f9' : '#ffffff',
               color: isPast ? '#0f172a' : isMeeting ? '#0f766e' : '#17652f',
               padding: '2px 8px',
@@ -144,11 +144,11 @@ export const InAppReminderBanner = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
               {getModeIcon()}
-              <span style={{ fontSize: '0.76rem', fontWeight: '800', color: isMeeting ? '#0f766e' : '#475569', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.76rem', fontWeight: '600', color: isMeeting ? '#0f766e' : '#475569', textTransform: 'uppercase' }}>
                 {getModeLabel()}
               </span>
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a' }}>
+            <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a' }}>
               {activeAlert.leadName}
             </div>
           </div>
@@ -222,7 +222,7 @@ export const InAppReminderBanner = ({
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.78rem',
-                fontWeight: '800',
+                fontWeight: '600',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -252,7 +252,7 @@ export const InAppReminderBanner = ({
                     color: '#ffffff',
                     textDecoration: 'none',
                     fontSize: '0.78rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -281,7 +281,7 @@ export const InAppReminderBanner = ({
                     color: '#ffffff',
                     textDecoration: 'none',
                     fontSize: '0.76rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -306,12 +306,12 @@ export const InAppReminderBanner = ({
                   color: '#ffffff',
                   textDecoration: 'none',
                   fontSize: '0.76rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '4px',
-                  boxShadow: '0 1px 3px rgba(37,99,235,0.3)'
+                  boxShadow: '0 1px 3px rgba(23, 101, 47,0.3)'
                 }}
               >
                 <Phone size={13} />
@@ -361,7 +361,7 @@ export const InAppReminderBanner = ({
                 border: '1px solid #cde4c9',
                 color: '#17652f',
                 fontSize: '0.74rem',
-                fontWeight: '800',
+                fontWeight: '600',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',

@@ -236,119 +236,84 @@ export const ScheduleMeetingModal = ({
         </div>
 
         {/* 2. Title */}
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#1e293b', marginBottom: '4px' }}>
-            Meeting Title / Subject <span style={{ color: '#dc2626' }}>*</span>
-          </label>
-          <input
-            type="text"
-            required
-            placeholder="e.g. Weekly Site Progress & Materials Review"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '9px 12px',
-              borderRadius: '8px',
-              border: '1px solid #cbd5e1',
-              fontSize: '13px',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-        </div>
-
-        {/* 3. Date, Time & Venue in a simple 2-column grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#1e293b', marginBottom: '4px' }}>
-              Date <span style={{ color: '#dc2626' }}>*</span>
-            </label>
-            <input
-              type="date"
-              required
-              value={scheduledDate}
-              onChange={(e) => setScheduledDate(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '13px',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Meeting title / subject *</span>
           </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#1e293b', marginBottom: '4px' }}>
-              Time
-            </label>
-            <input
-              type="time"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '13px',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-        </div>
-
-        {/* 4. Venue or Online Link (Single input) */}
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#1e293b', marginBottom: '4px' }}>
-            Location or Online Meeting Link
-          </label>
-          <div style={{ position: 'relative' }}>
-            <MapPin size={14} color="#64748b" style={{ position: 'absolute', left: '10px', top: '11px' }} />
+          <div className="form-card-input-row">
             <input
               type="text"
-              placeholder="e.g. Site Room 102 or Google Meet link..."
-              value={locationDetails}
-              onChange={(e) => setLocationDetails(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 10px 8px 30px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '12px',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
+              required
+              placeholder="e.g. Weekly Site Progress & Materials Review"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="form-card-input"
             />
           </div>
         </div>
 
-        {/* 5. Agenda (Quick notes) */}
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#1e293b', marginBottom: '4px' }}>
-            Agenda / Key Discussion Points (Optional)
-          </label>
-          <textarea
-            rows={2}
-            placeholder="Key discussion topics or objectives for this sync..."
-            value={agenda}
-            onChange={(e) => setAgenda(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 10px',
-              borderRadius: '8px',
-              border: '1px solid #cbd5e1',
-              fontSize: '12px',
-              outline: 'none',
-              fontFamily: 'inherit',
-              resize: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
+        {/* 3. Date & Time */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Date *</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="date"
+                required
+                value={scheduledDate}
+                onChange={(e) => setScheduledDate(e.target.value)}
+                className="form-card-input"
+              />
+            </div>
+          </div>
+
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Time</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="form-card-input"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Venue */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Location / Online link</span>
+          </div>
+          <div className="form-card-input-row">
+            <input
+              type="text"
+              placeholder="e.g. Site Room 102 or Google Meet link"
+              value={locationDetails}
+              onChange={(e) => setLocationDetails(e.target.value)}
+              className="form-card-input"
+            />
+          </div>
+        </div>
+
+        {/* 5. Agenda */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Agenda notes (optional)</span>
+          </div>
+          <div className="form-card-input-row">
+            <input
+              type="text"
+              placeholder="Key discussion topics or objectives..."
+              value={agenda}
+              onChange={(e) => setAgenda(e.target.value)}
+              className="form-card-input"
+            />
+          </div>
         </div>
 
         {/* 6. Attendees (Compact, Click-to-Select) */}
@@ -423,32 +388,40 @@ export const ScheduleMeetingModal = ({
         </div>
 
         {/* Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '6px', paddingTop: '10px', borderTop: '1px solid #e2e8f0' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
           <button
             type="button"
-            className="btn-secondary"
             onClick={onClose}
             disabled={loading}
-            style={{ padding: '7px 16px', fontSize: '12px', borderRadius: '6px' }}
+            style={{
+              padding: '9px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#f1f5f9',
+              color: '#475569',
+              fontSize: '0.86rem',
+              fontWeight: '500',
+              cursor: 'pointer'
+            }}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="btn-primary"
             disabled={loading}
             style={{
-              padding: '7px 20px',
-              fontSize: '12px',
-              borderRadius: '6px',
-              backgroundColor: '#ca8a04',
-              color: '#ffffff',
+              padding: '9px 24px',
+              borderRadius: '8px',
               border: 'none',
-              fontWeight: 600,
+              backgroundColor: '#17652f',
+              color: '#ffffff',
+              fontSize: '0.86rem',
+              fontWeight: '500',
               cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)'
             }}
           >
-            {loading ? 'Saving...' : initialMeeting ? 'Save Changes' : 'Schedule Meeting'}
+            {loading ? 'Saving...' : initialMeeting ? 'Save changes' : 'Schedule meeting'}
           </button>
         </div>
       </form>

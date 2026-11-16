@@ -170,7 +170,7 @@ export const TestNotificationModal = ({ isOpen, onClose, initialChannel = 'whats
                   padding: '8px 4px',
                   borderRadius: 'var(--radius-sm)',
                   border: channel === 'sms' ? '1px solid #17652f' : '1px solid var(--border-subtle)',
-                  background: channel === 'sms' ? 'rgba(59, 130, 246, 0.15)' : 'var(--bg-card)',
+                  background: channel === 'sms' ? 'rgba(23, 101, 47, 0.15)' : 'var(--bg-card)',
                   color: channel === 'sms' ? '#4a9e68' : 'var(--text-secondary)',
                   fontSize: '0.75rem',
                   fontWeight: '700',

@@ -66,7 +66,9 @@ export const CommandCenterPage = () => {
   const navigate = useNavigate();
   const { user, userRole: authRole, isSuperAdmin, hasPermission } = useAuth();
   const userRole = extractRoleCode(user, authRole);
-  const isFinancialRestricted = userRole === 'taskforce_manager' || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
+  const isTaskforceRole = userRole === 'taskforce_manager' || userRole === 'taskforce_member' || userRole === 'staff' || Boolean(user?.isTaskforceMember);
+  const canViewSalesRevenue = isSuperAdmin || hasPermission('sales:view') || hasPermission('reports:financial') || userRole === 'sales_head' || userRole === 'accounts_manager';
+  const isFinancialRestricted = isTaskforceRole || !canViewSalesRevenue;
 
   const [loading, setLoading] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
@@ -82,17 +84,17 @@ export const CommandCenterPage = () => {
   const [materialsList, setMaterialsList] = useState([]);
   const [serviceRequests, setServiceRequests] = useState([]);
   const [rentalKpis, setRentalKpis] = useState({
-    totalUnits: 138,
-    totalMonthlyGross: 3520000,
-    totalDisbursed: 159700000,
-    totalCommitmentAll: 260200000
+    totalUnits: 0,
+    totalMonthlyGross: 0,
+    totalDisbursed: 0,
+    totalCommitmentAll: 0
   });
   const [taskStats, setTaskStats] = useState({
-    totalTasks: 24,
-    activeTasks: 18,
-    completedTasks: 6,
-    mdDirectivesActive: 8,
-    followUpsDueToday: 5,
+    totalTasks: 0,
+    activeTasks: 0,
+    completedTasks: 0,
+    mdDirectivesActive: 0,
+    followUpsDueToday: 0,
     roadblocksCount: 0
   });
 
@@ -100,12 +102,25 @@ export const CommandCenterPage = () => {
   const [selectedCluster, setSelectedCluster] = useState('Vrindavan Cluster');
   const [clusterDropdownOpen, setClusterDropdownOpen] = useState(false);
   const [taskFilter, setTaskFilter] = useState('all'); // 'all' | 'open' | 'closed'
-  const [todayTasksList, setTodayTasksList] = useState([
-    { id: 1, text: 'Follow-up after intro call', priority: 'Medium', completed: true },
-    { id: 2, text: 'Send updated IM to Seller X', priority: 'Normal', completed: false },
-    { id: 3, text: 'Confirm DD status for Seller Y', priority: 'High', completed: false },
-  ]);
+  const [todayTasksList, setTodayTasksList] = useState(() => {
+    try {
+      const saved = localStorage.getItem('kv_executive_today_tasks');
+      if (saved) return JSON.parse(saved);
+    } catch { /* ignore */ }
+    return [
+      { id: 1, text: 'Review today’s scheduled buyer site visits', priority: 'High', completed: false },
+      { id: 2, text: 'Verify pending monthly guaranteed rental payouts', priority: 'Medium', completed: false },
+      { id: 3, text: 'Check on-site material deliveries and stores receipt', priority: 'Normal', completed: true },
+    ];
+  });
   const [newTaskInput, setNewTaskInput] = useState('');
+
+  // Persist tasks
+  useEffect(() => {
+    try {
+      localStorage.setItem('kv_executive_today_tasks', JSON.stringify(todayTasksList));
+    } catch { /* ignore */ }
+  }, [todayTasksList]);
 
   // Fetch Dashboard Core Datasets in Parallel
   const fetchDashboardData = async () => {
@@ -198,16 +213,16 @@ export const CommandCenterPage = () => {
   // ==========================================
   // REAL-TIME METRIC CALCULATIONS
   // ==========================================
-  
+
   // 1. Projects & Units Master
-  const totalProjectsCount = projectsList.length > 0 ? projectsList.length : 1;
+  const totalProjectsCount = projectsList.length;
   const totalUnitsInPortfolio = flatsList.length > 0
     ? flatsList.length
-    : projectsList.reduce((acc, p) => acc + (Number(p.totalUnits) || 0), 168);
+    : projectsList.reduce((acc, p) => acc + (Number(p.totalUnits) || 0), 0);
 
   const totalBookedUnits = flatsList.length > 0
     ? flatsList.filter((f) => ['sold', 'booked', 'resell', 'possession_renewal', 'buy_back'].includes(f.status) || f.takenForRental).length
-    : (salesDeals.length > 0 ? salesDeals.length : 138);
+    : salesDeals.length;
 
   const totalAvailableUnits = flatsList.length > 0
     ? flatsList.filter((f) => f.status === 'available' && !f.takenForRental).length
@@ -215,10 +230,9 @@ export const CommandCenterPage = () => {
 
   const overallAbsorptionRate = totalUnitsInPortfolio > 0
     ? Math.round((totalBookedUnits / totalUnitsInPortfolio) * 100)
-    : 82;
+    : 0;
 
   // 2. Realized Sales Bookings Portfolio Valuation
-  // If salesDeals collection has records, use those; otherwise aggregate from flats basePrice
   const totalBookedValue = useMemo(() => {
     const dealsSum = salesDeals.reduce((acc, d) => {
       return acc + (Number(d.finalPrice) || Number(d.bookingAmount) || 0);
@@ -230,33 +244,33 @@ export const CommandCenterPage = () => {
       return flatsList
         .filter((f) => ['sold', 'booked', 'resell', 'possession_renewal', 'buy_back'].includes(f.status) || f.takenForRental)
         .reduce((sum, f) => {
-          const price = Number(f.basePrice) || Number(f.salesDetails?.agreedDealPrice) || Number(f.pricing?.totalPrice) || 4500000;
+          const price = Number(f.basePrice) || Number(f.salesDetails?.agreedDealPrice) || Number(f.pricing?.totalPrice) || 0;
           return sum + price;
         }, 0);
     }
-    return 621000000; // ₹62.10 Cr baseline for 138 sold units
+    return 0;
   }, [salesDeals, flatsList]);
 
   const totalPortfolioValue = useMemo(() => {
     if (flatsList.length > 0) {
       return flatsList.reduce((sum, f) => {
-        const price = Number(f.basePrice) || Number(f.pricing?.totalPrice) || 4500000;
+        const price = Number(f.basePrice) || Number(f.pricing?.totalPrice) || 0;
         return sum + price;
       }, 0);
     }
-    return 756000000; // ₹75.60 Cr for 168 total units
+    return 0;
   }, [flatsList]);
 
   // 3. Guaranteed Rental Assurance Program
-  const monthlyRentalPayout = rentalKpis.totalMonthlyGross > 0 ? rentalKpis.totalMonthlyGross : 3520000;
-  const totalRentDisbursed = rentalKpis.totalDisbursed > 0 ? rentalKpis.totalDisbursed : 159700000;
-  const totalRentalUnits = rentalKpis.totalUnits > 0 ? rentalKpis.totalUnits : totalBookedUnits;
+  const monthlyRentalPayout = rentalKpis.totalMonthlyGross || 0;
+  const totalRentDisbursed = rentalKpis.totalDisbursed || 0;
+  const totalRentalUnits = rentalKpis.totalUnits || (flatsList.filter(f => f.takenForRental).length);
 
   // 4. CRM Leads & Pipeline
-  const activeLeadsCount = crmLeads.length > 0 ? crmLeads.length : 607;
+  const activeLeadsCount = crmLeads.length;
   const scheduledVisits = crmLeads.filter(
     (l) => l.status === 'site_visit' || l.status === 'site_visit_scheduled' || (l.followUps || []).some((fu) => fu.mode === 'site_visit')
-  ).length || 14;
+  ).length;
 
   const openServiceRequestsCount = serviceRequests.filter(
     (sr) => sr.status === 'open' || sr.status === 'assigned' || sr.status === 'in_progress'
@@ -294,14 +308,10 @@ export const CommandCenterPage = () => {
       const bookingsCr = Number((monthlyBookings / 10000000).toFixed(2));
       const collectionsCr = Number((monthlyCollections / 10000000).toFixed(2));
 
-      // Realistic business curve reflecting portfolio monetization
-      const baseBooking = Number((4.2 + (monthsCount - i) * 0.85).toFixed(2));
-      const baseCollection = Number((3.1 + (monthsCount - i) * 0.72).toFixed(2));
-
       months.push({
         month: `${mName}${i === 0 ? ' (MTD)' : ''}`,
-        bookings: bookingsCr > 0 ? bookingsCr : baseBooking,
-        collections: collectionsCr > 0 ? collectionsCr : baseCollection
+        bookings: bookingsCr,
+        collections: collectionsCr
       });
     }
     return months;
@@ -318,38 +328,22 @@ export const CommandCenterPage = () => {
     for (let i = monthsCount - 1; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const mName = d.toLocaleString('en-IN', { month: 'short' });
-      const baseAssigned = Math.round(16 + (monthsCount - i) * 1.8 + (i % 2 === 0 ? 3 : -1));
-      const baseCompleted = Math.round(baseAssigned * 0.88);
 
       months.push({
         month: `${mName}${i === 0 ? ' (MTD)' : ''}`,
-        assigned: baseAssigned,
-        completed: baseCompleted
+        assigned: i === 0 ? (taskStats.activeTasks || 0) : 0,
+        completed: i === 0 ? (taskStats.completedTasks || 0) : 0
       });
     }
     return months;
-  }, [revenueTimeframe]);
+  }, [revenueTimeframe, taskStats]);
 
   // ==========================================
   // DYNAMIC CHART 2: Inventory Absorption (Floor-wise & Project Summary)
-  // FIX: Eliminated pitch-black Recharts block, replaced with clean blue & sky-blue
   // ==========================================
   const floorInventoryData = useMemo(() => {
     if (flatsList.length === 0) {
-      return [
-        { floor: 'GF', Booked: 14, Available: 0, Total: 14 },
-        { floor: 'F1', Booked: 11, Available: 3, Total: 14 },
-        { floor: 'F2', Booked: 10, Available: 4, Total: 14 },
-        { floor: 'F3', Booked: 10, Available: 4, Total: 14 },
-        { floor: 'F4', Booked: 11, Available: 3, Total: 14 },
-        { floor: 'F5', Booked: 10, Available: 4, Total: 14 },
-        { floor: 'F6', Booked: 11, Available: 3, Total: 14 },
-        { floor: 'F7', Booked: 13, Available: 1, Total: 14 },
-        { floor: 'F8', Booked: 9, Available: 5, Total: 14 },
-        { floor: 'F9', Booked: 12, Available: 2, Total: 14 },
-        { floor: 'F10', Booked: 14, Available: 0, Total: 14 },
-        { floor: 'F11', Booked: 13, Available: 1, Total: 14 }
-      ];
+      return [];
     }
 
     const floorMap = {};
@@ -374,11 +368,7 @@ export const CommandCenterPage = () => {
       }
     });
 
-    const sorted = Object.values(floorMap).sort((a, b) => a.floorOrder - b.floorOrder);
-    return sorted.length > 0 ? sorted : [
-      { floor: 'GF', Booked: 14, Available: 0, Total: 14 },
-      { floor: 'F1', Booked: 11, Available: 3, Total: 14 }
-    ];
+    return Object.values(floorMap).sort((a, b) => a.floorOrder - b.floorOrder);
   }, [flatsList]);
 
   const projectInventoryData = useMemo(() => {
@@ -397,12 +387,7 @@ export const CommandCenterPage = () => {
   // ==========================================
   const leadSourceData = useMemo(() => {
     if (crmLeads.length === 0) {
-      return [
-        { name: 'Channel Partners & Agents', value: 38, count: 231, color: '#17652f' },
-        { name: 'Website & Digital Portal', value: 27, count: 164, color: '#0284c7' },
-        { name: 'Direct Walk-in', value: 20, count: 121, color: '#10b981' },
-        { name: 'Meta & Social Ads', value: 15, count: 91, color: '#f59e0b' }
-      ];
+      return [];
     }
 
     const sourceCounts = {};
@@ -490,7 +475,7 @@ export const CommandCenterPage = () => {
           fontSize: '0.82rem',
           minWidth: '180px'
         }}>
-          <div style={{ fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>{label}</div>
+          <div style={{ fontWeight: '600', color: '#0f172a', marginBottom: '6px' }}>{label}</div>
           {payload.map((entry, index) => (
             <div key={index} style={{ color: entry.color, fontWeight: '700', display: 'flex', gap: '12px', justifyContent: 'space-between', margin: '3px 0' }}>
               <span>{entry.name}:</span>
@@ -516,7 +501,7 @@ export const CommandCenterPage = () => {
           fontSize: '0.82rem',
           minWidth: '190px'
         }}>
-          <div style={{ fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>{label}</div>
+          <div style={{ fontWeight: '600', color: '#0f172a', marginBottom: '6px' }}>{label}</div>
           {payload.map((entry, index) => (
             <div key={index} style={{ color: entry.color, fontWeight: '700', display: 'flex', gap: '12px', justifyContent: 'space-between', margin: '3px 0' }}>
               <span>{entry.name}:</span>
@@ -547,7 +532,7 @@ export const CommandCenterPage = () => {
           fontSize: '0.82rem',
           minWidth: '200px'
         }}>
-          <div style={{ fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>
+          <div style={{ fontWeight: '600', color: '#0f172a', marginBottom: '6px' }}>
             {label === 'GF' ? 'Ground Floor' : label.startsWith('F') ? `Floor ${label.replace('F', '')}` : label}
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#17652f', fontWeight: '700', margin: '2px 0' }}>
@@ -558,7 +543,7 @@ export const CommandCenterPage = () => {
             <span>Available:</span>
             <span>{available} Units ({100 - pct}%)</span>
           </div>
-          <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '6px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between', color: '#0f172a', fontWeight: '800' }}>
+          <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '6px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between', color: '#0f172a', fontWeight: '600' }}>
             <span>Total Units:</span>
             <span>{total} Units</span>
           </div>
@@ -570,45 +555,120 @@ export const CommandCenterPage = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }}>
-      
-      {/* 1. Executive Editorial Hero Section with Resort Landscape Banner */}
+
+      {/* 1. Executive Editorial Hero Section with Resort Landscape & Watercolor Hills (Inspired by Inspo Image 4) */}
       <div
         style={{
-          background: '#ffffff',
-          border: '1px solid #e8e6df',
-          borderRadius: '16px',
-          padding: '22px 26px',
+          background: 'linear-gradient(135deg, #133922 0%, #174428 50%, #1e5332 100%)',
+          borderRadius: '20px',
+          padding: '28px 32px',
+          minHeight: '195px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '20px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-          position: 'relative'
+          position: 'relative',
+          overflow: 'hidden',
+          border: 'none',
+          boxShadow: '0 12px 36px -10px rgba(19, 57, 34, 0.35)'
         }}
       >
-        <div style={{ flex: 1, minWidth: '290px' }}>
-          <div style={{ fontSize: '0.86rem', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
-            Good Morning, {user?.firstName || 'Sanskar'} 👋
+        {/* Art at the left at the very end (Border-free Watercolor Hills) */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            height: '100%',
+            width: 'auto',
+            maxHeight: '170px',
+            pointerEvents: 'none',
+            zIndex: 1,
+            userSelect: 'none'
+          }}
+        >
+          <img
+            src="/assets/valley-hills-luminous.png"
+            alt="Valley Hills Landscape Contour"
+            style={{
+              height: '100%',
+              width: 'auto',
+              objectFit: 'contain',
+              objectPosition: 'left bottom',
+              display: 'block',
+              opacity: 0.65
+            }}
+          />
+        </div>
+
+        {/* Resort photograph at the right at the very end with seamless left bleed & zero borders */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: '48%',
+            minWidth: '280px',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: 1,
+            overflow: 'hidden'
+          }}
+        >
+          <img
+            src="/assets/krishna-valley-resort-building.jpg"
+            alt="Krishna Valley Luxury Resort & Swimming Pool"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center 40%',
+              display: 'block',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 16%, rgba(0,0,0,1) 46%)',
+              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 16%, rgba(0,0,0,1) 46%)'
+            }}
+          />
+        </div>
+
+        {/* Dynamic text layer elevated cleanly above the art (Z-Index 2) */}
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: '620px' }}>
+
+          {/* Greeting */}
+          <div style={{ fontSize: '0.85rem', color: '#a7f3d0', fontWeight: '500', marginBottom: '4px', letterSpacing: '-0.01em' }}>
+            Good morning, {user?.firstName || 'Rajesh'}
           </div>
+
+          {/* Clean, Calm Page Title */}
           <h1
             style={{
               fontFamily: "'Newsreader', 'Lora', Georgia, serif",
-              fontSize: '2.15rem',
+              fontSize: '2.25rem',
               fontWeight: '600',
-              color: '#1f2937',
-              margin: '0 0 6px 0',
-              letterSpacing: '-0.02em',
+              color: '#ffffff',
+              margin: '0 0 8px 0',
+              letterSpacing: '-0.025em',
               lineHeight: 1.15
             }}
           >
-            Executive Command Center
+            Dashboard
           </h1>
-          <p style={{ fontSize: '0.85rem', color: '#596372', margin: '0 0 16px 0', fontWeight: '400', maxWidth: '620px' }}>
-            Real-time portfolio intelligence for sales, inventory, site operations, and resource management.
+
+          {/* Subtitle in soft mint */}
+          <p
+            style={{
+              fontSize: '0.86rem',
+              color: '#d1fae5',
+              margin: '0 0 18px 0',
+              fontWeight: '400',
+              maxWidth: '560px',
+              lineHeight: 1.5,
+              opacity: 0.95
+            }}
+          >
+            Overview of sales, inventory, and operations.
           </p>
 
-          {/* Cluster & Telemetry Status Pills */}
+          {/* Cluster Selector, Live Status & Refresh Action */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <div style={{ position: 'relative' }}>
               <button
@@ -617,21 +677,25 @@ export const CommandCenterPage = () => {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 14px',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e8e6df',
+                  gap: '7px',
+                  padding: '7px 15px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
                   borderRadius: '9999px',
                   fontSize: '0.78rem',
                   fontWeight: '600',
-                  color: '#1f2937',
+                  color: '#ffffff',
                   cursor: 'pointer',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                  border: '1px solid rgba(255, 255, 255, 0.22)',
+                  transition: 'all 0.15s ease'
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'; }}
               >
-                <MapPin size={13} color="#17652f" />
+                <MapPin size={13} color="#86efac" />
                 <span>{selectedCluster}</span>
-                <ChevronDown size={13} color="#6b7280" />
+                <ChevronDown size={13} color="#d1fae5" />
               </button>
 
               {clusterDropdownOpen && (
@@ -643,9 +707,9 @@ export const CommandCenterPage = () => {
                     backgroundColor: '#ffffff',
                     border: '1px solid #e8e6df',
                     borderRadius: '10px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                    zIndex: 20,
-                    minWidth: '170px',
+                    boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
+                    zIndex: 30,
+                    minWidth: '180px',
                     padding: '4px'
                   }}
                 >
@@ -674,524 +738,287 @@ export const CommandCenterPage = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
-                backgroundColor: '#e8f2e5',
-                border: '1px solid #cde4c9',
+                gap: '7px',
+                padding: '7px 15px',
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
                 borderRadius: '9999px',
                 fontSize: '0.78rem',
-                fontWeight: '700',
-                color: '#17652f'
+                fontWeight: '600',
+                color: '#86efac',
+                border: '1px solid rgba(52, 211, 153, 0.3)'
               }}
             >
-              <Activity size={13} color="#17652f" />
-              <span>Live Telemetry</span>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block' }} />
+              <Activity size={13} color="#86efac" />
+              <span>Live</span>
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: '#34d399',
+                  display: 'inline-block'
+                }}
+              />
             </div>
 
             <button
               onClick={fetchDashboardData}
-              title="Refresh Telemetry"
+              title="Refresh"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '32px',
-                height: '32px',
+                width: '34px',
+                height: '34px',
                 borderRadius: '50%',
-                backgroundColor: '#ffffff',
-                border: '1px solid #e8e6df',
-                color: '#6b7280',
-                cursor: 'pointer'
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                border: '1px solid rgba(255, 255, 255, 0.22)',
+                color: '#ffffff',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'; }}
             >
               <RefreshCw size={13} className={loading ? 'spin' : ''} />
             </button>
           </div>
         </div>
-
-        {/* Right Hero Banner Image (Resort Landscape from reference image) */}
-        <div
-          style={{
-            width: '370px',
-            maxWidth: '100%',
-            height: '140px',
-            borderRadius: '14px',
-            overflow: 'hidden',
-            flexShrink: 0,
-            boxShadow: '0 3px 12px rgba(0,0,0,0.06)',
-            position: 'relative'
-          }}
-        >
-          <img
-            src="/assets/resort-hero-landscape.jpg"
-            alt="Krishna Valley Luxury Villas & Resort"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: 'block'
-            }}
-          />
-        </div>
       </div>
 
-      {/* 2. Top Executive KPI Cards (Reference Image Ribbon) */}
+      {/* 2. Key Performance Indicators */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))', gap: '16px' }}>
-        
-        {/* Metric 1: Booked Sales Valuation */}
+
+        {/* Metric 1: Total Sales */}
         <div
           onClick={() => navigate('/sales')}
           style={{
             background: '#ffffff',
-            border: '1px solid #e8e6df',
-            borderRadius: '14px',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
             padding: '20px 22px',
             cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-            transition: 'all 0.15s ease',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+            transition: 'border-color 0.15s ease',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
         >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{
                 width: '36px',
                 height: '36px',
-                borderRadius: '10px',
-                backgroundColor: '#e8f2e5',
+                borderRadius: '8px',
+                backgroundColor: '#f0fdf4',
                 color: '#17652f',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <DollarSign size={18} strokeWidth={2.4} />
+                <DollarSign size={18} />
               </div>
-              {/* Upward Trajectory Sparkline Curve */}
-              <svg width="68" height="26" viewBox="0 0 68 26" fill="none">
-                <path d="M2 22C14 20 22 14 34 14C46 14 52 4 66 3" stroke="#10b981" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
-              Booked Sales Valuation
+            <div style={{ fontSize: '0.8rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
+              Total sales
             </div>
-            <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1f2937', marginTop: '2px', letterSpacing: '-0.02em' }}>
-              ₹62.10 Cr
+            <div style={{ fontSize: '1.65rem', fontWeight: '600', color: '#111827', marginTop: '2px', letterSpacing: '-0.02em' }}>
+              {formatCr(totalBookedValue)}
             </div>
           </div>
           <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.73rem', color: '#6b7280', fontWeight: '500' }}>
-              138 Booked • ₹75.60 Cr Cap
+            <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+              {totalBookedUnits} units booked
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '9999px' }}>
-              82% Value
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600', backgroundColor: '#f0fdf4', padding: '2px 8px', borderRadius: '6px' }}>
+              {overallAbsorptionRate}% of portfolio
             </span>
           </div>
         </div>
 
-        {/* Metric 2: Inventory Absorption */}
+        {/* Metric 2: Units Booked */}
         <div
           onClick={() => navigate('/inventory')}
           style={{
             background: '#ffffff',
-            border: '1px solid #e8e6df',
-            borderRadius: '14px',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
             padding: '20px 22px',
             cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-            transition: 'all 0.15s ease',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+            transition: 'border-color 0.15s ease',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
         >
           <div>
             <div style={{
               width: '36px',
               height: '36px',
-              borderRadius: '10px',
-              backgroundColor: '#e0f2fe',
-              color: '#0284c7',
+              borderRadius: '8px',
+              backgroundColor: '#f0fdf4',
+              color: '#17652f',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Layers size={18} strokeWidth={2.4} />
+              <Layers size={18} />
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
-              Inventory Absorption
+            <div style={{ fontSize: '0.8rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
+              Units booked
             </div>
-            <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1f2937', marginTop: '2px', letterSpacing: '-0.02em' }}>
-              82% <span style={{ fontSize: '0.88rem', fontWeight: '500', color: '#6b7280' }}>(138/168 Units)</span>
+            <div style={{ fontSize: '1.65rem', fontWeight: '600', color: '#111827', marginTop: '2px', letterSpacing: '-0.02em' }}>
+              {overallAbsorptionRate}% <span style={{ fontSize: '0.85rem', fontWeight: '400', color: '#6b7280' }}>({totalBookedUnits} of {totalUnitsInPortfolio})</span>
             </div>
           </div>
-          
+
           <div style={{ marginTop: '14px' }}>
             <div style={{ width: '100%', height: '6px', backgroundColor: '#e5e7eb', borderRadius: '9999px', overflow: 'hidden' }}>
-              <div style={{ width: '82%', height: '100%', backgroundColor: '#17652f', borderRadius: '9999px' }} />
+              <div style={{ width: `${Math.min(100, overallAbsorptionRate)}%`, height: '100%', backgroundColor: '#17652f', borderRadius: '9999px' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-              <span style={{ fontSize: '0.73rem', color: '#17652f', fontWeight: '700' }}>
-                30 Units Available
+              <span style={{ fontSize: '0.75rem', color: '#374151' }}>
+                {totalAvailableUnits} available
               </span>
-              <span style={{ fontSize: '0.73rem', color: '#17652f', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                View Matrix <ArrowRight size={12} />
+              <span style={{ fontSize: '0.75rem', color: '#17652f', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                View units <ArrowRight size={12} />
               </span>
             </div>
           </div>
         </div>
 
-        {/* Metric 3: Guaranteed Rental Yield */}
+        {/* Metric 3: Monthly Rental Payouts */}
         <div
           onClick={() => navigate('/rentals')}
           style={{
             background: '#ffffff',
-            border: '1px solid #e8e6df',
-            borderRadius: '14px',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
             padding: '20px 22px',
             cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-            transition: 'all 0.15s ease',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+            transition: 'border-color 0.15s ease',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
         >
           <div>
             <div style={{
               width: '36px',
               height: '36px',
-              borderRadius: '10px',
-              backgroundColor: '#fef3c7',
-              color: '#d97706',
+              borderRadius: '8px',
+              backgroundColor: '#f0fdf4',
+              color: '#17652f',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Home size={18} strokeWidth={2.4} />
+              <Home size={18} />
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
-              Guaranteed Rental Yield
+            <div style={{ fontSize: '0.8rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
+              Monthly rental payouts
             </div>
-            <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1f2937', marginTop: '2px', letterSpacing: '-0.02em' }}>
-              ₹35.20 L <span style={{ fontSize: '0.88rem', fontWeight: '500', color: '#6b7280' }}>/mo</span>
+            <div style={{ fontSize: '1.65rem', fontWeight: '600', color: '#111827', marginTop: '2px', letterSpacing: '-0.02em' }}>
+              {formatLakhs(monthlyRentalPayout)} <span style={{ fontSize: '0.85rem', fontWeight: '400', color: '#6b7280' }}>/ month</span>
             </div>
           </div>
           <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.73rem', color: '#6b7280', fontWeight: '500' }}>
-              138 Flats • ₹15.97 Cr Disbursed
+            <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+              {totalRentalUnits} enrolled • {formatCr(totalRentDisbursed)} paid
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '9999px' }}>
-              100% Active
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600', backgroundColor: '#f0fdf4', padding: '2px 8px', borderRadius: '6px' }}>
+              {totalRentalUnits > 0 ? 'Active' : 'None'}
             </span>
           </div>
         </div>
 
-        {/* Metric 4: Buyer Prospect Pipeline */}
+        {/* Metric 4: Active Leads */}
         <div
           onClick={() => navigate('/crm')}
           style={{
             background: '#ffffff',
-            border: '1px solid #e8e6df',
-            borderRadius: '14px',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
             padding: '20px 22px',
             cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-            transition: 'all 0.15s ease',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+            transition: 'border-color 0.15s ease',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
         >
           <div>
             <div style={{
               width: '36px',
               height: '36px',
-              borderRadius: '10px',
-              backgroundColor: '#e8f2e5',
+              borderRadius: '8px',
+              backgroundColor: '#f0fdf4',
               color: '#17652f',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Users size={18} strokeWidth={2.4} />
+              <Users size={18} />
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
-              Buyer Prospect Pipeline
+            <div style={{ fontSize: '0.8rem', color: '#6b7280', fontWeight: '500', marginTop: '12px' }}>
+              Active leads
             </div>
-            <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#1f2937', marginTop: '2px', letterSpacing: '-0.02em' }}>
-              607 Leads
+            <div style={{ fontSize: '1.65rem', fontWeight: '600', color: '#111827', marginTop: '2px', letterSpacing: '-0.02em' }}>
+              {activeLeadsCount}
             </div>
           </div>
           <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.73rem', color: '#6b7280', fontWeight: '500' }}>
-              14 Scheduled Site Visits
+            <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+              {scheduledVisits} scheduled visits
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '9999px' }}>
-              Active Queue
+            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600', backgroundColor: '#f0fdf4', padding: '2px 8px', borderRadius: '6px' }}>
+              {activeLeadsCount > 0 ? 'Active' : 'None'}
             </span>
           </div>
         </div>
 
       </div>
 
-      {/* 3. Seller Matches Section */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#1f2937', margin: 0 }}>
-              Seller Matches
-            </h2>
-            <span style={{
-              backgroundColor: '#17652f',
-              color: '#ffffff',
-              fontSize: '0.72rem',
-              fontWeight: '700',
-              padding: '2px 8px',
-              borderRadius: '9999px'
-            }}>
-              4
-            </span>
-          </div>
-          <button
-            onClick={() => navigate('/sales')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#17652f',
-              fontSize: '0.82rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-          >
-            View All <ArrowRight size={13} />
-          </button>
-        </div>
-
-        {/* 3 Seller Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
-          
-          {/* Card 1: Alistair Davenport */}
-          <div
-            onClick={() => navigate('/sales')}
-            style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #e8e6df',
-              borderRadius: '14px',
-              padding: '18px 20px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '10px',
-                  backgroundColor: '#17652f',
-                  color: '#ffffff',
-                  fontWeight: '700',
-                  fontSize: '0.88rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  AD
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#1f2937' }}>Alistair Davenport</div>
-                  <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>SaaS Business • England</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#17652f', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '6px' }}>
-                  97% Match
-                </span>
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#0369a1', backgroundColor: '#e0f2fe', padding: '2px 6px', borderRadius: '6px' }}>
-                  New
-                </span>
-              </div>
-            </div>
-            <div style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.45 }}>
-              Founder-owned SaaS platform with recurring revenue and international customers.
-            </div>
-            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
-              <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Deal Overview</div>
-              <div style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '600', marginTop: '2px' }}>
-                Estimated deal size: £2m – £5m <span style={{ color: '#d1d5db', margin: '0 6px' }}>|</span> Timeline: 6–9 months
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Oliver Thompson */}
-          <div
-            onClick={() => navigate('/sales')}
-            style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #e8e6df',
-              borderRadius: '14px',
-              padding: '18px 20px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '10px',
-                  backgroundColor: '#f59e0b',
-                  color: '#ffffff',
-                  fontWeight: '700',
-                  fontSize: '0.88rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  OT
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#1f2937' }}>Oliver Thompson</div>
-                  <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>Business Services • England</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '6px' }}>
-                  82% Match
-                </span>
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#0369a1', backgroundColor: '#e0f2fe', padding: '2px 6px', borderRadius: '6px' }}>
-                  New
-                </span>
-              </div>
-            </div>
-            <div style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.45 }}>
-              Owner-led UK logistics business serving B2B clients across England.
-            </div>
-            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
-              <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Deal Overview</div>
-              <div style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '600', marginTop: '2px' }}>
-                Estimated deal size: £2m – £5m <span style={{ color: '#d1d5db', margin: '0 6px' }}>|</span> Timeline: 6–9 months
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3: Charlotte Harrington */}
-          <div
-            onClick={() => navigate('/sales')}
-            style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #e8e6df',
-              borderRadius: '14px',
-              padding: '18px 20px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e8e6df'; }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '10px',
-                  backgroundColor: '#10b981',
-                  color: '#ffffff',
-                  fontWeight: '700',
-                  fontSize: '0.88rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  CH
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#1f2937' }}>Charlotte Harrington</div>
-                  <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>Business Services • England</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#17652f', backgroundColor: '#e8f2e5', padding: '2px 8px', borderRadius: '6px' }}>
-                  92% Match
-                </span>
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#0369a1', backgroundColor: '#e0f2fe', padding: '2px 6px', borderRadius: '6px' }}>
-                  New
-                </span>
-              </div>
-            </div>
-            <div style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.45 }}>
-              Established manufacturing business supplying industrial components to UK buyers.
-            </div>
-            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px' }}>
-              <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Deal Overview</div>
-              <div style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '600', marginTop: '2px' }}>
-                Estimated deal size: £2m – £5m <span style={{ color: '#d1d5db', margin: '0 6px' }}>|</span> Timeline: 6–9 months
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* 4. Active Mandates Table & Today's Tasks Interactive Grid */}
+      {/* 3. Recent Sales & Tasks */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
-        
-        {/* Left Column: Active Mandates Table */}
+
+        {/* Left Column: Recent Sales */}
         <div style={{
           backgroundColor: '#ffffff',
-          border: '1px solid #e8e6df',
-          borderRadius: '14px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '12px',
           padding: '22px 24px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#1f2937', margin: 0 }}>
-                Active Mandates
+              <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+                Recent sales
               </h2>
               <span style={{
-                backgroundColor: '#17652f',
-                color: '#ffffff',
+                backgroundColor: '#f0fdf4',
+                color: '#17652f',
                 fontSize: '0.72rem',
-                fontWeight: '700',
+                fontWeight: '600',
                 padding: '2px 8px',
-                borderRadius: '9999px'
+                borderRadius: '6px'
               }}>
-                10
+                {salesDeals.length > 0 ? salesDeals.length : flatsList.filter(f => ['sold', 'booked'].includes(f.status)).length}
               </span>
             </div>
             <button
@@ -1200,7 +1027,7 @@ export const CommandCenterPage = () => {
                 background: 'none',
                 border: 'none',
                 color: '#17652f',
-                fontSize: '0.82rem',
+                fontSize: '0.8rem',
                 fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
@@ -1208,79 +1035,99 @@ export const CommandCenterPage = () => {
                 gap: '4px'
               }}
             >
-              View All <ArrowRight size={13} />
+              View all <ArrowRight size={13} />
             </button>
           </div>
 
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #e8e6df', color: '#6b7280', fontSize: '0.72rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  <th style={{ padding: '10px 12px' }}>Seller</th>
-                  <th style={{ padding: '10px 12px' }}>Sector</th>
-                  <th style={{ padding: '10px 12px' }}>Stage</th>
-                  <th style={{ padding: '10px 12px' }}>Last Update</th>
-                  <th style={{ padding: '10px 12px' }}>Next Update</th>
+                <tr style={{ borderBottom: '1px solid #e5e7eb', color: '#6b7280', fontSize: '0.74rem', fontWeight: '500' }}>
+                  <th style={{ padding: '10px 12px' }}>Unit and buyer</th>
+                  <th style={{ padding: '10px 12px' }}>Project</th>
+                  <th style={{ padding: '10px 12px' }}>Amount</th>
+                  <th style={{ padding: '10px 12px' }}>Status</th>
+                  <th style={{ padding: '10px 12px' }}>Date</th>
                 </tr>
               </thead>
               <tbody>
-                {[
-                  { name: 'Northshore Logistics Ltd', icon: '🚚', sector: 'Logistics', stage: 'LOI Signed', stageType: 'success', last: '3 days ago', next: 'In 4 days' },
-                  { name: 'Brightline Digital', icon: '💻', sector: 'Prof. Services', stage: 'Due Diligence', stageType: 'warning', last: 'Yesterday', next: 'In 6 days' },
-                  { name: 'Falcon Engineering', icon: '⚙️', sector: 'Manufacturing', stage: 'Active', stageType: 'success', last: '1 week ago', next: 'In 2 days' },
-                  { name: 'Oakridge Healthcare Group', icon: '🏥', sector: 'Healthcare', stage: 'Signed Mandate', stageType: 'success', last: '5 days ago', next: 'In 1 week' },
-                  { name: 'Atlas Software Solutions', icon: '☁️', sector: 'SaaS', stage: 'Buyer Outreach', stageType: 'info', last: '2 days ago', next: 'Tomorrow' },
-                ].map((row, idx) => (
-                  <tr
-                    key={idx}
-                    style={{
-                      borderBottom: '1px solid #f3f4f6',
-                      transition: 'background-color 0.12s ease',
-                      cursor: 'pointer'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#faf9f6'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                    onClick={() => navigate('/sales')}
-                  >
-                    <td style={{ padding: '12px', fontWeight: '600', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '1rem' }}>{row.icon}</span>
-                      <span>{row.name}</span>
+                {salesDeals.length === 0 && flatsList.filter(f => ['sold', 'booked'].includes(f.status)).length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={{ padding: '30px', textAlign: 'center', color: '#6b7280' }}>
+                      No sales recorded yet. New sales bookings will appear here.
                     </td>
-                    <td style={{ padding: '12px', color: '#6b7280' }}>{row.sector}</td>
-                    <td style={{ padding: '12px' }}>
-                      <span style={{
-                        padding: '3px 8px',
-                        borderRadius: '6px',
-                        fontSize: '0.72rem',
-                        fontWeight: '700',
-                        backgroundColor: row.stageType === 'success' ? '#e8f2e5' : row.stageType === 'warning' ? '#fef3c7' : '#e0f2fe',
-                        color: row.stageType === 'success' ? '#17652f' : row.stageType === 'warning' ? '#b45309' : '#0369a1'
-                      }}>
-                        {row.stage}
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px', color: '#6b7280' }}>{row.last}</td>
-                    <td style={{ padding: '12px', color: '#1f2937', fontWeight: '500' }}>{row.next}</td>
                   </tr>
-                ))}
+                ) : (
+                  (salesDeals.length > 0 ? salesDeals.slice(0, 5) : flatsList.filter(f => ['sold', 'booked'].includes(f.status)).slice(0, 5)).map((row, idx) => {
+                    const unitName = row.assignedFlat?.flatNumber || row.flatNumber || `Flat ${row.flatNumber || idx + 101}`;
+                    const buyerName = row.buyerName || row.name || row.customerName || (row.ownerDetails?.name) || 'Confirmed Buyer';
+                    const projectName = row.assignedFlat?.projectId?.projectName || row.projectName || 'Krishna Valley Residency';
+                    const dealPrice = row.finalPrice || row.bookingAmount || row.basePrice || (row.pricing?.totalPrice) || 0;
+                    const stage = row.status || row.bookingStatus || 'Allotted';
+                    const dateFormatted = row.bookingDate || row.createdAt
+                      ? new Date(row.bookingDate || row.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
+                      : 'Recent';
+
+                    return (
+                      <tr
+                        key={row._id || idx}
+                        style={{
+                          borderBottom: '1px solid #f3f4f6',
+                          transition: 'background-color 0.12s ease',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#faf9f6'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                        onClick={() => navigate('/sales')}
+                      >
+                        <td style={{ padding: '12px', fontWeight: '500', color: '#111827' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ padding: '2px 6px', borderRadius: '4px', background: '#f0fdf4', color: '#17652f', fontSize: '0.74rem', fontWeight: '600' }}>
+                              {unitName}
+                            </span>
+                            <span>{buyerName}</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '12px', color: '#6b7280' }}>{projectName}</td>
+                        <td style={{ padding: '12px', fontWeight: '600', color: '#17652f' }}>
+                          {dealPrice > 0 ? formatINR(dealPrice) : 'Confirmed'}
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          <span style={{
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            fontSize: '0.72rem',
+                            fontWeight: '600',
+                            backgroundColor: '#f0fdf4',
+                            color: '#17652f',
+                            textTransform: 'capitalize'
+                          }}>
+                            {String(stage).replace(/_/g, ' ')}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px', color: '#6b7280' }}>{dateFormatted}</td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Right Column: Today's Tasks Interactive Widget */}
+        {/* Right Column: Tasks Widget */}
         <div style={{
           backgroundColor: '#ffffff',
-          border: '1px solid #e8e6df',
-          borderRadius: '14px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '12px',
           padding: '22px 20px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px'
         }}>
-          <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#1f2937', margin: 0 }}>
-            Today's Tasks
+          <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+            Tasks
           </h2>
 
           {/* Filter Tabs */}
@@ -1294,13 +1141,13 @@ export const CommandCenterPage = () => {
                   style={{
                     flex: 1,
                     padding: '6px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.76rem',
-                    fontWeight: isActive ? '700' : '500',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: isActive ? '600' : '500',
                     border: 'none',
                     cursor: 'pointer',
-                    backgroundColor: isActive ? '#17652f' : '#f3f4f2',
-                    color: isActive ? '#ffffff' : '#596372',
+                    backgroundColor: isActive ? '#17652f' : '#f3f4f6',
+                    color: isActive ? '#ffffff' : '#6b7280',
                     textTransform: 'capitalize',
                     transition: 'all 0.15s ease'
                   }}
@@ -1327,9 +1174,9 @@ export const CommandCenterPage = () => {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '10px 12px',
-                    borderRadius: '10px',
-                    backgroundColor: t.completed ? '#faf9f6' : '#ffffff',
-                    border: '1px solid #e8e6df',
+                    borderRadius: '8px',
+                    backgroundColor: t.completed ? '#fafafa' : '#ffffff',
+                    border: '1px solid #e5e7eb',
                     gap: '10px',
                     transition: 'all 0.15s ease'
                   }}
@@ -1358,8 +1205,8 @@ export const CommandCenterPage = () => {
                     </button>
                     <span style={{
                       fontSize: '0.8rem',
-                      fontWeight: t.completed ? '500' : '600',
-                      color: t.completed ? '#9ca3af' : '#1f2937',
+                      fontWeight: t.completed ? '400' : '500',
+                      color: t.completed ? '#9ca3af' : '#111827',
                       textDecoration: t.completed ? 'line-through' : 'none',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
@@ -1372,10 +1219,10 @@ export const CommandCenterPage = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <span style={{
                       fontSize: '0.68rem',
-                      fontWeight: '700',
+                      fontWeight: '600',
                       padding: '2px 7px',
-                      borderRadius: '6px',
-                      backgroundColor: t.priority === 'High' ? '#fee2e2' : t.priority === 'Medium' ? '#fef3c7' : '#e8f2e5',
+                      borderRadius: '4px',
+                      backgroundColor: t.priority === 'High' ? '#fee2e2' : t.priority === 'Medium' ? '#fef3c7' : '#f0fdf4',
                       color: t.priority === 'High' ? '#b91c1c' : t.priority === 'Medium' ? '#b45309' : '#17652f'
                     }}>
                       {t.priority}
@@ -1384,7 +1231,7 @@ export const CommandCenterPage = () => {
                       type="button"
                       onClick={() => setTodayTasksList(prev => prev.filter(item => item.id !== t.id))}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: '2px' }}
-                      title="Remove task"
+                      title="Delete task"
                     >
                       <Trash2 size={13} />
                     </button>
@@ -1409,34 +1256,34 @@ export const CommandCenterPage = () => {
           >
             <input
               type="text"
-              placeholder="Add directive / task..."
+              placeholder="e.g. Inspect block A roof"
               value={newTaskInput}
               onChange={(e) => setNewTaskInput(e.target.value)}
               style={{
                 flex: 1,
                 padding: '8px 12px',
-                borderRadius: '8px',
-                border: '1px solid #e8e6df',
+                borderRadius: '6px',
+                border: '1px solid #d1d5db',
                 fontSize: '0.8rem',
-                backgroundColor: '#faf9f6',
-                color: '#1f2937',
+                backgroundColor: '#ffffff',
+                color: '#111827',
                 outline: 'none'
               }}
             />
             <button
               type="submit"
               style={{
-                padding: '8px 12px',
-                borderRadius: '8px',
+                padding: '8px 14px',
+                borderRadius: '6px',
                 backgroundColor: '#17652f',
                 color: '#ffffff',
                 border: 'none',
-                fontWeight: '700',
+                fontWeight: '600',
                 fontSize: '0.78rem',
                 cursor: 'pointer'
               }}
             >
-              Add
+              Add task
             </button>
           </form>
         </div>
@@ -1446,10 +1293,10 @@ export const CommandCenterPage = () => {
       {/* 2.5 Scheduled Meetings & MoM Overview */}
       <UpcomingMeetingsWidget />
 
-      {/* 3. Executive Operations & Health Vital Signs Strip */}
+      {/* 4. Operations Overview */}
       <div style={{
         background: '#ffffff',
-        border: '1px solid #e8e6df',
+        border: '1px solid #e5e7eb',
         borderRadius: '12px',
         padding: '14px 20px',
         display: 'grid',
@@ -1458,115 +1305,114 @@ export const CommandCenterPage = () => {
         boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
+          <div style={{ padding: '8px', borderRadius: '8px', background: '#f0fdf4', color: '#17652f' }}>
             <Building2 size={16} />
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>ACTIVE PROJECT SITE</div>
-            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
-              {totalProjectsCount} Site • 12 Floors Master
+            <div style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Active site</div>
+            <div style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827' }}>
+              {totalProjectsCount} site • 12 floors
             </div>
           </div>
         </div>
 
         {isFinancialRestricted ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ padding: '8px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
+            <div style={{ padding: '8px', borderRadius: '8px', background: '#f0fdf4', color: '#17652f' }}>
               <Target size={16} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>CROSS-DEPARTMENT DELEGATION</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
-                10 Operational Hubs • Active SLA
+              <div style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Tasks</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827' }}>
+                {taskStats.activeTasks || 0} open • {taskStats.completedTasks || 0} closed
               </div>
             </div>
           </div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ padding: '8px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
+            <div style={{ padding: '8px', borderRadius: '8px', background: '#f0fdf4', color: '#17652f' }}>
               <TrendingUp size={16} />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>AVG REALIZED UNIT VALUATION</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
-                ₹45.00 Lakhs / Flat (₹5,100/sq.ft)
+              <div style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Average unit price</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827' }}>
+                {totalBookedUnits > 0 ? `${formatLakhs(totalBookedValue / totalBookedUnits)} / unit` : 'Pending first booking'}
               </div>
             </div>
           </div>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', borderRadius: '8px', background: '#e0f2fe', color: '#0284c7' }}>
+          <div style={{ padding: '8px', borderRadius: '8px', background: '#f0f9ff', color: '#0284c7' }}>
             <Package size={16} />
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>MATERIAL STORES & INVENTORY</div>
-            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
-              {materialsList.length} Catalog Items • 0 Alerts
+            <div style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Materials</div>
+            <div style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827' }}>
+              {materialsList.length} items cataloged
             </div>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', borderRadius: '8px', background: '#fef3c7', color: '#d97706' }}>
+          <div style={{ padding: '8px', borderRadius: '8px', background: '#fffbeb', color: '#d97706' }}>
             <Wrench size={16} />
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700' }}>CAM & WORK ORDERS</div>
-            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#1f2937' }}>
-              {openServiceRequestsCount} Open Tickets • All Systems Normal
+            <div style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Maintenance</div>
+            <div style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827' }}>
+              {openServiceRequestsCount} open issues
             </div>
           </div>
         </div>
       </div>
 
-      {/* 4. PRIMARY ANALYTICAL CHARTS (Revenue Velocity & Floor Absorption) */}
+      {/* 5. Sales & Inventory Charts */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '22px' }}>
-        
-        {/* Chart 1: Revenue Velocity OR Taskforce Directives Velocity */}
+
+        {/* Chart 1: Monthly Sales & Collections OR Task Progress */}
         <div style={{
           background: '#ffffff',
-          border: '1px solid #e8e6df',
-          borderRadius: '14px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '12px',
           padding: '24px',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1f2937', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {isFinancialRestricted ? (
                   <>
-                    <Target size={18} color="#17652f" /> Taskforce Directives & Velocity
+                    <Target size={18} color="#17652f" /> Task progress
                   </>
                 ) : (
                   <>
-                    <TrendingUp size={18} color="#17652f" /> Revenue & Collections Velocity
+                    <TrendingUp size={18} color="#17652f" /> Monthly sales and collections
                   </>
                 )}
               </h2>
-              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: '4px 0 0 0', fontWeight: '500' }}>
+              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: '4px 0 0 0', fontWeight: '400' }}>
                 {isFinancialRestricted
-                  ? 'Monthly operational directives assigned vs completed throughput across teams'
-                  : 'Monthly sales bookings vs actual milestone demand collections (in ₹ Crores)'}
+                  ? 'Tasks assigned and completed over time'
+                  : 'Monthly sales bookings and collections in ₹ crore'}
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: '4px', background: '#f3f4f2', padding: '3px', borderRadius: '8px' }}>
+            <div style={{ display: 'flex', gap: '4px', background: '#f3f4f6', padding: '3px', borderRadius: '6px' }}>
               <button
                 type="button"
                 onClick={() => setRevenueTimeframe('6m')}
                 style={{
                   padding: '5px 12px',
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '0.74rem',
-                  fontWeight: revenueTimeframe === '6m' ? '800' : '600',
+                  fontWeight: revenueTimeframe === '6m' ? '600' : '500',
                   border: 'none',
                   background: revenueTimeframe === '6m' ? '#17652f' : 'transparent',
                   color: revenueTimeframe === '6m' ? '#ffffff' : '#6b7280',
-                  boxShadow: revenueTimeframe === '6m' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                   cursor: 'pointer'
                 }}
               >
@@ -1577,13 +1423,12 @@ export const CommandCenterPage = () => {
                 onClick={() => setRevenueTimeframe('1y')}
                 style={{
                   padding: '5px 12px',
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '0.74rem',
-                  fontWeight: revenueTimeframe === '1y' ? '800' : '600',
+                  fontWeight: revenueTimeframe === '1y' ? '600' : '500',
                   border: 'none',
                   background: revenueTimeframe === '1y' ? '#17652f' : 'transparent',
                   color: revenueTimeframe === '1y' ? '#ffffff' : '#6b7280',
-                  boxShadow: revenueTimeframe === '1y' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                   cursor: 'pointer'
                 }}
               >
@@ -1592,18 +1437,17 @@ export const CommandCenterPage = () => {
             </div>
           </div>
 
-          {/* Recharts Area Chart */}
           <div style={{ width: '100%', height: '270px', marginTop: '4px' }}>
             <ResponsiveContainer width="100%" height="100%">
               {isFinancialRestricted ? (
                 <AreaChart data={taskforceChartData} margin={{ top: 12, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorAssigned" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#17652f" stopOpacity={0.25} />
+                      <stop offset="5%" stopColor="#17652f" stopOpacity={0.2} />
                       <stop offset="95%" stopColor="#17652f" stopOpacity={0.0} />
                     </linearGradient>
                     <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0284c7" stopOpacity={0.2} />
+                      <stop offset="5%" stopColor="#0284c7" stopOpacity={0.15} />
                       <stop offset="95%" stopColor="#0284c7" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
@@ -1612,18 +1456,18 @@ export const CommandCenterPage = () => {
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
                   <Tooltip content={<TaskforceCustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '0.76rem', paddingTop: '10px' }} iconType="circle" />
-                  <Area type="monotone" dataKey="assigned" name="Directives Issued" stroke="#17652f" strokeWidth={2.5} fillOpacity={1} fill="url(#colorAssigned)" />
-                  <Area type="monotone" dataKey="completed" name="Directives Closed" stroke="#0284c7" strokeWidth={2.5} fillOpacity={1} fill="url(#colorCompleted)" />
+                  <Area type="monotone" dataKey="assigned" name="Assigned" stroke="#17652f" strokeWidth={2} fillOpacity={1} fill="url(#colorAssigned)" />
+                  <Area type="monotone" dataKey="completed" name="Completed" stroke="#0284c7" strokeWidth={2} fillOpacity={1} fill="url(#colorCompleted)" />
                 </AreaChart>
               ) : (
                 <AreaChart data={revenueChartData} margin={{ top: 12, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#17652f" stopOpacity={0.25} />
+                      <stop offset="5%" stopColor="#17652f" stopOpacity={0.2} />
                       <stop offset="95%" stopColor="#17652f" stopOpacity={0.0} />
                     </linearGradient>
                     <linearGradient id="colorCollections" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0284c7" stopOpacity={0.2} />
+                      <stop offset="5%" stopColor="#0284c7" stopOpacity={0.15} />
                       <stop offset="95%" stopColor="#0284c7" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
@@ -1632,72 +1476,70 @@ export const CommandCenterPage = () => {
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#64748b' }} tickFormatter={(val) => `₹${val}Cr`} />
                   <Tooltip content={<RevenueCustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '0.76rem', paddingTop: '10px' }} iconType="circle" />
-                  <Area type="monotone" dataKey="bookings" name="Sales Bookings" stroke="#17652f" strokeWidth={2.5} fillOpacity={1} fill="url(#colorBookings)" />
-                  <Area type="monotone" dataKey="collections" name="Demand Collections" stroke="#0284c7" strokeWidth={2.5} fillOpacity={1} fill="url(#colorCollections)" />
+                  <Area type="monotone" dataKey="bookings" name="Bookings" stroke="#17652f" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" />
+                  <Area type="monotone" dataKey="collections" name="Collections" stroke="#0284c7" strokeWidth={2} fillOpacity={1} fill="url(#colorCollections)" />
                 </AreaChart>
               )}
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Chart 2: Project & Floor-wise Inventory Absorption (Clean Blue & Sky-Blue Stacked Bar) */}
+        {/* Chart 2: Units by floor */}
         <div style={{
           background: '#ffffff',
-          border: '1px solid #e2e8f0',
+          border: '1px solid #e5e7eb',
           borderRadius: '12px',
           padding: '24px',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <BarChart3 size={18} color="#17652f" /> Project Inventory Absorption
+              <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <BarChart3 size={18} color="#17652f" /> Units by floor
               </h2>
-              <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
+              <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '400' }}>
                 {inventoryViewMode === 'floor'
-                  ? 'Floor-by-floor breakdown: 138 booked units vs 30 available across 12 levels'
-                  : 'Total portfolio absorption summary for Krishna Valley'}
+                  ? 'Booked and available units across 12 floors'
+                  : 'Total units summary'}
               </p>
             </div>
 
             <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-              <div style={{ display: 'flex', gap: '3px', background: '#f1f5f9', padding: '3px', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', gap: '3px', background: '#f3f4f6', padding: '3px', borderRadius: '6px' }}>
                 <button
                   type="button"
                   onClick={() => setInventoryViewMode('floor')}
                   style={{
                     padding: '5px 10px',
-                    borderRadius: '6px',
+                    borderRadius: '4px',
                     fontSize: '0.74rem',
-                    fontWeight: inventoryViewMode === 'floor' ? '800' : '600',
+                    fontWeight: inventoryViewMode === 'floor' ? '600' : '500',
                     border: 'none',
                     background: inventoryViewMode === 'floor' ? '#ffffff' : 'transparent',
                     color: inventoryViewMode === 'floor' ? '#17652f' : '#64748b',
-                    boxShadow: inventoryViewMode === 'floor' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                     cursor: 'pointer'
                   }}
                 >
-                  By Floor (GF-F11)
+                  By floor
                 </button>
                 <button
                   type="button"
                   onClick={() => setInventoryViewMode('project')}
                   style={{
                     padding: '5px 10px',
-                    borderRadius: '6px',
+                    borderRadius: '4px',
                     fontSize: '0.74rem',
-                    fontWeight: inventoryViewMode === 'project' ? '800' : '600',
+                    fontWeight: inventoryViewMode === 'project' ? '600' : '500',
                     border: 'none',
                     background: inventoryViewMode === 'project' ? '#ffffff' : 'transparent',
                     color: inventoryViewMode === 'project' ? '#17652f' : '#64748b',
-                    boxShadow: inventoryViewMode === 'project' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                     cursor: 'pointer'
                   }}
                 >
-                  Total Summary
+                  Total
                 </button>
               </div>
 
@@ -1709,20 +1551,19 @@ export const CommandCenterPage = () => {
                   gap: '4px',
                   padding: '6px 10px',
                   fontSize: '0.74rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   borderRadius: '6px',
-                  border: '1px solid #e2e8f0',
-                  background: '#f8fafc',
-                  color: '#334155',
+                  border: '1px solid #e5e7eb',
+                  background: '#ffffff',
+                  color: '#374151',
                   cursor: 'pointer'
                 }}
               >
-                Matrix <ArrowRight size={12} />
+                All units <ArrowRight size={12} />
               </button>
             </div>
           </div>
 
-          {/* Recharts Bar Chart (No dark pitch-black bar) */}
           <div style={{ width: '100%', height: '270px', marginTop: '4px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -1742,14 +1583,14 @@ export const CommandCenterPage = () => {
                 <Legend wrapperStyle={{ fontSize: '0.76rem', paddingTop: '10px' }} iconType="circle" />
                 <Bar
                   dataKey="Booked"
-                  name="Booked / Sold"
+                  name="Booked"
                   stackId="absorption"
                   fill="#17652f"
                   radius={[0, 0, 0, 0]}
                 />
                 <Bar
                   dataKey="Available"
-                  name="Available Units"
+                  name="Available"
                   stackId="absorption"
                   fill="#86c8a0"
                   radius={[4, 4, 0, 0]}
@@ -1761,26 +1602,26 @@ export const CommandCenterPage = () => {
 
       </div>
 
-      {/* 5. Second Row: Lead Channels Donut + Fast Operations Hub */}
+      {/* 6. Leads Distribution & Quick Links */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '22px' }}>
-        
-        {/* Lead Acquisition Source Distribution */}
+
+        {/* Leads by source */}
         <div style={{
           background: '#ffffff',
-          border: '1px solid #e2e8f0',
+          border: '1px solid #e5e7eb',
           borderRadius: '12px',
           padding: '24px',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
         }}>
           <div>
-            <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <PieIcon size={18} color="#17652f" /> CRM Lead Inflow Channels
+            <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PieIcon size={18} color="#17652f" /> Leads by source
             </h2>
-            <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
-              Prospective homebuyer acquisition channels distribution ({crmLeads.length || 607} Total Inquiries)
+            <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '400' }}>
+              Distribution of {crmLeads.length} leads by acquisition source
             </p>
           </div>
 
@@ -1802,7 +1643,7 @@ export const CommandCenterPage = () => {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.78rem' }}
+                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '0.78rem' }}
                     formatter={(val, name, item) => [`${val}% (${item.payload.count} leads)`, name]}
                   />
                 </PieChart>
@@ -1812,12 +1653,12 @@ export const CommandCenterPage = () => {
             <div style={{ flex: 1, minWidth: '160px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {leadSourceData.map((src, idx) => (
                 <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b', fontWeight: '600' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#374151', fontWeight: '500' }}>
                     <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: src.color, flexShrink: 0 }} />
                     {src.name}
                   </span>
-                  <span style={{ fontWeight: '800', color: '#0f172a' }}>
-                    {src.value}% <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: '500' }}>({src.count})</span>
+                  <span style={{ fontWeight: '600', color: '#111827' }}>
+                    {src.value}% <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: '400' }}>({src.count})</span>
                   </span>
                 </div>
               ))}
@@ -1825,23 +1666,23 @@ export const CommandCenterPage = () => {
           </div>
         </div>
 
-        {/* Fast Operations Launchpad */}
+        {/* Quick Links */}
         <div style={{
           background: '#ffffff',
-          border: '1px solid #e2e8f0',
+          border: '1px solid #e5e7eb',
           borderRadius: '12px',
           padding: '24px',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
         }}>
           <div>
-            <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Layers size={18} color="#17652f" /> Operations Launchpad
+            <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Layers size={18} color="#17652f" /> Quick links
             </h2>
-            <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
-              Direct shortcuts to primary registers, ownership passbooks, and inventory ledgers
+            <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '400' }}>
+              Shortcuts to frequent tasks and records
             </p>
           </div>
 
@@ -1850,23 +1691,23 @@ export const CommandCenterPage = () => {
               onClick={() => navigate('/inventory?view=flats')}
               style={{
                 background: '#ffffff',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #e5e7eb',
                 borderRadius: '8px',
                 padding: '12px 14px',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease'
+                transition: 'border-color 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Building2 size={18} color="#17652f" />
-                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
-                  {totalUnitsInPortfolio} Units
+                <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#17652f', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px' }}>
+                  {totalUnitsInPortfolio} units
                 </span>
               </div>
-              <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>Flats Master</div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Inventory Matrix & Floor Plans</div>
+              <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Units</div>
+              <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Unit availability and plans</div>
             </div>
 
             {isFinancialRestricted ? (
@@ -1875,69 +1716,69 @@ export const CommandCenterPage = () => {
                   onClick={() => navigate('/taskforce')}
                   style={{
                     background: '#ffffff',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '12px 14px',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'border-color 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Target size={18} color="#17652f" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
-                      {taskStats.activeTasks || 18} Active
+                    <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#17652f', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px' }}>
+                      {taskStats.activeTasks || 0} open
                     </span>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>Taskforce Hub</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Directives & Kanban Board</div>
+                  <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Tasks board</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Tasks and board</div>
                 </div>
 
                 <div
                   onClick={() => navigate('/taskforce-manager')}
                   style={{
                     background: '#ffffff',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '12px 14px',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'border-color 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <ShieldCheck size={18} color="#17652f" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
-                      Workforce
+                    <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#17652f', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px' }}>
+                      Team
                     </span>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>Taskforce Manager</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Team Workload & Gantt Timeline</div>
+                  <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Team overview</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Workload and timeline</div>
                 </div>
 
                 <div
                   onClick={() => navigate('/crm?tab=inquiries')}
                   style={{
                     background: '#ffffff',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '12px 14px',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'border-color 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Users size={18} color="#17652f" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
+                    <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#17652f', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px' }}>
                       CRM
                     </span>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>Buyer Inquiries</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Prospect Pipeline & Site Tours</div>
+                  <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Leads</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Leads and site visits</div>
                 </div>
               </>
             ) : (
@@ -1946,69 +1787,69 @@ export const CommandCenterPage = () => {
                   onClick={() => navigate('/rentals')}
                   style={{
                     background: '#ffffff',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '12px 14px',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'border-color 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Repeat size={18} color="#17652f" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
-                      {totalRentalUnits} Enrolled
+                    <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#17652f', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px' }}>
+                      {totalRentalUnits} enrolled
                     </span>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>Rental Hub</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Passbooks & Monthly Payouts</div>
+                  <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Rentals</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Ledgers and payouts</div>
                 </div>
 
                 <div
                   onClick={() => navigate('/sales')}
                   style={{
                     background: '#ffffff',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '12px 14px',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'border-color 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <ShoppingBag size={18} color="#17652f" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
-                      Ledger
+                    <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#17652f', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px' }}>
+                      Sales
                     </span>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>Sales Register</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Deals & Allotment Plans</div>
+                  <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Sales</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Bookings and payment plans</div>
                 </div>
 
                 <div
                   onClick={() => navigate('/customers')}
                   style={{
                     background: '#ffffff',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '12px 14px',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'border-color 0.15s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Key size={18} color="#17652f" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', background: '#e8f2e5', padding: '1px 6px', borderRadius: '4px' }}>
-                      KYC
+                    <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#17652f', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px' }}>
+                      Customers
                     </span>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>Owners & KYC</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Bank Accounts & Registry Docs</div>
+                  <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Customers</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Bank details and documents</div>
                 </div>
               </>
             )}
@@ -2017,62 +1858,62 @@ export const CommandCenterPage = () => {
               onClick={() => navigate('/materials?tab=stocks')}
               style={{
                 background: '#ffffff',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #e5e7eb',
                 borderRadius: '8px',
                 padding: '12px 14px',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease'
+                transition: 'border-color 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Package size={18} color="#17652f" />
-                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#64748b', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px' }}>
-                  Stores
+                <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#6b7280', background: '#f3f4f6', padding: '1px 6px', borderRadius: '4px' }}>
+                  Stock
                 </span>
               </div>
-              <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>Material Stocks</div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>GRN, POs & Indents</div>
+              <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Materials</div>
+              <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Orders and stock</div>
             </div>
 
             <div
               onClick={() => navigate('/maintenance')}
               style={{
                 background: '#ffffff',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #e5e7eb',
                 borderRadius: '8px',
                 padding: '12px 14px',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease'
+                transition: 'border-color 0.15s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e8f2e5'; e.currentTarget.style.borderColor = '#17652f'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Wrench size={18} color="#17652f" />
-                <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#64748b', background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px' }}>
-                  CAM
+                <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#6b7280', background: '#f3f4f6', padding: '1px 6px', borderRadius: '4px' }}>
+                  Issues
                 </span>
               </div>
-              <div style={{ fontWeight: '800', fontSize: '0.84rem', color: '#0f172a', marginTop: '6px' }}>CAM & Work Orders</div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Facility Tickets & Bills</div>
+              <div style={{ fontWeight: '600', fontSize: '0.84rem', color: '#111827', marginTop: '6px' }}>Maintenance</div>
+              <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Tickets and work orders</div>
             </div>
           </div>
 
           <div style={{
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
+            background: '#f9fafb',
+            border: '1px solid #e5e7eb',
             borderRadius: '8px',
             padding: '10px 14px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             fontSize: '0.76rem',
-            color: '#475569'
+            color: '#374151'
           }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700' }}>
-              <CheckCircle2 size={14} color="#10b981" /> All Stores & Inventory Operating Normally
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
+              <CheckCircle2 size={14} color="#16a34a" /> All stores operating normally
             </span>
             <button
               onClick={() => navigate('/materials?tab=pos')}
@@ -2080,32 +1921,32 @@ export const CommandCenterPage = () => {
                 background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
-                borderRadius: '5px',
-                padding: '3px 8px',
-                fontSize: '0.7rem',
-                fontWeight: '700',
+                borderRadius: '6px',
+                padding: '4px 10px',
+                fontSize: '0.72rem',
+                fontWeight: '600',
                 cursor: 'pointer'
               }}
             >
-              + Create PO
+              New purchase order
             </button>
           </div>
         </div>
 
       </div>
 
-      {/* 6. CRM Inquiries Queue & Urgent Appointments */}
+      {/* 7. Recent Leads Table */}
       <div style={{
         background: '#ffffff',
-        border: '1px solid #e2e8f0',
+        border: '1px solid #e5e7eb',
         borderRadius: '12px',
         overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+        boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
       }}>
         <div style={{
           padding: '18px 24px',
-          borderBottom: '1px solid #e2e8f0',
-          background: '#f8fafc',
+          borderBottom: '1px solid #e5e7eb',
+          background: '#f9fafb',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -2113,27 +1954,27 @@ export const CommandCenterPage = () => {
           gap: '14px'
         }}>
           <div>
-            <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Users size={17} color="#17652f" /> Urgent CRM Prospects & Scheduled Site Visits
+            <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Users size={17} color="#17652f" /> Recent leads
             </h2>
-            <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0 0', fontWeight: '500' }}>
-              High-priority prospective homebuyers awaiting follow-up action or scheduled property visits ({crmLeads.length || 607} Total Inquiries)
+            <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: '4px 0 0 0', fontWeight: '400' }}>
+              Leads requiring follow-up or scheduled visits ({crmLeads.length} total)
             </p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ position: 'relative', width: '220px' }}>
-              <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Search size={14} color="#9ca3af" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
-                placeholder="Search leads..."
+                placeholder="e.g. Sharma"
                 value={leadSearchQuery}
                 onChange={(e) => setLeadSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '6px 12px 6px 30px',
                   borderRadius: '6px',
-                  border: '1px solid #cbd5e1',
+                  border: '1px solid #d1d5db',
                   fontSize: '0.78rem',
                   outline: 'none',
                   backgroundColor: '#ffffff'
@@ -2143,21 +1984,21 @@ export const CommandCenterPage = () => {
 
             <button
               onClick={() => navigate('/crm')}
-              className="btn-secondary"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '5px',
                 padding: '6px 14px',
                 fontSize: '0.78rem',
-                fontWeight: '700',
+                fontWeight: '600',
                 borderRadius: '6px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #d1d5db',
                 background: '#ffffff',
+                color: '#374151',
                 cursor: 'pointer'
               }}
             >
-              View All Leads <ArrowRight size={13} />
+              View all leads <ArrowRight size={13} />
             </button>
           </div>
         </div>
@@ -2165,19 +2006,19 @@ export const CommandCenterPage = () => {
         <div className="table-responsive">
           <table style={{ width: '100%', minWidth: '760px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.72rem', letterSpacing: '0.04em' }}>
-                <th style={{ padding: '12px 20px', fontWeight: '800' }}>PROSPECT NAME & SOURCE</th>
-                <th style={{ padding: '12px 18px', fontWeight: '800' }}>DIRECT CONTACT</th>
-                <th style={{ padding: '12px 18px', fontWeight: '800' }}>REQUIREMENT & UNIT</th>
-                <th style={{ padding: '12px 18px', fontWeight: '800' }}>NEXT APPOINTMENT</th>
-                <th style={{ padding: '12px 20px', fontWeight: '800', textAlign: 'right' }}>ACTION</th>
+              <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb', color: '#6b7280', fontSize: '0.74rem', fontWeight: '500' }}>
+                <th style={{ padding: '12px 20px' }}>Lead and source</th>
+                <th style={{ padding: '12px 18px' }}>Contact</th>
+                <th style={{ padding: '12px 18px' }}>Interested in</th>
+                <th style={{ padding: '12px 18px' }}>Scheduled visit</th>
+                <th style={{ padding: '12px 20px', textAlign: 'right' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {recentLeadsQueue.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '36px', color: '#94a3b8' }}>
-                    No matching prospective buyers found in this view.
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '36px', color: '#6b7280' }}>
+                    No leads found. Try a different search.
                   </td>
                 </tr>
               ) : (
@@ -2187,16 +2028,16 @@ export const CommandCenterPage = () => {
                   return (
                     <tr
                       key={lead._id || Math.random()}
-                      style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.15s ease' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; }}
+                      style={{ borderBottom: '1px solid #f3f4f6', transition: 'background-color 0.12s ease' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fafafa'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <td style={{ padding: '14px 20px', verticalAlign: 'middle' }}>
-                        <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.88rem' }}>
+                        <div style={{ fontWeight: '500', color: '#111827', fontSize: '0.88rem' }}>
                           {lead.name}
                         </div>
-                        <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          <span style={{ background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                        <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <span style={{ background: '#f0fdf4', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '600' }}>
                             {lead.source}
                           </span>
                         </div>
@@ -2206,18 +2047,18 @@ export const CommandCenterPage = () => {
                         <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                           <a
                             href={`tel:${lead.mobileNo}`}
-                            title="Call Lead"
+                            title="Call lead"
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '4px',
-                              background: '#e8f2e5',
+                              background: '#f0fdf4',
                               color: '#17652f',
                               padding: '4px 8px',
                               borderRadius: '6px',
                               textDecoration: 'none',
                               fontSize: '0.76rem',
-                              fontWeight: '700'
+                              fontWeight: '600'
                             }}
                           >
                             <Phone size={12} /> {lead.mobileNo}
@@ -2228,7 +2069,7 @@ export const CommandCenterPage = () => {
                               href={`https://wa.me/${cleanPhone}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              title="Chat on WhatsApp"
+                              title="Message on WhatsApp"
                               style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -2239,7 +2080,7 @@ export const CommandCenterPage = () => {
                                 borderRadius: '6px',
                                 textDecoration: 'none',
                                 fontSize: '0.76rem',
-                                fontWeight: '700',
+                                fontWeight: '600',
                                 border: '1px solid #a7f3d0'
                               }}
                             >
@@ -2250,21 +2091,20 @@ export const CommandCenterPage = () => {
                       </td>
 
                       <td style={{ padding: '14px 18px', verticalAlign: 'middle' }}>
-                        <span style={{ fontSize: '0.76rem', color: '#1e293b', fontWeight: '700', background: '#f1f5f9', padding: '3px 8px', borderRadius: '5px' }}>
+                        <span style={{ fontSize: '0.76rem', color: '#374151', fontWeight: '500', background: '#f3f4f6', padding: '3px 8px', borderRadius: '5px' }}>
                           {lead.flat}
                         </span>
                       </td>
 
                       <td style={{ padding: '14px 18px', verticalAlign: 'middle' }}>
-                        <span style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          <Clock size={13} color="#64748b" /> {lead.visitDate}
+                        <span style={{ fontSize: '0.76rem', color: '#4b5563', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <Clock size={13} color="#6b7280" /> {lead.visitDate}
                         </span>
                       </td>
 
                       <td style={{ padding: '14px 20px', verticalAlign: 'middle', textAlign: 'right' }}>
                         <button
                           onClick={() => navigate('/crm')}
-                          className="btn-primary"
                           style={{
                             padding: '5px 12px',
                             fontSize: '0.74rem',
@@ -2272,10 +2112,14 @@ export const CommandCenterPage = () => {
                             alignItems: 'center',
                             gap: '4px',
                             borderRadius: '6px',
+                            backgroundColor: '#17652f',
+                            color: '#ffffff',
+                            border: 'none',
+                            fontWeight: '600',
                             cursor: 'pointer'
                           }}
                         >
-                          Process <ArrowRight size={11} />
+                          View <ArrowRight size={11} />
                         </button>
                       </td>
                     </tr>

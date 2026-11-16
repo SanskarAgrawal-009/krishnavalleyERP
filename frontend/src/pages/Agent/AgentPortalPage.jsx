@@ -304,7 +304,7 @@ export const AgentPortalPage = () => {
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: '12px',
-            boxShadow: '0 4px 14px rgba(29, 78, 216, 0.08)',
+            boxShadow: '0 4px 14px rgba(23, 101, 47, 0.08)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -318,7 +318,7 @@ export const AgentPortalPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '1.2rem',
                 flexShrink: 0,
               }}
@@ -326,7 +326,7 @@ export const AgentPortalPage = () => {
               
             </div>
             <div>
-              <div style={{ fontSize: '0.96rem', fontWeight: '800', color: '#17652f' }}>
+              <div style={{ fontSize: '0.96rem', fontWeight: '600', color: '#17652f' }}>
                 Inhouse Management Inspection: Viewing Profile for {dashboardData?.agent?.firstName || 'Partner'} {dashboardData?.agent?.lastName || ''} ({agentProfile.agentCode || 'AGT-PARTNER'})
               </div>
               <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '2px' }}>
@@ -359,94 +359,89 @@ export const AgentPortalPage = () => {
       {/* Header Banner: Agent Partner Profile & Commission Model */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
-          borderRadius: '20px',
-          padding: '32px',
-          color: '#ffffff',
-          boxShadow: '0 12px 36px rgba(15, 23, 42, 0.25)',
+          background: '#ffffff',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          border: '1px solid #e5e7eb',
+          color: '#111827',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '24px',
-          position: 'relative',
-          overflow: 'hidden',
+          gap: '16px',
         }}
       >
-        <div style={{ zIndex: 1, maxWidth: '650px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
+        <div style={{ maxWidth: '650px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
             <span
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '4px 12px',
-                borderRadius: '20px',
-                backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(8px)',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                backgroundColor: '#e8f2e5',
+                color: '#17652f',
+                fontSize: '0.74rem',
+                fontWeight: '600',
               }}
             >
-              <Award size={14} style={{ color: '#cbd5e1' }} />
-              Authorized Channel Partner
+              <Award size={13} />
+              Channel partner
             </span>
 
             {agentProfile.reraNumber && (
-              <span style={{ fontSize: '0.78rem', color: '#86c8a0', backgroundColor: 'rgba(0,0,0,0.2)', padding: '4px 10px', borderRadius: '20px' }}>
+              <span style={{ fontSize: '0.74rem', color: '#4b5563', backgroundColor: '#f3f4f6', padding: '2px 8px', borderRadius: '4px' }}>
                 RERA: {agentProfile.reraNumber}
               </span>
             )}
           </div>
 
-          <h1 style={{ margin: '0 0 6px', fontSize: '1.85rem', fontWeight: '800', letterSpacing: '-0.02em' }}>
-            Welcome, {dashboardData?.agent?.firstName || currentUser?.firstName || 'Partner'}!
+          <h1 style={{ margin: '0 0 4px', fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
+            Agent portal
           </h1>
-          <p style={{ margin: '0 0 16px', fontSize: '0.92rem', color: '#cbd5e1', lineHeight: 1.5 }}>
-            {agentProfile.agencyName || 'Krishna Valley Realty Partner'} • Manage your buyer leads, track live pipeline progress, and earn guaranteed commissions when site visits are completed.
+          <p style={{ margin: '0 0 10px', fontSize: '0.85rem', color: '#4b5563', lineHeight: 1.5 }}>
+            {agentProfile.agencyName || 'Krishna Valley Realty Partner'} • Manage buyer leads, track site visits, and review earned commissions.
           </p>
 
-          {/* Commission terms pill */}
           <div
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '10px',
-              padding: '8px 16px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(13, 144, 79, 0.25)',
-              border: '1px solid rgba(52, 211, 153, 0.4)',
-              color: '#86c8a0',
-              fontSize: '0.88rem',
-              fontWeight: '700',
+              gap: '8px',
+              padding: '4px 10px',
+              borderRadius: '6px',
+              backgroundColor: '#f9fafb',
+              border: '1px solid #e5e7eb',
+              color: '#374151',
+              fontSize: '0.8rem',
+              fontWeight: '500',
             }}
           >
-            <Sparkles size={16} style={{ color: '#4a9e68' }} />
-            <span>Commission Terms: {commissionModelLabel}</span>
+            <span>Commission rate: <strong>{commissionModelLabel}</strong></span>
           </div>
         </div>
 
-        {/* Action Button */}
-        <div style={{ zIndex: 1, display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
             onClick={loadData}
-            title="Refresh pipeline data"
             style={{
-              padding: '12px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              color: '#ffffff',
+              padding: '8px 14px',
+              borderRadius: '6px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e7eb',
+              color: '#374151',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              gap: '6px',
+              fontSize: '0.82rem',
+              fontWeight: '600',
             }}
           >
-            <RefreshCw size={18} />
+            <RefreshCw size={14} style={{ color: '#17652f' }} />
+            <span>Refresh</span>
           </button>
 
           <button
@@ -454,23 +449,19 @@ export const AgentPortalPage = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              padding: '12px 20px',
-              borderRadius: '12px',
-              backgroundColor: '#17652f',
-              color: '#ffffff',
-              border: 'none',
-              fontSize: '0.92rem',
-              fontWeight: '700',
+              gap: '6px',
+              padding: '8px 14px',
+              borderRadius: '6px',
+              backgroundColor: '#ffffff',
+              color: '#374151',
+              border: '1px solid #e5e7eb',
+              fontSize: '0.82rem',
+              fontWeight: '600',
               cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(16, 185, 129, 0.3)',
-              transition: 'transform 0.15s ease',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
           >
-            <ShieldCheck size={18} />
-            <span>Log Verified Site Visit</span>
+            <ShieldCheck size={14} style={{ color: '#17652f' }} />
+            <span>Log visit</span>
           </button>
 
           <button
@@ -478,55 +469,50 @@ export const AgentPortalPage = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              padding: '12px 22px',
-              borderRadius: '12px',
-              backgroundColor: '#ffffff',
-              color: '#0f172a',
+              gap: '6px',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              backgroundColor: '#17652f',
+              color: '#ffffff',
               border: 'none',
-              fontSize: '0.95rem',
-              fontWeight: '700',
+              fontSize: '0.82rem',
+              fontWeight: '600',
               cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-              transition: 'transform 0.15s ease',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
           >
-            <Plus size={18} style={{ color: '#17652f' }} />
-            <span>Submit New Buyer Lead</span>
+            <Plus size={14} />
+            <span>Add lead</span>
           </button>
         </div>
       </div>
 
       {/* KPI Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
         {/* Wallet Balance */}
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '16px',
-            border: '1px solid #e2e8f0',
-            padding: '22px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            padding: '16px',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
           }}
         >
           <div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
-              Credited Wallet Balance
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600', marginBottom: '4px' }}>
+              Wallet balance
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: '800', color: '#17652f', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#17652f' }}>
               ₹{(agentProfile.walletBalance || 0).toLocaleString('en-IN')}
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px' }}>
-              Credited directly upon verified site visits
+            <div style={{ fontSize: '0.74rem', color: '#6b7280', marginTop: '4px' }}>
+              Credited upon verified visits
             </div>
           </div>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Wallet size={24} />
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Wallet size={18} />
           </div>
         </div>
 
@@ -534,28 +520,27 @@ export const AgentPortalPage = () => {
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '16px',
-            border: '1px solid #e2e8f0',
-            padding: '22px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            padding: '16px',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
           }}
         >
           <div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
-              Total Earnings to Date
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600', marginBottom: '4px' }}>
+              Total earnings
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: '800', color: '#1e293b', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
               ₹{(agentProfile.totalEarned || 0).toLocaleString('en-IN')}
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px' }}>
-              {commissions.length} credited payouts logged
+            <div style={{ fontSize: '0.74rem', color: '#6b7280', marginTop: '4px' }}>
+              {commissions.length} payouts recorded
             </div>
           </div>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <TrendingUp size={24} />
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <TrendingUp size={18} />
           </div>
         </div>
 
@@ -563,28 +548,27 @@ export const AgentPortalPage = () => {
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '16px',
-            border: '1px solid #e2e8f0',
-            padding: '22px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            padding: '16px',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
           }}
         >
           <div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
-              Matured Site Visits
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600', marginBottom: '4px' }}>
+              Matured visits
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: '800', color: '#1e293b', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
               {dashboardData?.metrics?.maturedVisits ?? agentProfile.maturedLeadsCount ?? 0}
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#17652f', fontWeight: '600', marginTop: '6px' }}>
-              100% Commission Credited
+            <div style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '500', marginTop: '4px' }}>
+              Commission credited
             </div>
           </div>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#f8fafc', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <CheckCircle2 size={24} />
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <CheckCircle2 size={18} />
           </div>
         </div>
 
@@ -592,28 +576,27 @@ export const AgentPortalPage = () => {
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '16px',
-            border: '1px solid #e2e8f0',
-            padding: '22px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            padding: '16px',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
           }}
         >
           <div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
-              Total Uploaded Leads
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600', marginBottom: '4px' }}>
+              Registered leads
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: '800', color: '#1e293b', letterSpacing: '-0.02em' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
               {leads.length}
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px' }}>
-              {leads.filter((l) => l.status === 'site_visit_scheduled').length} upcoming site visits
+            <div style={{ fontSize: '0.74rem', color: '#6b7280', marginTop: '4px' }}>
+              {leads.filter((l) => l.status === 'site_visit_scheduled').length} upcoming visits
             </div>
           </div>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#f3e8fd', color: '#9334e6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Users size={24} />
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Users size={18} />
           </div>
         </div>
       </div>
@@ -621,21 +604,20 @@ export const AgentPortalPage = () => {
       {/* 5-Day Maturity Window Informational Policy Banner */}
       <div
         style={{
-          backgroundColor: '#e8f2e5',
-          border: '1px solid #cde4c9',
-          borderRadius: '16px',
-          padding: '16px 20px',
+          backgroundColor: '#f9fafb',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+          padding: '14px 18px',
           display: 'flex',
           alignItems: 'center',
-          gap: '14px',
-          boxShadow: '0 2px 8px rgba(30, 58, 138, 0.04)',
+          gap: '12px',
         }}
       >
         <div
           style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '10px',
+            width: '32px',
+            height: '32px',
+            borderRadius: '6px',
             backgroundColor: '#e8f2e5',
             color: '#17652f',
             display: 'flex',
@@ -644,93 +626,93 @@ export const AgentPortalPage = () => {
             flexShrink: 0,
           }}
         >
-          <Clock size={22} />
+          <Clock size={16} />
         </div>
-        <div style={{ fontSize: '0.86rem', color: '#17652f', lineHeight: 1.5 }}>
-          <strong>5-Day Maturity & Handover Policy:</strong> Once you complete a site visit with your buyer, your commission is credited and you have an exclusive <strong>5-day window</strong> to close the prospect. After 5 days, the lead automatically transfers to the inhouse CRM team for final conversion while your commission remains <strong>100% secured</strong> in your wallet.
+        <div style={{ fontSize: '0.82rem', color: '#374151', lineHeight: 1.5 }}>
+          <strong>5-day maturity window:</strong> Once a site visit is verified, your commission is credited with an exclusive 5-day window to close the prospect. After 5 days, the lead automatically transfers to the inhouse CRM team while your credited commission remains intact.
         </div>
       </div>
 
       {/* Tabs Bar */}
-      <div className="no-scrollbar" style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', gap: '24px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
+      <div className="no-scrollbar" style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', gap: '20px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
         <button
           onClick={() => handleTabChange('leads')}
           style={{
-            padding: '12px 4px',
+            padding: '10px 4px',
             backgroundColor: 'transparent',
             border: 'none',
             borderBottom: activeTab === 'leads' ? '2px solid #17652f' : '2px solid transparent',
-            color: activeTab === 'leads' ? '#17652f' : '#64748b',
-            fontWeight: activeTab === 'leads' ? '700' : '500',
-            fontSize: '0.95rem',
+            color: activeTab === 'leads' ? '#17652f' : '#4b5563',
+            fontWeight: activeTab === 'leads' ? '600' : '500',
+            fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
           }}
         >
-          <Users size={18} />
-          <span>My Uploaded Leads ({leads.length})</span>
+          <Users size={16} />
+          <span>Buyer leads ({leads.length})</span>
         </button>
 
         <button
           onClick={() => handleTabChange('visits')}
           style={{
-            padding: '12px 4px',
+            padding: '10px 4px',
             backgroundColor: 'transparent',
             border: 'none',
             borderBottom: activeTab === 'visits' ? '2px solid #17652f' : '2px solid transparent',
-            color: activeTab === 'visits' ? '#17652f' : '#64748b',
-            fontWeight: activeTab === 'visits' ? '700' : '500',
-            fontSize: '0.95rem',
+            color: activeTab === 'visits' ? '#17652f' : '#4b5563',
+            fontWeight: activeTab === 'visits' ? '600' : '500',
+            fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
           }}
         >
-          <ShieldCheck size={18} />
-          <span>Verified Site Visits ({siteVisits.length})</span>
+          <ShieldCheck size={16} />
+          <span>Site visits ({siteVisits.length})</span>
         </button>
 
         <button
           onClick={() => handleTabChange('commissions')}
           style={{
-            padding: '12px 4px',
+            padding: '10px 4px',
             backgroundColor: 'transparent',
             border: 'none',
             borderBottom: activeTab === 'commissions' ? '2px solid #17652f' : '2px solid transparent',
-            color: activeTab === 'commissions' ? '#17652f' : '#64748b',
-            fontWeight: activeTab === 'commissions' ? '700' : '500',
-            fontSize: '0.95rem',
+            color: activeTab === 'commissions' ? '#17652f' : '#4b5563',
+            fontWeight: activeTab === 'commissions' ? '600' : '500',
+            fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
           }}
         >
-          <DollarSign size={18} />
-          <span>Commission Statement & Ledger ({commissions.length})</span>
+          <DollarSign size={16} />
+          <span>Commissions and ledger ({commissions.length})</span>
         </button>
 
         <button
           onClick={() => handleTabChange('audit')}
           style={{
-            padding: '12px 4px',
+            padding: '10px 4px',
             backgroundColor: 'transparent',
             border: 'none',
             borderBottom: activeTab === 'audit' ? '2px solid #17652f' : '2px solid transparent',
-            color: activeTab === 'audit' ? '#17652f' : '#64748b',
-            fontWeight: activeTab === 'audit' ? '700' : '500',
-            fontSize: '0.95rem',
+            color: activeTab === 'audit' ? '#17652f' : '#4b5563',
+            fontWeight: activeTab === 'audit' ? '600' : '500',
+            fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
           }}
         >
-          <Activity size={18} />
-          <span>Audit & Activity Trail ({auditLogs.length})</span>
+          <Activity size={16} />
+          <span>Audit trail ({auditLogs.length})</span>
         </button>
       </div>
 
@@ -1027,7 +1009,7 @@ export const AgentPortalPage = () => {
                                     fontSize: '0.78rem',
                                     fontWeight: '700',
                                     cursor: 'pointer',
-                                    boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
+                                    boxShadow: '0 2px 6px rgba(23, 101, 47,0.3)',
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '4px',
@@ -1037,7 +1019,7 @@ export const AgentPortalPage = () => {
                                   <span>Approve Visit</span>
                                 </button>
                               ) : (
-                                <span style={{ padding: '4px 8px', borderRadius: '6px', backgroundColor: '#f1f5f9', color: '#334155', fontSize: '0.74rem', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                <span style={{ padding: '4px 8px', borderRadius: '6px', backgroundColor: '#f1f5f9', color: '#334155', fontSize: '0.74rem', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                                   <Clock size={11} /> Pending Inhouse Approval
                                 </span>
                               )
@@ -1093,7 +1075,7 @@ export const AgentPortalPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h3 style={{ margin: '0 0 4px', fontSize: '1.2rem', fontWeight: '800', color: '#1e293b' }}>
+              <h3 style={{ margin: '0 0 4px', fontSize: '1.2rem', fontWeight: '600', color: '#1e293b' }}>
                 My Verified Site Visits Ledger ({siteVisits.length})
               </h3>
               <p style={{ margin: 0, fontSize: '0.84rem', color: '#64748b' }}>
@@ -1170,7 +1152,7 @@ export const AgentPortalPage = () => {
                           </td>
 
                           <td style={{ padding: '14px 18px' }}>
-                            <div style={{ fontWeight: '800', color: '#1e293b' }}>{visit.partyName}</div>
+                            <div style={{ fontWeight: '600', color: '#1e293b' }}>{visit.partyName}</div>
                             <div style={{ fontSize: '0.76rem', color: '#17652f', fontWeight: '700' }}>{visit.partyMobile}</div>
                           </td>
 
@@ -1209,17 +1191,17 @@ export const AgentPortalPage = () => {
 
                           <td style={{ padding: '14px 18px' }}>
                             {isPending && (
-                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#334155', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#334155', fontWeight: '600', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <Clock size={11} /> Pending Review
                               </span>
                             )}
                             {isApproved && (
-                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ padding: '3px 8px', borderRadius: '12px', background: '#e8f2e5', color: '#17652f', fontWeight: '600', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <CheckCircle2 size={11} /> Approved
                               </span>
                             )}
                             {isRejected && (
-                              <span title={visit.rejectionReason} style={{ padding: '3px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#0f172a', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <span title={visit.rejectionReason} style={{ padding: '3px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#0f172a', fontWeight: '600', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <AlertCircle size={11} /> Rejected
                               </span>
                             )}
@@ -1228,10 +1210,10 @@ export const AgentPortalPage = () => {
                           <td style={{ padding: '14px 18px' }}>
                             {isBooked ? (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f', fontWeight: '600', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                   <Award size={12} /> Deal Booked
                                 </span>
-                                <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#17652f' }}>
+                                <span style={{ fontSize: '0.76rem', fontWeight: '600', color: '#17652f' }}>
                                   + ₹{(visit.commissionAmount || 0).toLocaleString('en-IN')} Credited
                                 </span>
                               </div>
@@ -1264,7 +1246,7 @@ export const AgentPortalPage = () => {
                                     fontSize: '0.78rem',
                                     fontWeight: '700',
                                     cursor: 'pointer',
-                                    boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
+                                    boxShadow: '0 2px 6px rgba(23, 101, 47,0.3)',
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '4px',
@@ -1328,7 +1310,7 @@ export const AgentPortalPage = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
               <div>
-                <h3 style={{ margin: '0 0 4px', fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: '0 0 4px', fontSize: '1.2rem', fontWeight: '600', color: '#0f172a' }}>
                   Commission Account Ledger
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -1339,7 +1321,7 @@ export const AgentPortalPage = () => {
               <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Net Wallet Balance</div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#17652f' }}>
                     ₹{(agentProfile.walletBalance || 0).toLocaleString('en-IN')}
                   </div>
                 </div>
@@ -1347,7 +1329,7 @@ export const AgentPortalPage = () => {
                 {dashboardData?.metrics?.totalDebited > 0 && (
                   <div style={{ textAlign: 'right', borderLeft: '1px solid #e2e8f0', paddingLeft: '16px' }}>
                     <div style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: '600', textTransform: 'uppercase' }}>Expired Debits</div>
-                    <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: '600', color: '#0f172a' }}>
                       - ₹{(dashboardData.metrics.totalDebited || 0).toLocaleString('en-IN')}
                     </div>
                   </div>
@@ -1412,7 +1394,7 @@ export const AgentPortalPage = () => {
                             <span
                               style={{
                                 fontSize: '0.95rem',
-                                fontWeight: '800',
+                                fontWeight: '600',
                                 color: isDebit ? '#0f172a' : '#17652f',
                               }}
                             >
@@ -1460,7 +1442,7 @@ export const AgentPortalPage = () => {
               </div>
               <div>
                 <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>Total Events</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{auditLogs.length}</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#0f172a' }}>{auditLogs.length}</div>
               </div>
             </div>
 
@@ -1470,7 +1452,7 @@ export const AgentPortalPage = () => {
               </div>
               <div>
                 <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>Approved Visits</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#17652f' }}>
                   {auditLogs.filter((l) => l.action === 'SITE_VISIT_APPROVED' || l.action === 'APPROVE').length}
                 </div>
               </div>
@@ -1482,7 +1464,7 @@ export const AgentPortalPage = () => {
               </div>
               <div>
                 <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>Rejections</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#0f172a' }}>
                   {auditLogs.filter((l) => l.action === 'SITE_VISIT_REJECTED' || l.action === 'REJECT').length}
                 </div>
               </div>
@@ -1494,7 +1476,7 @@ export const AgentPortalPage = () => {
               </div>
               <div>
                 <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>Commission Credits</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0284c7' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#0284c7' }}>
                   {auditLogs.filter((l) => l.action === 'COMMISSION_CREDIT').length}
                 </div>
               </div>
@@ -1506,7 +1488,7 @@ export const AgentPortalPage = () => {
               </div>
               <div>
                 <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>Lead Submissions</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#334155' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#334155' }}>
                   {auditLogs.filter((l) => l.action === 'LEAD_SUBMITTED' || l.action === 'CREATE').length}
                 </div>
               </div>
@@ -1732,7 +1714,7 @@ export const AgentPortalPage = () => {
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Plus size={20} style={{ color: '#17652f' }} />
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '600', color: '#0f172a' }}>
                   Submit Buyer Lead
                 </h3>
               </div>
@@ -1907,7 +1889,7 @@ export const AgentPortalPage = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <CheckCircle2 size={22} style={{ color: '#17652f' }} />
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '600', color: '#0f172a' }}>
                   Verify & Complete Site Visit
                 </h3>
               </div>

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 
-export const Modal = ({ isOpen, onClose, title, children, maxWidth = '650px' }) => {
+export const Modal = ({ isOpen, onClose, title, subtitle, children, maxWidth = '650px', centeredHeader = true }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) onClose();
@@ -17,7 +17,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = '650px' }) 
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(25, 28, 29, 0.65)',
+        backgroundColor: 'rgba(15, 23, 42, 0.45)',
         backdropFilter: 'blur(4px)',
         display: 'flex',
         alignItems: 'center',
@@ -31,66 +31,81 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = '650px' }) 
       }}
     >
       <div
-        className="g-card"
         style={{
           backgroundColor: '#ffffff',
-          border: '1px solid #e8e6df',
+          border: '1px solid #e5e7eb',
           borderRadius: '16px',
           width: '100%',
           maxWidth,
           maxHeight: '92vh',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.12)',
-          overflow: 'hidden'
+          boxShadow: '0 20px 45px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
-        {/* Header */}
-        <div
+        {/* Minimal Clean Close Button (Top Right, matching reference image) */}
+        <button
+          onClick={onClose}
           style={{
-            padding: '18px 24px',
-            borderBottom: '1px solid #e8e6df',
+            position: 'absolute',
+            top: '16px',
+            right: '18px',
+            background: 'transparent',
+            color: '#94a3b8',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: '#faf9f6'
+            justifyContent: 'center',
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'color 0.15s ease, background-color 0.15s ease',
+            zIndex: 10
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#f1f5f9';
+            e.currentTarget.style.color = '#334155';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '#94a3b8';
+          }}
+          aria-label="Close"
         >
-          <h3
-            className="font-title-lg"
-            style={{ fontSize: '1.15rem', fontWeight: '700', color: '#1f2937', letterSpacing: '-0.01em' }}
-          >
-            {title}
-          </h3>
-          <button
-            onClick={onClose}
+          <X size={18} />
+        </button>
+
+        {/* Header (Clean, Centered or Left, matching reference) */}
+        {title && (
+          <div
             style={{
-              background: '#ffffff',
-              color: '#596372',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              border: '1px solid #e8e6df',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#e8f2e5';
-              e.currentTarget.style.color = '#17652f';
-              e.currentTarget.style.borderColor = '#cde4c9';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff';
-              e.currentTarget.style.color = '#596372';
-              e.currentTarget.style.borderColor = '#e8e6df';
+              padding: centeredHeader ? '22px 48px 12px' : '20px 24px 14px',
+              borderBottom: '1px solid #f1f5f9',
+              textAlign: centeredHeader ? 'center' : 'left',
+              backgroundColor: '#ffffff'
             }}
           >
-            <X size={16} />
-          </button>
-        </div>
+            <h3
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: '600',
+                color: '#1e293b',
+                letterSpacing: '-0.02em',
+                margin: 0
+              }}
+            >
+              {title}
+            </h3>
+            {subtitle && (
+              <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Content Body */}
         <div style={{ padding: '24px', overflowY: 'auto', flex: 1, backgroundColor: '#ffffff' }}>

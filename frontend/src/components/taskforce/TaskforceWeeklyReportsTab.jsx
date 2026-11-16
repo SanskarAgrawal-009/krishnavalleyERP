@@ -293,7 +293,7 @@ export const TaskforceWeeklyReportsTab = ({
   const getPriorityBadgeStyle = (priority) => {
     switch (priority) {
       case 'urgent':
-        return { background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5', fontWeight: '800' };
+        return { background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5', fontWeight: '600' };
       case 'high':
         return { background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a', fontWeight: '700' };
       case 'medium':
@@ -493,7 +493,7 @@ export const TaskforceWeeklyReportsTab = ({
               <TrendingUp size={22} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '600', color: '#0f172a' }}>
                 Weekly Performance Reports &amp; Analytics
               </h2>
               <span style={{ fontSize: '0.76rem', color: '#64748b' }}>
@@ -687,7 +687,7 @@ export const TaskforceWeeklyReportsTab = ({
               )}
 
               <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: '800' }}>
+                <div style={{ fontSize: '0.9rem', fontWeight: '600' }}>
                   {exportBanner.status === 'loading'
                     ? `Generating ${exportBanner.format} Report...`
                     : exportBanner.status === 'success'
@@ -906,12 +906,12 @@ export const TaskforceWeeklyReportsTab = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', color: '#64748b' }}>
               Total Workload
             </span>
             <Layers size={16} color="#17652f" />
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a' }}>
+          <div style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0f172a' }}>
             {summary.totalWorkload}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
@@ -936,12 +936,12 @@ export const TaskforceWeeklyReportsTab = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#92400e' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', color: '#92400e' }}>
               Carried Forward
             </span>
             <RotateCcw size={16} color="#d97706" />
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#78350f' }}>
+          <div style={{ fontSize: '1.65rem', fontWeight: 700, color: '#78350f' }}>
             {summary.carriedForward}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#b45309', fontWeight: 600, marginTop: '4px' }}>
@@ -964,12 +964,12 @@ export const TaskforceWeeklyReportsTab = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#166534' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', color: '#166534' }}>
               Completed
             </span>
             <CheckCircle2 size={16} color="#16a34a" />
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#14532d' }}>
+          <div style={{ fontSize: '1.65rem', fontWeight: 700, color: '#14532d' }}>
             {summary.completed}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: 700, marginTop: '4px' }}>
@@ -992,12 +992,12 @@ export const TaskforceWeeklyReportsTab = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', color: '#64748b' }}>
               In Progress
             </span>
             <Clock size={16} color="#0284c7" />
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a' }}>
+          <div style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0f172a' }}>
             {summary.inProgress}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#0284c7', fontWeight: 600, marginTop: '4px' }}>
@@ -1020,12 +1020,12 @@ export const TaskforceWeeklyReportsTab = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', color: '#64748b' }}>
               Pending
             </span>
             <AlertCircle size={16} color="#94a3b8" />
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#475569' }}>
+          <div style={{ fontSize: '1.65rem', fontWeight: 700, color: '#475569' }}>
             {summary.pending}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
@@ -1048,12 +1048,12 @@ export const TaskforceWeeklyReportsTab = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#991b1b' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', color: '#991b1b' }}>
               Overdue Tasks
             </span>
             <AlertTriangle size={16} color="#dc2626" />
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#7f1d1d' }}>
+          <div style={{ fontSize: '1.65rem', fontWeight: 700, color: '#7f1d1d' }}>
             {summary.overdue}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#b91c1c', fontWeight: 600, marginTop: '4px' }}>
@@ -1134,7 +1134,7 @@ export const TaskforceWeeklyReportsTab = ({
                     padding: '2px 7px',
                     borderRadius: '6px',
                     fontSize: '10px',
-                    fontWeight: 800,
+                    fontWeight: 600,
                     background: isActive
                       ? 'rgba(255,255,255,0.25)'
                       : tab.highlight && tab.badge > 0
@@ -1199,7 +1199,7 @@ export const TaskforceWeeklyReportsTab = ({
               }}
             >
               <div>
-                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600', color: '#0f172a' }}>
                   Departmental Assigned Responsibilities &amp; Execution Matrix
                 </h3>
                 <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
@@ -1224,7 +1224,7 @@ export const TaskforceWeeklyReportsTab = ({
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 800 }}>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Department &amp; Code</th>
                     <th style={{ padding: '12px 16px', minWidth: '260px' }}>Assigned Responsibilities &amp; Scope</th>
                     <th style={{ padding: '12px 12px' }}>Head / Lead</th>
@@ -1271,7 +1271,7 @@ export const TaskforceWeeklyReportsTab = ({
                               <i className={iconClass} />
                             </span>
                             <div>
-                              <div style={{ fontWeight: 800, color: '#0f172a' }}>{dept.name}</div>
+                              <div style={{ fontWeight: 600, color: '#0f172a' }}>{dept.name}</div>
                               <span style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>
                                 {dept.code || 'KV-DEPT'}
                               </span>
@@ -1297,7 +1297,7 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Carried Forward */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600 }}>
                           {dept.carriedForward > 0 ? (
                             <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {dept.carriedForward}
@@ -1313,12 +1313,12 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Total Workload */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 900, color: '#0f172a' }}>
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 700, color: '#0f172a' }}>
                           {dept.totalWorkload}
                         </td>
 
                         {/* Completed */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600 }}>
                           {dept.completed > 0 ? (
                             <span style={{ background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {dept.completed}
@@ -1334,7 +1334,7 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Overdue */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600 }}>
                           {dept.overdue > 0 ? (
                             <span style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {dept.overdue}
@@ -1357,7 +1357,7 @@ export const TaskforceWeeklyReportsTab = ({
                                 }}
                               />
                             </div>
-                            <span style={{ fontWeight: 800, fontSize: '11px', color: '#0f172a', width: '35px', textAlign: 'right' }}>
+                            <span style={{ fontWeight: 600, fontSize: '11px', color: '#0f172a', width: '35px', textAlign: 'right' }}>
                               {dept.completionRate}%
                             </span>
                           </div>
@@ -1420,7 +1420,7 @@ export const TaskforceWeeklyReportsTab = ({
               }}
             >
               <div>
-                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600', color: '#0f172a' }}>
                   Task Force Personnel Contributions &amp; Accountability
                 </h3>
                 <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
@@ -1445,7 +1445,7 @@ export const TaskforceWeeklyReportsTab = ({
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 800 }}>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Member Name</th>
                     <th style={{ padding: '12px 12px' }}>Hierarchy Tier</th>
                     <th style={{ padding: '12px 12px' }}>Department / Trade</th>
@@ -1474,7 +1474,7 @@ export const TaskforceWeeklyReportsTab = ({
                       >
                         {/* Name */}
                         <td style={{ padding: '12px 16px' }}>
-                          <div style={{ fontWeight: 800, color: '#0f172a' }}>{m.name}</div>
+                          <div style={{ fontWeight: 600, color: '#0f172a' }}>{m.name}</div>
                           <div style={{ fontSize: '10px', color: '#94a3b8' }}>
                             {m.mobileNo !== '—' ? m.mobileNo : m.email}
                           </div>
@@ -1490,7 +1490,7 @@ export const TaskforceWeeklyReportsTab = ({
                               padding: '3px 8px',
                               borderRadius: '12px',
                               fontSize: '10px',
-                              fontWeight: 800,
+                              fontWeight: 600,
                               textTransform: 'uppercase',
                               backgroundColor: tierTheme.bg,
                               color: tierTheme.color,
@@ -1516,7 +1516,7 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Carried Forward */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600 }}>
                           {m.carriedForward > 0 ? (
                             <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {m.carriedForward}
@@ -1532,12 +1532,12 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Total Workload */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 900, color: '#0f172a' }}>
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 700, color: '#0f172a' }}>
                           {m.totalWorkload}
                         </td>
 
                         {/* Completed */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600 }}>
                           {m.completed > 0 ? (
                             <span style={{ background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {m.completed}
@@ -1553,7 +1553,7 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Overdue */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800 }}>
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 600 }}>
                           {m.overdue > 0 ? (
                             <span style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>
                               {m.overdue}
@@ -1564,7 +1564,7 @@ export const TaskforceWeeklyReportsTab = ({
                         </td>
 
                         {/* Completion Rate */}
-                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: 800, color: '#0f172a' }}>
+                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: 600, color: '#0f172a' }}>
                           {m.completionRate}%
                         </td>
 
@@ -1576,7 +1576,7 @@ export const TaskforceWeeklyReportsTab = ({
                               padding: '2px 8px',
                               borderRadius: '12px',
                               fontSize: '10px',
-                              fontWeight: 800,
+                              fontWeight: 600,
                               background:
                                 m.performanceRating === 'Excellent'
                                   ? '#dcfce7'
@@ -1646,7 +1646,7 @@ export const TaskforceWeeklyReportsTab = ({
             >
               <AlertTriangle color="#d97706" size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
               <div>
-                <h4 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#92400e' }}>
+                <h4 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: '#92400e' }}>
                   Critical Focus: Incomplete Responsibilities Carried Forward
                 </h4>
                 <p style={{ margin: '4px 0 0', fontSize: '0.76rem', color: '#b45309', lineHeight: 1.5 }}>
@@ -1717,7 +1717,7 @@ export const TaskforceWeeklyReportsTab = ({
             </div>
 
             <div style={{ color: '#64748b', fontWeight: 600 }}>
-              Showing <span style={{ fontWeight: 800, color: '#0f172a' }}>{filteredTasks.length}</span> tasks
+              Showing <span style={{ fontWeight: 600, color: '#0f172a' }}>{filteredTasks.length}</span> tasks
             </div>
           </div>
 
@@ -1734,7 +1734,7 @@ export const TaskforceWeeklyReportsTab = ({
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 800 }}>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '10px', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Task Code</th>
                     <th style={{ padding: '12px 16px', minWidth: '240px' }}>Task Title &amp; Scope</th>
                     <th style={{ padding: '12px 10px' }}>Department</th>
@@ -1772,7 +1772,7 @@ export const TaskforceWeeklyReportsTab = ({
                               onClick={() => onSelectTask && onSelectTask(t._id)}
                               style={{
                                 fontFamily: 'monospace',
-                                fontWeight: 800,
+                                fontWeight: 600,
                                 color: '#17652f',
                                 background: 'none',
                                 border: 'none',
@@ -1790,7 +1790,7 @@ export const TaskforceWeeklyReportsTab = ({
                                   padding: '1px 5px',
                                   borderRadius: '4px',
                                   fontSize: '9px',
-                                  fontWeight: 900,
+                                  fontWeight: 700,
                                   background: '#f3e8ff',
                                   color: '#17652f',
                                 }}
@@ -1823,7 +1823,7 @@ export const TaskforceWeeklyReportsTab = ({
                                 padding: '2px 7px',
                                 borderRadius: '6px',
                                 fontSize: '10px',
-                                fontWeight: 800,
+                                fontWeight: 600,
                                 textTransform: 'uppercase',
                                 backgroundColor: deptTheme.bg,
                                 color: deptTheme.color,
@@ -1897,7 +1897,7 @@ export const TaskforceWeeklyReportsTab = ({
                                   padding: '2px 8px',
                                   borderRadius: '12px',
                                   fontSize: '10px',
-                                  fontWeight: 800,
+                                  fontWeight: 600,
                                   background: '#fef3c7',
                                   color: '#92400e',
                                   border: '1px solid #fde68a',

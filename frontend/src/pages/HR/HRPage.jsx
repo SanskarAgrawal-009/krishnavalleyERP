@@ -681,29 +681,21 @@ export const HRPage = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
       {/* Top Header */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '16px',
-        border: '1px solid #e8e6df',
-        padding: '24px 28px',
+      <div className="g-card" style={{
+        padding: '20px 24px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: '16px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+        border: '1px solid #e5e7eb'
       }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.74rem', padding: '3px 10px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              STAFF & TALENT HUB
-            </span>
-          </div>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: '600', color: '#1f2937', letterSpacing: '-0.015em' }}>
-            Human Resources & Workforce Management
+          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600, color: '#111827' }}>
+            Human Resources
           </h1>
-          <p style={{ color: '#596372', fontSize: '0.88rem', marginTop: '4px', margin: 0 }}>
-            Employee directory, site shift attendance rosters, leave applications, and monthly staff payroll registers.
+          <p style={{ color: '#6b7280', fontSize: '0.875rem', marginTop: '4px', margin: 0 }}>
+            Employee directory, attendance rosters, leave applications, and monthly payroll.
           </p>
         </div>
 
@@ -711,23 +703,11 @@ export const HRPage = () => {
           type="button"
           onClick={loadData}
           disabled={loading}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '9px 16px',
-            background: '#ffffff',
-            border: '1px solid #e8e6df',
-            borderRadius: '9px',
-            color: '#1f2937',
-            fontSize: '0.84rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.15s ease'
-          }}
+          className="btn-secondary"
+          style={{ padding: '8px 14px', fontSize: '0.84rem' }}
         >
           <RefreshCw size={14} className={loading ? 'spin' : ''} />
-          Refresh Data
+          Refresh
         </button>
       </div>
 
@@ -737,93 +717,92 @@ export const HRPage = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
         gap: '14px'
       }}>
-        <div className="stat-card" style={{ border: '1px solid #e8e6df', borderRadius: '14px' }}>
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>ACTIVE HEADCOUNT</span>
-            <div style={{ padding: '6px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Active staff</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
               <Users size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1f2937', marginTop: '4px' }}>
-            {summary.activeStaff} <span style={{ fontSize: '0.85rem', color: '#8c95a4', fontWeight: '500' }}>/ {summary.totalEmployees}</span>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', marginTop: '4px' }}>
+            {summary.activeStaff} <span style={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: '400' }}>/ {summary.totalEmployees}</span>
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#8c95a4', fontWeight: '500' }}>Permanent on-roll staff</span>
+          <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '400' }}>Permanent on-roll staff</span>
         </div>
 
-        <div className="stat-card" style={{ border: '1px solid #e8e6df', borderRadius: '14px' }}>
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>ON LEAVE TODAY</span>
-            <div style={{ padding: '6px', borderRadius: '8px', background: (summary.staffOnLeaveToday || 0) > 0 ? '#fef3c7' : '#e8f2e5', color: (summary.staffOnLeaveToday || 0) > 0 ? '#b45309' : '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>On leave today</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: (summary.staffOnLeaveToday || 0) > 0 ? '#fef3c7' : '#f0fdf4', color: (summary.staffOnLeaveToday || 0) > 0 ? '#d97706' : '#17652f' }}>
               <Calendar size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '700', color: (summary.staffOnLeaveToday || 0) > 0 ? '#b45309' : '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: (summary.staffOnLeaveToday || 0) > 0 ? '#d97706' : '#17652f', marginTop: '4px' }}>
             {summary.staffOnLeaveToday || 0}
           </div>
-          <span style={{ fontSize: '0.72rem', color: (summary.staffOnLeaveToday || 0) > 0 ? '#b45309' : '#17652f', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.72rem', color: (summary.staffOnLeaveToday || 0) > 0 ? '#d97706' : '#17652f', fontWeight: '500' }}>
             {(summary.staffOnLeaveToday || 0) > 0 ? 'Staff absent on leave' : 'Full team available'}
           </span>
         </div>
 
-        <div className="stat-card" style={{ border: '1px solid #e8e6df', borderRadius: '14px' }}>
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>ID BADGES ISSUED</span>
-            <div style={{ padding: '6px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>ID cards issued</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
               <ShieldCheck size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#17652f', marginTop: '4px' }}>
             {summary.totalIdCardsIssued !== undefined ? summary.totalIdCardsIssued : employees.filter(e => e.idCardDetails?.idCardIssued).length}
-            <span style={{ fontSize: '0.85rem', color: '#8c95a4', fontWeight: '500' }}> / {employees.length}</span>
+            <span style={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: '400' }}> / {employees.length}</span>
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>Official cards in circulation</span>
+          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '500' }}>Cards in circulation</span>
         </div>
 
-        <div className="stat-card" style={{ border: '1px solid #e8e6df', borderRadius: '14px' }}>
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>PENDING LEAVES</span>
-            <div style={{ padding: '6px', borderRadius: '8px', background: '#fffbeb', color: '#d97706' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Pending leaves</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#fef3c7', color: '#d97706' }}>
               <Clock size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1f2937', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', marginTop: '4px' }}>
             {summary.pendingLeavesCount}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#8c95a4', fontWeight: '500' }}>HR approval required</span>
+          <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '400' }}>Approval required</span>
         </div>
 
-        <div className="stat-card" style={{ border: '1px solid #e8e6df', borderRadius: '14px' }}>
+        <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '700' }}>MONTHLY PAYROLL</span>
-            <div style={{ padding: '6px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Monthly payroll</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#17652f', marginTop: '4px' }}>
             {formatINR(summary.monthlyPayrollOutflow)}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#8c95a4', fontWeight: '500' }}>Salary & benefits total</span>
+          <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '400' }}>Salary and benefits total</span>
         </div>
       </div>
 
       {/* Sub-Tab Navigation Header */}
-      <div style={{
+      <div className="g-card no-scrollbar" style={{
         display: 'flex',
-        backgroundColor: '#f5f3ec',
-        border: '1px solid #e8e6df',
-        borderRadius: '12px',
         padding: '4px',
-        gap: '6px',
+        gap: '4px',
+        border: '1px solid #e5e7eb',
         overflowX: 'auto',
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        whiteSpace: 'nowrap'
       }}>
         {[
-          { id: 'directory', label: `Staff Directory (${filteredEmployees.length})` },
-          { id: 'id_cards', label: `Staff ID Badges & Identity (${employees.length})` },
-          { id: 'leaves', label: `Leave Quotas & Ledger (${allLeaveRequests.length})` },
-          { id: 'attendance', label: `Daily Shift Attendance (${allAttendanceLogs.length})` },
-          { id: 'payroll', label: `Monthly Payroll Register (${allPayrollRecords.length})` },
-          { id: 'dept_roles', label: `Departments & Roles (${masterData.departments?.length || 8})` }
+          { id: 'directory', label: `Directory (${filteredEmployees.length})` },
+          { id: 'id_cards', label: `ID cards (${employees.length})` },
+          { id: 'leaves', label: `Leaves (${allLeaveRequests.length})` },
+          { id: 'attendance', label: `Attendance (${allAttendanceLogs.length})` },
+          { id: 'payroll', label: `Payroll (${allPayrollRecords.length})` },
+          { id: 'dept_roles', label: `Departments and roles (${masterData.departments?.length || 8})` }
         ].map((tab) => {
           const isSelected = activeTab === tab.id;
           return (
@@ -833,15 +812,14 @@ export const HRPage = () => {
               onClick={() => handleTabChange(tab.id)}
               style={{
                 flex: '1 1 auto',
-                padding: '9px 16px',
-                borderRadius: '8px',
+                padding: '8px 16px',
+                borderRadius: '6px',
                 background: isSelected ? '#17652f' : 'transparent',
-                color: isSelected ? '#ffffff' : '#596372',
-                fontWeight: isSelected ? '700' : '600',
+                color: isSelected ? '#ffffff' : '#6b7280',
+                fontWeight: isSelected ? '600' : '500',
                 fontSize: '0.82rem',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: isSelected ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                 whiteSpace: 'nowrap',
                 transition: 'all 0.15s ease'
               }}
@@ -857,64 +835,42 @@ export const HRPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Employee Directory</h3>
-              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>Showing {filteredEmployees.length} of {employees.length} total staff members</p>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', margin: 0 }}>Employee directory</h3>
+              <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '2px 0 0 0' }}>Showing {filteredEmployees.length} of {employees.length} employees</p>
             </div>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
               {canManageEmployees && employees.length === 0 && (
                 <button
                   type="button"
                   onClick={handleSeedSampleStaff}
-                  style={{
-                    background: '#e8f2e5',
-                    color: '#17652f',
-                    border: '1px solid #cde4c9',
-                    padding: '8px 14px',
-                    borderRadius: '6px',
-                    fontSize: '0.82rem',
-                    fontWeight: '700',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    cursor: 'pointer'
-                  }}
+                  className="btn-secondary"
+                  style={{ padding: '8px 14px', fontSize: '0.82rem' }}
                 >
-                  <Sparkles size={14} /> Populate Sample Staff
+                  <Sparkles size={14} /> Add sample staff
                 </button>
               )}
               {canManageEmployees && (
                 <button
                   type="button"
                   onClick={() => setIsEmpModalOpen(true)}
-                  style={{
-                    background: '#17652f',
-                    color: '#ffffff',
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    fontSize: '0.82rem',
-                    fontWeight: '700',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    cursor: 'pointer',
-                    border: 'none'
-                  }}
+                  className="btn-primary"
+                  style={{ padding: '8px 16px', fontSize: '0.84rem' }}
                 >
-                  <Plus size={15} /> Onboard New Employee
+                  <Plus size={15} /> Add employee
                 </button>
               )}
             </div>
           </div>
 
           {/* DYNAMIC DEPARTMENT & ROLE FILTER BAR */}
-          <div className="g-card" style={{ padding: '12px 16px', background: '#ffffff', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <div className="g-card" style={{ padding: '12px 16px', background: '#ffffff', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end', border: '1px solid #e5e7eb' }}>
             <div style={{ flex: '1.2 1 200px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>Search Staff</label>
+              <label style={{ fontSize: '0.75rem', fontWeight: 500, color: '#374151', display: 'block', marginBottom: '4px' }}>Search staff</label>
               <div style={{ position: 'relative' }}>
                 <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
                 <input
                   type="text"
-                  placeholder="Search name, code, email, phone..."
+                  placeholder="e.g. Rahul, ENG-01, or 98765"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{ width: '100%', paddingLeft: '30px', fontSize: '0.82rem' }}
@@ -923,36 +879,36 @@ export const HRPage = () => {
             </div>
 
             <div style={{ flex: '1 1 180px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
+              <label style={{ fontSize: '0.75rem', fontWeight: 500, color: '#374151', display: 'block', marginBottom: '4px' }}>
                 Department ({masterData.departments?.length || 0})
               </label>
               <select
                 value={departmentFilter}
                 onChange={(e) => {
                   setDepartmentFilter(e.target.value);
-                  setRoleFilter(''); // Reset role when department changes
+                  setRoleFilter('');
                 }}
-                style={{ width: '100%', fontSize: '0.82rem', borderColor: departmentFilter ? '#17652f' : '#dadce0', fontWeight: departmentFilter ? '700' : 'normal' }}
+                style={{ width: '100%', fontSize: '0.82rem' }}
               >
-                <option value="">All Departments</option>
+                <option value="">All departments</option>
                 {(masterData.departments || []).map((d) => (
                   <option key={d._id || d.departmentCode} value={d.departmentCode}>
-                    {d.departmentName} ({d.departmentCode})
+                    {d.departmentName}
                   </option>
                 ))}
               </select>
             </div>
 
             <div style={{ flex: '1 1 180px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                Role / Designation ({activeDeptRoles.length} in Dept)
+              <label style={{ fontSize: '0.75rem', fontWeight: 500, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                Role ({activeDeptRoles.length})
               </label>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', borderColor: roleFilter ? '#17652f' : '#dadce0', fontWeight: roleFilter ? '700' : 'normal' }}
+                style={{ width: '100%', fontSize: '0.82rem' }}
               >
-                <option value="">{departmentFilter ? `All Roles in Dept` : `All Roles`}</option>
+                <option value="">{departmentFilter ? `All roles in dept` : `All roles`}</option>
                 {activeDeptRoles.map((r) => (
                   <option key={r._id || r.roleCode} value={r.roleCode}>
                     {r.roleName}
@@ -969,92 +925,64 @@ export const HRPage = () => {
                   setRoleFilter('');
                   setSearchTerm('');
                 }}
+                className="btn-secondary"
                 style={{
                   padding: '7px 12px',
-                  background: '#f1f5f9',
-                  color: '#0f172a',
-                  borderRadius: '6px',
-                  border: '1px solid #e2e8f0',
                   fontSize: '0.76rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  alignSelf: 'flex-end',
                   height: '34px'
                 }}
               >
-                Reset Filters
+                Reset filters
               </button>
             )}
           </div>
 
-          <div className="g-card" style={{ overflow: 'hidden' }}>
+          <div className="g-card" style={{ overflow: 'hidden', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
             <div style={{ overflowX: 'auto' }}>
-              <table>
+              <table style={{ width: '100%' }}>
                 <thead>
-                  <tr>
-                    <th>Staff Name & Code</th>
-                    <th>Department</th>
-                    <th>Role Designation</th>
-                    <th>Phone / Email</th>
-                    <th>Monthly Salary</th>
-                    <th>Status</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Employee</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Department</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Role</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Contact</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Salary</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Status</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredEmployees.length === 0 ? (
                     <tr>
                       <td colSpan={7} style={{ textAlign: 'center', padding: '40px 20px', color: '#6b7280' }}>
-                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-                          <Users size={24} />
+                        <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0fdf4', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                          <Users size={22} />
                         </div>
-                        <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
-                          No Employees Found
+                        <div style={{ fontSize: '1rem', fontWeight: 600, color: '#111827', marginBottom: '4px' }}>
+                          No employees found
                         </div>
-                        <p style={{ color: '#4b5563', fontSize: '0.85rem', maxWidth: '460px', margin: '0 auto 16px' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.84rem', maxWidth: '420px', margin: '0 auto 16px' }}>
                           {employees.length === 0
-                            ? 'Your staff directory is currently empty. You can onboard new staff manually or initialize sample staff across site engineering, architecture, accounts, and facilities.'
-                            : 'No employees match the selected department, designation or search filters.'}
+                            ? 'The staff directory is currently empty. Add new staff or initialize sample staff records.'
+                            : 'No employees match the selected filters.'}
                         </p>
                         {employees.length === 0 && (
-                          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
                             <button
                               type="button"
                               onClick={() => setIsEmpModalOpen(true)}
-                              style={{
-                                background: '#17652f',
-                                color: '#ffffff',
-                                padding: '8px 18px',
-                                borderRadius: '6px',
-                                fontSize: '0.82rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                border: 'none',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px'
-                              }}
+                              className="btn-primary"
+                              style={{ padding: '8px 16px', fontSize: '0.82rem' }}
                             >
-                              <Plus size={15} /> Onboard New Employee
+                              <Plus size={15} /> Add employee
                             </button>
                             <button
                               type="button"
                               onClick={handleSeedSampleStaff}
-                              style={{
-                                background: '#17652f',
-                                color: '#ffffff',
-                                padding: '8px 18px',
-                                borderRadius: '6px',
-                                fontSize: '0.82rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                border: 'none',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px'
-                              }}
+                              className="btn-secondary"
+                              style={{ padding: '8px 16px', fontSize: '0.82rem' }}
                             >
-                              <Sparkles size={15} /> Initialize Sample Staff (6 Members)
+                              <Sparkles size={15} /> Add sample staff
                             </button>
                           </div>
                         )}
@@ -1062,122 +990,88 @@ export const HRPage = () => {
                     </tr>
                   ) : (
                     filteredEmployees.map((emp) => (
-                      <tr key={emp._id || emp.id}>
-                        <td>
-                          <div style={{ fontWeight: '700', color: '#111827' }}>{emp.firstName} {emp.lastName}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Emp Code: {emp.employeeCode}</div>
+                      <tr key={emp._id || emp.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                        <td style={{ padding: '12px 16px' }}>
+                          <div style={{ fontWeight: 600, color: '#111827' }}>{emp.firstName} {emp.lastName}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Code: {emp.employeeCode}</div>
                         </td>
-                        <td style={{ color: '#374151', fontWeight: '600' }}>
+                        <td style={{ padding: '12px 16px', color: '#374151', fontWeight: 500 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Building2 size={14} color="#17652f" />
+                            <Building2 size={13} color="#17652f" />
                             <span>{emp.departmentName || emp.departmentId?.departmentName || emp.departmentId?.name || emp.department || 'Civil & Structural Engineering'}</span>
                           </div>
                         </td>
-                        <td style={{ color: '#111827', fontWeight: '700' }}>
+                        <td style={{ padding: '12px 16px', color: '#111827', fontWeight: 500 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Briefcase size={14} color="#17652f" />
+                            <Briefcase size={13} color="#17652f" />
                             <span>{emp.designation || emp.roleName || emp.roleId?.roleName || emp.roleId?.name || emp.role || 'Senior Site Engineer'}</span>
                           </div>
                         </td>
-                        <td>
-                          <div style={{ color: '#17652f', fontWeight: '600' }}>{emp.phone || emp.mobileNo || 'N/A'}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{emp.email || ''}</div>
+                        <td style={{ padding: '12px 16px' }}>
+                          <div style={{ color: '#17652f', fontWeight: 500 }}>{emp.phone || emp.mobileNo || '—'}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>{emp.email || ''}</div>
                         </td>
-                        <td style={{ color: '#111827', fontWeight: '800' }}>
+                        <td style={{ padding: '12px 16px', color: '#111827', fontWeight: 500 }}>
                           {formatINR(emp.salaryStructure?.basicSalary || (emp.payroll && emp.payroll[0]?.basicSalary) || emp.salary || 45000)}
                         </td>
-                        <td>
+                        <td style={{ padding: '12px 16px' }}>
                           <StatusBadge status={emp.employmentStatus} />
                         </td>
-                        <td style={{ textAlign: 'right' }}>
+                        <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', gap: '6px', alignItems: 'center' }}>
                             <button
                               type="button"
-                              title="Print Official Staff ID Badge"
+                              title="ID card"
                               onClick={() => {
                                 setSelectedEmployeeForID(emp);
                                 setIsIDCardModalOpen(true);
                               }}
-                              style={{
-                                padding: '5px 9px',
-                                background: '#f1f5f9',
-                                border: '1px solid #cbd5e1',
-                                color: '#334155',
-                                borderRadius: '5px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                              }}
+                              className="btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.75rem' }}
                             >
-                              <CreditCard size={13} /> ID Card
+                              <CreditCard size={12} /> ID card
                             </button>
                             <button
                               type="button"
-                              title="View Staff Dossier"
+                              title="View details"
                               onClick={() => {
                                 setSelectedEmployee(emp);
                                 setIsDetailModalOpen(true);
                               }}
-                              style={{
-                                padding: '5px 9px',
-                                background: '#f1f5f9',
-                                border: '1px solid #cbd5e1',
-                                color: '#0f172a',
-                                borderRadius: '5px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                              }}
+                              className="btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.75rem' }}
                             >
-                              <Eye size={13} /> Dossier
+                              <Eye size={12} /> Details
                             </button>
                             {canEditHR && (
                               <button
                                 type="button"
-                                title="Edit Employee Profile"
+                                title="Edit employee"
                                 onClick={() => handleOpenEdit(emp)}
-                                style={{
-                                  padding: '5px 9px',
-                                  background: '#e8f2e5',
-                                  border: '1px solid #cde4c9',
-                                  color: '#17652f',
-                                  borderRadius: '5px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: '700',
-                                  cursor: 'pointer',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px'
-                                }}
+                                className="btn-secondary"
+                                style={{ padding: '4px 8px', fontSize: '0.75rem' }}
                               >
-                                <Edit2 size={13} /> Edit
+                                <Edit2 size={12} /> Edit
                               </button>
                             )}
                             {canManageEmployees && (
                               <button
                                 type="button"
-                                title="Delete Employee"
+                                title="Delete employee"
                                 onClick={() => handleDeleteEmployee(emp)}
                                 style={{
-                                  padding: '5px 7px',
-                                  background: '#f1f5f9',
-                                  border: '1px solid #e2e8f0',
-                                  color: '#0f172a',
+                                  padding: '4px 6px',
+                                  background: '#ffffff',
+                                  border: '1px solid #fee2e2',
+                                  color: '#dc2626',
                                   borderRadius: '5px',
                                   fontSize: '0.75rem',
-                                  fontWeight: '700',
                                   cursor: 'pointer',
                                   display: 'inline-flex',
                                   alignItems: 'center'
                                 }}
                               >
-                                <Trash2 size={13} />
+                                <Trash2 size={12} />
                               </button>
                             )}
                           </div>
@@ -1196,80 +1090,63 @@ export const HRPage = () => {
       {activeTab === 'id_cards' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Header & Quick Metrics */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', margin: 0 }}>
-                  Official Staff Identity Cards & Badge Hub
-                </h3>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#334155', fontWeight: '800' }}>
-                  CENTRAL HR CREDENTIALING
-                </span>
-              </div>
-              <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: '4px 0 0 0' }}>
-                Generate, review, and print physical company identification cards for all Krishna Valley staff. Standardized with official corporate branding, security QR code, emergency contacts, blood group, and government identity vault.
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', margin: 0 }}>
+                Staff identity cards
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '2px 0 0 0' }}>
+                Review and print physical identity cards for employees.
               </p>
             </div>
 
             <button
               type="button"
               onClick={() => setIsEmpModalOpen(true)}
-              style={{
-                background: '#17652f',
-                color: '#ffffff',
-                padding: '8px 16px',
-                borderRadius: '6px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                border: 'none',
-                boxShadow: '0 2px 4px rgba(26, 115, 232, 0.2)'
-              }}
+              className="btn-primary"
+              style={{ padding: '8px 16px', fontSize: '0.84rem' }}
             >
-              <Plus size={15} /> Onboard Staff For ID Card
+              <Plus size={15} /> Add employee
             </button>
           </div>
 
           {/* Quick Metrics Bar */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px' }}>
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 14px' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#64748b', display: 'block' }}>TOTAL STAFF IN REGISTRY</span>
-              <strong style={{ fontSize: '1.25rem', color: '#0f172a' }}>{employees.length}</strong>
-              <span style={{ fontSize: '0.68rem', color: '#64748b', display: 'block' }}>Personnel on records</span>
+            <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff', padding: '10px 14px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 500, color: '#6b7280', display: 'block' }}>Total staff</span>
+              <strong style={{ fontSize: '1.25rem', color: '#111827' }}>{employees.length}</strong>
+              <span style={{ fontSize: '0.68rem', color: '#6b7280', display: 'block' }}>Staff on record</span>
             </div>
-            <div style={{ background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '8px', padding: '10px 14px' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', display: 'block' }}>PHYSICAL CARDS ISSUED</span>
+            <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff', padding: '10px 14px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 500, color: '#6b7280', display: 'block' }}>Cards issued</span>
               <strong style={{ fontSize: '1.25rem', color: '#17652f' }}>
                 {employees.filter(e => e.idCardDetails?.idCardIssued).length}
               </strong>
-              <span style={{ fontSize: '0.68rem', color: '#17652f', display: 'block' }}>Badges delivered to staff</span>
+              <span style={{ fontSize: '0.68rem', color: '#17652f', display: 'block' }}>Issued to employees</span>
             </div>
-            <div style={{ background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '8px', padding: '10px 14px' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', display: 'block' }}>AADHAAR & PAN KYC LINKED</span>
+            <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff', padding: '10px 14px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 500, color: '#6b7280', display: 'block' }}>KYC linked</span>
               <strong style={{ fontSize: '1.25rem', color: '#17652f' }}>
                 {employees.filter(e => e.idCardDetails?.aadhaarNumber && e.idCardDetails?.panNumber).length}
               </strong>
-              <span style={{ fontSize: '0.68rem', color: '#17652f', display: 'block' }}>Govt verified IDs on file</span>
+              <span style={{ fontSize: '0.68rem', color: '#17652f', display: 'block' }}>Aadhaar and PAN on file</span>
             </div>
-            <div style={{ background: '#fff1f2', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 14px' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#0f172a', display: 'block' }}>BLOOD GROUP RECORDED</span>
-              <strong style={{ fontSize: '1.25rem', color: '#0f172a' }}>
+            <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff', padding: '10px 14px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 500, color: '#6b7280', display: 'block' }}>Blood group recorded</span>
+              <strong style={{ fontSize: '1.25rem', color: '#111827' }}>
                 {employees.filter(e => e.bloodGroup).length}
               </strong>
-              <span style={{ fontSize: '0.68rem', color: '#0f172a', display: 'block' }}>Emergency medical badge tag</span>
+              <span style={{ fontSize: '0.68rem', color: '#6b7280', display: 'block' }}>Emergency record on file</span>
             </div>
           </div>
 
           {/* Search & Department Filter Bar */}
-          <div className="g-card" style={{ padding: '12px 16px', background: '#ffffff', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="g-card" style={{ padding: '12px 16px', background: '#ffffff', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', border: '1px solid #e5e7eb' }}>
             <div style={{ flex: '1.5 1 220px', position: 'relative' }}>
               <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
               <input
                 type="text"
-                placeholder="Search staff by name, code, designation, phone..."
+                placeholder="e.g. Rahul, ENG-01, or 98765"
                 value={idCardSearch}
                 onChange={(e) => setIdCardSearch(e.target.value)}
                 style={{ width: '100%', paddingLeft: '32px', fontSize: '0.82rem' }}
@@ -1282,7 +1159,7 @@ export const HRPage = () => {
                 onChange={(e) => setIdCardDeptFilter(e.target.value)}
                 style={{ width: '100%', fontSize: '0.82rem' }}
               >
-                <option value="">All Departments ({employees.length} Staff)</option>
+                <option value="">All departments ({employees.length})</option>
                 {(masterData.departments || []).map((d) => (
                   <option key={d._id || d.departmentCode} value={d.departmentCode}>
                     {d.departmentName}
@@ -1298,37 +1175,29 @@ export const HRPage = () => {
                   setIdCardSearch('');
                   setIdCardDeptFilter('');
                 }}
-                style={{
-                  padding: '7px 12px',
-                  background: '#f1f5f9',
-                  color: '#0f172a',
-                  borderRadius: '6px',
-                  border: '1px solid #e2e8f0',
-                  fontSize: '0.76rem',
-                  fontWeight: '700',
-                  cursor: 'pointer'
-                }}
+                className="btn-secondary"
+                style={{ padding: '7px 12px', fontSize: '0.76rem' }}
               >
-                Reset Filter
+                Reset filters
               </button>
             )}
           </div>
 
           {/* ID Card Badges Grid */}
           {filteredIDCardEmployees.length === 0 ? (
-            <div className="g-card" style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
-              <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-                <ShieldCheck size={28} />
+            <div className="g-card" style={{ textAlign: 'center', padding: '40px 20px', color: '#6b7280', border: '1px solid #e5e7eb' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0fdf4', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                <ShieldCheck size={22} />
               </div>
-              <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', margin: '0 0 6px 0' }}>
-                No Staff ID Cards Found
+              <h4 style={{ fontSize: '1rem', fontWeight: 600, color: '#111827', margin: '0 0 4px 0' }}>
+                No ID cards found
               </h4>
-              <p style={{ fontSize: '0.82rem', color: '#64748b', maxWidth: '420px', margin: '0 auto 16px' }}>
-                No employees match your search query or department filter. Onboard new staff or reset your filter.
+              <p style={{ fontSize: '0.84rem', color: '#6b7280', maxWidth: '400px', margin: '0 auto 16px' }}>
+                No employees match your search query or department filter.
               </p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '14px' }}>
               {filteredIDCardEmployees.map((emp) => {
                 const fullName = `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || 'Staff Member';
                 const initials = `${(emp.firstName || '')[0] || 'K'}${(emp.lastName || '')[0] || 'V'}`.toUpperCase();
@@ -1342,72 +1211,58 @@ export const HRPage = () => {
                     key={emp._id}
                     style={{
                       background: '#ffffff',
-                      borderRadius: '12px',
-                      border: '1px solid #cbd5e1',
-                      boxShadow: '0 4px 12px rgba(15, 23, 42, 0.06)',
+                      borderRadius: '8px',
+                      border: '1px solid #e5e7eb',
                       overflow: 'hidden',
                       display: 'flex',
-                      flexDirection: 'column',
-                      transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                      flexDirection: 'column'
                     }}
                   >
-                    {/* Simulated Lanyard Hole */}
-                    <div style={{ background: '#f8fafc', padding: '6px 0', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'center' }}>
-                      <div style={{ width: '38px', height: '8px', background: '#cbd5e1', borderRadius: '4px' }} />
-                    </div>
-
-                    {/* Official Badge Header Strip */}
+                    {/* Badge Header Strip */}
                     <div style={{
-                      background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
-                      padding: '10px 14px',
+                      background: '#17652f',
+                      padding: '8px 12px',
                       color: '#ffffff',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center'
                     }}>
-                      <div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: '900', letterSpacing: '1px', color: '#475569' }}>
-                          KRISHNA VALLEY
-                        </div>
-                        <div style={{ fontSize: '0.62rem', color: '#86c8a0', fontWeight: '700', letterSpacing: '0.5px' }}>
-                          OFFICIAL IDENTITY CARD
-                        </div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 600, letterSpacing: '0.02em' }}>
+                        KRISHNA VALLEY
                       </div>
 
                       <span style={{
-                        padding: '2px 8px',
-                        borderRadius: '12px',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
                         fontSize: '0.65rem',
-                        fontWeight: '800',
-                        background: isIssued ? '#17652f' : '#475569',
+                        fontWeight: 500,
+                        background: isIssued ? '#14532d' : '#374151',
                         color: '#ffffff'
                       }}>
-                        {isIssued ? 'ISSUED' : 'READY TO PRINT'}
+                        {isIssued ? 'Issued' : 'Ready'}
                       </span>
                     </div>
 
                     {/* Card Body */}
-                    <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-                      {/* Photo + Identity Details */}
-                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         {/* Avatar */}
                         <div style={{
-                          width: '64px',
-                          height: '64px',
-                          borderRadius: '8px',
-                          background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
-                          color: '#ffffff',
+                          width: '54px',
+                          height: '54px',
+                          borderRadius: '6px',
+                          background: '#f0fdf4',
+                          color: '#17652f',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '1.2rem',
-                          fontWeight: '800',
-                          border: '2px solid #cde4c9',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          border: '1px solid #bbf7d0',
                           flexShrink: 0
                         }}>
                           {emp.idCardDetails?.photoUrl ? (
-                            <img src={emp.idCardDetails.photoUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }} />
+                            <img src={emp.idCardDetails.photoUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '5px' }} />
                           ) : (
                             initials
                           )}
@@ -1415,114 +1270,89 @@ export const HRPage = () => {
 
                         {/* Text info */}
                         <div style={{ overflow: 'hidden' }}>
-                          <h4 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <h4 style={{ fontSize: '0.92rem', fontWeight: 600, color: '#111827', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {fullName}
                           </h4>
-                          <div style={{ display: 'inline-block', background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '4px', padding: '1px 6px', fontSize: '0.72rem', fontWeight: '800', color: '#17652f', fontFamily: 'monospace', marginTop: '2px' }}>
+                          <div style={{ display: 'inline-block', background: '#f3f4f6', borderRadius: '4px', padding: '1px 5px', fontSize: '0.7rem', fontWeight: 500, color: '#374151', fontFamily: 'monospace', marginTop: '2px' }}>
                             {emp.employeeCode}
                           </div>
-                          <div style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', marginTop: '2px' }}>
+                          <div style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: 500, marginTop: '2px' }}>
                             {roleName}
                           </div>
-                          <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                          <div style={{ fontSize: '0.7rem', color: '#6b7280' }}>
                             {deptName}
                           </div>
                         </div>
                       </div>
 
                       {/* Detail Badges Grid */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', background: '#f8fafc', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', background: '#f9fafb', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
                         <div>
-                          <span style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '700', display: 'block' }}>BLOOD GROUP</span>
-                          <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#0f172a', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                            <Heart size={11} fill="#0f172a" /> {bloodGroup}
+                          <span style={{ fontSize: '0.62rem', color: '#6b7280', fontWeight: 500, display: 'block' }}>Blood group</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#111827' }}>
+                            {bloodGroup}
                           </span>
                         </div>
                         <div>
-                          <span style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '700', display: 'block' }}>WORK LOCATION</span>
-                          <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#0f172a' }}>
+                          <span style={{ fontSize: '0.62rem', color: '#6b7280', fontWeight: 500, display: 'block' }}>Location</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 500, color: '#111827' }}>
                             {emp.workLocation || 'Site & HQ'}
                           </span>
                         </div>
                         <div>
-                          <span style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '700', display: 'block' }}>AADHAAR KYC</span>
-                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: emp.idCardDetails?.aadhaarNumber ? '#17652f' : '#334155' }}>
-                            {emp.idCardDetails?.aadhaarNumber ? `•••• ${emp.idCardDetails.aadhaarNumber.slice(-4)}` : 'Missing'}
+                          <span style={{ fontSize: '0.62rem', color: '#6b7280', fontWeight: 500, display: 'block' }}>Aadhaar</span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 500, color: emp.idCardDetails?.aadhaarNumber ? '#17652f' : '#6b7280' }}>
+                            {emp.idCardDetails?.aadhaarNumber ? `•••• ${emp.idCardDetails.aadhaarNumber.slice(-4)}` : 'On file'}
                           </span>
                         </div>
                         <div>
-                          <span style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '700', display: 'block' }}>PAN CARD</span>
-                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: emp.idCardDetails?.panNumber ? '#17652f' : '#334155' }}>
-                            {emp.idCardDetails?.panNumber ? `${emp.idCardDetails.panNumber}` : 'Missing'}
+                          <span style={{ fontSize: '0.62rem', color: '#6b7280', fontWeight: 500, display: 'block' }}>PAN</span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 500, color: emp.idCardDetails?.panNumber ? '#17652f' : '#6b7280' }}>
+                            {emp.idCardDetails?.panNumber || 'On file'}
                           </span>
                         </div>
                       </div>
 
                       {/* Action buttons */}
-                      <div style={{ display: 'flex', gap: '6px', marginTop: 'auto', paddingTop: '6px' }}>
+                      <div style={{ display: 'flex', gap: '6px', marginTop: 'auto', paddingTop: '4px' }}>
                         <button
                           type="button"
                           onClick={() => {
                             setSelectedEmployeeForID(emp);
                             setIsIDCardModalOpen(true);
                           }}
+                          className="btn-primary"
                           style={{
                             flex: 1,
-                            padding: '7px 10px',
-                            background: '#17652f',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '6px',
-                            fontSize: '0.76rem',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '5px',
-                            boxShadow: '0 2px 4px rgba(30, 58, 138, 0.2)'
+                            padding: '6px 10px',
+                            fontSize: '0.76rem'
                           }}
                         >
-                          <Printer size={13} /> Print ID Card
+                          <Printer size={13} /> Print ID card
                         </button>
                         <button
                           type="button"
-                          title="Edit Employee KYC & Badges"
+                          title="Edit"
                           onClick={() => handleOpenEdit(emp)}
+                          className="btn-secondary"
                           style={{
-                            padding: '7px 10px',
-                            background: '#e8f2e5',
-                            border: '1px solid #cde4c9',
-                            color: '#17652f',
-                            borderRadius: '6px',
-                            fontSize: '0.76rem',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px'
+                            padding: '6px 10px',
+                            fontSize: '0.76rem'
                           }}
                         >
                           <Edit2 size={13} /> Edit
                         </button>
                         <button
                           type="button"
-                          title="View Full Dossier"
+                          title="Details"
                           onClick={() => {
                             setSelectedEmployee(emp);
                             setIsDetailModalOpen(true);
                           }}
+                          className="btn-secondary"
                           style={{
-                            padding: '7px 10px',
-                            background: '#f1f5f9',
-                            border: '1px solid #cbd5e1',
-                            color: '#0f172a',
-                            borderRadius: '6px',
-                            fontSize: '0.76rem',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center'
+                            padding: '6px 8px',
+                            fontSize: '0.76rem'
                           }}
                         >
                           <Eye size={13} />
@@ -1542,28 +1372,17 @@ export const HRPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>Department & Role Hierarchy Matrix</h3>
-              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>Every department maintains distinct dedicated roles and operational scopes.</p>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', margin: 0 }}>Departments and roles</h3>
+              <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '2px 0 0 0' }}>Manage department hierarchies and job roles.</p>
             </div>
             {canManageEmployees && (
               <button
                 type="button"
                 onClick={() => handleOpenDeptModal(null)}
-                style={{
-                  background: '#17652f',
-                  color: '#ffffff',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
-                }}
+                className="btn-primary"
+                style={{ padding: '8px 16px', fontSize: '0.84rem' }}
               >
-                <Plus size={15} /> Add New Department
+                <Plus size={15} /> Add department
               </button>
             )}
           </div>
@@ -1580,45 +1399,39 @@ export const HRPage = () => {
               }).length;
 
               return (
-                <div key={dept._id || dept.departmentCode} className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div key={dept._id || dept.departmentCode} className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <span style={{ fontSize: '0.68rem', padding: '2px 6px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', borderRadius: '4px' }}>
-                        CODE: {dept.departmentCode}
+                      <span style={{ fontSize: '0.68rem', padding: '2px 6px', background: '#f0fdf4', color: '#17652f', fontWeight: 500, borderRadius: '4px' }}>
+                        Code: {dept.departmentCode}
                       </span>
-                      <h4 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>
+                      <h4 style={{ fontSize: '0.98rem', fontWeight: 600, color: '#111827', margin: '4px 0 0 0' }}>
                         {dept.departmentName}
                       </h4>
                     </div>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.72rem', padding: '4px 8px', borderRadius: '12px', background: '#e8f2e5', color: '#17652f', fontWeight: '700' }}>
-                        {deptStaffCount} Staff
+                      <span style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '12px', background: '#f0fdf4', color: '#17652f', fontWeight: 500 }}>
+                        {deptStaffCount} staff
                       </span>
                       <button
                         type="button"
-                        title="Edit Department"
+                        title="Edit department"
                         onClick={() => handleOpenDeptModal(dept)}
-                        style={{
-                          padding: '4px 6px',
-                          background: '#e8f2e5',
-                          border: '1px solid #cde4c9',
-                          color: '#17652f',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
+                        className="btn-secondary"
+                        style={{ padding: '4px 6px' }}
                       >
                         <Edit2 size={12} />
                       </button>
                       {deptStaffCount === 0 && (
                         <button
                           type="button"
-                          title="Delete Department"
+                          title="Delete department"
                           onClick={() => handleDeleteDepartment(dept)}
                           style={{
                             padding: '4px 6px',
-                            background: '#f1f5f9',
-                            border: '1px solid #e2e8f0',
-                            color: '#0f172a',
+                            background: '#ffffff',
+                            border: '1px solid #fee2e2',
+                            color: '#dc2626',
                             borderRadius: '4px',
                             cursor: 'pointer'
                           }}
@@ -1629,33 +1442,28 @@ export const HRPage = () => {
                     </div>
                   </div>
 
-                  <p style={{ fontSize: '0.76rem', color: '#4b5563', margin: 0, lineHeight: '1.4' }}>
+                  <p style={{ fontSize: '0.78rem', color: '#6b7280', margin: 0, lineHeight: '1.4' }}>
                     {dept.description || 'Department operational unit.'}
                   </p>
 
                   <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '10px', marginTop: '4px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', textTransform: 'uppercase' }}>
-                        Roles & Designations ({deptRoles.length}):
+                      <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#374151' }}>
+                        Roles ({deptRoles.length}):
                       </div>
                       <button
                         type="button"
                         onClick={() => handleOpenRoleModal(dept.departmentCode, null)}
+                        className="btn-secondary"
                         style={{
                           padding: '3px 8px',
-                          background: '#f1f5f9',
-                          border: '1px solid #cbd5e1',
-                          color: '#0f172a',
-                          borderRadius: '4px',
                           fontSize: '0.7rem',
-                          fontWeight: '700',
-                          cursor: 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px'
                         }}
                       >
-                        <Plus size={11} /> Add Role
+                        <Plus size={11} /> Add role
                       </button>
                     </div>
 
@@ -1680,42 +1488,36 @@ export const HRPage = () => {
                             }}
                           >
                             <div>
-                              <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#111827' }}>
+                              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#111827' }}>
                                 {role.roleName}
                               </div>
                               <div style={{ fontSize: '0.68rem', color: '#6b7280' }}>
-                                Code: <span style={{ fontFamily: 'monospace', fontWeight: '600' }}>{role.roleCode}</span> • {role.description || 'Department Role'}
+                                Code: <span style={{ fontFamily: 'monospace', fontWeight: 500 }}>{role.roleCode}</span> • {role.description || 'Department role'}
                               </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <span style={{ fontSize: '0.7rem', fontWeight: '700', color: roleStaff > 0 ? '#17652f' : '#9ca3af' }}>
+                              <span style={{ fontSize: '0.7rem', fontWeight: 500, color: roleStaff > 0 ? '#17652f' : '#9ca3af' }}>
                                 {roleStaff} staff
                               </span>
                               <button
                                 type="button"
-                                title="Edit Role"
+                                title="Edit role"
                                 onClick={() => handleOpenRoleModal(dept.departmentCode, role)}
-                                style={{
-                                  padding: '3px 5px',
-                                  background: '#e8f2e5',
-                                  border: '1px solid #cde4c9',
-                                  color: '#17652f',
-                                  borderRadius: '4px',
-                                  cursor: 'pointer'
-                                }}
+                                className="btn-secondary"
+                                style={{ padding: '3px 5px' }}
                               >
                                 <Edit2 size={11} />
                               </button>
                               {roleStaff === 0 && (
                                 <button
                                   type="button"
-                                  title="Delete Role"
+                                  title="Delete role"
                                   onClick={() => handleDeleteRole(role)}
                                   style={{
                                     padding: '3px 5px',
-                                    background: '#f1f5f9',
-                                    border: '1px solid #e2e8f0',
-                                    color: '#0f172a',
+                                    background: '#ffffff',
+                                    border: '1px solid #fee2e2',
+                                    color: '#dc2626',
                                     borderRadius: '4px',
                                     cursor: 'pointer'
                                   }}
@@ -1743,17 +1545,17 @@ export const HRPage = () => {
           {/* Header & Controls Bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
-                Shift Attendance & Biometric Rosters
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', margin: 0 }}>
+                Attendance
               </h3>
-              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>
-                Record daily site attendance rosters, mark presence, half-days, late arrivals, and generate attendance logs.
+              <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '2px 0 0 0' }}>
+                Record daily shift attendance and view logs.
               </p>
             </div>
 
             {/* Mode Switch & Log Single Modal Button */}
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', background: '#f1f5f9', padding: '3px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+              <div style={{ display: 'flex', background: '#f3f4f6', padding: '3px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
                 <button
                   type="button"
                   onClick={() => setAttendanceViewMode('roster')}
@@ -1762,13 +1564,13 @@ export const HRPage = () => {
                     borderRadius: '4px',
                     border: 'none',
                     background: attendanceViewMode === 'roster' ? '#17652f' : 'transparent',
-                    color: attendanceViewMode === 'roster' ? '#ffffff' : '#475569',
+                    color: attendanceViewMode === 'roster' ? '#ffffff' : '#4b5563',
                     fontSize: '0.75rem',
-                    fontWeight: '700',
+                    fontWeight: 600,
                     cursor: 'pointer'
                   }}
                 >
-                  Daily Roster Mode
+                  Daily roster
                 </button>
                 <button
                   type="button"
@@ -1778,34 +1580,26 @@ export const HRPage = () => {
                     borderRadius: '4px',
                     border: 'none',
                     background: attendanceViewMode === 'history' ? '#17652f' : 'transparent',
-                    color: attendanceViewMode === 'history' ? '#ffffff' : '#475569',
+                    color: attendanceViewMode === 'history' ? '#ffffff' : '#4b5563',
                     fontSize: '0.75rem',
-                    fontWeight: '700',
+                    fontWeight: 600,
                     cursor: 'pointer'
                   }}
                 >
-                  Attendance History Logs ({allAttendanceLogs.length})
+                  History logs ({allAttendanceLogs.length})
                 </button>
               </div>
 
               <button
                 type="button"
                 onClick={() => setIsAttModalOpen(true)}
+                className="btn-primary"
                 style={{
-                  background: '#17652f',
-                  color: '#ffffff',
                   padding: '7px 14px',
-                  borderRadius: '6px',
-                  fontSize: '0.78rem',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: 'none'
+                  fontSize: '0.8rem'
                 }}
               >
-                <Clock size={14} /> Single Entry Modal
+                <Clock size={14} /> Log attendance
               </button>
             </div>
           </div>
@@ -1815,17 +1609,17 @@ export const HRPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               
               {/* Date Selector & Quick Actions Ribbon */}
-              <div className="g-card" style={{ padding: '12px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: '#ffffff' }}>
+              <div className="g-card" style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: '#ffffff', border: '1px solid #e5e7eb' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-                      Roster Date:
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 500, color: '#374151', marginBottom: '2px' }}>
+                      Roster date:
                     </label>
                     <input
                       type="date"
                       value={selectedAttendanceDate}
                       onChange={(e) => setSelectedAttendanceDate(e.target.value)}
-                      style={{ padding: '6px 10px', fontSize: '0.85rem', fontWeight: '700', border: '1px solid #cbd5e1', borderRadius: '6px' }}
+                      style={{ padding: '6px 10px', fontSize: '0.82rem', border: '1px solid #d1d5db', borderRadius: '6px' }}
                     />
                   </div>
                   <div style={{ display: 'flex', gap: '6px', marginTop: '16px' }}>
@@ -1835,7 +1629,8 @@ export const HRPage = () => {
                         const today = new Date().toISOString().slice(0, 10);
                         setSelectedAttendanceDate(today);
                       }}
-                      style={{ padding: '6px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer' }}
+                      className="btn-secondary"
+                      style={{ padding: '6px 10px', fontSize: '0.75rem' }}
                     >
                       Today
                     </button>
@@ -1845,110 +1640,100 @@ export const HRPage = () => {
                         const yest = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
                         setSelectedAttendanceDate(yest);
                       }}
-                      style={{ padding: '6px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer' }}
+                      className="btn-secondary"
+                      style={{ padding: '6px 10px', fontSize: '0.75rem' }}
                     >
                       Yesterday
                     </button>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     onClick={handleMarkAllPresent}
+                    className="btn-secondary"
                     style={{
-                      padding: '8px 16px',
-                      background: '#e8f2e5',
-                      color: '#17652f',
-                      border: '1px solid #cde4c9',
-                      borderRadius: '6px',
+                      padding: '8px 14px',
                       fontSize: '0.8rem',
-                      fontWeight: '700',
-                      cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px'
                     }}
                   >
-                    <CheckCircle2 size={15} /> Mark All Active Present
+                    <CheckCircle2 size={15} /> Mark all present
                   </button>
 
                   <button
                     type="button"
                     onClick={handleSaveDailyRoster}
                     disabled={rosterLoading || rosterData.length === 0}
+                    className="btn-primary"
                     style={{
-                      padding: '8px 20px',
-                      background: '#17652f',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '6px',
+                      padding: '8px 16px',
                       fontSize: '0.8rem',
-                      fontWeight: '800',
-                      cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      boxShadow: '0 2px 4px rgba(26, 115, 232, 0.25)'
+                      gap: '6px'
                     }}
                   >
-                    <Check size={16} /> Save Daily Roster
+                    <Check size={16} /> Save roster
                   </button>
                 </div>
               </div>
 
               {/* Roster Table */}
-              <div className="g-card" style={{ overflow: 'hidden' }}>
+              <div className="g-card" style={{ overflow: 'hidden', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
                 <div style={{ overflowX: 'auto' }}>
-                  <table>
+                  <table style={{ width: '100%' }}>
                     <thead>
-                      <tr>
-                        <th>Staff Member & Code</th>
-                        <th>Department & Role</th>
-                        <th style={{ textAlign: 'center' }}>Attendance Status Toggle</th>
-                        <th>Shift Hours</th>
-                        <th>Shift Remarks / Notes</th>
+                      <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                        <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Employee</th>
+                        <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Department and role</th>
+                        <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', textAlign: 'center' }}>Status</th>
+                        <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Hours</th>
+                        <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Remarks</th>
                       </tr>
                     </thead>
                     <tbody>
                       {rosterLoading ? (
                         <tr>
-                          <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                          <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: '#6b7280' }}>
                             Loading roster for {selectedAttendanceDate}...
                           </td>
                         </tr>
                       ) : rosterData.length === 0 ? (
                         <tr>
-                          <td colSpan={5} style={{ textAlign: 'center', padding: '36px', color: '#64748b' }}>
-                            No active employees found to mark attendance. Onboard staff or initialize sample staff first.
+                          <td colSpan={5} style={{ textAlign: 'center', padding: '36px', color: '#6b7280' }}>
+                            No active employees found to mark attendance. Add employees first.
                           </td>
                         </tr>
                       ) : (
                         rosterData.map((r) => {
                           const status = r.status || 'present';
                           return (
-                            <tr key={r.employeeId}>
-                              <td>
-                                <div style={{ fontWeight: '700', color: '#111827' }}>{r.employeeName}</div>
-                                <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Code: {r.employeeCode}</div>
+                            <tr key={r.employeeId} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                              <td style={{ padding: '12px 16px' }}>
+                                <div style={{ fontWeight: 600, color: '#111827' }}>{r.employeeName}</div>
+                                <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Code: {r.employeeCode}</div>
                               </td>
-                              <td>
-                                <div style={{ color: '#17652f', fontWeight: '600', fontSize: '0.8rem' }}>{r.departmentName}</div>
-                                <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{r.designation}</div>
+                              <td style={{ padding: '12px 16px' }}>
+                                <div style={{ color: '#17652f', fontWeight: 500, fontSize: '0.8rem' }}>{r.departmentName}</div>
+                                <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>{r.designation}</div>
                               </td>
-                              <td style={{ textAlign: 'center' }}>
-                                <div style={{ display: 'inline-flex', gap: '4px', background: '#f1f5f9', padding: '3px', borderRadius: '6px' }}>
+                              <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                                <div style={{ display: 'inline-flex', gap: '4px', background: '#f3f4f6', padding: '3px', borderRadius: '6px' }}>
                                   <button
                                     type="button"
                                     onClick={() => handleRosterStatusChange(r.employeeId, 'present')}
                                     style={{
-                                      padding: '4px 10px',
+                                      padding: '4px 8px',
                                       borderRadius: '4px',
                                       border: 'none',
                                       background: status === 'present' ? '#17652f' : 'transparent',
-                                      color: status === 'present' ? '#ffffff' : '#334155',
+                                      color: status === 'present' ? '#ffffff' : '#374151',
                                       fontSize: '0.72rem',
-                                      fontWeight: '700',
+                                      fontWeight: 500,
                                       cursor: 'pointer'
                                     }}
                                   >
@@ -1958,13 +1743,13 @@ export const HRPage = () => {
                                     type="button"
                                     onClick={() => handleRosterStatusChange(r.employeeId, 'late')}
                                     style={{
-                                      padding: '4px 10px',
+                                      padding: '4px 8px',
                                       borderRadius: '4px',
                                       border: 'none',
-                                      background: status === 'late' ? '#475569' : 'transparent',
-                                      color: status === 'late' ? '#ffffff' : '#334155',
+                                      background: status === 'late' ? '#d97706' : 'transparent',
+                                      color: status === 'late' ? '#ffffff' : '#374151',
                                       fontSize: '0.72rem',
-                                      fontWeight: '700',
+                                      fontWeight: 500,
                                       cursor: 'pointer'
                                     }}
                                   >
@@ -1974,29 +1759,29 @@ export const HRPage = () => {
                                     type="button"
                                     onClick={() => handleRosterStatusChange(r.employeeId, 'half_day')}
                                     style={{
-                                      padding: '4px 10px',
+                                      padding: '4px 8px',
                                       borderRadius: '4px',
                                       border: 'none',
-                                      background: status === 'half_day' ? '#17652f' : 'transparent',
-                                      color: status === 'half_day' ? '#ffffff' : '#334155',
+                                      background: status === 'half_day' ? '#2563eb' : 'transparent',
+                                      color: status === 'half_day' ? '#ffffff' : '#374151',
                                       fontSize: '0.72rem',
-                                      fontWeight: '700',
+                                      fontWeight: 500,
                                       cursor: 'pointer'
                                     }}
                                   >
-                                    Half-Day
+                                    Half-day
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => handleRosterStatusChange(r.employeeId, 'absent')}
                                     style={{
-                                      padding: '4px 10px',
+                                      padding: '4px 8px',
                                       borderRadius: '4px',
                                       border: 'none',
-                                      background: status === 'absent' ? '#0f172a' : 'transparent',
-                                      color: status === 'absent' ? '#ffffff' : '#334155',
+                                      background: status === 'absent' ? '#dc2626' : 'transparent',
+                                      color: status === 'absent' ? '#ffffff' : '#374151',
                                       fontSize: '0.72rem',
-                                      fontWeight: '700',
+                                      fontWeight: 500,
                                       cursor: 'pointer'
                                     }}
                                   >
@@ -2006,13 +1791,13 @@ export const HRPage = () => {
                                     type="button"
                                     onClick={() => handleRosterStatusChange(r.employeeId, 'leave')}
                                     style={{
-                                      padding: '4px 10px',
+                                      padding: '4px 8px',
                                       borderRadius: '4px',
                                       border: 'none',
-                                      background: status === 'leave' ? '#0284c7' : 'transparent',
-                                      color: status === 'leave' ? '#ffffff' : '#334155',
+                                      background: status === 'leave' ? '#0891b2' : 'transparent',
+                                      color: status === 'leave' ? '#ffffff' : '#374151',
                                       fontSize: '0.72rem',
-                                      fontWeight: '700',
+                                      fontWeight: 500,
                                       cursor: 'pointer'
                                     }}
                                   >
@@ -2020,7 +1805,7 @@ export const HRPage = () => {
                                   </button>
                                 </div>
                               </td>
-                              <td>
+                              <td style={{ padding: '12px 16px' }}>
                                 <input
                                   type="number"
                                   step="0.5"
@@ -2033,17 +1818,17 @@ export const HRPage = () => {
                                       prev.map((item) => (item.employeeId === r.employeeId ? { ...item, workingHours: val } : item))
                                     );
                                   }}
-                                  style={{ width: '65px', padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '0.8rem', textAlign: 'center', fontWeight: '700' }}
+                                  style={{ width: '60px', padding: '4px 6px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '0.8rem', textAlign: 'center' }}
                                 />
-                                <span style={{ fontSize: '0.72rem', color: '#64748b', marginLeft: '4px' }}>hrs</span>
+                                <span style={{ fontSize: '0.72rem', color: '#6b7280', marginLeft: '4px' }}>hrs</span>
                               </td>
-                              <td>
+                              <td style={{ padding: '12px 16px' }}>
                                 <input
                                   type="text"
                                   value={r.remarks || ''}
                                   onChange={(e) => handleRosterRemarksChange(r.employeeId, e.target.value)}
-                                  placeholder="e.g. Regular site shift / tower B inspection"
-                                  style={{ width: '100%', padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '0.78rem' }}
+                                  placeholder="e.g. Regular site shift"
+                                  style={{ width: '100%', padding: '4px 8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '0.78rem' }}
                                 />
                               </td>
                             </tr>
@@ -2061,72 +1846,63 @@ export const HRPage = () => {
           {attendanceViewMode === 'history' && (
             <div>
               {allAttendanceLogs.length === 0 ? (
-                <div className="g-card" style={{ padding: '32px 20px', textAlign: 'center' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-                    <Clock size={24} />
+                <div className="g-card" style={{ padding: '32px 20px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#f0fdf4', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                    <Clock size={22} />
                   </div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
-                    No Attendance Logs Yet
+                  <div style={{ fontSize: '1rem', fontWeight: 600, color: '#111827', marginBottom: '4px' }}>
+                    No attendance logs yet
                   </div>
-                  <p style={{ color: '#4b5563', fontSize: '0.85rem', maxWidth: '500px', margin: '0 auto 16px' }}>
-                    Daily biometric and manual shift rosters automatically calculate monthly present days, half-days, and overtime for payroll generation.
+                  <p style={{ color: '#6b7280', fontSize: '0.84rem', maxWidth: '460px', margin: '0 auto 16px' }}>
+                    Daily shift rosters calculate present days, half-days, and overtime for payroll.
                   </p>
                   <button
                     type="button"
                     onClick={() => setAttendanceViewMode('roster')}
-                    style={{
-                      background: '#17652f',
-                      color: '#ffffff',
-                      padding: '8px 18px',
-                      borderRadius: '6px',
-                      fontSize: '0.82rem',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      border: 'none'
-                    }}
+                    className="btn-primary"
+                    style={{ padding: '8px 16px', fontSize: '0.82rem' }}
                   >
-                    Open Daily Shift Roster
+                    Open daily roster
                   </button>
                 </div>
               ) : (
-                <div className="g-card" style={{ overflow: 'hidden' }}>
+                <div className="g-card" style={{ overflow: 'hidden', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
                   <div style={{ overflowX: 'auto' }}>
-                    <table>
+                    <table style={{ width: '100%' }}>
                       <thead>
-                        <tr>
-                          <th>Date & Shift</th>
-                          <th>Staff Name & Code</th>
-                          <th>Department & Role</th>
-                          <th>Logged Hours</th>
-                          <th>Attendance Status</th>
-                          <th>Shift Remarks</th>
+                        <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                          <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Date</th>
+                          <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Employee</th>
+                          <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Department and role</th>
+                          <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Hours</th>
+                          <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Status</th>
+                          <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Remarks</th>
                         </tr>
                       </thead>
                       <tbody>
                         {allAttendanceLogs.map((att, idx) => (
-                          <tr key={att.id || att._id || idx}>
-                            <td>
-                              <div style={{ fontWeight: '700', color: '#111827' }}>
+                          <tr key={att.id || att._id || idx} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ fontWeight: 600, color: '#111827' }}>
                                 {new Date(att.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                               </div>
-                              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Standard Site Shift</div>
                             </td>
-                            <td>
-                              <div style={{ fontWeight: '700', color: '#111827' }}>{att.employeeName}</div>
-                              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Emp Code: {att.employeeCode}</div>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ fontWeight: 600, color: '#111827' }}>{att.employeeName}</div>
+                              <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Code: {att.employeeCode}</div>
                             </td>
-                            <td>
-                              <div style={{ color: '#17652f', fontWeight: '600', fontSize: '0.8rem' }}>{att.departmentName}</div>
-                              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{att.designation}</div>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ color: '#17652f', fontWeight: 500, fontSize: '0.8rem' }}>{att.departmentName}</div>
+                              <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>{att.designation}</div>
                             </td>
-                            <td>
-                              <div style={{ fontWeight: '700', color: '#111827' }}>{att.workingHours || 8.5} hrs</div>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ fontWeight: 600, color: '#111827' }}>{att.workingHours || 8.5} hrs</div>
                             </td>
-                            <td>
+                            <td style={{ padding: '12px 16px' }}>
                               <StatusBadge status={att.status || 'present'} />
                             </td>
-                            <td>
-                              <div style={{ color: '#4b5563', fontSize: '0.8rem' }}>{att.remarks || 'Standard site shift'}</div>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ color: '#6b7280', fontSize: '0.8rem' }}>{att.remarks || 'Standard shift'}</div>
                             </td>
                           </tr>
                         ))}
@@ -2146,16 +1922,11 @@ export const HRPage = () => {
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', margin: 0 }}>
-                  Centralized Staff Leave Administration & Quotas
-                </h3>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#334155', fontWeight: '800' }}>
-                  HR CENTRALIZED ONLY
-                </span>
-              </div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+                Leaves
+              </h3>
               <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: '4px 0 0 0' }}>
-                All staff leaves are recorded and tracked directly by HR Admin. Monitor live quotas (CL, SL, EL, LWP), active leaves today, and approval records without any employee self-portals.
+                Track leave quotas, view staff on leave today, and review leave applications.
               </p>
             </div>
 
@@ -2164,30 +1935,29 @@ export const HRPage = () => {
                 type="button"
                 onClick={() => setIsLeaveModalOpen(true)}
                 style={{
-                  background: '#475569',
+                  background: '#17652f',
                   color: '#ffffff',
                   padding: '8px 18px',
                   borderRadius: '6px',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
                   cursor: 'pointer',
-                  border: 'none',
-                  boxShadow: '0 2px 4px rgba(176, 96, 0, 0.25)'
+                  border: 'none'
                 }}
               >
-                <Plus size={15} /> Record Staff Leave
+                <Plus size={15} /> Apply leave
               </button>
             )}
           </div>
 
           {/* STAFF ON LEAVE TODAY BANNER */}
           <div style={{
-            background: staffOnLeaveTodayList.length > 0 ? '#f8fafc' : '#e8f2e5',
-            border: `1px solid ${staffOnLeaveTodayList.length > 0 ? '#cbd5e1' : '#e8f2e5'}`,
-            borderRadius: '10px',
+            background: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
             padding: '12px 16px',
             display: 'flex',
             justifyContent: 'space-between',
@@ -2197,11 +1967,11 @@ export const HRPage = () => {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                background: staffOnLeaveTodayList.length > 0 ? '#f1f5f9' : '#e8f2e5',
-                color: staffOnLeaveTodayList.length > 0 ? '#334155' : '#17652f',
+                width: '36px',
+                height: '36px',
+                borderRadius: '6px',
+                background: staffOnLeaveTodayList.length > 0 ? '#fef3c7' : '#f0fdf4',
+                color: staffOnLeaveTodayList.length > 0 ? '#92400e' : '#17652f',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -2210,15 +1980,15 @@ export const HRPage = () => {
                 <Calendar size={18} />
               </div>
               <div>
-                <strong style={{ fontSize: '0.9rem', color: staffOnLeaveTodayList.length > 0 ? '#334155' : '#17652f', display: 'block' }}>
+                <strong style={{ fontSize: '0.88rem', color: '#111827', display: 'block' }}>
                   {staffOnLeaveTodayList.length > 0
-                    ? `Staff Currently On Approved Leave Today (${staffOnLeaveTodayList.length} Absent)`
-                    : 'Full Workforce Available: 0 Staff On Leave Today'}
+                    ? `${staffOnLeaveTodayList.length} staff on leave today`
+                    : 'No staff on leave today'}
                 </strong>
-                <span style={{ fontSize: '0.74rem', color: staffOnLeaveTodayList.length > 0 ? '#334155' : '#17652f' }}>
+                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                   {staffOnLeaveTodayList.length > 0
-                    ? 'The following staff members have approved leave covering today\'s site/office shift:'
-                    : 'All on-roll employees are scheduled for duty with no approved absences.'}
+                    ? 'Staff members with approved leave for today:'
+                    : 'All staff are scheduled for duty.'}
                 </span>
               </div>
             </div>
@@ -2229,8 +1999,8 @@ export const HRPage = () => {
                   <div
                     key={lv.id || lv._id}
                     style={{
-                      background: '#ffffff',
-                      border: '1px solid #cbd5e1',
+                      background: '#f9fafb',
+                      border: '1px solid #e5e7eb',
                       borderRadius: '6px',
                       padding: '4px 10px',
                       fontSize: '0.75rem',
@@ -2239,11 +2009,11 @@ export const HRPage = () => {
                       gap: '6px'
                     }}
                   >
-                    <span style={{ fontWeight: '800', color: '#111827' }}>{lv.employeeName}</span>
-                    <span style={{ color: '#64748b' }}>•</span>
-                    <span style={{ color: '#17652f', fontWeight: '700', textTransform: 'capitalize' }}>{lv.leaveType}</span>
-                    <span style={{ color: '#64748b' }}>•</span>
-                    <span style={{ color: '#475569' }}>until {new Date(lv.toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
+                    <span style={{ fontWeight: '600', color: '#111827' }}>{lv.employeeName}</span>
+                    <span style={{ color: '#9ca3af' }}>•</span>
+                    <span style={{ color: '#17652f', fontWeight: '600', textTransform: 'capitalize' }}>{lv.leaveType}</span>
+                    <span style={{ color: '#9ca3af' }}>•</span>
+                    <span style={{ color: '#6b7280' }}>until {new Date(lv.toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
                   </div>
                 ))}
               </div>
@@ -2252,40 +2022,38 @@ export const HRPage = () => {
 
           {/* Sub-view Switcher Bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <div style={{ display: 'inline-flex', background: '#f1f5f9', padding: '4px', borderRadius: '8px', gap: '4px' }}>
+            <div style={{ display: 'inline-flex', background: '#f3f4f6', padding: '3px', borderRadius: '6px', gap: '4px' }}>
               <button
                 type="button"
                 onClick={() => setLeaveSubView('matrix')}
                 style={{
-                  padding: '7px 16px',
-                  borderRadius: '6px',
+                  padding: '6px 14px',
+                  borderRadius: '4px',
                   border: 'none',
                   background: leaveSubView === 'matrix' ? '#ffffff' : 'transparent',
-                  color: leaveSubView === 'matrix' ? '#0f172a' : '#64748b',
-                  fontWeight: leaveSubView === 'matrix' ? '800' : '600',
+                  color: leaveSubView === 'matrix' ? '#111827' : '#6b7280',
+                  fontWeight: leaveSubView === 'matrix' ? '600' : '500',
                   fontSize: '0.8rem',
-                  cursor: 'pointer',
-                  boxShadow: leaveSubView === 'matrix' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                  cursor: 'pointer'
                 }}
               >
-                Staff Leave Quota & Balances Matrix ({employees.length})
+                Quotas and balances ({employees.length})
               </button>
               <button
                 type="button"
                 onClick={() => setLeaveSubView('applications')}
                 style={{
-                  padding: '7px 16px',
-                  borderRadius: '6px',
+                  padding: '6px 14px',
+                  borderRadius: '4px',
                   border: 'none',
                   background: leaveSubView === 'applications' ? '#ffffff' : 'transparent',
-                  color: leaveSubView === 'applications' ? '#0f172a' : '#64748b',
-                  fontWeight: leaveSubView === 'applications' ? '800' : '600',
+                  color: leaveSubView === 'applications' ? '#111827' : '#6b7280',
+                  fontWeight: leaveSubView === 'applications' ? '600' : '500',
                   fontSize: '0.8rem',
-                  cursor: 'pointer',
-                  boxShadow: leaveSubView === 'applications' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                  cursor: 'pointer'
                 }}
               >
-                Leave Applications & Approvals Ledger ({allLeaveRequests.length})
+                Applications ledger ({allLeaveRequests.length})
               </button>
             </div>
 
@@ -2299,11 +2067,11 @@ export const HRPage = () => {
                     style={{
                       padding: '4px 10px',
                       borderRadius: '4px',
-                      border: '1px solid #cbd5e1',
+                      border: '1px solid #e5e7eb',
                       background: leaveStatusFilter === st ? '#17652f' : '#ffffff',
-                      color: leaveStatusFilter === st ? '#ffffff' : '#334151',
+                      color: leaveStatusFilter === st ? '#ffffff' : '#374151',
                       fontSize: '0.72rem',
-                      fontWeight: '700',
+                      fontWeight: '600',
                       textTransform: 'capitalize',
                       cursor: 'pointer'
                     }}
@@ -2323,21 +2091,21 @@ export const HRPage = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>Staff Member & Code</th>
+                        <th>Employee</th>
                         <th>Department</th>
-                        <th>Casual Leave (CL)</th>
-                        <th>Sick Leave (SL)</th>
-                        <th>Earned Leave (EL)</th>
-                        <th>LWP (Unpaid)</th>
+                        <th>Casual leave (CL)</th>
+                        <th>Sick leave (SL)</th>
+                        <th>Earned leave (EL)</th>
+                        <th>Unpaid leave (LWP)</th>
                         <th>Status</th>
-                        <th style={{ textAlign: 'right' }}>HR Actions</th>
+                        <th style={{ textAlign: 'right' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {employees.length === 0 ? (
                         <tr>
-                          <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
-                            No staff registered. Onboard staff to initialize annual leave quotas.
+                          <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#6b7280' }}>
+                            No employees found. Add staff to track leave balances.
                           </td>
                         </tr>
                       ) : (
@@ -2359,52 +2127,52 @@ export const HRPage = () => {
                           return (
                             <tr key={emp._id}>
                               <td>
-                                <div style={{ fontWeight: '700', color: '#111827' }}>
+                                <div style={{ fontWeight: '600', color: '#111827' }}>
                                   {emp.firstName} {emp.lastName}
                                 </div>
-                                <div style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'monospace' }}>
+                                <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
                                   {emp.employeeCode}
                                 </div>
                               </td>
                               <td>
-                                <div style={{ color: '#17652f', fontWeight: '600', fontSize: '0.8rem' }}>
+                                <div style={{ color: '#17652f', fontWeight: '500', fontSize: '0.8rem' }}>
                                   {emp.departmentName || 'Krishna Valley'}
                                 </div>
-                                <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                                <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>
                                   {emp.designation || 'Staff'}
                                 </div>
                               </td>
                               {/* Casual Leave */}
                               <td>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>{clLeft}</span>
-                                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>/ {clTotal} left</span>
+                                  <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#17652f' }}>{clLeft}</span>
+                                  <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>/ {clTotal} left</span>
                                 </div>
-                                <span style={{ fontSize: '0.66rem', color: '#64748b' }}>{clUsed} days used</span>
+                                <span style={{ fontSize: '0.66rem', color: '#6b7280' }}>{clUsed} used</span>
                               </td>
                               {/* Sick Leave */}
                               <td>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#334155' }}>{slLeft}</span>
-                                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>/ {slTotal} left</span>
+                                  <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#374151' }}>{slLeft}</span>
+                                  <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>/ {slTotal} left</span>
                                 </div>
-                                <span style={{ fontSize: '0.66rem', color: '#64748b' }}>{slUsed} days used</span>
+                                <span style={{ fontSize: '0.66rem', color: '#6b7280' }}>{slUsed} used</span>
                               </td>
                               {/* Earned Leave */}
                               <td>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>{elLeft}</span>
-                                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>/ {elTotal} left</span>
+                                  <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#17652f' }}>{elLeft}</span>
+                                  <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>/ {elTotal} left</span>
                                 </div>
-                                <span style={{ fontSize: '0.66rem', color: '#64748b' }}>{elUsed} days used</span>
+                                <span style={{ fontSize: '0.66rem', color: '#6b7280' }}>{elUsed} used</span>
                               </td>
                               {/* LWP */}
                               <td>
-                                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: lwpUsed > 0 ? '#0f172a' : '#64748b' }}>
-                                  {lwpUsed} <span style={{ fontSize: '0.72rem', fontWeight: '500' }}>days</span>
+                                <div style={{ fontSize: '0.9rem', fontWeight: '600', color: lwpUsed > 0 ? '#dc2626' : '#6b7280' }}>
+                                  {lwpUsed} <span style={{ fontSize: '0.72rem', fontWeight: 'normal' }}>days</span>
                                 </div>
                                 {lwpUsed > 0 && (
-                                  <span style={{ fontSize: '0.64rem', color: '#0f172a', fontWeight: '700' }}>Salary Deducted</span>
+                                  <span style={{ fontSize: '0.64rem', color: '#dc2626', fontWeight: '500' }}>Unpaid</span>
                                 )}
                               </td>
                               <td>
@@ -2419,32 +2187,32 @@ export const HRPage = () => {
                                     }}
                                     style={{
                                       padding: '4px 9px',
-                                      background: '#f1f5f9',
-                                      border: '1px solid #cbd5e1',
-                                      color: '#334155',
+                                      background: '#f9fafb',
+                                      border: '1px solid #e5e7eb',
+                                      color: '#374151',
                                       borderRadius: '4px',
                                       fontSize: '0.72rem',
-                                      fontWeight: '700',
+                                      fontWeight: '600',
                                       cursor: 'pointer'
                                     }}
                                   >
-                                    + Record Leave
+                                    Apply leave
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => handleOpenEdit(emp)}
                                     style={{
                                       padding: '4px 9px',
-                                      background: '#e8f2e5',
-                                      border: '1px solid #cde4c9',
+                                      background: '#f0fdf4',
+                                      border: '1px solid #bbf7d0',
                                       color: '#17652f',
                                       borderRadius: '4px',
                                       fontSize: '0.72rem',
-                                      fontWeight: '700',
+                                      fontWeight: '600',
                                       cursor: 'pointer'
                                     }}
                                   >
-                                    Adjust Quotas
+                                    Adjust quotas
                                   </button>
                                   <button
                                     type="button"
@@ -2454,16 +2222,16 @@ export const HRPage = () => {
                                     }}
                                     style={{
                                       padding: '4px 8px',
-                                      background: '#f1f5f9',
-                                      border: '1px solid #cbd5e1',
-                                      color: '#0f172a',
+                                      background: '#f9fafb',
+                                      border: '1px solid #e5e7eb',
+                                      color: '#374151',
                                       borderRadius: '4px',
                                       fontSize: '0.72rem',
-                                      fontWeight: '700',
+                                      fontWeight: '600',
                                       cursor: 'pointer'
                                     }}
                                   >
-                                    Dossier
+                                    Details
                                   </button>
                                 </div>
                               </td>
@@ -2483,30 +2251,30 @@ export const HRPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {filteredLeaveRequests.length === 0 ? (
                 <div className="g-card" style={{ padding: '36px 20px', textAlign: 'center' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f8fafc', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f3f4f6', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                     <Calendar size={24} />
                   </div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
-                    No Leave Records in Selected Filter
+                  <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#111827', marginBottom: '6px' }}>
+                    No leave applications found
                   </div>
-                  <p style={{ color: '#4b5563', fontSize: '0.85rem', maxWidth: '500px', margin: '0 auto 16px' }}>
-                    No leave entries match status "{leaveStatusFilter}". Record staff leaves directly as Central HR Admin.
+                  <p style={{ color: '#6b7280', fontSize: '0.85rem', maxWidth: '500px', margin: '0 auto 16px' }}>
+                    No leave entries match status "{leaveStatusFilter}".
                   </p>
                   <button
                     type="button"
                     onClick={() => setIsLeaveModalOpen(true)}
                     style={{
-                      background: '#475569',
+                      background: '#17652f',
                       color: '#ffffff',
                       padding: '8px 18px',
                       borderRadius: '6px',
                       fontSize: '0.82rem',
-                      fontWeight: '700',
+                      fontWeight: '600',
                       cursor: 'pointer',
                       border: 'none'
                     }}
                   >
-                    + Record Staff Leave
+                    Apply leave
                   </button>
                 </div>
               ) : (
@@ -2515,11 +2283,11 @@ export const HRPage = () => {
                     <table>
                       <thead>
                         <tr>
-                          <th>Staff Member</th>
+                          <th>Employee</th>
                           <th>Department</th>
-                          <th>Leave Category</th>
-                          <th>Duration & Days</th>
-                          <th>Reason for Absence</th>
+                          <th>Type</th>
+                          <th>Dates and days</th>
+                          <th>Reason</th>
                           <th>Status</th>
                           <th style={{ textAlign: 'right' }}>Actions</th>
                         </tr>
@@ -2528,31 +2296,31 @@ export const HRPage = () => {
                         {filteredLeaveRequests.map((lv, idx) => (
                           <tr key={lv.id || lv._id || idx}>
                             <td>
-                              <div style={{ fontWeight: '700', color: '#111827' }}>{lv.employeeName}</div>
-                              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Emp Code: {lv.employeeCode}</div>
+                              <div style={{ fontWeight: '600', color: '#111827' }}>{lv.employeeName}</div>
+                              <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Code: {lv.employeeCode}</div>
                             </td>
-                            <td style={{ color: '#374151', fontWeight: '600' }}>
+                            <td style={{ color: '#374151', fontWeight: '500' }}>
                               {lv.departmentName}
                             </td>
                             <td>
-                              <div style={{ fontWeight: '700', color: '#111827', textTransform: 'capitalize' }}>
-                                {lv.leaveType} Leave
+                              <div style={{ fontWeight: '600', color: '#111827', textTransform: 'capitalize' }}>
+                                {lv.leaveType}
                               </div>
-                              <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>
-                                {lv.leaveType === 'unpaid' ? 'Leave Without Pay (LWP)' : 'Paid Quota'}
+                              <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                                {lv.leaveType === 'unpaid' ? 'Unpaid' : 'Paid'}
                               </div>
                             </td>
                             <td>
-                              <div style={{ fontWeight: '600', color: '#111827' }}>
+                              <div style={{ fontWeight: '500', color: '#111827' }}>
                                 {new Date(lv.fromDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })} → {new Date(lv.toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                               </div>
-                              <div style={{ fontSize: '0.75rem', color: '#475569', fontWeight: '700' }}>
-                                {lv.numberOfDays} Day{lv.numberOfDays > 1 ? 's' : ''}
+                              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                                {lv.numberOfDays} day{lv.numberOfDays > 1 ? 's' : ''}
                               </div>
                             </td>
                             <td>
                               <div style={{ color: '#4b5563', fontSize: '0.8rem', maxWidth: '240px' }}>
-                                {lv.reason || 'Personal Reason'}
+                                {lv.reason || 'Personal'}
                               </div>
                             </td>
                             <td>
@@ -2567,12 +2335,12 @@ export const HRPage = () => {
                                       onClick={() => handleUpdateLeaveStatus(lv.employeeId, lv.id || lv._id, 'approved')}
                                       style={{
                                         padding: '4px 10px',
-                                        background: '#e8f2e5',
-                                        border: '1px solid #cde4c9',
+                                        background: '#f0fdf4',
+                                        border: '1px solid #bbf7d0',
                                         color: '#17652f',
                                         borderRadius: '4px',
                                         fontSize: '0.75rem',
-                                        fontWeight: '700',
+                                        fontWeight: '600',
                                         cursor: 'pointer'
                                       }}
                                     >
@@ -2583,12 +2351,12 @@ export const HRPage = () => {
                                       onClick={() => handleUpdateLeaveStatus(lv.employeeId, lv.id || lv._id, 'rejected')}
                                       style={{
                                         padding: '4px 10px',
-                                        background: '#f1f5f9',
-                                        border: '1px solid #cbd5e1',
-                                        color: '#0f172a',
+                                        background: '#fef2f2',
+                                        border: '1px solid #fecaca',
+                                        color: '#dc2626',
                                         borderRadius: '4px',
                                         fontSize: '0.75rem',
-                                        fontWeight: '700',
+                                        fontWeight: '600',
                                         cursor: 'pointer'
                                       }}
                                     >
@@ -2596,22 +2364,21 @@ export const HRPage = () => {
                                     </button>
                                   </>
                                 ) : (
-                                  <span style={{ color: lv.status === 'approved' ? '#17652f' : '#0f172a', fontWeight: '700', fontSize: '0.75rem' }}>
+                                  <span style={{ color: lv.status === 'approved' ? '#16a34a' : '#dc2626', fontWeight: '600', fontSize: '0.75rem' }}>
                                     {lv.status === 'approved' ? 'Approved' : 'Rejected'}
                                   </span>
                                 )}
                                 <button
                                   type="button"
-                                  title="Cancel / Delete Leave Application"
+                                  title="Cancel application"
                                   onClick={() => handleDeleteLeave(lv.employeeId, lv.id || lv._id)}
                                   style={{
                                     padding: '4px 6px',
-                                    background: '#f1f5f9',
-                                    border: '1px solid #e2e8f0',
-                                    color: '#0f172a',
+                                    background: '#f9fafb',
+                                    border: '1px solid #e5e7eb',
+                                    color: '#6b7280',
                                     borderRadius: '4px',
                                     fontSize: '0.75rem',
-                                    fontWeight: '700',
                                     cursor: 'pointer',
                                     display: 'inline-flex',
                                     alignItems: 'center'
@@ -2633,16 +2400,16 @@ export const HRPage = () => {
         </div>
       )}
 
-      {/* ================= TAB 4: PAYROLL ================= */}
+      {/* ================= TAB 5: PAYROLL ================= */}
       {activeTab === 'payroll' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
-                Monthly Staff Payroll Register ({filteredPayrollRecords.length})
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+                Payroll
               </h3>
-              <p style={{ fontSize: '0.76rem', color: '#6b7280', margin: 0 }}>
-                Gross calculations, statutory deductions (PF/ESI), net pay, official slips, and bank disbursements.
+              <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: '4px 0 0 0' }}>
+                Calculate monthly salaries, view statutory deductions, download payslips, and disburse payments.
               </p>
             </div>
             {canManagePayroll && (
@@ -2655,7 +2422,7 @@ export const HRPage = () => {
                   padding: '8px 16px',
                   borderRadius: '6px',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
@@ -2663,7 +2430,7 @@ export const HRPage = () => {
                   border: 'none'
                 }}
               >
-                <DollarSign size={15} /> Calculate & Process Payroll
+                <DollarSign size={15} /> Process payroll
               </button>
             )}
           </div>
@@ -2671,15 +2438,15 @@ export const HRPage = () => {
           {/* Payroll Filter Bar */}
           <div className="g-card" style={{ padding: '12px 16px', background: '#ffffff', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: '1 1 160px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                Filter Month
+              <label style={{ fontSize: '0.75rem', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                Month
               </label>
               <select
                 value={selectedPayrollMonth}
                 onChange={(e) => setSelectedPayrollMonth(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', borderColor: selectedPayrollMonth ? '#17652f' : '#dadce0', fontWeight: selectedPayrollMonth ? '700' : 'normal' }}
+                style={{ width: '100%', fontSize: '0.82rem', borderColor: selectedPayrollMonth ? '#17652f' : '#e5e7eb' }}
               >
-                <option value="">All Months</option>
+                <option value="">All months</option>
                 {monthNames.map((name, i) => (
                   <option key={i + 1} value={i + 1}>
                     {name}
@@ -2689,15 +2456,15 @@ export const HRPage = () => {
             </div>
 
             <div style={{ flex: '1 1 140px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                Filter Year
+              <label style={{ fontSize: '0.75rem', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                Year
               </label>
               <select
                 value={selectedPayrollYear}
                 onChange={(e) => setSelectedPayrollYear(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', borderColor: selectedPayrollYear ? '#17652f' : '#dadce0', fontWeight: selectedPayrollYear ? '700' : 'normal' }}
+                style={{ width: '100%', fontSize: '0.82rem', borderColor: selectedPayrollYear ? '#17652f' : '#e5e7eb' }}
               >
-                <option value="">All Years</option>
+                <option value="">All years</option>
                 {[2024, 2025, 2026, 2027].map((yr) => (
                   <option key={yr} value={yr}>
                     {yr}
@@ -2707,17 +2474,17 @@ export const HRPage = () => {
             </div>
 
             <div style={{ flex: '1 1 160px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>
-                Payment Status
+              <label style={{ fontSize: '0.75rem', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '4px' }}>
+                Status
               </label>
               <select
                 value={payrollStatusFilter}
                 onChange={(e) => setPayrollStatusFilter(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', borderColor: payrollStatusFilter ? '#17652f' : '#dadce0', fontWeight: payrollStatusFilter ? '700' : 'normal' }}
+                style={{ width: '100%', fontSize: '0.82rem', borderColor: payrollStatusFilter ? '#17652f' : '#e5e7eb' }}
               >
-                <option value="">All Statuses</option>
-                <option value="processed">Processed (Unpaid)</option>
-                <option value="paid">Paid (Disbursed)</option>
+                <option value="">All statuses</option>
+                <option value="processed">Processed (unpaid)</option>
+                <option value="paid">Paid (disbursed)</option>
               </select>
             </div>
 
@@ -2731,34 +2498,34 @@ export const HRPage = () => {
                 }}
                 style={{
                   padding: '7px 12px',
-                  background: '#f1f5f9',
-                  color: '#0f172a',
+                  background: '#f3f4f6',
+                  color: '#374151',
                   borderRadius: '6px',
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid #e5e7eb',
                   fontSize: '0.76rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
                   alignSelf: 'flex-end',
                   height: '34px'
                 }}
               >
-                Reset Filters
+                Reset filters
               </button>
             )}
           </div>
 
           {filteredPayrollRecords.length === 0 ? (
             <div className="g-card" style={{ padding: '32px 20px', textAlign: 'center' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f0fdf4', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <DollarSign size={24} />
               </div>
-              <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
-                No Payroll Records Found
+              <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#111827', marginBottom: '6px' }}>
+                No payroll records found
               </div>
-              <p style={{ color: '#4b5563', fontSize: '0.85rem', maxWidth: '500px', margin: '0 auto 16px' }}>
+              <p style={{ color: '#6b7280', fontSize: '0.85rem', maxWidth: '500px', margin: '0 auto 16px' }}>
                 {allPayrollRecords.length === 0
-                  ? 'Automated PF (12%), ESI, HRA allowances, and unpaid leave deductions with net disbursable calculations.'
-                  : 'No payroll records match your current month/year/status filter.'}
+                  ? 'Calculate monthly payroll to generate payslips and record salary disbursements.'
+                  : 'No records match your selected month, year, or status filter.'}
               </p>
               {allPayrollRecords.length === 0 && (
                 <button
@@ -2770,12 +2537,12 @@ export const HRPage = () => {
                     padding: '8px 18px',
                     borderRadius: '6px',
                     fontSize: '0.82rem',
-                    fontWeight: '700',
+                    fontWeight: '600',
                     cursor: 'pointer',
                     border: 'none'
                   }}
                 >
-                  Run Monthly Payroll Calculations
+                  Process payroll
                 </button>
               )}
             </div>
@@ -2785,45 +2552,44 @@ export const HRPage = () => {
                 <table>
                   <thead>
                     <tr>
-                      <th>Salary Month</th>
-                      <th>Staff Member</th>
-                      <th>Department & Role</th>
-                      <th>Basic Salary</th>
-                      <th>Allowances (HRA)</th>
+                      <th>Period</th>
+                      <th>Employee</th>
+                      <th>Department and role</th>
+                      <th>Basic salary</th>
+                      <th>Allowances</th>
                       <th>Deductions</th>
-                      <th>Net Disbursable</th>
+                      <th>Net pay</th>
                       <th>Status</th>
-                      <th style={{ textAlign: 'right' }}>Actions & Payslips</th>
+                      <th style={{ textAlign: 'right' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredPayrollRecords.map((pay, idx) => (
                       <tr key={pay.id || pay._id || idx}>
                         <td>
-                          <div style={{ fontWeight: '800', color: '#111827' }}>
+                          <div style={{ fontWeight: '600', color: '#111827' }}>
                             {monthNames[(pay.month || 1) - 1]} {pay.year}
                           </div>
-                          <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Payroll Period</div>
                         </td>
                         <td>
-                          <div style={{ fontWeight: '700', color: '#111827' }}>{pay.employeeName}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Emp Code: {pay.employeeCode}</div>
+                          <div style={{ fontWeight: '600', color: '#111827' }}>{pay.employeeName}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Code: {pay.employeeCode}</div>
                         </td>
                         <td>
-                          <div style={{ color: '#17652f', fontWeight: '600', fontSize: '0.78rem' }}>{pay.departmentName}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{pay.designation}</div>
+                          <div style={{ color: '#17652f', fontWeight: '500', fontSize: '0.78rem' }}>{pay.departmentName}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>{pay.designation}</div>
                         </td>
-                        <td style={{ fontWeight: '700', color: '#111827' }}>
+                        <td style={{ fontWeight: '600', color: '#111827' }}>
                           {formatINR(pay.basicSalary)}
                         </td>
-                        <td style={{ color: '#17652f', fontWeight: '700', fontSize: '0.78rem' }}>
+                        <td style={{ color: '#16a34a', fontWeight: '600', fontSize: '0.78rem' }}>
                           +{formatINR(pay.allowances)}
                         </td>
-                        <td style={{ color: '#0f172a', fontWeight: '700', fontSize: '0.78rem' }}>
+                        <td style={{ color: '#dc2626', fontWeight: '600', fontSize: '0.78rem' }}>
                           -{formatINR((pay.deductions || 0) + (pay.unpaidLeaveDeduction || 0))}
                         </td>
                         <td>
-                          <div style={{ color: '#111827', fontWeight: '800', fontSize: '0.9rem' }}>
+                          <div style={{ color: '#111827', fontWeight: '600', fontSize: '0.9rem' }}>
                             {formatINR(pay.netSalary)}
                           </div>
                         </td>
@@ -2835,19 +2601,19 @@ export const HRPage = () => {
                             <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                               <button
                                 type="button"
-                                title="Generate & Print Official Payslip"
+                                title="Print payslip"
                                 onClick={() => {
                                   setPayslipItemToPrint(pay);
                                   setIsPayslipModalOpen(true);
                                 }}
                                 style={{
                                   padding: '5px 9px',
-                                  background: '#e8f2e5',
-                                  border: '1px solid #cde4c9',
+                                  background: '#f0fdf4',
+                                  border: '1px solid #bbf7d0',
                                   color: '#17652f',
                                   borderRadius: '5px',
                                   fontSize: '0.75rem',
-                                  fontWeight: '700',
+                                  fontWeight: '600',
                                   cursor: 'pointer',
                                   display: 'inline-flex',
                                   alignItems: 'center',
@@ -2882,19 +2648,18 @@ export const HRPage = () => {
                                     border: 'none',
                                     borderRadius: '5px',
                                     fontSize: '0.75rem',
-                                    fontWeight: '700',
+                                    fontWeight: '600',
                                     cursor: 'pointer',
                                     whiteSpace: 'nowrap',
                                     display: 'inline-flex',
                                     alignItems: 'center',
-                                    gap: '4px',
-                                    boxShadow: '0 1px 2px rgba(0,0,0,0.08)'
+                                    gap: '4px'
                                   }}
                                 >
                                   <DollarSign size={13} /> Disburse
                                 </button>
                               ) : pay.status === 'paid' ? (
-                                <span style={{ color: '#17652f', fontWeight: '700', fontSize: '0.74rem' }}>
+                                <span style={{ color: '#16a34a', fontWeight: '600', fontSize: '0.74rem' }}>
                                   Disbursed
                                 </span>
                               ) : null}
@@ -2903,7 +2668,7 @@ export const HRPage = () => {
                             {pay.status === 'paid' && (
                               <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                                 {pay.paymentReference && (
-                                  <span style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                                  <span style={{ fontSize: '0.68rem', color: '#6b7280' }}>
                                     Ref: {pay.paymentReference}
                                   </span>
                                 )}
@@ -2920,12 +2685,11 @@ export const HRPage = () => {
                                       gap: '4px',
                                       fontSize: '0.68rem',
                                       color: '#17652f',
-                                      fontWeight: '700',
-                                      textDecoration: 'none',
-                                      backgroundColor: '#e8f2e5',
+                                      fontWeight: '600',
+                                      backgroundColor: '#f0fdf4',
                                       padding: '2px 6px',
                                       borderRadius: '4px',
-                                      border: '1px solid #cde4c9',
+                                      border: '1px solid #bbf7d0',
                                       cursor: 'pointer'
                                     }}
                                   >
@@ -3294,7 +3058,7 @@ export const HRPage = () => {
                     }}
                   >
                     <CheckCircle size={40} color="#17652f" />
-                    <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '1rem' }}>
+                    <div style={{ fontWeight: '600', color: '#0f172a', fontSize: '1rem' }}>
                       Payment Slip Recorded in System
                     </div>
                     <div style={{ fontSize: '0.8rem', color: '#64748b' }}>

@@ -76,11 +76,11 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ padding: '6px', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.2)', color: '#4a9e68' }}>
+            <div style={{ padding: '6px', borderRadius: '6px', background: 'rgba(23, 101, 47, 0.2)', color: '#4a9e68' }}>
               <ShieldCheck size={18} />
             </div>
             <div>
-              <h3 style={{ fontSize: '0.98rem', fontWeight: '800', margin: 0, color: '#f8fafc' }}>
+              <h3 style={{ fontSize: '0.98rem', fontWeight: '600', margin: 0, color: '#f8fafc' }}>
                 Official Staff Identity Card
               </h3>
               <p style={{ fontSize: '0.74rem', color: '#94a3b8', margin: 0 }}>
@@ -226,7 +226,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '2px' }}>
                     <Building2 size={16} color="#cbd5e1" />
-                    <span style={{ fontSize: '0.92rem', fontWeight: '900', letterSpacing: '0.8px', color: '#ffffff' }}>
+                    <span style={{ fontSize: '0.92rem', fontWeight: '700', letterSpacing: '0.8px', color: '#ffffff' }}>
                       KRISHNA VALLEY
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                     color: '#f1f5f9',
                     padding: '1px 8px',
                     borderRadius: '10px',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     letterSpacing: '0.5px'
                   }}>
                     STAFF IDENTITY CARD
@@ -281,7 +281,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontSize: '1.5rem',
-                          fontWeight: '800'
+                          fontWeight: '600'
                         }}
                       >
                         {getInitials(employee.firstName, employee.lastName)}
@@ -307,7 +307,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                   </div>
 
                   {/* Name & Title */}
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: '0 0 2px' }}>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', margin: '0 0 2px' }}>
                     {employee.firstName} {employee.lastName}
                   </h4>
                   <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#17652f' }}>
@@ -326,7 +326,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                       border: '1px solid #cde4c9',
                       borderRadius: '12px',
                       fontSize: '0.74rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       color: '#17652f',
                       letterSpacing: '0.5px'
                     }}
@@ -393,7 +393,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
 
                   <div style={{ textAlign: 'right' }}>
                     <span style={{ fontSize: '0.58rem', color: '#94a3b8', display: 'block', fontWeight: '600' }}>AUTHORIZED</span>
-                    <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#17652f', fontStyle: 'italic' }}>KV-HRD</span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: '600', color: '#17652f', fontStyle: 'italic' }}>KV-HRD</span>
                   </div>
                 </div>
               </div>
@@ -442,7 +442,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                     borderBottom: '2px solid #17652f'
                   }}
                 >
-                  <div style={{ fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.5px' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: '600', letterSpacing: '0.5px' }}>
                     KRISHNA VALLEY DEVELOPERS
                   </div>
                   <div style={{ fontSize: '0.62rem', color: '#94a3b8' }}>
@@ -453,7 +453,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                 <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {/* Terms List */}
                   <div style={{ fontSize: '0.64rem', color: '#334155', lineHeight: '1.4', background: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <div style={{ fontWeight: '800', color: '#0f172a', marginBottom: '4px' }}>Cardholder Guidelines:</div>
+                    <div style={{ fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>Cardholder Guidelines:</div>
                     <ul style={{ margin: 0, paddingLeft: '14px' }}>
                       <li>This credential is the property of Krishna Valley Real Estate Developers Pvt. Ltd.</li>
                       <li>Must be displayed visibly on all project construction sites and client offices.</li>
@@ -472,10 +472,10 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                       fontSize: '0.68rem'
                     }}
                   >
-                    <span style={{ fontSize: '0.6rem', color: '#0f172a', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '0.6rem', color: '#0f172a', fontWeight: '600', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <Phone size={10} /> IN EMERGENCY NOTIFY:
                     </span>
-                    <div style={{ fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+                    <div style={{ fontWeight: '600', color: '#0f172a', marginTop: '2px' }}>
                       {emergencyName} ({emergencyRel})
                     </div>
                     <div style={{ color: '#0f172a', fontWeight: '700' }}>
@@ -510,7 +510,7 @@ export const PrintableIDCardModal = ({ isOpen, onClose, employee }) => {
                         <div key={i} style={{ width: `${w}px`, height: '100%', backgroundColor: '#0f172a' }} />
                       ))}
                     </div>
-                    <span style={{ fontSize: '0.58rem', fontWeight: '800', color: '#475569', letterSpacing: '2px' }}>
+                    <span style={{ fontSize: '0.58rem', fontWeight: '600', color: '#475569', letterSpacing: '2px' }}>
                       *{empCode}*
                     </span>
                   </div>

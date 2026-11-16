@@ -131,7 +131,7 @@ export const UpcomingMeetingsWidget = ({ className = '', style = {} }) => {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.01em' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#0f172a', letterSpacing: '-0.01em' }}>
                 My Scheduled Meetings
               </h2>
               {todayMeetings.length > 0 ? (
@@ -141,7 +141,7 @@ export const UpcomingMeetingsWidget = ({ className = '', style = {} }) => {
                     color: '#0f766e',
                     border: '1px solid #99f6e4',
                     fontSize: '11px',
-                    fontWeight: 800,
+                    fontWeight: 600,
                     padding: '2px 9px',
                     borderRadius: '12px',
                     display: 'inline-flex',
@@ -331,7 +331,7 @@ export const UpcomingMeetingsWidget = ({ className = '', style = {} }) => {
                       <span
                         style={{
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           padding: '2px 6px',
                           borderRadius: '4px',
                           background: isToday ? '#ccfbf1' : '#f1f5f9',
@@ -361,7 +361,7 @@ export const UpcomingMeetingsWidget = ({ className = '', style = {} }) => {
                           background: '#fee2e2',
                           color: '#b91c1c',
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           padding: '2px 8px',
                           borderRadius: '10px',
                           display: 'inline-flex',
@@ -377,7 +377,7 @@ export const UpcomingMeetingsWidget = ({ className = '', style = {} }) => {
                           background: '#ccfbf1',
                           color: '#0f766e',
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           padding: '2px 8px',
                           borderRadius: '10px',
                         }}
@@ -392,7 +392,7 @@ export const UpcomingMeetingsWidget = ({ className = '', style = {} }) => {
                     style={{
                       margin: '0 0 6px 0',
                       fontSize: '14px',
-                      fontWeight: 800,
+                      fontWeight: 600,
                       color: '#0f172a',
                       lineHeight: 1.3,
                     }}

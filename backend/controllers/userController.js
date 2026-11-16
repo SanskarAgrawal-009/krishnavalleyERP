@@ -10,6 +10,20 @@ import { recordAuditEvent } from '../middleware/auditMiddleware.js';
 import { syncAllTaskforceMembersToUsers } from './taskforceTeamController.js';
 
 /**
+ * Helper to count remaining active Super Admin accounts
+ */
+const countActiveSuperAdmins = async () => {
+  const superAdminRoles = await Role.find({
+    roleCode: { $in: ['super_admin', 'superadmin'] },
+  });
+  const roleIds = superAdminRoles.map((r) => r._id);
+  return User.countDocuments({
+    roleId: { $in: roleIds },
+    status: 'active',
+  });
+};
+
+/**
  * @desc   Get all users with optional filters & search
  * @route  GET /api/users
  * @access Private (Admin / User Manager)
@@ -147,6 +161,9 @@ export const createUser = async (req, res) => {
       branchAccess,
       employeeId,
       agentProfile,
+      department,
+      taskforceHierarchyLevel,
+      isTaskforceMember,
       status = 'active',
     } = req.body;
 
@@ -159,14 +176,25 @@ export const createUser = async (req, res) => {
       if (agentRoleDoc) targetRoleId = agentRoleDoc._id;
     }
 
-    if (!firstName || !username || !email || !password || !targetRoleId) {
+    if (!firstName || !email || !targetRoleId) {
       return res.status(400).json({
         success: false,
-        message: 'First name, username, email, password, and role are required',
+        message: 'First name, email address, and role are required',
       });
     }
 
-    const cleanUsername = username.trim().toLowerCase();
+    // Auto-generate clean unique username if omitted
+    let cleanUsername = (username || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+    if (!cleanUsername) {
+      const baseName = `${firstName.toLowerCase().replace(/[^a-z0-9]/g, '')}${lastName ? `_${lastName.toLowerCase().replace(/[^a-z0-9]/g, '')}` : ''}` || 'user';
+      let candidate = baseName;
+      let counter = 1;
+      while (await User.findOne({ username: candidate })) {
+        candidate = `${baseName}_${counter++}`;
+      }
+      cleanUsername = candidate;
+    }
+
     const cleanEmail = email.trim().toLowerCase();
 
     // Check duplicate username or email
@@ -204,6 +232,11 @@ export const createUser = async (req, res) => {
       });
     }
 
+    // Auto-generate password if not provided
+    const plainPassword = (password && password.trim().length >= 6)
+      ? password.trim()
+      : `KV@${Math.floor(100000 + Math.random() * 900000)}`;
+
     // Process branch access
     let formattedBranchAccess = branchAccess || [];
     if (!formattedBranchAccess.length) {
@@ -213,8 +246,45 @@ export const createUser = async (req, res) => {
       }
     }
 
+    // Auto-generate unique Agent ID if role is Agent / Channel Partner
+    let finalAgentProfile = agentProfile;
+    if (role.roleCode === 'agent' || role.roleCode === 'channel_partner') {
+      let code = agentProfile?.agentCode?.trim()?.toUpperCase();
+      if (!code) {
+        let count = (await User.countDocuments({ 'agentProfile.agentCode': { $exists: true } })) + 101;
+        let candidate = `AGT-${count}`;
+        while (await User.findOne({ 'agentProfile.agentCode': candidate })) {
+          count++;
+          candidate = `AGT-${count}`;
+        }
+        code = candidate;
+      }
+      finalAgentProfile = {
+        agentCode: code,
+        agencyName: agentProfile?.agencyName?.trim() || `${firstName} Agency`,
+        tier: agentProfile?.tier || 'Standard',
+        city: agentProfile?.city?.trim() || '',
+        reraNumber: agentProfile?.reraNumber?.trim() || '',
+        commissionType: agentProfile?.commissionType || 'percentage',
+        commissionRate: Number(agentProfile?.commissionRate) || 2,
+        walletBalance: agentProfile?.walletBalance || 0,
+        totalEarned: agentProfile?.totalEarned || 0,
+        bankDetails: agentProfile?.bankDetails || {},
+      };
+    }
+
+    // Determine taskforce status
+    const isTaskforce =
+      Boolean(isTaskforceMember) ||
+      role.roleCode === 'taskforce_member' ||
+      role.roleCode === 'taskforce_manager' ||
+      role.roleCode === 'taskforce_lead' ||
+      role.roleCode === 'taskforce_supervisor' ||
+      (department && department.toLowerCase().includes('taskforce')) ||
+      Boolean(taskforceHierarchyLevel);
+
     const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
+    const passwordHash = await bcrypt.hash(plainPassword, salt);
 
     const newUser = await User.create({
       firstName: firstName.trim(),
@@ -223,11 +293,14 @@ export const createUser = async (req, res) => {
       email: cleanEmail,
       mobileNo: mobileNo ? mobileNo.trim() : '',
       passwordHash,
-      initialPassword: password.trim(),
+      initialPassword: plainPassword,
       roleId: targetRoleId,
       branchAccess: formattedBranchAccess,
       employeeId: employeeId || null,
-      agentProfile: agentProfile || undefined,
+      agentProfile: finalAgentProfile || undefined,
+      department: department ? department.trim() : (isTaskforce ? 'General Operations' : ''),
+      isTaskforceMember: isTaskforce,
+      taskforceHierarchyLevel: taskforceHierarchyLevel || (isTaskforce ? 'helper' : ''),
       status,
       createdBy: req.user?.id,
     });
@@ -301,7 +374,12 @@ export const updateUser = async (req, res) => {
       status,
       department,
       taskforceHierarchyLevel,
+      permissionOverrides,
     } = req.body;
+
+    const currentOperatorId = req.user?.id || req.user?._id;
+    const currentOperatorRole = (req.user?.role || '').toLowerCase();
+    const isOperatorSuperAdmin = currentOperatorRole === 'super_admin' || currentOperatorRole === 'superadmin';
 
     if (email && email.trim().toLowerCase() !== user.email) {
       const cleanEmail = email.trim().toLowerCase();
@@ -318,7 +396,21 @@ export const updateUser = async (req, res) => {
     if (firstName !== undefined && firstName !== null) user.firstName = firstName.trim();
     if (lastName !== undefined && lastName !== null) user.lastName = lastName.trim();
     if (mobileNo !== undefined && mobileNo !== null) user.mobileNo = mobileNo.trim();
-    if (status) user.status = status;
+    if (status) {
+      if (status !== 'active') {
+        const currentRole = await Role.findById(user.roleId);
+        if (currentRole && (currentRole.roleCode === 'super_admin' || currentRole.roleCode === 'superadmin')) {
+          const activeSuperAdmins = await countActiveSuperAdmins();
+          if (activeSuperAdmins <= 1 && user.status === 'active') {
+            return res.status(400).json({
+              success: false,
+              message: 'Safety Guard: Cannot deactivate or suspend the last active Super Admin',
+            });
+          }
+        }
+      }
+      user.status = status;
+    }
     if (employeeId !== undefined) user.employeeId = employeeId || null;
     if (department !== undefined && department !== null) user.department = department.trim();
     if (taskforceHierarchyLevel !== undefined && taskforceHierarchyLevel !== null) {
@@ -386,6 +478,36 @@ export const updateUser = async (req, res) => {
       }
 
       if (targetRole) {
+        // Prevent self-role elevation unless super_admin
+        if (user._id.toString() === currentOperatorId?.toString() && !isOperatorSuperAdmin) {
+          return res.status(403).json({
+            success: false,
+            message: 'Safety Guard: You cannot modify your own role or elevate your permissions',
+          });
+        }
+
+        // Prevent non-super-admin from granting super_admin role
+        if (targetRole.roleCode === 'super_admin' && !isOperatorSuperAdmin) {
+          return res.status(403).json({
+            success: false,
+            message: 'Safety Guard: Only Super Admins can assign the Super Admin role',
+          });
+        }
+
+        // Prevent demoting the last active Super Admin
+        const currentRoleDoc = await Role.findById(user.roleId);
+        if (currentRoleDoc && (currentRoleDoc.roleCode === 'super_admin' || currentRoleDoc.roleCode === 'superadmin')) {
+          if (targetRole.roleCode !== 'super_admin' && targetRole.roleCode !== 'superadmin') {
+            const activeSuperAdmins = await countActiveSuperAdmins();
+            if (activeSuperAdmins <= 1 && user.status === 'active') {
+              return res.status(400).json({
+                success: false,
+                message: 'Safety Guard: Cannot demote the last active Super Admin in the system',
+              });
+            }
+          }
+        }
+
         const oldRoleIdStr = user.roleId ? user.roleId.toString() : null;
         const newRoleIdStr = targetRole._id.toString();
 
@@ -428,6 +550,24 @@ export const updateUser = async (req, res) => {
           }
         }
       }
+    }
+
+    // Handle per-user permission overrides (allow or deny)
+    if (permissionOverrides !== undefined) {
+      if (user._id.toString() === currentOperatorId?.toString() && !isOperatorSuperAdmin) {
+        return res.status(403).json({
+          success: false,
+          message: 'Safety Guard: You cannot grant or modify permission overrides for your own account',
+        });
+      }
+      user.permissionOverrides = Array.isArray(permissionOverrides)
+        ? permissionOverrides
+            .filter((o) => o && o.permissionCode)
+            .map((o) => ({
+              permissionCode: String(o.permissionCode).trim().toLowerCase(),
+              grant: o.grant === 'deny' ? 'deny' : 'allow',
+            }))
+        : [];
     }
 
     user.updatedBy = req.user?.id;
@@ -495,6 +635,20 @@ export const updateUserStatus = async (req, res) => {
         success: false,
         message: 'User not found',
       });
+    }
+
+    // Safety Guard: Cannot deactivate or lock the last active Super Admin
+    if (status !== 'active') {
+      const currentRole = await Role.findById(user.roleId);
+      if (currentRole && (currentRole.roleCode === 'super_admin' || currentRole.roleCode === 'superadmin')) {
+        const activeSuperAdmins = await countActiveSuperAdmins();
+        if (activeSuperAdmins <= 1 && user.status === 'active') {
+          return res.status(400).json({
+            success: false,
+            message: 'Safety Guard: Cannot deactivate or suspend the last active Super Admin',
+          });
+        }
+      }
     }
 
     user.status = status;
@@ -585,6 +739,18 @@ export const deleteUser = async (req, res) => {
         success: false,
         message: 'Cannot delete primary system administrator account',
       });
+    }
+
+    // Safety Guard: Cannot delete the last active Super Admin
+    const currentRole = await Role.findById(user.roleId);
+    if (currentRole && (currentRole.roleCode === 'super_admin' || currentRole.roleCode === 'superadmin')) {
+      const activeSuperAdmins = await countActiveSuperAdmins();
+      if (activeSuperAdmins <= 1 && user.status === 'active') {
+        return res.status(400).json({
+          success: false,
+          message: 'Safety Guard: Cannot delete the last active Super Admin in the system',
+        });
+      }
     }
 
     // Remove from role's users array

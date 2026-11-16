@@ -121,7 +121,7 @@ export const NewGRNModal = ({ isOpen, onClose, onSubmit }) => {
 
         {/* Received Items Inspection Table */}
         <div className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#17652f' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: '600', color: '#17652f' }}>
             Goods Verification & Store Stock Auto-Credit ({receivedItems.length} items)
           </h4>
 
@@ -205,7 +205,7 @@ export const NewGRNModal = ({ isOpen, onClose, onSubmit }) => {
                 <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: '700', color: '#4b5563', marginBottom: '3px' }}>
                   Total Valuation
                 </label>
-                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f', paddingTop: '4px' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#17652f', paddingTop: '4px' }}>
                   ₹{Math.round(item.receivedQuantity * item.unitRate).toLocaleString('en-IN')}
                 </div>
               </div>

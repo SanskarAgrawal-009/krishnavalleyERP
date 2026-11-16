@@ -108,12 +108,12 @@ export const RentalDetailModal = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: '800'
+                fontWeight: '600'
               }}>
                 <User size={18} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#0f172a' }}>
                   {customerName}
                 </h3>
                 {customerMobile && (
@@ -143,7 +143,7 @@ export const RentalDetailModal = ({
             <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>
               Monthly Net Payout
             </div>
-            <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#17652f' }}>
+            <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#17652f' }}>
               {formatINR(netRent)} <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#64748b' }}>/ mo</span>
             </div>
             <span style={{ fontSize: '0.7rem', color: isTdsEnabled ? '#17652f' : '#64748b', fontWeight: '700' }}>
@@ -202,7 +202,7 @@ export const RentalDetailModal = ({
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '12px' }}>
               <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Gross Rent</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
                   {formatINR(grossRent)} / mo
                 </div>
                 <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Agreed rate</span>
@@ -210,7 +210,7 @@ export const RentalDetailModal = ({
 
               <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>TDS Withholding</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: isTdsEnabled ? '#0f172a' : '#17652f', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: '600', color: isTdsEnabled ? '#0f172a' : '#17652f', marginTop: '2px' }}>
                   {isTdsEnabled ? `- ${formatINR(tdsAmount)} (${tdsPercentage}%)` : '0% (Exempt)'}
                 </div>
                 <span style={{ fontSize: '0.7rem', color: isTdsEnabled ? '#0f172a' : '#17652f' }}>
@@ -220,7 +220,7 @@ export const RentalDetailModal = ({
 
               <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', textTransform: 'uppercase' }}>Net Monthly Transfer</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
                   {formatINR(netRent)} / mo
                 </div>
                 <span style={{ fontSize: '0.7rem', color: '#17652f' }}>NEFT to Bank</span>
@@ -228,7 +228,7 @@ export const RentalDetailModal = ({
 
               <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Payout Due Day</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#0f172a', marginTop: '2px' }}>
                   Day {rentBack.rentDueDay || 25}
                 </div>
                 <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Every month</span>
@@ -259,7 +259,7 @@ export const RentalDetailModal = ({
 
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>36-Month Assured Return Total</span>
-                <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#0f172a', marginTop: '2px' }}>
                   {formatINR(totalTenureAmount)}
                 </div>
               </div>
@@ -275,7 +275,7 @@ export const RentalDetailModal = ({
               flexDirection: 'column',
               gap: '10px'
             }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#0f172a' }}>
                 Guaranteed Rent-Back MOU / Agreement Document:
               </span>
 
@@ -338,7 +338,7 @@ export const RentalDetailModal = ({
         {activeTab === 'ledger' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ margin: 0, fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+              <h4 style={{ margin: 0, fontSize: '0.88rem', fontWeight: '600', color: '#0f172a' }}>
                 36-Month Payout Ledger (Monthly Developer Transfers)
               </h4>
               <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
@@ -378,7 +378,7 @@ export const RentalDetailModal = ({
                         <td style={{ padding: '8px 12px', textAlign: 'right', color: isTdsEnabled ? '#0f172a' : '#17652f', fontWeight: '600' }}>
                           {isTdsEnabled ? `- ${formatINR(tdsAmount)}` : '₹0'}
                         </td>
-                        <td style={{ padding: '8px 12px', textAlign: 'right', color: '#17652f', fontWeight: '800' }}>
+                        <td style={{ padding: '8px 12px', textAlign: 'right', color: '#17652f', fontWeight: '600' }}>
                           {formatINR(netRent)}
                         </td>
                         <td style={{ padding: '8px 12px', textAlign: 'center' }}>
@@ -386,7 +386,7 @@ export const RentalDetailModal = ({
                             padding: '2px 8px',
                             borderRadius: '4px',
                             fontSize: '0.68rem',
-                            fontWeight: '800',
+                            fontWeight: '600',
                             background: isPassed ? '#e8f2e5' : '#f8fafc',
                             color: isPassed ? '#17652f' : '#64748b',
                             border: isPassed ? '1px solid #cde4c9' : '1px solid #e2e8f0'

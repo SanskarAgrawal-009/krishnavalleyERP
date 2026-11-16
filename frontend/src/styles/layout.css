@@ -418,7 +418,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 14px rgba(26, 115, 232, 0.45);
+    box-shadow: 0 4px 14px rgba(23, 101, 47, 0.45);
     margin-top: -18px;
     border: 3px solid #ffffff;
     cursor: pointer;
@@ -427,7 +427,7 @@
 
   .mobile-action-fab:active {
     transform: scale(0.92);
-    background: #1557d0;
+    background: #145929;
   }
 
   /* Utility classes for mobile layout flow */

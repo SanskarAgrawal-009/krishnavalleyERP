@@ -254,7 +254,7 @@ export const SalesTeamManagementModal = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       fontSize: '0.84rem'
                     }}>
                       {index + 1}
@@ -274,7 +274,7 @@ export const SalesTeamManagementModal = ({
                             color: '#ffffff',
                             padding: '2px 8px',
                             borderRadius: '12px',
-                            fontWeight: '800',
+                            fontWeight: '600',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '3px'
@@ -293,21 +293,21 @@ export const SalesTeamManagementModal = ({
                   {/* Workload Stats */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '0.8rem' }}>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.95rem' }}>
+                      <div style={{ fontWeight: '600', color: '#0f172a', fontSize: '0.95rem' }}>
                         {member.metrics?.totalAssigned || member.leadsAssignedCount || 0}
                       </div>
                       <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Total Leads</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontWeight: '800', color: '#17652f', fontSize: '0.95rem' }}>
+                      <div style={{ fontWeight: '600', color: '#17652f', fontSize: '0.95rem' }}>
                         {member.metrics?.activeLeads || 0}
                       </div>
                       <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Active</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontWeight: '800', color: '#17652f', fontSize: '0.95rem' }}>
+                      <div style={{ fontWeight: '600', color: '#17652f', fontSize: '0.95rem' }}>
                         {member.metrics?.convertedLeads || 0}
                       </div>
                       <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Converted</div>

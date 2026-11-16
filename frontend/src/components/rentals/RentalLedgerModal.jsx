@@ -165,7 +165,7 @@ export const RentalLedgerModal = ({
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.1rem', fontWeight: '800' }}>
+              <span style={{ fontSize: '1.1rem', fontWeight: '600' }}>
                 Flat {rentalContract.flatId?.flatNumber || '001'} — {rentalContract.ownerId?.name || 'Owner'}
               </span>
               <span style={{ background: '#17652f', color: '#ffffff', fontSize: '0.7rem', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>
@@ -206,25 +206,25 @@ export const RentalLedgerModal = ({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px' }}>
             <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>TOTAL 36-MONTH COMMITMENT</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1e293b', marginTop: '2px' }}>{formatINR(totalTenureAmount)}</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1e293b', marginTop: '2px' }}>{formatINR(totalTenureAmount)}</div>
             <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{formatINR(monthlyRent)} / month × 36</span>
           </div>
 
           <div style={{ background: '#e8f2e5', border: '1px solid #e8f2e5', borderRadius: '8px', padding: '12px' }}>
             <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>TOTAL PAID TO OWNER</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>{formatINR(totalPaidToOwner)}</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>{formatINR(totalPaidToOwner)}</div>
             <span style={{ fontSize: '0.72rem', color: '#17652f' }}>{paidCount} of {tenureMonths} Months Disbursed</span>
           </div>
 
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '12px' }}>
             <div style={{ fontSize: '0.72rem', color: '#334155', fontWeight: '700' }}>REMAINING TENURE BALANCE</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#334155', marginTop: '2px' }}>{formatINR(remainingPayableToOwner)}</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#334155', marginTop: '2px' }}>{formatINR(remainingPayableToOwner)}</div>
             <span style={{ fontSize: '0.72rem', color: '#334155' }}>{tenureMonths - paidCount} Months Left to Pay</span>
           </div>
 
           <div style={{ background: '#e8f2e5', border: '1px solid #cde4c9', borderRadius: '8px', padding: '12px' }}>
             <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>DISBURSEMENT PROGRESS</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>{progressPct}%</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>{progressPct}%</div>
             <div style={{ width: '100%', height: '6px', background: '#e8f2e5', borderRadius: '3px', marginTop: '6px', overflow: 'hidden' }}>
               <div style={{ width: `${progressPct}%`, height: '100%', background: '#17652f' }} />
             </div>
@@ -282,7 +282,7 @@ export const RentalLedgerModal = ({
                       <td style={{ padding: '8px 10px', color: '#64748b' }}>
                         {formatINR(entry.tdsDeducted || 0)}
                       </td>
-                      <td style={{ padding: '8px 10px', fontWeight: '800', color: isPaid ? '#17652f' : '#94a3b8' }}>
+                      <td style={{ padding: '8px 10px', fontWeight: '600', color: isPaid ? '#17652f' : '#94a3b8' }}>
                         {formatINR(entry.netAmountPaid || (isPaid ? (entry.grossAmount || monthlyRent) : 0))}
                       </td>
                       <td style={{ padding: '8px 10px', fontWeight: '700', color: '#334155' }}>

@@ -310,7 +310,7 @@ export const FlatProfilePage = () => {
   }
 
   return (
-    <div className="flat-profile-page animate-fade-in" style={{ padding: '20px 28px 60px', maxWidth: '1500px', margin: '0 auto' }}>
+    <div className="flat-profile-page animate-fade-in" style={{ padding: '20px 24px 60px', maxWidth: '1500px', margin: '0 auto' }}>
       
       {/* 1. TOP BREADCRUMB & HEADER ACTIONS */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
@@ -324,22 +324,21 @@ export const FlatProfilePage = () => {
               padding: '6px 12px',
               borderRadius: '6px',
               background: '#ffffff',
-              border: '1px solid #dadce0',
+              border: '1px solid #e5e7eb',
               color: '#17652f',
               fontSize: '0.82rem',
               fontWeight: '600',
               cursor: 'pointer',
-              transition: 'all 0.15s ease'
             }}
           >
-            <ArrowLeft size={14} /> Back to Inventory
+            <ArrowLeft size={14} /> Back to inventory
           </button>
-          <span style={{ color: '#9aa0a6', fontSize: '0.85rem' }}>/</span>
-          <span style={{ color: '#5f6368', fontSize: '0.82rem', fontWeight: '500' }}>
+          <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>/</span>
+          <span style={{ color: '#4b5563', fontSize: '0.82rem', fontWeight: '500' }}>
             {flat.buildingName || 'Tower A'}
           </span>
-          <span style={{ color: '#9aa0a6', fontSize: '0.85rem' }}>/</span>
-          <span style={{ color: '#111827', fontSize: '0.82rem', fontWeight: '700' }}>
+          <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>/</span>
+          <span style={{ color: '#111827', fontSize: '0.82rem', fontWeight: '600' }}>
             Flat {flat.flatNumber}
           </span>
         </div>
@@ -352,17 +351,17 @@ export const FlatProfilePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '7px 14px',
+              padding: '7px 12px',
               borderRadius: '6px',
               background: '#ffffff',
-              border: '1px solid #dadce0',
-              color: '#3c4043',
+              border: '1px solid #e5e7eb',
+              color: '#374151',
               fontSize: '0.8rem',
               fontWeight: '600',
               cursor: 'pointer'
             }}
           >
-            <Pencil size={13} color="#17652f" /> Edit Specs
+            <Pencil size={13} style={{ color: '#17652f' }} /> Edit specs
           </button>
 
           <button
@@ -371,17 +370,17 @@ export const FlatProfilePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '7px 14px',
+              padding: '7px 12px',
               borderRadius: '6px',
               background: '#ffffff',
-              border: '1px solid #dadce0',
-              color: '#3c4043',
+              border: '1px solid #e5e7eb',
+              color: '#374151',
               fontSize: '0.8rem',
               fontWeight: '600',
               cursor: 'pointer'
             }}
           >
-            <FileText size={13} color="#17652f" /> Update MOU Terms
+            <FileText size={13} style={{ color: '#17652f' }} /> Edit MOU terms
           </button>
 
           <button
@@ -398,10 +397,9 @@ export const FlatProfilePage = () => {
               fontSize: '0.8rem',
               fontWeight: '600',
               cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(19, 115, 51, 0.2)'
             }}
           >
-            <DollarSign size={13} /> Record Payout
+            <DollarSign size={13} /> Record payout
           </button>
 
           <button
@@ -410,22 +408,22 @@ export const FlatProfilePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '7px 14px',
+              padding: '7px 12px',
               borderRadius: '6px',
               background: '#ffffff',
-              border: '1px solid #dadce0',
+              border: '1px solid #e5e7eb',
               color: '#17652f',
               fontSize: '0.8rem',
               fontWeight: '600',
               cursor: 'pointer'
             }}
           >
-            <Repeat size={13} /> Resale / Transfer
+            <Repeat size={13} /> Transfer ownership
           </button>
 
           <button
             onClick={() => window.print()}
-            title="Print Property Dossier"
+            title="Print dossier"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -433,10 +431,10 @@ export const FlatProfilePage = () => {
               padding: '7px 12px',
               borderRadius: '6px',
               background: '#ffffff',
-              border: '1px solid #dadce0',
-              color: '#5f6368',
+              border: '1px solid #e5e7eb',
+              color: '#4b5563',
               fontSize: '0.8rem',
-              fontWeight: '600',
+              fontWeight: '500',
               cursor: 'pointer'
             }}
           >
@@ -447,14 +445,12 @@ export const FlatProfilePage = () => {
 
       {/* 2. HERO PROPERTY COMMAND CARD */}
       <div
-        className="g-card"
         style={{
-          background: 'linear-gradient(135deg, #ffffff 0%, #faf9f6 100%)',
-          border: '1px solid #dadce0',
-          borderRadius: '12px',
-          padding: '24px 28px',
-          marginBottom: '20px',
-          boxShadow: '0 1px 3px rgba(60, 64, 67, 0.08)'
+          background: '#ffffff',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          marginBottom: '18px',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
@@ -462,33 +458,33 @@ export const FlatProfilePage = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <div
                 style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '10px',
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '8px',
                   background: '#e8f2e5',
                   color: '#17652f',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   fontSize: '1.25rem'
                 }}
               >
-                <Home size={24} />
+                <Home size={22} />
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#111827', margin: 0, letterSpacing: '-0.02em' }}>
+                  <h1 style={{ fontSize: '1.6rem', fontWeight: 600, color: '#111827', margin: 0 }}>
                     Flat {flat.flatNumber}
                   </h1>
                   <StatusBadge status={flat.status} />
                   {monthlyRent > 0 && (
                     <span
                       style={{
-                        fontSize: '0.72rem',
-                        fontWeight: '700',
-                        padding: '3px 9px',
-                        borderRadius: '12px',
+                        fontSize: '0.74rem',
+                        fontWeight: '600',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
                         background: '#e8f2e5',
                         color: '#17652f',
                         display: 'inline-flex',
@@ -496,27 +492,27 @@ export const FlatProfilePage = () => {
                         gap: '4px'
                       }}
                     >
-                      <CheckCircle2 size={12} /> MOU ACTIVE • {formatINR(monthlyRent)}/mo
+                      <CheckCircle2 size={12} /> MOU active • {formatINR(monthlyRent)}/mo
                     </span>
                   )}
                   {flat.salesDetails?.salesStatus === 'fully_paid' && (
                     <span
                       style={{
-                        fontSize: '0.72rem',
-                        fontWeight: '700',
-                        padding: '3px 9px',
-                        borderRadius: '12px',
+                        fontSize: '0.74rem',
+                        fontWeight: '600',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
                         background: '#e8f2e5',
                         color: '#17652f'
                       }}
                     >
-                      REGISTRY COMPLETED
+                      Registry completed
                     </span>
                   )}
                 </div>
-                <div style={{ display: 'flex', gap: '16px', fontSize: '0.85rem', color: '#5f6368', marginTop: '6px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '14px', fontSize: '0.84rem', color: '#6b7280', marginTop: '4px', flexWrap: 'wrap' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Building2 size={14} color="#17652f" /> {flat.buildingName || 'Tower A'}, {flat.projectName || 'Krishna Valley Resorts'}
+                    <Building2 size={13} color="#17652f" /> {flat.buildingName || 'Tower A'}, {flat.projectName || 'Krishna Valley Resorts'}
                   </span>
                   <span>•</span>
                   <span>{flat.floor === 0 ? 'Ground Floor' : `Floor ${flat.floor}`}</span>
@@ -532,44 +528,44 @@ export const FlatProfilePage = () => {
           {/* Quick Owner Summary Tile */}
           <div
             style={{
-              background: '#ffffff',
-              border: '1px solid #dadce0',
-              borderRadius: '10px',
-              padding: '12px 18px',
-              minWidth: '260px',
+              background: '#f9fafb',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              minWidth: '240px',
               display: 'flex',
               alignItems: 'center',
-              gap: '12px'
+              gap: '10px'
             }}
           >
             <div
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '8px',
+                width: '36px',
+                height: '36px',
+                borderRadius: '6px',
                 background: '#e8f2e5',
                 color: '#17652f',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: '700'
+                fontWeight: '600'
               }}
             >
-              <User size={20} />
+              <User size={18} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.7rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Current Owner</div>
-              <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '600' }}>Current owner</div>
+              <div style={{ fontSize: '0.9rem', fontWeight: '600', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {owner.name || 'Unassigned / Available'}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#17652f', fontWeight: '600' }}>
+              <div style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '500' }}>
                 {owner.mobileNo || 'Contact on file'}
               </div>
             </div>
             {owner.name && (
               <button
                 onClick={() => navigate(`/customers?tab=directory&search=${encodeURIComponent(owner.name)}`)}
-                title="View Owner Customer Dossier"
+                title="View customer profile"
                 style={{
                   background: 'none',
                   border: 'none',
@@ -578,7 +574,7 @@ export const FlatProfilePage = () => {
                   padding: '4px'
                 }}
               >
-                <ExternalLink size={15} />
+                <ExternalLink size={14} />
               </button>
             )}
           </div>
@@ -589,22 +585,22 @@ export const FlatProfilePage = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '14px',
-          marginBottom: '22px'
+          marginBottom: '20px'
         }}
       >
         {/* Metric 1: Monthly Assured Rent */}
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
+        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Monthly Assured Rent</span>
+            <span style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '600' }}>Monthly rent</span>
             <div style={{ padding: '5px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <DollarSign size={15} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
             {formatINR(monthlyRent)}
-            <span style={{ fontSize: '0.75rem', color: '#5f6368', fontWeight: '600' }}> /mo</span>
+            <span style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '500' }}> /mo</span>
           </div>
           <div style={{ fontSize: '0.74rem', color: '#4b5563', marginTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
             <span>Net (after TDS): <strong>{formatINR(netMonthlyRent)}</strong></span>
@@ -613,22 +609,22 @@ export const FlatProfilePage = () => {
         </div>
 
         {/* Metric 2: Tenure Progress */}
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
+        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Tenure Progress</span>
+            <span style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '600' }}>Tenure progress</span>
             <div style={{ padding: '5px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <Clock size={15} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
             {paidMonthsCount} / {tenureMonths}
-            <span style={{ fontSize: '0.75rem', color: '#5f6368', fontWeight: '600' }}> Months</span>
+            <span style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '500' }}> Months</span>
           </div>
           <div style={{ marginTop: '6px' }}>
-            <div style={{ width: '100%', height: '6px', background: '#e0e2ec', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: '6px', background: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
               <div style={{ width: `${progressPct}%`, height: '100%', background: '#17652f', borderRadius: '3px', transition: 'width 0.4s ease' }} />
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#5f6368', display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
               <span>{outstandingMonthsCount} mos remaining</span>
               <strong>{progressPct}%</strong>
             </div>
@@ -636,14 +632,14 @@ export const FlatProfilePage = () => {
         </div>
 
         {/* Metric 3: Financial Commitment */}
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
+        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Total Assured Amount</span>
-            <div style={{ padding: '5px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
+            <span style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '600' }}>Total commitment</span>
+            <div style={{ padding: '5px', borderRadius: '6px', background: '#f9fafb', color: '#4b5563' }}>
               <Receipt size={15} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
             {formatINR(totalCommitment)}
           </div>
           <div style={{ fontSize: '0.74rem', color: '#4b5563', marginTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
@@ -653,17 +649,17 @@ export const FlatProfilePage = () => {
         </div>
 
         {/* Metric 4: Lock-In & Possession Target */}
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #dadce0', borderRadius: '10px', padding: '16px' }}>
+        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.74rem', color: '#5f6368', fontWeight: '700', textTransform: 'uppercase' }}>Possession & Lock-in</span>
+            <span style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '600' }}>Possession and lock-in</span>
             <div style={{ padding: '5px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <Key size={15} />
             </div>
           </div>
-          <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
             {lockIn.isLocked ? `${lockIn.remainingMonths} Months` : 'Eligible'}
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#5f6368', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '4px' }}>
             Target: <strong>{formatDate(lockIn.lockInEndDate || rental.endDate)}</strong>
           </div>
         </div>
@@ -674,20 +670,20 @@ export const FlatProfilePage = () => {
         style={{
           display: 'flex',
           gap: '6px',
-          background: '#f1f3f4',
+          background: '#f9fafb',
           padding: '4px',
           borderRadius: '8px',
           marginBottom: '20px',
           overflowX: 'auto',
-          border: '1px solid #dadce0'
+          border: '1px solid #e5e7eb'
         }}
       >
         {[
-          { id: 'payouts', label: '1. Owner Payouts & MOU Passbook', icon: Receipt },
-          { id: 'owner', label: '2. Owner KYC & Resale History', icon: User },
-          { id: 'specs', label: '3. Property Specs & Blueprints', icon: Layers },
-          { id: 'sales', label: '4. Sales Allotment & Agreements', icon: DollarSign },
-          { id: 'maintenance', label: '5. Maintenance & CAM', icon: ShieldCheck }
+          { id: 'payouts', label: 'Payouts and passbook', icon: Receipt },
+          { id: 'owner', label: 'Owner details', icon: User },
+          { id: 'specs', label: 'Property specs', icon: Layers },
+          { id: 'sales', label: 'Sales allotment', icon: DollarSign },
+          { id: 'maintenance', label: 'Maintenance', icon: ShieldCheck }
         ].map((tab) => {
           const Icon = tab.icon;
           const isSelected = activeTab === tab.id;
@@ -698,13 +694,13 @@ export const FlatProfilePage = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '9px 18px',
+                gap: '6px',
+                padding: '8px 16px',
                 borderRadius: '6px',
                 background: isSelected ? '#17652f' : 'transparent',
-                color: isSelected ? '#ffffff' : '#3c4043',
+                color: isSelected ? '#ffffff' : '#4b5563',
                 fontSize: '0.82rem',
-                fontWeight: isSelected ? '700' : '600',
+                fontWeight: isSelected ? '600' : '500',
                 border: 'none',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',

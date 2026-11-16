@@ -260,7 +260,7 @@ export const SoftphoneModal = ({
               <PhoneCall size={18} />
             </div>
             <div>
-              <div style={{ fontSize: '1rem', fontWeight: '800' }}>Krishna Valley Cloud Softphone</div>
+              <div style={{ fontSize: '1rem', fontWeight: '600' }}>Krishna Valley Cloud Softphone</div>
               <div style={{ fontSize: '0.72rem', opacity: 0.85 }}>Live Calling API & CRM Telephony Bridge</div>
             </div>
           </div>
@@ -276,7 +276,7 @@ export const SoftphoneModal = ({
         <div style={{ padding: '16px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#0f172a' }}>
                 {recipientName}
               </h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px', fontSize: '0.8rem', color: '#475569' }}>
@@ -384,7 +384,7 @@ export const SoftphoneModal = ({
               }}>
                 <RefreshCw size={28} className="spin" />
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: '800', color: '#334155' }}>
+              <div style={{ fontSize: '1rem', fontWeight: '600', color: '#334155' }}>
                 Connecting &amp; Ringing...
               </div>
               <div style={{ fontSize: '0.75rem', color: '#334155', marginTop: '4px' }}>
@@ -397,7 +397,7 @@ export const SoftphoneModal = ({
             <div style={{ textAlign: 'center' }}>
               <div style={{
                 fontSize: '2rem',
-                fontWeight: '900',
+                fontWeight: '700',
                 color: '#17652f',
                 fontFamily: 'monospace',
                 letterSpacing: '1px'
@@ -471,7 +471,7 @@ export const SoftphoneModal = ({
               }}>
                 <PhoneOff size={24} />
               </div>
-              <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+              <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                 Call Ended • Duration: {formatTimer(callDuration)}
               </div>
               <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>
@@ -492,7 +492,7 @@ export const SoftphoneModal = ({
                 background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                 color: '#ffffff',
                 border: 'none',
-                fontWeight: '800',
+                fontWeight: '600',
                 fontSize: '0.86rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -604,7 +604,7 @@ export const SoftphoneModal = ({
                 background: 'linear-gradient(135deg, #17652f 0%, #0284c7 100%)',
                 color: '#ffffff',
                 fontSize: '0.8rem',
-                fontWeight: '800',
+                fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',

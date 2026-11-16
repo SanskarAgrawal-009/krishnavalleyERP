@@ -16,12 +16,12 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'inventory', label: 'Unit Matrix & Inventory', icon: Building2 },
+    { id: 'inventory', label: 'Sites & Inventory', icon: Building2 },
     { id: 'leads', label: 'Leads & CRM', icon: Users },
-    { id: 'bookings', label: 'Bookings & Sales', icon: BookCheck },
+    { id: 'bookings', label: 'Sales & Allotments', icon: BookCheck },
     { id: 'finance', label: 'Milestone Billing & Dues', icon: CreditCard },
-    { id: 'customers', label: 'Buyer Profiles & KYC', icon: UserCheck },
-    { id: 'settings', label: 'ERP Settings & Roles', icon: Settings }
+    { id: 'customers', label: 'Customer Accounts', icon: UserCheck },
+    { id: 'settings', label: 'System Settings', icon: Settings }
   ];
 
   return (

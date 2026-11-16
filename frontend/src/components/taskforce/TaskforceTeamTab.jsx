@@ -337,7 +337,7 @@ export const TaskforceTeamTab = ({
                 <Building2 size={20} />
               </div>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                   Departments &amp; Hierarchy
                 </h2>
                 <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
@@ -486,7 +486,7 @@ export const TaskforceTeamTab = ({
                 <div style={{ fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
                   {item.label}
                 </div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: item.color, marginTop: '2px' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: '600', color: item.color, marginTop: '2px' }}>
                   {item.value}
                 </div>
               </div>
@@ -529,7 +529,7 @@ export const TaskforceTeamTab = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Layers size={17} color="#059669" />
-            <h3 style={{ margin: 0, fontSize: '0.94rem', fontWeight: '800', color: '#0f172a' }}>
+            <h3 style={{ margin: 0, fontSize: '0.94rem', fontWeight: '600', color: '#0f172a' }}>
               Select Department to View &amp; Manage Hierarchy
             </h3>
           </div>
@@ -581,7 +581,7 @@ export const TaskforceTeamTab = ({
                 >
                   <i className="fa-solid fa-sitemap" />
                 </div>
-                <span style={{ fontWeight: '800', fontSize: '0.84rem', color: selectedDept === 'all' ? '#047857' : '#1e293b' }}>
+                <span style={{ fontWeight: '600', fontSize: '0.84rem', color: selectedDept === 'all' ? '#047857' : '#1e293b' }}>
                   All Departments
                 </span>
               </div>
@@ -642,7 +642,7 @@ export const TaskforceTeamTab = ({
                     </div>
                     <span
                       style={{
-                        fontWeight: '800',
+                        fontWeight: '600',
                         fontSize: '0.82rem',
                         color: isSelected ? '#0f172a' : '#334155',
                         whiteSpace: 'nowrap',
@@ -661,7 +661,7 @@ export const TaskforceTeamTab = ({
                       <span
                         style={{
                           fontSize: '0.62rem',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           padding: '1px 5px',
                           borderRadius: '4px',
                           background: isSelected ? '#ffffff' : '#f1f5f9',
@@ -752,14 +752,14 @@ export const TaskforceTeamTab = ({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '600', color: '#0f172a' }}>
                   {currentDeptObj.name}
                 </h3>
                 {currentDeptObj.code && (
                   <span
                     style={{
                       fontSize: '0.72rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       padding: '2px 8px',
                       borderRadius: '6px',
                       background: getDepartmentTheme(currentDeptObj.name).bg,
@@ -904,7 +904,7 @@ export const TaskforceTeamTab = ({
           }}
         >
           <Building2 size={40} color="#94a3b8" style={{ margin: '0 auto 12px' }} />
-          <div style={{ fontWeight: '800', fontSize: '1rem', color: '#1e293b' }}>
+          <div style={{ fontWeight: '600', fontSize: '1rem', color: '#1e293b' }}>
             No team members found in {selectedDept === 'all' ? 'this filter' : `department "${selectedDept}"`}
           </div>
           <p style={{ margin: '6px 0 16px', fontSize: '0.8rem' }}>
@@ -943,13 +943,13 @@ export const TaskforceTeamTab = ({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <i className="fa-solid fa-user-tie" style={{ fontSize: '18px', color: '#0891b2' }} />
-                  <span style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0f172a' }}>
+                  <span style={{ fontSize: '0.94rem', fontWeight: '600', color: '#0f172a' }}>
                     Department Heads
                   </span>
                   <span
                     style={{
                       fontSize: '0.68rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       padding: '2px 8px',
                       borderRadius: '12px',
                       background: '#ecfeff',
@@ -1018,13 +1018,13 @@ export const TaskforceTeamTab = ({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <i className="fa-solid fa-user-gear" style={{ fontSize: '18px', color: '#17652f' }} />
-                  <span style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0f172a' }}>
+                  <span style={{ fontSize: '0.94rem', fontWeight: '600', color: '#0f172a' }}>
                     Field &amp; Site Supervisors
                   </span>
                   <span
                     style={{
                       fontSize: '0.68rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       padding: '2px 8px',
                       borderRadius: '12px',
                       background: '#e8f2e5',
@@ -1093,13 +1093,13 @@ export const TaskforceTeamTab = ({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <i className="fa-solid fa-person-digging" style={{ fontSize: '18px', color: '#17652f' }} />
-                  <span style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0f172a' }}>
+                  <span style={{ fontSize: '0.94rem', fontWeight: '600', color: '#0f172a' }}>
                     Field Helpers &amp; Technicians
                   </span>
                   <span
                     style={{
                       fontSize: '0.68rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       padding: '2px 8px',
                       borderRadius: '12px',
                       background: '#e8f2e5',
@@ -1198,7 +1198,7 @@ export const TaskforceTeamTab = ({
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <FolderPlus size={20} color="#059669" />
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '600', color: '#0f172a' }}>
                   Add Operational Department
                 </h3>
               </div>
@@ -1433,7 +1433,7 @@ export const TaskforceTeamTab = ({
                 <AlertTriangle size={22} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '600', color: '#0f172a' }}>
                   Delete Department "{deptToDelete.name}"?
                 </h3>
                 <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
@@ -1600,7 +1600,7 @@ export const TaskforceTeamTab = ({
             </div>
 
             <div>
-              <div style={{ fontWeight: '800', fontSize: '0.94rem', color: '#0f172a' }}>
+              <div style={{ fontWeight: '600', fontSize: '0.94rem', color: '#0f172a' }}>
                 {m.name}
               </div>
               <div style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
@@ -1615,7 +1615,7 @@ export const TaskforceTeamTab = ({
               padding: '3px 8px',
               borderRadius: '6px',
               fontSize: '0.68rem',
-              fontWeight: '800',
+              fontWeight: '600',
               textTransform: 'uppercase',
               background: tierBadgeBg,
               color: tierBadgeColor,
@@ -1668,7 +1668,7 @@ export const TaskforceTeamTab = ({
             <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
               <i className="fa-solid fa-list-check" style={{ fontSize: '9px' }} /> Active
             </div>
-            <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+            <div style={{ fontSize: '1rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
               {m.stats?.activeTasks || 0}
             </div>
           </div>
@@ -1676,7 +1676,7 @@ export const TaskforceTeamTab = ({
             <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
               <i className="fa-solid fa-circle-check" style={{ fontSize: '9px' }} /> Completed
             </div>
-            <div style={{ fontSize: '1rem', fontWeight: '800', color: '#16a34a', marginTop: '2px' }}>
+            <div style={{ fontSize: '1rem', fontWeight: '600', color: '#16a34a', marginTop: '2px' }}>
               {m.stats?.completedTasks || 0}
             </div>
           </div>
@@ -1684,7 +1684,7 @@ export const TaskforceTeamTab = ({
             <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
               <i className="fa-solid fa-camera" style={{ fontSize: '9px' }} /> Proofs
             </div>
-            <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+            <div style={{ fontSize: '1rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
               {m.stats?.uploadCount || 0}
             </div>
           </div>

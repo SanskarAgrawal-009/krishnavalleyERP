@@ -101,11 +101,11 @@ export const EmployeeDetailModal = ({
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827' }}>
+              <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827' }}>
                 {employee.firstName} {employee.lastName}
               </span>
               <StatusBadge status={employee.employmentStatus} />
-              <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: 'rgba(59, 130, 246, 0.15)', color: '#4a9e68', fontWeight: '700' }}>
+              <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '4px', background: 'rgba(23, 101, 47, 0.15)', color: '#4a9e68', fontWeight: '700' }}>
                 {employee.employmentType.replace('_', ' ').toUpperCase()}
               </span>
             </div>
@@ -121,7 +121,7 @@ export const EmployeeDetailModal = ({
           <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
             <div>
               <span style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '700' }}>EMPLOYEE CODE</span>
-              <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#17652f' }}>
+              <div style={{ fontSize: '0.92rem', fontWeight: '600', color: '#17652f' }}>
                 {employee.employeeCode}
               </div>
             </div>
@@ -197,7 +197,7 @@ export const EmployeeDetailModal = ({
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
               <div>
-                <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+                <h4 style={{ fontSize: '0.92rem', fontWeight: '600', color: '#111827', margin: 0 }}>
                   Official Krishna Valley Staff Identity Badge
                 </h4>
                 <p style={{ fontSize: '0.74rem', color: '#6b7280', margin: '2px 0 0' }}>
@@ -244,11 +244,11 @@ export const EmployeeDetailModal = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #475569', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Building2 size={16} color="#17652f" />
-                    <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#17652f', letterSpacing: '0.5px' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#17652f', letterSpacing: '0.5px' }}>
                       KRISHNA VALLEY
                     </span>
                   </div>
-                  <span style={{ fontSize: '0.62rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 6px', borderRadius: '4px', fontWeight: '800' }}>
+                  <span style={{ fontSize: '0.62rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 6px', borderRadius: '4px', fontWeight: '600' }}>
                     AUTHORIZED ID
                   </span>
                 </div>
@@ -265,7 +265,7 @@ export const EmployeeDetailModal = ({
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontSize: '1.2rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       flexShrink: 0
                     }}
                   >
@@ -273,7 +273,7 @@ export const EmployeeDetailModal = ({
                   </div>
 
                   <div>
-                    <h5 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: '0 0 2px' }}>
+                    <h5 style={{ fontSize: '0.98rem', fontWeight: '600', color: '#0f172a', margin: '0 0 2px' }}>
                       {employee.firstName} {employee.lastName}
                     </h5>
                     <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#17652f' }}>
@@ -317,7 +317,7 @@ export const EmployeeDetailModal = ({
                   gap: '10px'
                 }}
               >
-                <h5 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <h5 style={{ fontSize: '0.82rem', fontWeight: '600', color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Government Regulatory Credentials
                 </h5>
 
@@ -378,7 +378,7 @@ export const EmployeeDetailModal = ({
         {/* ================= TAB 1: ATTENDANCE LOG ================= */}
         {activeTab === 'attendance' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>Daily Attendance Log</h4>
+            <h4 style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827' }}>Daily Attendance Log</h4>
 
             {attendanceList.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '24px', color: '#4b5563', fontSize: '0.78rem' }}>
@@ -419,7 +419,7 @@ export const EmployeeDetailModal = ({
         {activeTab === 'leaves' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827', margin: 0 }}>
                 Leave Quota Balances & History
               </h4>
             </div>
@@ -428,7 +428,7 @@ export const EmployeeDetailModal = ({
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
               <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#e8f2e5', border: '1px solid #cde4c9' }}>
                 <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', display: 'block' }}>CASUAL LEAVES (CL)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
                   {Math.max(0, (employee.leaveBalance?.casualLeave?.total || 12) - (employee.leaveBalance?.casualLeave?.used || 0))}
                   <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> / {employee.leaveBalance?.casualLeave?.total || 12} left</span>
                 </div>
@@ -437,7 +437,7 @@ export const EmployeeDetailModal = ({
 
               <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #cbd5e1' }}>
                 <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#334155', display: 'block' }}>SICK LEAVES (SL)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#334155', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#334155', marginTop: '2px' }}>
                   {Math.max(0, (employee.leaveBalance?.sickLeave?.total || 10) - (employee.leaveBalance?.sickLeave?.used || 0))}
                   <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> / {employee.leaveBalance?.sickLeave?.total || 10} left</span>
                 </div>
@@ -446,7 +446,7 @@ export const EmployeeDetailModal = ({
 
               <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#e8f2e5', border: '1px solid #cde4c9' }}>
                 <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#17652f', display: 'block' }}>EARNED LEAVES (EL)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
                   {Math.max(0, (employee.leaveBalance?.earnedLeave?.total || 15) - (employee.leaveBalance?.earnedLeave?.used || 0))}
                   <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> / {employee.leaveBalance?.earnedLeave?.total || 15} left</span>
                 </div>
@@ -455,7 +455,7 @@ export const EmployeeDetailModal = ({
 
               <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #cbd5e1' }}>
                 <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#475569', display: 'block' }}>LWP (UNPAID)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#0f172a', marginTop: '2px' }}>
                   {employee.leaveBalance?.unpaidLeave?.used || 0}
                   <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '500' }}> Days Taken</span>
                 </div>
@@ -512,7 +512,7 @@ export const EmployeeDetailModal = ({
         {activeTab === 'payroll' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#17652f', margin: 0 }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '600', color: '#17652f', margin: 0 }}>
                 Salary Slips & Disbursal History
               </h4>
             </div>
@@ -553,7 +553,7 @@ export const EmployeeDetailModal = ({
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '1rem', fontWeight: '800', color: '#17652f' }}>{formatINR(p.netSalary)}</div>
+                        <div style={{ fontSize: '1rem', fontWeight: '600', color: '#17652f' }}>{formatINR(p.netSalary)}</div>
                         <span style={{ fontSize: '0.68rem', color: p.status === 'paid' ? '#17652f' : '#cbd5e1', textTransform: 'uppercase', fontWeight: '700' }}>
                           {p.status}
                         </span>
@@ -610,7 +610,7 @@ export const EmployeeDetailModal = ({
         {activeTab === 'docs' && (
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827' }}>
                 KYC & Qualification Document Vault ({documentsList.length})
               </h4>
             </div>

@@ -197,7 +197,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
           }}>
             <div>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>CURRENT REGISTERED TITLEHOLDER</span>
-              <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+              <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                 {activeFlat.currentOwner?.name || activeFlat.salesDetails?.buyerName || 'Developer / Unassigned'}
               </div>
               <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
@@ -207,7 +207,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
 
             <div style={{ textAlign: 'right' }}>
               <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>PRIOR TRANSFERS / BUYBACKS</span>
-              <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0284c7' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#0284c7' }}>
                 {activeFlat.buybackCount || 0} Time(s)
               </div>
             </div>
@@ -314,7 +314,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
           gap: '10px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#334155' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#334155' }}>
               Rent Disbursed to Outgoing / Prior Owner
             </span>
             <span style={{ fontSize: '0.72rem', color: '#334155' }}>
@@ -416,7 +416,7 @@ export const RecordBuybackModal = ({ isOpen, onClose, flat: propFlat, flatsList 
             flexDirection: 'column',
             gap: '10px'
           }}>
-            <h5 style={{ margin: 0, fontSize: '0.82rem', color: '#0369a1', fontWeight: '800' }}>
+            <h5 style={{ margin: 0, fontSize: '0.82rem', color: '#0369a1', fontWeight: '600' }}>
               New Registered Buyer Details
             </h5>
 

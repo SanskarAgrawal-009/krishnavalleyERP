@@ -143,49 +143,27 @@ export const AuditLogsPage = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Header Banner - Executive Clean White Theme */}
+      {/* Header Banner */}
       <div
         style={{
           backgroundColor: '#ffffff',
-          borderRadius: '16px',
-          padding: '24px 28px',
-          color: '#1f2937',
-          border: '1px solid #e8e6df',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          color: '#111827',
+          border: '1px solid #e5e7eb',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '20px',
+          gap: '16px',
         }}
       >
         <div style={{ maxWidth: '650px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '4px 12px',
-                borderRadius: '6px',
-                backgroundColor: '#e8f2e5',
-                color: '#17652f',
-                border: '1px solid #cde4c9',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              <ShieldCheck size={14} />
-              Module 15 • Security & Audit Governance
-            </span>
-          </div>
-          <h1 style={{ margin: '0 0 6px', fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: '600', color: '#1f2937', letterSpacing: '-0.015em' }}>
-            System Audit Logs & CRUD Tracker
+          <h1 style={{ margin: '0 0 4px', fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
+            Audit logs
           </h1>
-          <p style={{ margin: 0, fontSize: '0.92rem', color: '#596372', lineHeight: 1.5 }}>
-            Real-time immutable audit trail capturing every CRUD operation, before/after diffs, deleted entity snapshots, authentication sessions, and system exceptions across Krishna Valley ERP.
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#4b5563', lineHeight: 1.5 }}>
+            Track system activities, record updates, deleted items, user logins, and errors.
           </p>
         </div>
 
@@ -196,20 +174,20 @@ export const AuditLogsPage = () => {
               target="_blank"
               rel="noreferrer"
               style={{
-                padding: '10px 18px',
-                borderRadius: '10px',
-                backgroundColor: '#faf9f6',
-                border: '1px solid #e8e6df',
-                color: '#1f2937',
+                padding: '8px 14px',
+                borderRadius: '6px',
+                backgroundColor: '#ffffff',
+                border: '1px solid #e5e7eb',
+                color: '#374151',
                 fontWeight: '600',
-                fontSize: '0.88rem',
+                fontSize: '0.82rem',
                 textDecoration: 'none',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
               }}
             >
-              <Download size={16} />
+              <Download size={14} />
               <span>Export CSV</span>
             </a>
           )}
@@ -217,85 +195,84 @@ export const AuditLogsPage = () => {
           <button
             onClick={() => fetchLogs(pagination.page)}
             style={{
-              padding: '10px 18px',
-              borderRadius: '10px',
+              padding: '8px 14px',
+              borderRadius: '6px',
               backgroundColor: '#17652f',
               border: 'none',
               color: '#ffffff',
               fontWeight: '600',
-              fontSize: '0.88rem',
+              fontSize: '0.82rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              boxShadow: '0 1px 3px rgba(23,101,47,0.2)',
+              gap: '6px',
             }}
           >
-            <RefreshCw size={16} />
-            <span>Refresh Feed</span>
+            <RefreshCw size={14} />
+            <span>Refresh</span>
           </button>
         </div>
       </div>
 
       {/* KPI Stats Bar */}
       {stats && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e8e6df', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Activity size={22} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px' }}>
+          <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Activity size={18} />
             </div>
             <div>
-              <div style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '700', textTransform: 'uppercase' }}>Today's CRUD Operations</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#1f2937' }}>{stats.totalActivitiesToday || 0}</div>
+              <div style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '500' }}>Activities today</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827' }}>{stats.totalActivitiesToday || 0}</div>
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e8e6df', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#fef2f2', color: '#b91c1c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Trash2 size={22} />
+          <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#fee2e2', color: '#991b1b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Trash2 size={18} />
             </div>
             <div>
-              <div style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '700', textTransform: 'uppercase' }}>Deleted Records Vault</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#1f2937' }}>{stats.totalDeletedRecords || 0}</div>
+              <div style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '500' }}>Deleted records</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827' }}>{stats.totalDeletedRecords || 0}</div>
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e8e6df', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#2d6a4f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <RefreshCw size={22} />
+          <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <RefreshCw size={18} />
             </div>
             <div>
-              <div style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '700', textTransform: 'uppercase' }}>Modified Record Diffs</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#2d6a4f' }}>{stats.totalUpdatedRecords || 0}</div>
+              <div style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '500' }}>Record updates</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827' }}>{stats.totalUpdatedRecords || 0}</div>
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e8e6df', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <History size={22} />
+          <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <History size={18} />
             </div>
             <div>
-              <div style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '700', textTransform: 'uppercase' }}>Successful Logins Today</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#17652f' }}>{stats.loginSuccessToday || 0}</div>
+              <div style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '500' }}>Logins today</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827' }}>{stats.loginSuccessToday || 0}</div>
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e8e6df', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AlertTriangle size={22} />
+          <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#fef3c7', color: '#92400e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AlertTriangle size={18} />
             </div>
             <div>
-              <div style={{ fontSize: '0.74rem', color: '#596372', fontWeight: '700', textTransform: 'uppercase' }}>System Errors Today</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#1f2937' }}>{stats.totalErrorsToday || 0}</div>
+              <div style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: '500' }}>Errors today</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827' }}>{stats.totalErrorsToday || 0}</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Main Container */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e8e6df', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+      <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb', padding: '20px' }}>
         {/* Navigation Tabs */}
-        <div className="no-scrollbar" style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e8e6df', paddingBottom: '12px', marginBottom: '20px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
+        <div className="no-scrollbar" style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e5e7eb', paddingBottom: '12px', marginBottom: '18px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -306,21 +283,20 @@ export const AuditLogsPage = () => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  padding: '9px 18px',
-                  borderRadius: '9px',
+                  gap: '6px',
+                  padding: '8px 14px',
+                  borderRadius: '6px',
                   border: 'none',
                   backgroundColor: isActive ? '#17652f' : 'transparent',
-                  color: isActive ? '#ffffff' : '#596372',
-                  fontWeight: isActive ? '700' : '600',
-                  fontSize: '0.88rem',
+                  color: isActive ? '#ffffff' : '#4b5563',
+                  fontWeight: isActive ? '600' : '500',
+                  fontSize: '0.84rem',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
-                  boxShadow: isActive ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <Icon size={17} />
+                <Icon size={15} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -328,44 +304,44 @@ export const AuditLogsPage = () => {
         </div>
 
         {/* Filter Controls Bar */}
-        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '20px', alignItems: 'center' }}>
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '18px', alignItems: 'center' }}>
           <div style={{ flex: '1', minWidth: '220px', position: 'relative' }}>
-            <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+            <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
             <input
               type="text"
-              placeholder="Search by summary, username, resource or IP..."
+              placeholder="Search by summary, username, resource, or IP..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', padding: '9px 12px 9px 36px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+              style={{ width: '100%', padding: '8px 12px 8px 32px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', boxSizing: 'border-box' }}
             />
           </div>
 
           <select
             value={moduleFilter}
             onChange={(e) => setModuleFilter(e.target.value)}
-            style={{ padding: '9px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.85rem', backgroundColor: '#ffffff', fontWeight: '600' }}
+            style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', backgroundColor: '#ffffff', color: '#374151', fontWeight: '500' }}
           >
-            <option value="all">All Modules</option>
+            <option value="all">All modules</option>
             <option value="leads">Leads CRM</option>
-            <option value="agent">Agent Portal</option>
-            <option value="sales">Sales Deals</option>
-            <option value="inventory">Inventory & Flats</option>
-            <option value="materials">Materials & Stores</option>
+            <option value="agent">Agent portal</option>
+            <option value="sales">Sales deals</option>
+            <option value="inventory">Inventory & flats</option>
+            <option value="materials">Materials & stores</option>
             <option value="customers">Customers</option>
             <option value="rentals">Rentals</option>
             <option value="maintenance">Maintenance</option>
-            <option value="hr">HR Workforce</option>
+            <option value="hr">HR workforce</option>
             <option value="settings">Settings</option>
-            <option value="users">Access Control</option>
-            <option value="auth">Auth & Logins</option>
+            <option value="users">Access control</option>
+            <option value="auth">Auth & logins</option>
           </select>
 
           <select
             value={actionFilter}
             onChange={(e) => setActionFilter(e.target.value)}
-            style={{ padding: '9px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.85rem', backgroundColor: '#ffffff', fontWeight: '600' }}
+            style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', backgroundColor: '#ffffff', color: '#374151', fontWeight: '500' }}
           >
-            <option value="all">All Actions</option>
+            <option value="all">All actions</option>
             <option value="CREATE">CREATE</option>
             <option value="UPDATE">UPDATE</option>
             <option value="DELETE">DELETE</option>
@@ -377,20 +353,20 @@ export const AuditLogsPage = () => {
           <button
             type="submit"
             style={{
-              padding: '9px 18px',
-              borderRadius: '10px',
-              backgroundColor: '#6a1b9a',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              backgroundColor: '#17652f',
               color: '#ffffff',
               border: 'none',
-              fontWeight: '700',
-              fontSize: '0.85rem',
+              fontWeight: '600',
+              fontSize: '0.82rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
             }}
           >
-            <Filter size={15} />
+            <Filter size={14} />
             <span>Filter</span>
           </button>
         </form>
@@ -446,7 +422,7 @@ export const AuditLogsPage = () => {
 
                       {/* Deleted Entity / Lead Name */}
                       <td style={{ padding: '12px 14px' }}>
-                        <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.92rem' }}>
+                        <div style={{ fontWeight: '600', color: '#0f172a', fontSize: '0.92rem' }}>
                           {entityName}
                         </div>
                         {entityEmail && (
@@ -489,7 +465,7 @@ export const AuditLogsPage = () => {
                             borderRadius: '6px',
                             backgroundColor: '#f8fafc',
                             color: '#0f172a',
-                            fontWeight: '800',
+                            fontWeight: '600',
                             fontSize: '0.72rem',
                             textTransform: 'uppercase',
                           }}
@@ -592,7 +568,7 @@ export const AuditLogsPage = () => {
                             backgroundColor: actStyle.bg,
                             color: actStyle.text,
                             border: `1px solid ${actStyle.border}`,
-                            fontWeight: '800',
+                            fontWeight: '600',
                             fontSize: '0.72rem',
                             letterSpacing: '0.03em',
                           }}
@@ -740,10 +716,10 @@ export const AuditLogsPage = () => {
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #e8e6df', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f8fafc', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                  <span style={{ padding: '3px 8px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.75rem' }}>
+                  <span style={{ padding: '3px 8px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', fontWeight: '600', fontSize: '0.75rem' }}>
                     {selectedLog.action}
                   </span>
-                  <span style={{ fontWeight: '800', fontSize: '1.1rem', color: '#0f172a' }}>
+                  <span style={{ fontWeight: '600', fontSize: '1.1rem', color: '#0f172a' }}>
                     Audit Record Inspector
                   </span>
                 </div>
@@ -779,7 +755,7 @@ export const AuditLogsPage = () => {
                 <div style={{ backgroundColor: '#fff1f2', border: '1px solid #e8e6df', padding: '18px', borderRadius: '14px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                     <Trash2 size={18} style={{ color: '#0f172a' }} />
-                    <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#0f172a' }}>
+                    <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600', color: '#0f172a' }}>
                       Deleted Record Identity & Snapshot
                     </h4>
                   </div>
@@ -787,14 +763,14 @@ export const AuditLogsPage = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '14px' }}>
                     <div style={{ backgroundColor: '#ffffff', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e8e6df' }}>
                       <div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '700', textTransform: 'uppercase' }}>Entity / Lead Name</div>
-                      <div style={{ fontSize: '1rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+                      <div style={{ fontSize: '1rem', fontWeight: '600', color: '#0f172a', marginTop: '2px' }}>
                         {selectedLog.deletionDetails?.fullDeletedSnapshot?.name || selectedLog.deletionDetails?.fullDeletedSnapshot?.title || selectedLog.deletionDetails?.fullDeletedSnapshot?.flatNumber || selectedLog.resourceName || 'Unknown'}
                       </div>
                     </div>
 
                     <div style={{ backgroundColor: '#ffffff', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e8e6df' }}>
                       <div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '700', textTransform: 'uppercase' }}>Contact Mobile Number</div>
-                      <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
                         {selectedLog.deletionDetails?.fullDeletedSnapshot?.mobileNo || selectedLog.deletionDetails?.fullDeletedSnapshot?.phone || 'No Phone Registered'}
                       </div>
                     </div>
@@ -802,7 +778,7 @@ export const AuditLogsPage = () => {
                     {(selectedLog.deletionDetails?.fullDeletedSnapshot?.email || selectedLog.deletionDetails?.fullDeletedSnapshot?.budget) && (
                       <div style={{ backgroundColor: '#ffffff', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e8e6df' }}>
                         <div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '700', textTransform: 'uppercase' }}>Budget / Price Value</div>
-                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+                        <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
                           {selectedLog.deletionDetails?.fullDeletedSnapshot?.budget ? `₹${Number(selectedLog.deletionDetails.fullDeletedSnapshot.budget).toLocaleString('en-IN')}` : (selectedLog.deletionDetails?.fullDeletedSnapshot?.price ? `₹${Number(selectedLog.deletionDetails.fullDeletedSnapshot.price).toLocaleString('en-IN')}` : 'N/A')}
                         </div>
                       </div>
@@ -821,7 +797,7 @@ export const AuditLogsPage = () => {
               {/* Error Stack Trace if error */}
               {selectedLog.errorDetails?.message && (
                 <div style={{ backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1', padding: '16px', borderRadius: '12px' }}>
-                  <h4 style={{ margin: '0 0 6px', fontSize: '0.9rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h4 style={{ margin: '0 0 6px', fontSize: '0.9rem', fontWeight: '600', color: '#0f172a' }}>
                     Exception Diagnostics
                   </h4>
                   <div style={{ fontSize: '0.82rem', color: '#0f172a', fontWeight: '600', marginBottom: '8px' }}>

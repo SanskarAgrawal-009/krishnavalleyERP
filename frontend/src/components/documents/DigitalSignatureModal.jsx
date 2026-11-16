@@ -189,7 +189,7 @@ export const DigitalSignatureModal = ({
         {activeDoc ? (
           <div style={{ background: '#f8f9fa', padding: '12px 16px', borderRadius: '6px', border: '1px solid #dadce0' }}>
             <div style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700' }}>DOCUMENT TO DIGITALLY SIGN</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.92rem', fontWeight: '600', color: '#111827', marginTop: '2px' }}>
               {activeDoc.documentTitle || activeDoc.agreementNumber || 'Agreement Document'}
             </div>
             <div style={{ fontSize: '0.76rem', color: '#17652f', marginTop: '2px', fontWeight: '600' }}>

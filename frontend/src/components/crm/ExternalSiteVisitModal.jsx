@@ -238,10 +238,10 @@ export const ExternalSiteVisitModal = ({
             gap: '10px'
           }}>
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '800', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600', textTransform: 'uppercase' }}>
                 Existing CRM Prospect
               </div>
-              <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {lead.name}
                 <span style={{ fontSize: '0.72rem', background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '12px', fontWeight: '700' }}>
                   {lead.status?.replace(/_/g, ' ')}
@@ -259,7 +259,7 @@ export const ExternalSiteVisitModal = ({
         ) : (
           /* Walk-in Visitor Info Inputs */
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px 16px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#0f172a', textTransform: 'uppercase', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <User size={14} color="#17652f" /> Visitor Information (Walk-in Lead)
             </div>
 
@@ -352,7 +352,7 @@ export const ExternalSiteVisitModal = ({
                   padding: '8px 10px',
                   borderRadius: '6px',
                   fontSize: '0.8rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   border: !isScheduledOnly ? '2px solid #17652f' : '1px solid #cbd5e1',
                   background: !isScheduledOnly ? '#e8f2e5' : '#ffffff',
                   color: !isScheduledOnly ? '#17652f' : '#475569',
@@ -369,7 +369,7 @@ export const ExternalSiteVisitModal = ({
                   padding: '8px 10px',
                   borderRadius: '6px',
                   fontSize: '0.8rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   border: isScheduledOnly ? '2px solid #17652f' : '1px solid #cbd5e1',
                   background: isScheduledOnly ? '#e8f2e5' : '#ffffff',
                   color: isScheduledOnly ? '#17652f' : '#475569',
@@ -460,7 +460,7 @@ export const ExternalSiteVisitModal = ({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Car size={16} color={isCabProvided ? '#17652f' : '#64748b'} />
-              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#0f172a' }}>
                 Cab & Transportation Assistance
               </span>
             </div>
@@ -536,7 +536,7 @@ export const ExternalSiteVisitModal = ({
         {!isScheduledOnly ? (
           <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '14px 16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#334155', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <Star size={15} color="#475569" fill="#475569" /> Client Interest Rating
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
@@ -627,13 +627,13 @@ export const ExternalSiteVisitModal = ({
                 ? 'linear-gradient(135deg, #17652f 0%, #17652f 100%)'
                 : 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
               color: '#ffffff',
-              fontWeight: '800',
+              fontWeight: '600',
               fontSize: '0.88rem',
               cursor: submitting ? 'not-allowed' : 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: isScheduledOnly ? '0 2px 6px rgba(37,99,235,0.3)' : '0 2px 6px rgba(22,163,74,0.3)',
+              boxShadow: isScheduledOnly ? '0 2px 6px rgba(23, 101, 47,0.3)' : '0 2px 6px rgba(22,163,74,0.3)',
               transition: 'all 0.15s ease'
             }}
           >

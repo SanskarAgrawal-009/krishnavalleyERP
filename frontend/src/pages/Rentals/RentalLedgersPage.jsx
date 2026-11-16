@@ -235,63 +235,27 @@ export const RentalLedgersPage = () => {
       <div
         style={{
           backgroundColor: '#ffffff',
-          borderRadius: '16px',
-          border: '1px solid #e8e6df',
-          padding: '24px 28px',
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          padding: '20px 24px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '16px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+          gap: '16px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div
-            style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              background: '#e8f2e5',
-              color: '#17652f',
-              border: '1px solid #cde4c9',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: 'none'
-            }}
-          >
-            <BookOpen size={22} />
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span
-                style={{
-                  padding: '3px 10px',
-                  borderRadius: '6px',
-                  backgroundColor: '#e8f2e5',
-                  color: '#17652f',
-                  border: '1px solid #cde4c9',
-                  fontSize: '0.74rem',
-                  fontWeight: '700',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em'
-                }}
-              >
-                Passbook Hub
-              </span>
-            </div>
-            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: '600', color: '#1f2937', margin: 0, letterSpacing: '-0.015em' }}>
-              Rental Passbooks & Customer Ledgers
-            </h1>
-            <p style={{ margin: '3px 0 0', fontSize: '0.88rem', color: '#596372', fontWeight: '500' }}>
-              Owner-by-Owner Disbursal Passbooks • Tenure Schedule • Auto-Calculated Paid Month Entries
-            </p>
-          </div>
+        <div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', margin: 0 }}>
+            Rental ledgers
+          </h1>
+          <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#6b7280' }}>
+            Passbook accounts, monthly schedules, and settlement records.
+          </p>
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           
           <button
             onClick={() => setIsUploadCalculateModalOpen(true)}
@@ -299,18 +263,17 @@ export const RentalLedgersPage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '9px 16px',
-              borderRadius: '8px',
+              padding: '8px 14px',
+              borderRadius: '6px',
               background: '#17652f',
               color: '#ffffff',
               border: 'none',
-              fontSize: '0.84rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(23,101,47,0.2)'
+              fontSize: '0.82rem',
+              fontWeight: 500,
+              cursor: 'pointer'
             }}
           >
-            <Calculator size={16} /> Upload Excel & Auto-Calculate
+            <Calculator size={15} /> Upload Excel
           </button>
 
           <button
@@ -320,19 +283,18 @@ export const RentalLedgersPage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '9px 16px',
-              borderRadius: '8px',
-              background: '#faf9f6',
-              color: '#1f2937',
-              border: '1px solid #e8e6df',
-              fontSize: '0.84rem',
-              fontWeight: '600',
-              cursor: autoGenerating ? 'not-allowed' : 'pointer',
-              boxShadow: 'none'
+              padding: '8px 14px',
+              borderRadius: '6px',
+              background: '#ffffff',
+              color: '#111827',
+              border: '1px solid #e5e7eb',
+              fontSize: '0.82rem',
+              fontWeight: 500,
+              cursor: autoGenerating ? 'not-allowed' : 'pointer'
             }}
           >
-            <Sparkles size={16} color="#17652f" />
-            {autoGenerating ? 'Generating...' : 'Sync from Active Register'}
+            <Sparkles size={15} style={{ color: '#17652f' }} />
+            {autoGenerating ? 'Generating...' : 'Sync register'}
           </button>
 
           <button
@@ -341,17 +303,17 @@ export const RentalLedgersPage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '9px 14px',
-              borderRadius: '8px',
+              padding: '8px 12px',
+              borderRadius: '6px',
               background: '#ffffff',
-              border: '1px solid #e8e6df',
-              color: '#1f2937',
-              fontSize: '0.84rem',
-              fontWeight: '600',
+              border: '1px solid #e5e7eb',
+              color: '#111827',
+              fontSize: '0.82rem',
+              fontWeight: 500,
               cursor: 'pointer'
             }}
           >
-            <FileSpreadsheet size={15} color="#17652f" /> Export Master CSV
+            <FileSpreadsheet size={15} style={{ color: '#17652f' }} /> Export CSV
           </button>
 
           <button
@@ -360,17 +322,17 @@ export const RentalLedgersPage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '9px 14px',
-              borderRadius: '8px',
-              background: '#f1f5f9',
-              border: '1px solid #cbd5e1',
-              color: '#1e293b',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              background: '#ffffff',
+              border: '1px solid #e5e7eb',
+              color: '#111827',
               fontSize: '0.82rem',
-              fontWeight: '700',
+              fontWeight: 500,
               cursor: 'pointer'
             }}
           >
-            <Building2 size={15} /> Active Register
+            <Building2 size={15} /> Active rentals
           </button>
 
           <button
@@ -379,17 +341,18 @@ export const RentalLedgersPage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '9px 12px',
-              borderRadius: '8px',
+              padding: '8px 12px',
+              borderRadius: '6px',
               background: '#ffffff',
-              border: '1px solid #cbd5e1',
-              color: '#334155',
+              border: '1px solid #e5e7eb',
+              color: '#111827',
               fontSize: '0.82rem',
-              fontWeight: '700',
+              fontWeight: 500,
               cursor: 'pointer'
             }}
+            title="Refresh"
           >
-            <RefreshCw size={15} />
+            <RefreshCw size={14} style={{ color: '#6b7280' }} />
           </button>
         </div>
       </div>
@@ -399,102 +362,70 @@ export const RentalLedgersPage = () => {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '14px'
+          gap: '12px'
         }}
       >
         {/* Card 1 */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            padding: '16px 18px',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-          }}
-        >
+        <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-              Enrolled Passbooks
+            <span style={{ fontSize: '0.78rem', fontWeight: 500, color: '#6b7280' }}>
+              Enrolled passbooks
             </span>
             <Users size={16} color="#17652f" />
           </div>
-          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a' }}>
-            {kpis.totalAccounts} Flats
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827' }}>
+            {kpis.totalAccounts} <span style={{ fontSize: '0.82rem', fontWeight: 400, color: '#6b7280' }}>flats</span>
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
             Active rental contracts
           </span>
         </div>
 
         {/* Card 2 */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            padding: '16px 18px',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-          }}
-        >
+        <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-              Total Paid to Owners
+            <span style={{ fontSize: '0.78rem', fontWeight: 500, color: '#6b7280' }}>
+              Total paid
             </span>
             <CheckCircle2 size={16} color="#17652f" />
           </div>
-          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#17652f' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#17652f' }}>
             {formatINR(kpis.totalDisbursedAll)}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>
-            {kpis.totalPaidMonthsAll} Total months settled
+          <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
+            {kpis.totalPaidMonthsAll} months settled
           </span>
         </div>
 
         {/* Card 3 */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            padding: '16px 18px',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-          }}
-        >
+        <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-              Remaining Liability
+            <span style={{ fontSize: '0.78rem', fontWeight: 500, color: '#6b7280' }}>
+              Remaining liability
             </span>
-            <TrendingUp size={16} color="#0f172a" />
+            <TrendingUp size={16} color="#6b7280" />
           </div>
-          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827' }}>
             {formatINR(kpis.totalOutstandingAll)}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
             Scheduled upcoming disbursals
           </span>
         </div>
 
         {/* Card 4 */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            padding: '16px 18px',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-          }}
-        >
+        <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-              Total Commitment (Tenure)
+            <span style={{ fontSize: '0.78rem', fontWeight: 500, color: '#6b7280' }}>
+              Total commitment
             </span>
             <DollarSign size={16} color="#17652f" />
           </div>
-          <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#17652f' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827' }}>
             {formatINR(kpis.totalCommitmentAll)}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-            Rent × Tenure (Gross commitment)
+          <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
+            Gross contract liability
           </span>
         </div>
       </div>
@@ -503,9 +434,9 @@ export const RentalLedgersPage = () => {
       <div
         style={{
           background: '#ffffff',
-          borderRadius: '12px',
-          padding: '14px 18px',
-          border: '1px solid #e2e8f0',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          border: '1px solid #e5e7eb',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -513,36 +444,38 @@ export const RentalLedgersPage = () => {
           gap: '12px'
         }}
       >
-        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '280px' }}>
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '260px' }}>
           <div
             style={{
               position: 'relative',
               width: '100%',
-              maxWidth: '380px'
+              maxWidth: '360px'
             }}
           >
             <Search
-              size={16}
+              size={15}
               style={{
                 position: 'absolute',
                 left: '12px',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: '#94a3b8'
+                color: '#9ca3af'
               }}
             />
             <input
               type="text"
-              placeholder="Search by Flat Number, Owner Name, Mobile..."
+              placeholder="e.g. Flat 101, Rahul, or 98765"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
                 padding: '8px 12px 8px 36px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                border: '1px solid #e5e7eb',
                 fontSize: '0.84rem',
-                outline: 'none'
+                outline: 'none',
+                background: '#ffffff',
+                color: '#111827'
               }}
             />
           </div>
@@ -550,12 +483,12 @@ export const RentalLedgersPage = () => {
             type="submit"
             style={{
               padding: '8px 14px',
-              borderRadius: '8px',
+              borderRadius: '6px',
               backgroundColor: '#17652f',
               color: '#ffffff',
               border: 'none',
               fontSize: '0.82rem',
-              fontWeight: '700',
+              fontWeight: 500,
               cursor: 'pointer'
             }}
           >
@@ -563,43 +496,45 @@ export const RentalLedgersPage = () => {
           </button>
         </form>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Tenure:</span>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>Tenure:</span>
             <select
               value={tenureFilter}
               onChange={(e) => setTenureFilter(e.target.value)}
               style={{
                 padding: '6px 10px',
                 borderRadius: '6px',
-                border: '1px solid #cbd5e1',
+                border: '1px solid #e5e7eb',
                 fontSize: '0.8rem',
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                color: '#111827'
               }}
             >
-              <option value="all">All Tenures</option>
-              <option value="36">36 Months (3 Years)</option>
-              <option value="24">24 Months (2 Years)</option>
-              <option value="12">12 Months (1 Year)</option>
+              <option value="all">All tenures</option>
+              <option value="36">36 months</option>
+              <option value="24">24 months</option>
+              <option value="12">12 months</option>
             </select>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>Status:</span>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>Status:</span>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               style={{
                 padding: '6px 10px',
                 borderRadius: '6px',
-                border: '1px solid #cbd5e1',
+                border: '1px solid #e5e7eb',
                 fontSize: '0.8rem',
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                color: '#111827'
               }}
             >
-              <option value="all">All Passbooks</option>
-              <option value="active">Active (Pending Payments)</option>
-              <option value="completed">Fully Settled</option>
+              <option value="all">All passbooks</option>
+              <option value="active">Active</option>
+              <option value="completed">Settled</option>
             </select>
           </div>
         </div>
@@ -609,35 +544,34 @@ export const RentalLedgersPage = () => {
       <div
         style={{
           background: '#ffffff',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          overflow: 'hidden',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          overflow: 'hidden'
         }}
       >
         {loading ? (
           <TableSkeleton rows={8} columns={8} />
         ) : ledgers.length === 0 ? (
           <EmptyState
-            title="No Rental Passbook Records Found"
-            message="No active rental customer passbooks match your current search criteria. Click 'Upload Excel & Auto-Calculate' or 'Sync from Active Register' to generate passbooks."
+            title="No passbooks found"
+            message="No active customer passbooks match your search criteria."
             icon={BookOpen}
-            actionLabel="Upload Passbook Excel"
+            actionLabel="Upload Excel"
             onAction={() => setIsUploadCalculateModalOpen(true)}
           />
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
               <thead>
-                <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                  <th style={{ padding: '12px 14px', fontWeight: '700', color: '#475569' }}>Flat / Unit</th>
-                  <th style={{ padding: '12px 14px', fontWeight: '700', color: '#475569' }}>Owner & Contact</th>
-                  <th style={{ padding: '12px 14px', fontWeight: '700', color: '#475569' }}>Tenure Schedule</th>
-                  <th style={{ padding: '12px 14px', fontWeight: '700', color: '#475569', textAlign: 'right' }}>Monthly Net Rent</th>
-                  <th style={{ padding: '12px 14px', fontWeight: '700', color: '#475569', textAlign: 'right' }}>Total Disbursed</th>
-                  <th style={{ padding: '12px 14px', fontWeight: '700', color: '#475569', textAlign: 'right' }}>Remaining Balance</th>
-                  <th style={{ padding: '12px 14px', fontWeight: '700', color: '#475569' }}>Disbursal Progress</th>
-                  <th style={{ padding: '12px 14px', fontWeight: '700', color: '#475569', textAlign: 'center' }}>Passbook Statement</th>
+                <tr style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                  <th style={{ padding: '12px 14px', fontWeight: 500, color: '#6b7280' }}>Flat</th>
+                  <th style={{ padding: '12px 14px', fontWeight: 500, color: '#6b7280' }}>Owner</th>
+                  <th style={{ padding: '12px 14px', fontWeight: 500, color: '#6b7280' }}>Tenure schedule</th>
+                  <th style={{ padding: '12px 14px', fontWeight: 500, color: '#6b7280', textAlign: 'right' }}>Monthly net rent</th>
+                  <th style={{ padding: '12px 14px', fontWeight: 500, color: '#6b7280', textAlign: 'right' }}>Total disbursed</th>
+                  <th style={{ padding: '12px 14px', fontWeight: 500, color: '#6b7280', textAlign: 'right' }}>Remaining balance</th>
+                  <th style={{ padding: '12px 14px', fontWeight: 500, color: '#6b7280' }}>Progress</th>
+                  <th style={{ padding: '12px 14px', fontWeight: 500, color: '#6b7280', textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -645,48 +579,26 @@ export const RentalLedgersPage = () => {
                   <tr
                     key={item.flatId || idx}
                     style={{
-                      borderBottom: '1px solid #f1f5f9',
-                      backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa',
-                      transition: 'background 0.15s ease'
+                      borderBottom: '1px solid #f3f4f6'
                     }}
                   >
                     {/* Flat / Unit */}
                     <td style={{ padding: '12px 14px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div
-                          style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '8px',
-                            backgroundColor: '#e8f2e5',
-                            color: '#17652f',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: '800',
-                            fontSize: '0.78rem'
-                          }}
-                        >
-                          {item.flatNumber?.slice(0, 2) || 'FL'}
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.88rem' }}>
-                            {item.flatNumber}
-                          </div>
-                          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                            {item.floor ? `Floor ${item.floor}` : ''} {item.bhkType ? `• ${item.bhkType}` : ''}
-                          </span>
-                        </div>
+                      <div style={{ fontWeight: 600, color: '#111827', fontSize: '0.88rem' }}>
+                        {item.flatNumber}
                       </div>
+                      <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                        {item.floor ? `Floor ${item.floor}` : ''} {item.bhkType ? `• ${item.bhkType}` : ''}
+                      </span>
                     </td>
 
                     {/* Owner & Contact */}
                     <td style={{ padding: '12px 14px' }}>
-                      <div style={{ fontWeight: '700', color: '#1e293b' }}>
+                      <div style={{ fontWeight: 500, color: '#111827' }}>
                         {renderCellData(item.ownerName)}
                       </div>
-                      <div style={{ fontSize: '0.74rem', color: '#64748b' }}>
-                        {renderCellData(item.ownerMobile)} • PAN: {renderCellData(item.ownerPan)}
+                      <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>
+                        {renderCellData(item.ownerMobile)} {item.ownerPan ? `• PAN: ${item.ownerPan}` : ''}
                       </div>
                     </td>
 
@@ -695,75 +607,66 @@ export const RentalLedgersPage = () => {
                       <span
                         style={{
                           padding: '2px 8px',
-                          borderRadius: '6px',
-                          backgroundColor: '#f1f5f9',
+                          borderRadius: '4px',
+                          backgroundColor: '#f3f4f6',
                           fontSize: '0.75rem',
-                          fontWeight: '800',
-                          color: '#334155'
+                          fontWeight: 500,
+                          color: '#374151'
                         }}
                       >
-                        {item.tenureMonths} Months
+                        {item.tenureMonths} mos
                       </span>
-                      <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
                         {formatDate(item.startDate)} → {formatDate(item.endDate)}
                       </div>
                     </td>
 
                     {/* Monthly Net Rent */}
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                      <div style={{ fontWeight: '800', color: '#17652f' }}>
+                      <div style={{ fontWeight: 600, color: '#17652f' }}>
                         {formatINR(item.netRent)}
                       </div>
-                      <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                      <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>
                         Gross: {formatINR(item.grossRent)}
                       </span>
                     </td>
 
                     {/* Total Disbursed */}
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                      <div style={{ fontWeight: '800', color: '#17652f' }}>
+                      <div style={{ fontWeight: 600, color: '#111827' }}>
                         {formatINR(item.totalPaid)}
                       </div>
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '2px',
-                          fontSize: '0.72rem',
-                          color: '#17652f',
-                          fontWeight: '700'
-                        }}
-                      >
-                        <CheckCircle2 size={11} /> {item.paidCount} Months Paid
+                      <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                        {item.paidCount} paid
                       </span>
                     </td>
 
                     {/* Remaining Balance */}
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                      <div style={{ fontWeight: '800', color: '#0f172a' }}>
+                      <div style={{ fontWeight: 600, color: '#111827' }}>
                         {formatINR(item.amountOutstanding)}
                       </div>
-                      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                        {Math.max(0, item.tenureMonths - item.paidCount)} Months Due
+                      <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                        {Math.max(0, item.tenureMonths - item.paidCount)} remaining
                       </span>
                     </td>
 
                     {/* Disbursal Progress */}
-                    <td style={{ padding: '12px 14px', minWidth: '160px' }}>
+                    <td style={{ padding: '12px 14px', minWidth: '150px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '4px' }}>
-                        <span style={{ fontWeight: '700', color: '#334155' }}>
+                        <span style={{ fontWeight: 500, color: '#111827' }}>
                           {item.completionPercentage}%
                         </span>
-                        <span style={{ color: '#64748b' }}>
-                          {item.paidCount} / {item.tenureMonths} Mos
+                        <span style={{ color: '#6b7280' }}>
+                          {item.paidCount} / {item.tenureMonths} mos
                         </span>
                       </div>
-                      <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: '100%', height: '5px', backgroundColor: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
                         <div
                           style={{
                             width: `${item.completionPercentage}%`,
                             height: '100%',
-                            backgroundColor: item.completionPercentage === 100 ? '#17652f' : '#17652f'
+                            backgroundColor: '#17652f'
                           }}
                         />
                       </div>
@@ -786,22 +689,22 @@ export const RentalLedgersPage = () => {
                             startDate: item.startDate,
                             totalPaid: item.totalPaid
                           })}
-                          title="Edit Rental Terms, Price & Effective Date"
+                          title="Edit terms"
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '4px',
-                            padding: '6px 10px',
+                            padding: '5px 10px',
                             borderRadius: '6px',
-                            border: '1px solid #86c8a0',
-                            backgroundColor: '#e8f2e5',
-                            color: '#17652f',
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#ffffff',
+                            color: '#111827',
                             fontSize: '0.78rem',
-                            fontWeight: '700',
+                            fontWeight: 500,
                             cursor: 'pointer'
                           }}
                         >
-                          <Edit size={13} /> Edit Terms
+                          <Edit size={13} /> Edit
                         </button>
 
                         <button
@@ -810,33 +713,32 @@ export const RentalLedgersPage = () => {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '6px',
-                            padding: '6px 12px',
+                            padding: '5px 12px',
                             borderRadius: '6px',
                             backgroundColor: '#17652f',
                             color: '#ffffff',
                             border: 'none',
                             fontSize: '0.78rem',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 4px rgba(124, 58, 237, 0.2)'
+                            fontWeight: 500,
+                            cursor: 'pointer'
                           }}
                         >
-                          <BookOpen size={14} /> View Passbook
+                          <BookOpen size={14} /> Passbook
                         </button>
 
                         <button
                           type="button"
                           onClick={() => handleDeleteLedger(item)}
-                          title="Delete / Unenroll Rental Record"
+                          title="Delete rental"
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            padding: '6px 8px',
+                            padding: '5px 8px',
                             borderRadius: '6px',
-                            border: '1px solid #e2e8f0',
-                            backgroundColor: '#f1f5f9',
-                            color: '#0f172a',
+                            border: '1px solid #e5e7eb',
+                            backgroundColor: '#ffffff',
+                            color: '#dc2626',
                             cursor: 'pointer'
                           }}
                         >

@@ -254,89 +254,86 @@ export const AgentProfilePage = () => {
             alignItems: 'center',
             gap: '6px',
             color: '#17652f',
-            fontSize: '0.88rem',
-            fontWeight: '700',
+            fontSize: '0.84rem',
+            fontWeight: '600',
             textDecoration: 'none',
             padding: '6px 12px',
-            borderRadius: '8px',
-            backgroundColor: '#e8f2e5',
-            border: '1px solid #cde4c9',
+            borderRadius: '6px',
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
           }}
         >
-          <ArrowLeft size={16} /> Back to Channel Partner Directory
+          <ArrowLeft size={15} /> Back to channel partners
         </Link>
 
         <button
           onClick={loadProfileData}
           style={{
-            padding: '8px 16px',
-            borderRadius: '10px',
-            border: '1px solid #e2e8f0',
+            padding: '8px 14px',
+            borderRadius: '6px',
+            border: '1px solid #e5e7eb',
             backgroundColor: '#ffffff',
-            color: '#334155',
-            fontSize: '0.84rem',
-            fontWeight: '700',
+            color: '#374151',
+            fontSize: '0.82rem',
+            fontWeight: '600',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
           }}
         >
-          <RefreshCw size={14} /> Refresh Profile
+          <RefreshCw size={14} style={{ color: '#17652f' }} /> Refresh
         </button>
       </div>
 
       {/* Agent Hero Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
-          borderRadius: '20px',
-          padding: '28px 32px',
-          color: '#ffffff',
-          boxShadow: '0 12px 36px rgba(15, 23, 42, 0.2)',
+          background: '#ffffff',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          color: '#111827',
+          border: '1px solid #e5e7eb',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '24px',
+          gap: '20px',
         }}
       >
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <div
             style={{
-              width: '68px',
-              height: '68px',
-              borderRadius: '18px',
-              background: 'linear-gradient(135deg, #17652f, #17652f)',
-              border: '3px solid rgba(255, 255, 255, 0.25)',
+              width: '54px',
+              height: '54px',
+              borderRadius: '8px',
+              background: '#e8f2e5',
+              border: '1px solid #cde4c9',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#ffffff',
-              fontWeight: '800',
-              fontSize: '1.5rem',
+              color: '#17652f',
+              fontWeight: '600',
+              fontSize: '1.25rem',
               flexShrink: 0,
-              boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
             }}
           >
             {(agent.firstName?.[0] || '').toUpperCase()}{(agent.lastName?.[0] || '').toUpperCase()}
           </div>
 
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
-              <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '800', letterSpacing: '-0.02em' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '4px' }}>
+              <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
                 {agent.firstName} {agent.lastName || ''}
               </h1>
               <span
                 style={{
-                  padding: '3px 10px',
-                  borderRadius: '12px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  color: '#ffffff',
-                  fontSize: '0.8rem',
-                  fontWeight: '700',
-                  letterSpacing: '0.04em',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  backgroundColor: '#f3f4f6',
+                  color: '#374151',
+                  fontSize: '0.76rem',
+                  fontWeight: '600',
                 }}
               >
                 {ap.agentCode || 'AGT-PARTNER'}
@@ -344,30 +341,31 @@ export const AgentProfilePage = () => {
               {ap.tier && (
                 <span
                   style={{
-                    padding: '3px 10px',
-                    borderRadius: '12px',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
                     backgroundColor: tc.bg,
                     color: tc.color,
-                    fontSize: '0.78rem',
-                    fontWeight: '800',
+                    border: `1px solid ${tc.border}`,
+                    fontSize: '0.74rem',
+                    fontWeight: '500',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '4px',
                   }}
                 >
-                  <Star size={12} /> {ap.tier} Partner
+                  <Star size={11} /> {ap.tier} partner
                 </span>
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '0.85rem', color: '#cbd5e1', flexWrap: 'wrap' }}>
-              <span><Building2 size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />{ap.agencyName || 'Direct Channel Partner'}</span>
+            <div style={{ display: 'flex', gap: '14px', alignItems: 'center', fontSize: '0.82rem', color: '#6b7280', flexWrap: 'wrap' }}>
+              <span><Building2 size={13} style={{ marginRight: '4px', verticalAlign: 'middle' }} />{ap.agencyName || 'Direct channel partner'}</span>
               <span>•</span>
-              <span><MapPin size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />{ap.city || 'Mathura/Vrindavan'}</span>
+              <span><MapPin size={13} style={{ marginRight: '4px', verticalAlign: 'middle' }} />{ap.city || 'Mathura/Vrindavan'}</span>
               <span>•</span>
-              <span><Phone size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />{agent.mobileNo || '—'}</span>
+              <span><Phone size={13} style={{ marginRight: '4px', verticalAlign: 'middle' }} />{agent.mobileNo || '—'}</span>
               <span>•</span>
-              <span><Mail size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />{agent.email || '—'}</span>
+              <span><Mail size={13} style={{ marginRight: '4px', verticalAlign: 'middle' }} />{agent.email || '—'}</span>
             </div>
           </div>
         </div>
@@ -375,172 +373,171 @@ export const AgentProfilePage = () => {
         {/* Commission Terms Card in Banner */}
         <div
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.12)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '14px',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
-            padding: '16px 20px',
+            backgroundColor: '#f9fafb',
+            borderRadius: '6px',
+            border: '1px solid #e5e7eb',
+            padding: '12px 16px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '4px',
-            minWidth: '220px',
+            gap: '2px',
+            minWidth: '200px',
           }}
         >
-          <div style={{ fontSize: '0.75rem', color: '#86c8a0', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Commission Setup
+          <div style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '600' }}>
+            Commission setup
           </div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#86c8a0' }}>
-            {ap.commissionRate || 2}% Comm Rate
+          <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#17652f' }}>
+            {ap.commissionRate || 2}% rate
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
-            Credited upon inhouse verified site visits
+          <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+            Credited on verified visits
           </div>
         </div>
       </div>
 
       {/* KPI Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-        <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '18px 20px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
+        <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Wallet Balance</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Wallet balance</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#17652f', marginTop: '2px' }}>
               ₹{(ap.walletBalance || 0).toLocaleString('en-IN')}
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>Available for payout</div>
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>Available for payout</div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Wallet size={22} />
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Wallet size={18} />
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '18px 20px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Total Earned</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#1e293b', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Total earnings</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '2px' }}>
               ₹{(ap.totalEarned || 0).toLocaleString('en-IN')}
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>{commissions.length} payouts logged</div>
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>{commissions.length} payouts logged</div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <TrendingUp size={22} />
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <TrendingUp size={18} />
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '18px 20px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Total Uploaded Leads</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Registered leads</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '2px' }}>
               {leads.length}
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
               {leads.filter(l => l.status === 'site_visit_completed_pending_approval').length} awaiting review
             </div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#faf5ff', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Users size={22} />
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Users size={18} />
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '18px 20px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Site Visits Logged</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#334155', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Site visits</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '2px' }}>
               {siteVisits.length}
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
-              {siteVisits.filter(v => v.verificationStatus === 'approved').length} verified & approved
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
+              {siteVisits.filter(v => v.verificationStatus === 'approved').length} verified visits
             </div>
           </div>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#f8fafc', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ShieldCheck size={22} />
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ShieldCheck size={18} />
           </div>
         </div>
       </div>
 
       {/* Tabs Bar */}
-      <div className="no-scrollbar" style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', gap: '24px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
+      <div className="no-scrollbar" style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', gap: '20px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
         <button
           onClick={() => handleTabChange('leads')}
           style={{
-            padding: '12px 4px',
+            padding: '10px 4px',
             backgroundColor: 'transparent',
             border: 'none',
             borderBottom: activeTab === 'leads' ? '2px solid #17652f' : '2px solid transparent',
-            color: activeTab === 'leads' ? '#17652f' : '#64748b',
-            fontWeight: activeTab === 'leads' ? '700' : '500',
-            fontSize: '0.95rem',
+            color: activeTab === 'leads' ? '#17652f' : '#4b5563',
+            fontWeight: activeTab === 'leads' ? '600' : '500',
+            fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
             whiteSpace: 'nowrap',
           }}
         >
-          <Users size={18} />
-          <span>Leads Pipeline & Activity Tracks ({leads.length})</span>
+          <Users size={16} />
+          <span>Leads pipeline ({leads.length})</span>
         </button>
 
         <button
           onClick={() => handleTabChange('visits')}
           style={{
-            padding: '12px 4px',
+            padding: '10px 4px',
             backgroundColor: 'transparent',
             border: 'none',
             borderBottom: activeTab === 'visits' ? '2px solid #17652f' : '2px solid transparent',
-            color: activeTab === 'visits' ? '#17652f' : '#64748b',
-            fontWeight: activeTab === 'visits' ? '700' : '500',
-            fontSize: '0.95rem',
+            color: activeTab === 'visits' ? '#17652f' : '#4b5563',
+            fontWeight: activeTab === 'visits' ? '600' : '500',
+            fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
             whiteSpace: 'nowrap',
           }}
         >
-          <ShieldCheck size={18} />
-          <span>Site Visits & Approval Desk ({siteVisits.length})</span>
+          <ShieldCheck size={16} />
+          <span>Site visits ({siteVisits.length})</span>
         </button>
 
         <button
           onClick={() => handleTabChange('commissions')}
           style={{
-            padding: '12px 4px',
+            padding: '10px 4px',
             backgroundColor: 'transparent',
             border: 'none',
             borderBottom: activeTab === 'commissions' ? '2px solid #17652f' : '2px solid transparent',
-            color: activeTab === 'commissions' ? '#17652f' : '#64748b',
-            fontWeight: activeTab === 'commissions' ? '700' : '500',
-            fontSize: '0.95rem',
+            color: activeTab === 'commissions' ? '#17652f' : '#4b5563',
+            fontWeight: activeTab === 'commissions' ? '600' : '500',
+            fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
             whiteSpace: 'nowrap',
           }}
         >
-          <DollarSign size={18} />
-          <span>Commission Statement ({commissions.length})</span>
+          <DollarSign size={16} />
+          <span>Commissions ({commissions.length})</span>
         </button>
 
         <button
           onClick={() => handleTabChange('audit')}
           style={{
-            padding: '12px 4px',
+            padding: '10px 4px',
             backgroundColor: 'transparent',
             border: 'none',
             borderBottom: activeTab === 'audit' ? '2px solid #17652f' : '2px solid transparent',
-            color: activeTab === 'audit' ? '#17652f' : '#64748b',
-            fontWeight: activeTab === 'audit' ? '700' : '500',
-            fontSize: '0.95rem',
+            color: activeTab === 'audit' ? '#17652f' : '#4b5563',
+            fontWeight: activeTab === 'audit' ? '600' : '500',
+            fontSize: '0.88rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
             whiteSpace: 'nowrap',
           }}
         >
-          <Activity size={18} />
-          <span>Audit & Activity Trail ({auditLogs.length})</span>
+          <Activity size={16} />
+          <span>Audit trail ({auditLogs.length})</span>
         </button>
       </div>
 
@@ -973,7 +970,7 @@ export const AgentProfilePage = () => {
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '4px',
-                                  boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
+                                  boxShadow: '0 2px 6px rgba(23, 101, 47,0.3)',
                                 }}
                               >
                                 <ShieldCheck size={12} /> Inspect & Approve
@@ -1049,7 +1046,7 @@ export const AgentProfilePage = () => {
                                 padding: '3px 8px',
                                 borderRadius: '6px',
                                 fontSize: '0.72rem',
-                                fontWeight: '800',
+                                fontWeight: '600',
                                 backgroundColor: isDebit ? '#f1f5f9' : '#e8f2e5',
                                 color: isDebit ? '#0f172a' : '#17652f',
                               }}
@@ -1071,7 +1068,7 @@ export const AgentProfilePage = () => {
                             </div>
                           </td>
 
-                          <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: '800', fontSize: '0.92rem', color: isDebit ? '#0f172a' : '#17652f' }}>
+                          <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: '600', fontSize: '0.92rem', color: isDebit ? '#0f172a' : '#17652f' }}>
                             {isDebit ? '-' : '+'}₹{(comm.calculatedAmount || 0).toLocaleString('en-IN')}
                           </td>
 
@@ -1264,7 +1261,7 @@ export const AgentProfilePage = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <History size={22} style={{ color: '#17652f' }} />
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '600', color: '#0f172a' }}>
                     Lead Activity Track & Timeline
                   </h3>
                   <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
@@ -1285,26 +1282,26 @@ export const AgentProfilePage = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', backgroundColor: '#f8fafc', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700' }}>CURRENT STAGE</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1e293b' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#1e293b' }}>
                     {getStatusBadge(selectedLeadForTimeline.status).label}
                   </div>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700' }}>BUDGET</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f' }}>
                     ₹{(selectedLeadForTimeline.budget || 4500000).toLocaleString('en-IN')}
                   </div>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700' }}>REQUIREMENT</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f' }}>
                     {selectedLeadForTimeline.requirement || '2BHK'}
                   </div>
                 </div>
               </div>
 
               {/* Follow-up Timeline */}
-              <h4 style={{ margin: '8px 0 0', fontSize: '0.88rem', fontWeight: '800', color: '#334155' }}>
+              <h4 style={{ margin: '8px 0 0', fontSize: '0.88rem', fontWeight: '600', color: '#334155' }}>
                 Activity & Follow-Up History
               </h4>
 

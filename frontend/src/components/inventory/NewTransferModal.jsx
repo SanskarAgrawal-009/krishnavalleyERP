@@ -215,7 +215,7 @@ export const NewTransferModal = ({ isOpen, onClose, onSubmit }) => {
 
         {/* Material & Quantity */}
         <div className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#17652f' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: '600', color: '#17652f' }}>
             Transfer Material & Quantity
           </h4>
 

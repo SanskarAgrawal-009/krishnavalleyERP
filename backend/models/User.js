@@ -90,6 +90,26 @@ const UserSchema = new mongoose.Schema(
     },
 
     // ==========================================
+    // PER-USER PERMISSION OVERRIDES
+    // ==========================================
+
+    permissionOverrides: [
+      {
+        permissionCode: {
+          type: String,
+          required: true,
+          trim: true,
+          lowercase: true,
+        },
+        grant: {
+          type: String,
+          enum: ['allow', 'deny'],
+          default: 'allow',
+        },
+      },
+    ],
+
+    // ==========================================
     // BRANCH ACCESS
     // ==========================================
 

@@ -66,9 +66,11 @@ const triggerDesktopChatNotification = (title, body, onClick) => {
 };
 
 export const TaskChatNotifier = () => {
-  const { user } = useAuth();
+  const { user, hasPermission } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const canAccessTasks = Boolean(user && (hasPermission('tasks:view') || hasPermission('tasks:manage')));
 
   const [activePopups, setActivePopups] = useState([]);
   const [selectedTaskIdForModal, setSelectedTaskIdForModal] = useState(null);
@@ -124,7 +126,7 @@ export const TaskChatNotifier = () => {
 
   // Poll for new task chat comments
   const checkRecentChats = useCallback(async () => {
-    if (!user || isPollingRef.current) return;
+    if (!user || !canAccessTasks || isPollingRef.current) return;
     isPollingRef.current = true;
 
     try {
@@ -179,10 +181,10 @@ export const TaskChatNotifier = () => {
     } finally {
       isPollingRef.current = false;
     }
-  }, [user]);
+  }, [user, canAccessTasks]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !canAccessTasks) return;
 
     // Check immediately, then every 8 seconds
     checkRecentChats();
@@ -195,7 +197,7 @@ export const TaskChatNotifier = () => {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
     };
-  }, [user, checkRecentChats]);
+  }, [user, canAccessTasks, checkRecentChats]);
 
   // Auto-dismiss individual popups after 9 seconds
   useEffect(() => {

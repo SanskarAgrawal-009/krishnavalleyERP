@@ -53,15 +53,15 @@ export const UploadAnimation = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          animation: 'pulseUploadBlue 1.6s infinite ease-in-out',
-          boxShadow: '0 8px 24px rgba(26, 115, 232, 0.3)'
+          animation: 'pulseUpload 1.6s infinite ease-in-out',
+          boxShadow: '0 8px 24px rgba(23, 101, 47, 0.3)'
         }}
       >
         <UploadCloud size={38} className="spin" style={{ animationDuration: '4s' }} />
       </div>
 
       <div>
-        <h4 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
+        <h4 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', fontWeight: '600', color: '#0f172a' }}>
           Processing &amp; Uploading File
         </h4>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', color: '#17652f', background: '#e8f2e5', padding: '3px 10px', borderRadius: '12px', fontWeight: '600' }}>

@@ -114,10 +114,10 @@ export const NAV_CATEGORIES = [
       },
       {
         path: '/reports',
-        label: 'BI Reports & Analytics',
+        label: 'Reports & Analytics',
         icon: BarChart3,
         highlight: true,
-        badge: 'BI',
+        badge: 'Reports',
         permission: 'reports:view',
         subItems: [
           { path: '/reports/sales', label: 'Sales Report', permission: 'sales:view' },
@@ -234,7 +234,7 @@ export const NAV_CATEGORIES = [
     items: [
       {
         path: '/agent-portal',
-        label: 'Agent Portal & Leads',
+        label: 'Agent Portal',
         icon: Sparkles,
         badge: 'Partner',
         permission: 'agent:leads',
@@ -253,12 +253,6 @@ export const NAV_CATEGORIES = [
           { path: '/agent-network', label: 'Channel Partner Directory', icon: Users },
           { path: '/site-visits', label: 'Site Visit Approvals', icon: ShieldCheck, permission: 'agent:verify' },
         ]
-      },
-      {
-        path: '/settings',
-        label: 'System Settings',
-        icon: Settings,
-        permission: ['settings:view', 'users:manage']
       }
     ]
   },
@@ -268,7 +262,7 @@ export const NAV_CATEGORIES = [
     items: [
       {
         path: '/hr',
-        label: 'Workforce & HR',
+        label: 'Human Resources',
         icon: Briefcase,
         permission: 'hr:view',
         subItems: [
@@ -282,7 +276,7 @@ export const NAV_CATEGORIES = [
       },
       {
         path: '/documents',
-        label: 'Documents Vault',
+        label: 'Document Vault',
         icon: Folder,
         permission: 'documents:view',
         subItems: [
@@ -295,7 +289,7 @@ export const NAV_CATEGORIES = [
       },
       {
         path: '/notifications',
-        label: 'Notifications & Comms',
+        label: 'Notifications & Messaging',
         icon: Bell,
         badge: 'Hub',
         permission: 'notifications:view',
@@ -317,24 +311,30 @@ export const NAV_CATEGORIES = [
     items: [
       {
         path: '/access-control',
-        label: 'Access Control & Users',
+        label: 'User Accounts & Permissions',
         icon: ShieldCheck,
         badge: 'Admin',
-        permission: ['users:view', 'roles:view', 'users:manage', 'roles:manage'],
+        permission: ['users:manage', 'roles:manage'],
         subItems: [
-          { path: '/access-control?tab=users', label: 'User Directory', icon: Users },
-          { path: '/access-control?tab=roles', label: 'Role Permissions Matrix', icon: ShieldCheck, permission: 'roles:view' },
-          { path: '/access-control?tab=branches', label: 'Branch Locations', icon: Building2 }
+          { path: '/access-control?tab=users', label: 'User Directory', icon: Users, permission: 'users:manage' },
+          { path: '/access-control?tab=roles', label: 'Role Permissions Matrix', icon: ShieldCheck, permission: 'roles:manage' },
+          { path: '/access-control?tab=branches', label: 'Branch Locations', icon: Building2, permission: 'users:manage' }
         ]
       },
       {
+        path: '/settings',
+        label: 'System Settings',
+        icon: Settings,
+        permission: ['settings:manage', 'users:manage']
+      },
+      {
         path: '/audit-logs',
-        label: 'Audit Logs & Vault',
+        label: 'Audit Logs & Activity',
         icon: ShieldCheck,
         badge: 'Sec',
-        permission: ['audit:view', 'users:view'],
+        permission: ['audit:view', 'users:manage'],
         subItems: [
-          { path: '/audit-logs?tab=activity', label: 'Activity Logs (CRUD)', icon: FileText },
+          { path: '/audit-logs?tab=activity', label: 'Activity History', icon: FileText },
           { path: '/audit-logs?tab=deleted', label: 'Deleted Records Vault', icon: FileText },
           { path: '/audit-logs?tab=updated', label: 'Updated Records (Diffs)', icon: FileText },
           { path: '/audit-logs?tab=logins', label: 'Login History', icon: User },
@@ -485,25 +485,62 @@ export const AppLayout = () => {
   // Mobile Omnisearch overlay state
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
+  // Dynamic Module Visibility state configured via Access Control
+  const [moduleVisibility, setModuleVisibility] = useState(() => {
+    try {
+      const saved = localStorage.getItem('kv_module_visibility');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      try {
+        const saved = localStorage.getItem('kv_module_visibility');
+        setModuleVisibility(saved ? JSON.parse(saved) : {});
+      } catch {
+        setModuleVisibility({});
+      }
+    };
+    window.addEventListener('kv_module_visibility_changed', handleVisibilityChange);
+    return () => window.removeEventListener('kv_module_visibility_changed', handleVisibilityChange);
+  }, []);
+
   // Filter items based on user permissions, role, and search
   const userRole = extractRoleCode(user, authRole);
   const isAgentUser = userRole === 'agent';
   const isTaskforceManager = userRole === 'taskforce_manager' || userRole === 'taskforce_mgr';
   const isTaskforceUser = isTaskforceTeamMember(user, userRole);
-  const isFinancialRestricted = isTaskforceManager || (!isSuperAdmin && !hasPermission('reports:financial') && userRole !== 'accounts_manager');
+  
+  // Dedicated taskforce profile check: A user is taskforce-only ONLY if their primary role
+  // is dedicated taskforce field staff and they do NOT possess permissions for core ERP modules (Rentals, Sales, CRM, etc.)
+  const isDedicatedTaskforceRole = (
+    userRole === 'taskforce_member' ||
+    userRole === 'taskforce_lead' ||
+    userRole === 'taskforce_supervisor' ||
+    userRole === 'helper' ||
+    userRole === 'taskforce_manager' ||
+    userRole === 'taskforce_mgr'
+  );
+  const hasCoreErpAccess = hasPermission('rentals:view') ||
+    hasPermission('sales:view') ||
+    hasPermission('inventory:view') ||
+    hasPermission('crm:view') ||
+    hasPermission('customers:view') ||
+    hasPermission('hr:view') ||
+    hasPermission('materials:view') ||
+    hasPermission('maintenance:view') ||
+    userRole === 'rental_manager' ||
+    userRole === 'sales_head';
 
-  const FINANCIAL_PATHS = [
+  const isTaskforceOnlyProfile = !isSuperAdmin && isDedicatedTaskforceRole && !hasCoreErpAccess;
+  // Corporate Finance (P&L and Collections/Aging) is restricted to Accounts and Super Admin
+  const canAccessCorporateFinance = isSuperAdmin || userRole === 'accounts_manager' || hasPermission('reports:financial');
+  const CORPORATE_FINANCE_PATHS = [
     '/reports/finance',
     '/reports/collection',
-    '/reports/sales',
-    '/reports/rental',
-    '/reports/crm',
-    '/maintenance?tab=bills',
-    '/rentals/ledgers',
-    '/hr?tab=payroll',
-    '/customers?tab=passbook',
-    '/documents?tab=sales',
-    '/documents?tab=rental'
   ];
 
   const isOfflineDev = typeof window !== 'undefined' && (
@@ -588,17 +625,19 @@ export const AppLayout = () => {
   const quickActionConfig = getQuickActionConfig();
   const QuickActionIcon = quickActionConfig.icon;
 
-  // Sub-item permission & financial restriction validator
+  // Sub-item permission & corporate finance validator
   const isSubItemPermitted = (sub) => {
-    if (isFinancialRestricted && FINANCIAL_PATHS.includes(sub.path)) return false;
-    if (isTaskforceManager && (
+    if (CORPORATE_FINANCE_PATHS.includes(sub.path) && !canAccessCorporateFinance) return false;
+    if (isTaskforceOnlyProfile && (
       sub.path.startsWith('/reports/sales') ||
       sub.path.startsWith('/reports/rental') ||
       sub.path.startsWith('/reports/crm') ||
       sub.path.startsWith('/reports/finance') ||
       sub.path.startsWith('/reports/collection') ||
       sub.path.startsWith('/documents?tab=sales') ||
-      sub.path.startsWith('/documents?tab=rental')
+      sub.path.startsWith('/documents?tab=rental') ||
+      sub.path.startsWith('/rentals') ||
+      sub.path.startsWith('/customers')
     )) {
       return false;
     }
@@ -611,34 +650,44 @@ export const AppLayout = () => {
   };
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
-    // 1. Agent Portal is exclusively for logged-in Agents
+    // 0. Dynamic visibility override from Access Control
+    const roleOverrides = moduleVisibility[userRole] || {};
+    const globalOverrides = moduleVisibility['global'] || {};
+    if (roleOverrides[item.path] === false || (roleOverrides[item.path] === undefined && globalOverrides[item.path] === false)) {
+      return false;
+    }
+
+    // 1. Taskforce Member and Manager Profiles: do not show Property & Engineering or Workforce & Assets
+    if (isTaskforceOnlyProfile) {
+      if (['/inventory', '/materials', '/maintenance', '/hr', '/documents', '/notifications', '/sales', '/customers', '/rentals', '/crm', '/agent-network'].includes(item.path)) {
+        return false;
+      }
+    }
+
+    // 2. Agent Portal is exclusively for logged-in Agents
     if (item.path === '/agent-portal') {
       return isAgentUser;
     }
 
-    // 2. Agent Network Directory is exclusively for inhouse staff & management (not agents, and not taskforce manager)
+    // 3. Agent Network Directory is for inhouse staff & management (not external agents, and not taskforce field staff)
     if (item.path === '/agent-network') {
-      return !isAgentUser && !isTaskforceManager;
+      if (isAgentUser || isTaskforceOnlyProfile) return false;
+      if (isSuperAdmin) return true;
     }
 
-    // 3. Hide sales, CRM, customers, and rentals from taskforce manager
-    if (isTaskforceManager && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals' || item.path === '/crm')) {
+    // 4. Hide sales, CRM, customers, and rentals from taskforce profiles
+    if (isTaskforceOnlyProfile && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals' || item.path === '/crm')) {
       return false;
     }
 
-    // 4. Hide financial routes from general financial-restricted users
-    if (isFinancialRestricted && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals')) {
+    // 5. Hide Executive Dashboard for taskforce profiles (dedicated Taskforce Dashboard is used)
+    if (isTaskforceOnlyProfile && item.path === '/dashboard') {
       return false;
     }
 
-    // 5. Hide Executive Dashboard for taskforce manager (dedicated Taskforce Dashboard is used)
-    if (isTaskforceManager && item.path === '/dashboard') {
-      return false;
-    }
-
-    // 6. Taskforce Dashboard is exclusively for Taskforce team members & Admin
+    // 7. Taskforce Dashboard is exclusively for Taskforce team members & Admin
     if (item.path === '/taskforce-dashboard') {
-      return isTaskforceUser;
+      return isTaskforceUser || isSuperAdmin;
     }
 
     if (!item.permission) return true;
@@ -758,25 +807,54 @@ export const AppLayout = () => {
   };
 
   const filteredCategories = NAV_CATEGORIES.filter((category) => {
-    if (isTaskforceManager && (category.categoryKey === 'sales' || category.categoryKey === 'partners')) {
+    // 1. Taskforce Member and Manager Profiles: do not show Property & Engineering or Workforce & Assets
+    if (isTaskforceOnlyProfile) {
+      if (category.categoryKey === 'property' || category.categoryKey === 'workforce') {
+        return false;
+      }
+      if (category.categoryKey === 'sales' || category.categoryKey === 'partners') {
+        return false;
+      }
+    }
+
+    // 2. Dynamic visibility switch from Access Control
+    const roleOverrides = moduleVisibility[userRole] || {};
+    const globalOverrides = moduleVisibility['global'] || {};
+    if (roleOverrides[category.categoryKey] === false || (roleOverrides[category.categoryKey] === undefined && globalOverrides[category.categoryKey] === false)) {
       return false;
     }
+
     return true;
   }).map((category) => {
+    const roleOverrides = moduleVisibility[userRole] || {};
+    const globalOverrides = moduleVisibility['global'] || {};
+
     const visibleCategoryItems = category.items.filter((item) => {
+      // Dynamic item-level visibility switch from Access Control
+      if (roleOverrides[item.path] === false || (roleOverrides[item.path] === undefined && globalOverrides[item.path] === false)) {
+        return false;
+      }
+
+      // Hide individual property/workforce items for taskforce members/managers
+      if (isTaskforceOnlyProfile) {
+        if (['/inventory', '/materials', '/maintenance', '/hr', '/documents', '/notifications', '/sales', '/customers', '/rentals', '/crm', '/agent-network'].includes(item.path)) {
+          return false;
+        }
+      }
+
       if (item.path === '/agent-portal') return isAgentUser;
-      if (item.path === '/agent-network') return !isAgentUser && !isTaskforceManager;
-      if (isTaskforceManager && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals' || item.path === '/crm')) {
+      if (item.path === '/agent-network') {
+        if (isAgentUser || isTaskforceOnlyProfile) return false;
+        if (isSuperAdmin) return true;
+      }
+      if (isTaskforceOnlyProfile && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals' || item.path === '/crm')) {
         return false;
       }
-      if (isFinancialRestricted && (item.path === '/sales' || item.path === '/customers' || item.path === '/rentals')) {
-        return false;
-      }
-      if (isTaskforceManager && item.path === '/dashboard') {
+      if (isTaskforceOnlyProfile && item.path === '/dashboard') {
         return false;
       }
       if (item.path === '/taskforce-dashboard') {
-        return isTaskforceUser;
+        return isTaskforceUser || isSuperAdmin;
       }
       if (!item.permission) return true;
       if (Array.isArray(item.permission)) {
@@ -1097,7 +1175,7 @@ export const AppLayout = () => {
                   style={{
                     padding: '14px 18px 6px',
                     fontSize: '0.67rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     color: '#94a3b8',
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
@@ -1429,7 +1507,7 @@ export const AppLayout = () => {
             }}
             onMouseEnter={(e) => {
               if (!isResizing) {
-                e.currentTarget.style.backgroundColor = isDark ? 'rgba(96, 165, 250, 0.45)' : 'rgba(26, 115, 232, 0.35)';
+                e.currentTarget.style.backgroundColor = isDark ? 'rgba(74, 158, 104, 0.45)' : 'rgba(23, 101, 47, 0.35)';
               }
             }}
             onMouseLeave={(e) => {
@@ -1775,7 +1853,7 @@ export const AppLayout = () => {
                   </div>
 
                   {/* Access Control shortcut (if authorized) */}
-                  {(isSuperAdmin || hasPermission('users:view')) && (
+                  {(isSuperAdmin || hasPermission('users:view') || hasPermission('roles:view') || hasPermission('users:manage') || hasPermission('roles:manage')) && (
                     <button
                       onClick={() => {
                         setProfileDropdownOpen(false);

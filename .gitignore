@@ -1,48 +1,193 @@
-# Dependencies
+# ==============================================================================
+# KRISHNA VALLEY ERP - MASTER SECURITY & SYSTEM .GITIGNORE
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. ENVIRONMENT VARIABLES & SECRETS (CRITICAL SECURITY)
+# ------------------------------------------------------------------------------
+# Never commit credentials, DB connection URIs, API keys, or JWT secrets
+.env
+.env.*
+!.env.example
+!.env.template
+!.env.development
+!.env.production
+*.env
+*.env.local
+*.env.*.local
+backend/.env*
+!backend/.env.example
+frontend/.env.local
+frontend/.env.*.local
+
+# Private keys, certificates & credentials
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.keystore
+*.jks
+id_rsa*
+id_ed25519*
+
+# Cloud & Third-Party Service Account Keys & Secrets
+*credentials*.json
+*service-account*.json
+*client_secret*.json
+google-services*.json
+firebase-adminsdk*.json
+*gcp-key*.json
+*aws-key*.json
+meta-app-secret*.json
+*.token
+
+# ------------------------------------------------------------------------------
+# 2. CUSTOMER DATA, SENSITIVE UPLOADS & BUSINESS ATTACHMENTS (DATA PRIVACY)
+# ------------------------------------------------------------------------------
+# Customer KYC, sale deeds, agreements, tenant contracts, call recordings & IDs
+backend/uploads/**
+uploads/**
+public/uploads/**
+!backend/uploads/**/.gitkeep
+!backend/uploads/.gitkeep
+
+# Sensitive document file types in root and working dirs (except public assets)
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.csv
+!frontend/src/assets/**
+!frontend/public/assets/**
+
+# Audio/Video call recordings & inspections
+*.mp3
+*.wav
+*.ogg
+*.mp4
+*.webm
+
+# Generated audit reports & financial compliance exports
+KRISHNA_VALLEY_ERP_SYSTEM_AUDIT_REPORT.*
+*AUDIT_REPORT*
+*compliance_export*
+*financial_export*
+
+# ------------------------------------------------------------------------------
+# 3. DATABASE DUMPS, CACHES & BACKUPS
+# ------------------------------------------------------------------------------
+backups/
+backend/backups/
+*.dump
+*.sql
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.db
+*.rdb
+dump/
+*.backup
+*.bak
+
+# ------------------------------------------------------------------------------
+# 4. DEPENDENCIES & PACKAGE MANAGERS
+# ------------------------------------------------------------------------------
 node_modules/
 */node_modules/
+package-lock.json.backup
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
 
-# Environment Variables & Secrets
-.env
-.env.local
-.env.*.local
-backend/.env
-frontend/.env
-
-# Build outputs
+# ------------------------------------------------------------------------------
+# 5. BUILD ARTIFACTS & COMPILED CODE
+# ------------------------------------------------------------------------------
 dist/
 build/
+out/
 */dist/
 */build/
+*/out/
+.parcel-cache/
+.vite/
+.next/
+.nuxt/
+*.tsbuildinfo
 
-# Logs
-logs
+# ------------------------------------------------------------------------------
+# 6. LOGS, DEBUGGING & RUNTIME ARTIFACTS
+# ------------------------------------------------------------------------------
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.pids
+*.pid
+*.seed
+*.pid.lock
 
-# OS & Editor Files
+# Test & Inspection Scratch Scripts
+check_*.cjs
+inspect_*.cjs
+test_*.cjs
+deep_search_*.cjs
+scratch/
+temp/
+tmp/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# ------------------------------------------------------------------------------
+# 7. AI AGENTS, WORKBENCHES & LOCAL WORKSPACE SKILLS
+# ------------------------------------------------------------------------------
+.agents/
+skills-lock.json
+.gemini/
+.system_generated/
+
+# ------------------------------------------------------------------------------
+# 8. OPERATING SYSTEM & IDE ARTIFACTS
+# ------------------------------------------------------------------------------
+# macOS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
 Thumbs.db
-.vscode/
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+
+# IDEs & Code Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# Uploads & Temp files (keep .gitkeep if needed)
-backend/uploads/*
-!backend/uploads/.gitkeep
-
-# Audit & Generated Reports
-KRISHNA_VALLEY_ERP_SYSTEM_AUDIT_REPORT.*
-*.pdf
-
-# Database backups & dumps
-backend/backups/
-backups/
+*.sublime-project
+*.sublime-workspace

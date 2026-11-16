@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
-import { Phone, MessageSquare, Mail, Users, Compass, Tag, Calendar, CheckCircle2 } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { googleCalendarService } from '../../services/googleCalendarService.js';
 
 export const ManualFollowUpModal = ({
@@ -50,138 +50,128 @@ export const ManualFollowUpModal = ({
   };
 
   const modes = [
-    { value: 'call', label: 'Call', icon: Phone, color: '#17652f' },
-    { value: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: '#17652f' },
-    { value: 'site_visit', label: 'Site Visit', icon: Compass, color: '#475569' },
-    { value: 'meeting', label: 'Meeting', icon: Users, color: '#17652f' },
-    { value: 'email', label: 'Email', icon: Mail, color: '#17652f' },
-    { value: 'other', label: 'Other', icon: Tag, color: '#4b5563' }
+    { value: 'call', label: 'Call' },
+    { value: 'whatsapp', label: 'WhatsApp' },
+    { value: 'site_visit', label: 'Site visit' },
+    { value: 'meeting', label: 'Meeting' },
+    { value: 'email', label: 'Email' }
   ];
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={followUp ? `Edit Follow-Up: ${leadName}` : `Log New Follow-Up for "${leadName}"`}
-      maxWidth="540px"
+      title={followUp ? `Edit follow-up: ${leadName}` : `Log follow-up: ${leadName}`}
+      maxWidth="520px"
     >
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         
-        {/* Interaction Mode Grid */}
-        <div>
-          <label style={{ fontSize: '0.8rem', color: '#374151', display: 'block', marginBottom: '8px' }}>
-            Interaction Mode *
-          </label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-            {modes.map((m) => {
-              const Icon = m.icon;
-              const isSelected = formData.mode === m.value;
-              return (
-                <button
-                  type="button"
-                  key={m.value}
-                  onClick={() => setFormData({ ...formData, mode: m.value })}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    padding: '8px 10px',
-                    borderRadius: 'var(--radius-sm)',
-                    background: isSelected ? `${m.color}22` : 'var(--bg-card)',
-                    border: `1px solid ${isSelected ? m.color : 'var(--border-subtle)'}`,
-                    color: isSelected ? m.color : 'var(--text-secondary)',
-                    fontWeight: isSelected ? '700' : '500',
-                    fontSize: '0.8rem',
-                    cursor: 'pointer',
-                    transition: 'var(--transition-fast)'
-                  }}
-                >
-                  <Icon size={14} />
-                  {m.label}
-                </button>
-              );
-            })}
+        {/* Interaction mode choices */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Interaction mode *</span>
+          </div>
+          <div className="form-card-choices" style={{ flexWrap: 'wrap', gap: '12px' }}>
+            {modes.map((m) => (
+              <label
+                key={m.value}
+                className="form-card-choice"
+                onClick={() => setFormData({ ...formData, mode: m.value })}
+              >
+                <input
+                  type="radio"
+                  name="manual_followup_mode"
+                  checked={formData.mode === m.value}
+                  onChange={() => setFormData({ ...formData, mode: m.value })}
+                  style={{ accentColor: '#17652f' }}
+                />
+                <span>{m.label}</span>
+              </label>
+            ))}
           </div>
         </div>
 
-        {/* Date of Interaction & Status */}
+        {/* Date and Status Row */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <div>
-            <label style={{ fontSize: '0.8rem', color: '#374151', display: 'block', marginBottom: '4px' }}>
-              Interaction Date & Time
-            </label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Interaction date & time</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="datetime-local"
+                className="form-card-input"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Status</span>
+            </div>
+            <div className="form-card-input-row">
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                className="form-card-input"
+                style={{ cursor: 'pointer' }}
+              >
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Remarks / Notes */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Discussion remarks or notes *</span>
+          </div>
+          <div className="form-card-input-row">
             <input
-              type="datetime-local"
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              style={{ width: '100%' }}
+              type="text"
+              required
+              placeholder="e.g. Discussed floor plan choices. Interested in weekend site visit."
+              className="form-card-input"
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
           </div>
+        </div>
 
-          <div>
-            <label style={{ fontSize: '0.8rem', color: '#374151', display: 'block', marginBottom: '4px' }}>
-              Follow-Up Status
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              style={{ width: '100%' }}
-            >
-              <option value="pending">Pending</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
+        {/* Next Follow-Up */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Next scheduled follow-up (optional)</span>
+            {formData.nextFollowUpDate && <span className="form-card-badge">Reminder Set</span>}
+          </div>
+          <div className="form-card-input-row">
+            <input
+              type="datetime-local"
+              className="form-card-input"
+              value={formData.nextFollowUpDate}
+              onChange={(e) => setFormData({ ...formData, nextFollowUpDate: e.target.value })}
+            />
           </div>
         </div>
 
-        {/* Notes */}
-        <div>
-          <label style={{ fontSize: '0.8rem', color: '#374151', display: 'block', marginBottom: '4px' }}>
-            Discussion Remarks / Notes *
-          </label>
-          <textarea
-            required
-            rows={3}
-            placeholder="e.g. Discussed floor plan choices. Client requested price quotation for 3BHK flat A-502. Interested in site visit this Saturday."
-            value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            style={{ width: '100%', resize: 'vertical' }}
-          />
-        </div>
-
-        {/* Next Follow-Up Date */}
-        <div>
-          <label style={{ fontSize: '0.8rem', color: '#374151', display: 'block', marginBottom: '4px' }}>
-            Next Scheduled Follow-Up Date & Time
-          </label>
-          <input
-            type="datetime-local"
-            value={formData.nextFollowUpDate}
-            onChange={(e) => setFormData({ ...formData, nextFollowUpDate: e.target.value })}
-            style={{ width: '100%' }}
-          />
-        </div>
-
-        {/* Google Calendar Direct Sync Callout */}
+        {/* Google Calendar Sync */}
         {formData.nextFollowUpDate && (
           <div style={{
-            padding: '10px 12px',
-            borderRadius: '6px',
+            padding: '8px 12px',
+            borderRadius: '8px',
             background: '#e8f2e5',
-            border: '1px solid #cde4c9',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '8px',
-            flexWrap: 'wrap'
+            justifyContent: 'space-between'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Calendar size={15} color="#17652f" />
-              <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#17652f' }}>
-                Google Calendar Auto-Sync Enabled
-              </span>
-            </div>
+            <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '600' }}>
+              Add reminder to personal calendar
+            </span>
             <button
               type="button"
               onClick={() => {
@@ -195,40 +185,60 @@ export const ManualFollowUpModal = ({
               }}
               style={{
                 padding: '3px 8px',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 background: '#ffffff',
                 border: '1px solid #17652f',
                 color: '#17652f',
-                fontSize: '0.7rem',
+                fontSize: '0.72rem',
                 fontWeight: '700',
                 cursor: 'pointer'
               }}
             >
-              + Add to Google Calendar
+              + Sync Calendar
             </button>
           </div>
         )}
 
-        {/* Actions */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
+        {/* Footer */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '10px',
+          paddingTop: '16px',
+          borderTop: '1px solid #f1f5f9'
+        }}>
           <button
             type="button"
             onClick={onClose}
-            style={{ padding: '8px 16px', background: '#f8f9fa', color: '#374151', borderRadius: 'var(--radius-sm)' }}
+            style={{
+              padding: '9px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#f1f5f9',
+              color: '#475569',
+              fontWeight: '600',
+              fontSize: '0.86rem',
+              cursor: 'pointer'
+            }}
           >
             Cancel
           </button>
+
           <button
             type="submit"
             style={{
-              padding: '8px 20px',
-              background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
-              color: '#111827',
+              padding: '9px 24px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#17652f',
+              color: '#ffffff',
               fontWeight: '700',
-              borderRadius: 'var(--radius-sm)'
+              fontSize: '0.86rem',
+              cursor: 'pointer'
             }}
           >
-            {followUp ? 'Save Follow-Up' : 'Log Follow-Up'}
+            {followUp ? 'Save follow-up' : 'Log follow-up'}
           </button>
         </div>
       </form>

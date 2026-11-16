@@ -486,7 +486,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
 
   const inputFocusStyle = {
     borderColor: '#17652f',
-    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+    boxShadow: '0 0 0 3px rgba(23, 101, 47, 0.1)',
   };
 
   const labelStyle = {
@@ -513,7 +513,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           <User size={16} color="#fff" />
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Owner & Registration Details</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Owner & Registration Details</h3>
           <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Enter owner KYC, contact info and registration documents</p>
         </div>
       </div>
@@ -638,7 +638,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#0f172a' }}>
+              <span style={{ fontSize: '0.84rem', fontWeight: '600', color: '#0f172a' }}>
                 Owner Registry Document
               </span>
               <span style={{
@@ -729,7 +729,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           <DollarSign size={16} color="#fff" />
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Monthly Rental Amount & TDS</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Monthly Rental Amount & TDS</h3>
           <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Set gross rent and TDS deduction preferences</p>
         </div>
       </div>
@@ -740,7 +740,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         <div style={{ position: 'relative' }}>
           <span style={{
             position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
-            fontWeight: '800', color: '#17652f', fontSize: '1rem',
+            fontWeight: '600', color: '#17652f', fontSize: '1rem',
           }}>₹</span>
           <input
             type="number"
@@ -760,7 +760,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
               ...inputStyle,
               paddingLeft: '30px',
               fontSize: '1.1rem',
-              fontWeight: '800',
+              fontWeight: '600',
               color: '#0f172a',
             }}
             onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
@@ -904,7 +904,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           Net Monthly Payout after TDS:
         </span>
         <div style={{ textAlign: 'right' }}>
-          <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#17652f' }}>
+          <span style={{ fontSize: '1.2rem', fontWeight: '600', color: '#17652f' }}>
             {formatINR(newNet)}
           </span>
           <span style={{ fontSize: '0.72rem', color: '#17652f', display: 'block', fontWeight: '600' }}>
@@ -929,7 +929,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           <Calendar size={16} color="#fff" />
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Contract Period & Effective Date</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Contract Period & Effective Date</h3>
           <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Set contract dates, tenure, and when new terms take effect</p>
         </div>
       </div>
@@ -957,7 +957,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
             required
             value={form.tenureMonths}
             onChange={(e) => handleTenureChange(e.target.value)}
-            style={{ ...inputStyle, fontWeight: '800', fontSize: '1rem', textAlign: 'center' }}
+            style={{ ...inputStyle, fontWeight: '600', fontSize: '1rem', textAlign: 'center' }}
             onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
             onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
           />
@@ -1033,7 +1033,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           marginBottom: '12px', flexWrap: 'wrap', gap: '8px',
         }}>
           <label style={{
-            fontSize: '0.82rem', fontWeight: '800', color: '#17652f',
+            fontSize: '0.82rem', fontWeight: '600', color: '#17652f',
             display: 'flex', alignItems: 'center', gap: '6px',
           }}>
             <Sparkles size={16} color="#17652f" />
@@ -1068,7 +1068,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           onChange={(e) => setForm({ ...form, effectiveMonthYear: e.target.value })}
           style={{
             ...inputStyle, maxWidth: '260px',
-            fontWeight: '800', fontSize: '1rem', color: '#17652f',
+            fontWeight: '600', fontSize: '1rem', color: '#17652f',
             borderColor: '#17652f',
           }}
         />
@@ -1123,7 +1123,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
           <CheckCircle2 size={16} color="#fff" />
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Review & Confirm</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Review & Confirm</h3>
           <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Review financial impact, upload agreement, and save</p>
         </div>
       </div>
@@ -1137,7 +1137,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <TrendingUp size={18} color="#17652f" />
-            <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase' }}>
               Financial Impact Summary
             </span>
           </div>
@@ -1154,11 +1154,11 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
             fontSize: '0.75rem', color: '#001a41', flexWrap: 'wrap',
           }}>
             <div>
-              <span style={{ fontWeight: '800' }}>Prior Period:</span> {priorMonthsCount} mos @ {formatINR(prevNet)} = <strong>{formatINR(priorMonthsCount * prevNet)}</strong>
+              <span style={{ fontWeight: '600' }}>Prior Period:</span> {priorMonthsCount} mos @ {formatINR(prevNet)} = <strong>{formatINR(priorMonthsCount * prevNet)}</strong>
             </div>
             <ArrowRight size={14} color="#17652f" />
             <div>
-              <span style={{ fontWeight: '800' }}>New Period ({formatMonthYearLabel(form.effectiveMonthYear)}):</span> {newMonthsCount} mos @ {formatINR(newNet)} = <strong>{formatINR(newMonthsCount * newNet)}</strong>
+              <span style={{ fontWeight: '600' }}>New Period ({formatMonthYearLabel(form.effectiveMonthYear)}):</span> {newMonthsCount} mos @ {formatINR(newNet)} = <strong>{formatINR(newMonthsCount * newNet)}</strong>
             </div>
           </div>
         ) : (
@@ -1170,17 +1170,17 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
           <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e8f2e5' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>TOTAL PAYMENT (TENURE)</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f' }}>{formatINR(totalCommitment)}</span>
+            <span style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f' }}>{formatINR(totalCommitment)}</span>
             <span style={{ fontSize: '0.66rem', color: '#17652f', display: 'block', fontWeight: '600', marginTop: '2px' }}>Gross without TDS</span>
           </div>
           <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e8f2e5' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>TOTAL PAID</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f' }}>{formatINR(totalPaid)}</span>
+            <span style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f' }}>{formatINR(totalPaid)}</span>
             <span style={{ fontSize: '0.66rem', color: '#64748b', display: 'block', marginTop: '2px' }}>Disbursed so far</span>
           </div>
           <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e8f2e5' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>OUTSTANDING</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: outstandingBalance > 0 ? '#0f172a' : '#17652f' }}>
+            <span style={{ fontSize: '1.15rem', fontWeight: '600', color: outstandingBalance > 0 ? '#0f172a' : '#17652f' }}>
               {formatINR(outstandingBalance)}
             </span>
             <span style={{ fontSize: '0.66rem', color: '#64748b', display: 'block', marginTop: '2px' }}>Remaining liability</span>
@@ -1193,7 +1193,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         background: '#f8fafc', border: '1px solid #e2e8f0',
         borderRadius: '12px', padding: '16px 18px',
       }}>
-        <h4 style={{ margin: '0 0 12px', fontSize: '0.82rem', fontWeight: '800', color: '#334155' }}>Terms Summary</h4>
+        <h4 style={{ margin: '0 0 12px', fontSize: '0.82rem', fontWeight: '600', color: '#334155' }}>Terms Summary</h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.82rem' }}>
           {[
             { label: 'Owner', value: form.ownerName || '—' },
@@ -1225,7 +1225,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
           <ShieldCheck size={16} color="#17652f" />
-          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase' }}>
             Owner Registry Document (Sale Deed / Registry Proof)
           </span>
         </div>
@@ -1329,7 +1329,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
           <FileText size={15} color="#17652f" />
-          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase' }}>
             Agreement Document (Rent-Back Contract)
           </span>
         </div>
@@ -1526,8 +1526,8 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(15, 23, 42, 0.7)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(15, 23, 42, 0.45)',
+        backdropFilter: 'blur(4px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1538,116 +1538,80 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
       <div
         style={{
           background: '#ffffff',
-          borderRadius: '20px',
+          borderRadius: '16px',
           width: '100%',
-          maxWidth: '720px',
+          maxWidth: '700px',
           maxHeight: '92vh',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 25px 60px -12px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 20px 45px rgba(0, 0, 0, 0.1)',
           overflow: 'hidden',
+          position: 'relative'
         }}
       >
-        {/* ================= HEADER ================= */}
-        <div
+        {/* Minimal Close Button */}
+        <button
+          onClick={onClose}
           style={{
-            padding: '18px 24px',
-            background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
-            color: '#ffffff',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            position: 'absolute', top: '16px', right: '18px',
+            background: 'transparent', border: 'none', borderRadius: '50%',
+            color: '#94a3b8', cursor: 'pointer', padding: '6px', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', zIndex: 10,
+            transition: 'background 0.15s ease, color 0.15s ease'
           }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#334155'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+          aria-label="Close"
         >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.15rem', fontWeight: '800' }}>Edit Rental Terms</span>
-              <span style={{
-                background: '#17652f', color: '#ffffff',
-                fontSize: '0.72rem', fontWeight: '700',
-                padding: '3px 10px', borderRadius: '6px',
-              }}>Flat {rental.flatNumber}</span>
-            </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: '#86c8a0' }}>
-              Step {currentStep} of {STEPS.length} — {STEPS[currentStep - 1].subtitle}
-            </p>
+          <X size={18} />
+        </button>
+
+        {/* HEADER (Centered & Clean) */}
+        <div style={{
+          padding: '24px 32px 12px', textAlign: 'center',
+          backgroundColor: '#ffffff'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <h2 style={{
+              margin: 0, fontSize: '1.35rem', fontWeight: '600',
+              color: '#1e293b', letterSpacing: '-0.02em'
+            }}>
+              Edit rental terms
+            </h2>
+            <span style={{
+              background: '#e8f2e5', color: '#17652f',
+              fontSize: '0.74rem', fontWeight: '600',
+              padding: '2px 8px', borderRadius: '6px'
+            }}>
+              Flat {rental.flatNumber}
+            </span>
           </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)', border: 'none',
-              borderRadius: '8px', color: '#94a3b8', cursor: 'pointer',
-              padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'background 0.2s',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-          >
-            <X size={18} />
-          </button>
+          <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+            Step {currentStep} of {STEPS.length} — {STEPS[currentStep - 1].subtitle}
+          </p>
         </div>
 
-        {/* ================= STEPPER ================= */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '0',
-          padding: '16px 24px', background: '#f8fafc',
-          borderBottom: '1px solid #e2e8f0',
-        }}>
+        {/* STEPPER (Matching Dashed-Line Reference Design) */}
+        <div className="form-stepper-header">
           {STEPS.map((step, idx) => {
             const isActive = currentStep === step.id;
             const isCompleted = currentStep > step.id;
-            const StepIcon = step.icon;
             return (
               <React.Fragment key={step.id}>
                 <button
                   type="button"
                   onClick={() => goToStep(step.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 14px', borderRadius: '10px', border: 'none',
-                    cursor: 'pointer',
-                    background: isActive ? '#ffffff' : 'transparent',
-                    boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-                    transition: 'all 0.2s ease',
-                    flex: isActive ? '1.2' : '1',
-                  }}
+                  className="form-stepper-item"
                 >
-                  <div style={{
-                    width: '30px', height: '30px', borderRadius: '8px',
-                    background: isCompleted
-                      ? 'linear-gradient(135deg, #17652f, #17652f)'
-                      : isActive
-                        ? `linear-gradient(135deg, ${step.color}, ${step.color}dd)`
-                        : '#e2e8f0',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.3s ease',
-                    flexShrink: 0,
-                  }}>
-                    {isCompleted ? (
-                      <CheckCircle2 size={14} color="#fff" />
-                    ) : (
-                      <StepIcon size={14} color={isActive ? '#fff' : '#94a3b8'} />
-                    )}
+                  <div className={`form-stepper-circle ${isCompleted ? 'completed' : isActive ? 'active' : 'upcoming'}`}>
+                    {isCompleted ? <Check size={12} strokeWidth={3} /> : step.id}
                   </div>
-                  <div style={{ textAlign: 'left', minWidth: 0 }}>
-                    <div style={{
-                      fontSize: '0.72rem', fontWeight: '800',
-                      color: isActive ? '#0f172a' : isCompleted ? '#17652f' : '#94a3b8',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                    }}>{step.title}</div>
-                    {isActive && (
-                      <div style={{ fontSize: '0.62rem', color: '#64748b', fontWeight: '600' }}>
-                        {step.subtitle}
-                      </div>
-                    )}
-                  </div>
+                  <span className={`form-stepper-label ${isActive ? 'active' : ''}`}>
+                    {step.title}
+                  </span>
                 </button>
                 {idx < STEPS.length - 1 && (
-                  <div style={{
-                    width: '24px', height: '2px', flexShrink: 0,
-                    background: isCompleted ? '#17652f' : '#e2e8f0',
-                    borderRadius: '1px', transition: 'background 0.3s',
-                  }} />
+                  <div className="form-stepper-line" />
                 )}
               </React.Fragment>
             );
@@ -1665,7 +1629,7 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
             }
           }}
           style={{
-            padding: '22px 24px',
+            padding: '8px 32px 24px',
             overflowY: 'auto',
             flex: 1,
           }}
@@ -1676,45 +1640,22 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
         {/* ================= FOOTER ================= */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '14px 24px', borderTop: '1px solid #e2e8f0',
+          padding: '16px 32px', borderTop: '1px solid #f1f5f9',
           background: '#ffffff',
         }}>
           <button
             type="button"
             onClick={currentStep === 1 ? onClose : goPrev}
             style={{
-              padding: '10px 20px', borderRadius: '10px',
-              border: '1px solid #e2e8f0', background: '#ffffff',
-              color: '#475569', fontSize: '0.84rem', fontWeight: '700',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-              transition: 'all 0.2s',
+              padding: '10px 24px', borderRadius: '8px', border: 'none',
+              background: '#f1f5f9', color: '#475569', fontSize: '0.86rem', fontWeight: '600',
+              cursor: 'pointer', transition: 'background-color 0.15s ease',
             }}
-            onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+            onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0'; }}
+            onMouseOut={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
           >
-            {currentStep === 1 ? (
-              <>Cancel</>
-            ) : (
-              <><ArrowLeft size={15} /> Back</>
-            )}
+            {currentStep === 1 ? 'Cancel' : 'Back'}
           </button>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {STEPS.map((step) => (
-              <div
-                key={step.id}
-                style={{
-                  width: currentStep === step.id ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '4px',
-                  background: currentStep >= step.id
-                    ? 'linear-gradient(135deg, #17652f, #17652f)'
-                    : '#e2e8f0',
-                  transition: 'all 0.3s ease',
-                }}
-              />
-            ))}
-          </div>
 
           {currentStep < STEPS.length ? (
             <button
@@ -1722,19 +1663,15 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
               onClick={goNext}
               disabled={!validateStep(currentStep)}
               style={{
-                padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: validateStep(currentStep)
-                  ? 'linear-gradient(135deg, #17652f, #17652f)'
-                  : '#e2e8f0',
+                padding: '10px 28px', borderRadius: '8px', border: 'none',
+                background: validateStep(currentStep) ? '#17652f' : '#e2e8f0',
                 color: validateStep(currentStep) ? '#ffffff' : '#94a3b8',
-                fontSize: '0.84rem', fontWeight: '800',
+                fontSize: '0.86rem', fontWeight: '600',
                 cursor: validateStep(currentStep) ? 'pointer' : 'not-allowed',
-                display: 'flex', alignItems: 'center', gap: '6px',
-                boxShadow: validateStep(currentStep) ? '0 4px 12px rgba(37, 99, 235, 0.35)' : 'none',
-                transition: 'all 0.2s',
+                transition: 'all 0.15s ease',
               }}
             >
-              Next <ChevronRight size={16} />
+              Continue
             </button>
           ) : (
             <button
@@ -1742,17 +1679,16 @@ export const EditRentalTermsModal = ({ isOpen, onClose, rental, onUpdated }) => 
               onClick={handleSubmit}
               disabled={saving}
               style={{
-                padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg, #17652f, #17652f)',
-                color: '#ffffff', fontSize: '0.84rem', fontWeight: '800',
+                padding: '10px 28px', borderRadius: '8px', border: 'none',
+                background: '#17652f',
+                color: '#ffffff', fontSize: '0.86rem', fontWeight: '600',
                 cursor: saving ? 'not-allowed' : 'pointer',
-                boxShadow: '0 4px 12px rgba(22, 163, 74, 0.35)',
                 display: 'flex', alignItems: 'center', gap: '8px',
-                transition: 'all 0.2s',
+                transition: 'all 0.15s ease',
               }}
             >
               <CheckCircle2 size={16} />
-              {saving ? 'Saving...' : 'Apply & Save Terms'}
+              {saving ? 'Saving...' : 'Save terms'}
             </button>
           )}
         </div>

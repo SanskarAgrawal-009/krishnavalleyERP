@@ -230,7 +230,7 @@ export const NewIssueModal = ({ isOpen, onClose, onSubmit, stores: propStores })
 
         {/* Material & Available Quantity Picker */}
         <div className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', background: '#fcfdfd' }}>
-          <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ fontSize: '0.88rem', fontWeight: '600', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Package size={16} /> Material & Stock Availability
           </h4>
 

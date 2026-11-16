@@ -156,11 +156,11 @@ export const BulkEnrollRentalModal = ({
           gap: '8px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Building2 size={16} color="#17652f" />
               Target Rental Units ({selectedFlats.length} Selected):
             </span>
-            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '4px', fontWeight: '800' }}>
+            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '4px', fontWeight: '600' }}>
               36-MONTH RENT-BACK CONTRACT
             </span>
           </div>
@@ -222,7 +222,7 @@ export const BulkEnrollRentalModal = ({
 
         {/* Section 1: Buyer / Owner Details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#1e293b', borderBottom: '1px solid #e2e8f0', paddingBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#1e293b', borderBottom: '1px solid #e2e8f0', paddingBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <User size={15} color="#17652f" /> 1. Registered Titleholder / Owner Details
           </div>
 
@@ -271,7 +271,7 @@ export const BulkEnrollRentalModal = ({
 
         {/* Section 2: 3-Year Rental Terms & Guaranteed Payouts */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#17652f', borderBottom: '1px solid #e2e8f0', paddingBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#17652f', borderBottom: '1px solid #e2e8f0', paddingBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Sparkles size={15} color="#17652f" /> 2. 3-Year Guaranteed Rent-Back Terms
           </div>
 
@@ -331,7 +331,7 @@ export const BulkEnrollRentalModal = ({
           }}>
             <div>
               <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#17652f' }}>36-MONTH CUMULATIVE GUARANTEED PAYOUT</span>
-              <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#4c1d95' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: '600', color: '#4c1d95' }}>
                 {formatINR(totalRentalRevenue)}
               </div>
             </div>
@@ -344,7 +344,7 @@ export const BulkEnrollRentalModal = ({
 
         {/* Section 3: Optional Initial Sales Allotment Value */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#1e293b', borderBottom: '1px solid #e2e8f0', paddingBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#1e293b', borderBottom: '1px solid #e2e8f0', paddingBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Receipt size={15} color="#17652f" /> 3. Property Valuation &amp; Allotment Agreement
           </div>
 

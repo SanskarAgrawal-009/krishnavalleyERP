@@ -90,24 +90,37 @@ export const AgentNetworkPage = () => {
   };
 
   const kpiCards = [
-    { label: 'Total Channel Partners', value: networkKPIs.totalAgents || 0, icon: Users, color: '#17652f', bg: '#e8f2e5' },
-    { label: 'Active Partners', value: networkKPIs.activeAgents || 0, icon: UserCheck, color: '#17652f', bg: '#e8f2e5' },
-    { label: 'Total Network Earnings', value: `₹${((networkKPIs.totalEarnings || 0) / 100000).toFixed(1)}L`, icon: TrendingUp, color: '#17652f', bg: '#faf5ff' },
-    { label: 'Outstanding Wallet', value: `₹${((networkKPIs.totalWallet || 0) / 100000).toFixed(1)}L`, icon: Wallet, color: '#0284c7', bg: '#f8fafc' },
-    { label: 'Total Matured Visits', value: networkKPIs.totalMatured || 0, icon: CheckCircle2, color: '#334155', bg: '#f8fafc' },
-    { label: 'Avg Commission Rate', value: `${(networkKPIs.avgCommRate || 2).toFixed(1)}%`, icon: BarChart3, color: '#0f172a', bg: '#f8fafc' },
+    { label: 'Channel partners', value: networkKPIs.totalAgents || 0, icon: Users, color: '#17652f', bg: '#e8f2e5' },
+    { label: 'Active partners', value: networkKPIs.activeAgents || 0, icon: UserCheck, color: '#17652f', bg: '#e8f2e5' },
+    { label: 'Total earnings', value: `₹${((networkKPIs.totalEarnings || 0) / 100000).toFixed(1)}L`, icon: TrendingUp, color: '#17652f', bg: '#e8f2e5' },
+    { label: 'Outstanding wallet', value: `₹${((networkKPIs.totalWallet || 0) / 100000).toFixed(1)}L`, icon: Wallet, color: '#17652f', bg: '#e8f2e5' },
+    { label: 'Matured visits', value: networkKPIs.totalMatured || 0, icon: CheckCircle2, color: '#17652f', bg: '#e8f2e5' },
+    { label: 'Average commission', value: `${(networkKPIs.avgCommRate || 2).toFixed(1)}%`, icon: BarChart3, color: '#17652f', bg: '#e8f2e5' },
   ];
 
   return (
-    <div style={{ padding: '28px 32px', fontFamily: "'Inter', sans-serif", maxWidth: '1600px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-        <div>
-          <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', margin: 0, fontSize: '26px', fontWeight: 700, color: '#1f2937', letterSpacing: '-0.02em' }}>
-            Channel Partner Network
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Header Banner */}
+      <div
+        style={{
+          background: '#ffffff',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          border: '1px solid #e5e7eb',
+          color: '#111827',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
+        <div style={{ maxWidth: '650px' }}>
+          <h1 style={{ margin: '0 0 4px', fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
+            Channel partners
           </h1>
-          <p style={{ margin: '4px 0 0', fontSize: '0.88rem', color: '#596372', fontWeight: '500' }}>
-            {pagination.total} registered agents across {new Set(agents.map(a => a.agentProfile?.city).filter(Boolean)).size}+ cities • Manage commissions, tiers &amp; verifications
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#4b5563', lineHeight: 1.5 }}>
+            Registered channel partners, commission structures, partner tiers, and site visit verifications.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -115,25 +128,36 @@ export const AgentNetworkPage = () => {
             <button
               onClick={() => setShowAddAgent(true)}
               style={{
-                padding: '9px 18px', borderRadius: '8px', border: 'none',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
                 background: '#17652f',
-                color: '#fff', fontSize: '0.84rem', fontWeight: '600', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: '6px',
-                boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
+                color: '#ffffff',
+                fontSize: '0.82rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#125225'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#17652f'; }}
             >
-              <UserPlus size={14} /> Add Agent
+              <UserPlus size={14} /> Add partner
             </button>
           )}
           <button
             onClick={() => { setPage(1); fetchAgents(); }}
             style={{
-              padding: '9px 16px', borderRadius: '8px', border: '1px solid #e8e6df',
+              padding: '8px 14px',
+              borderRadius: '6px',
+              border: '1px solid #e5e7eb',
               background: '#ffffff',
-              color: '#596372', fontSize: '0.84rem', fontWeight: '600', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '6px',
+              color: '#374151',
+              fontSize: '0.82rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
             }}
           >
             <RefreshCw size={14} style={{ color: '#17652f' }} /> Refresh
@@ -142,44 +166,44 @@ export const AgentNetworkPage = () => {
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '14px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px' }}>
         {kpiCards.map((kpi, i) => (
           <div key={i} style={{
-            background: '#ffffff', borderRadius: '14px', padding: '18px 16px',
-            boxShadow: '0 1px 8px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9',
+            background: '#ffffff', borderRadius: '8px', padding: '16px',
+            border: '1px solid #e5e7eb',
             display: 'flex', flexDirection: 'column', gap: '8px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
-                width: '34px', height: '34px', borderRadius: '10px',
+                width: '32px', height: '32px', borderRadius: '6px',
                 backgroundColor: kpi.bg, display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <kpi.icon size={17} style={{ color: kpi.color }} />
+                <kpi.icon size={16} style={{ color: kpi.color }} />
               </div>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', lineHeight: '1.2' }}>{kpi.label}</span>
+              <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600', lineHeight: '1.2' }}>{kpi.label}</span>
             </div>
-            <span style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>{kpi.value}</span>
+            <span style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827' }}>{kpi.value}</span>
           </div>
         ))}
       </div>
 
       {/* Filters Bar */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px',
-        background: '#ffffff', borderRadius: '14px', padding: '14px 18px',
-        boxShadow: '0 1px 6px rgba(0,0,0,0.05)', border: '1px solid #f1f5f9',
+        display: 'flex', alignItems: 'center', gap: '12px',
+        background: '#ffffff', borderRadius: '8px', padding: '12px 16px',
+        border: '1px solid #e5e7eb',
         flexWrap: 'wrap',
       }}>
         <div style={{ position: 'relative', flex: '1', minWidth: '220px' }}>
-          <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
           <input
             type="text"
-            placeholder="Search by name, code, agency, mobile..."
+            placeholder="Search by name, code, agency, or phone..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             style={{
-              width: '100%', padding: '9px 14px 9px 36px', borderRadius: '10px',
-              border: '1px solid #e2e8f0', fontSize: '0.84rem', boxSizing: 'border-box',
+              width: '100%', padding: '8px 12px 8px 34px', borderRadius: '6px',
+              border: '1px solid #e5e7eb', fontSize: '0.82rem', boxSizing: 'border-box',
               outline: 'none',
             }}
           />
@@ -188,9 +212,9 @@ export const AgentNetworkPage = () => {
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          style={{ padding: '9px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '0.82rem', color: '#334155', cursor: 'pointer', fontWeight: '600' }}
+          style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', color: '#374151', cursor: 'pointer', fontWeight: '500' }}
         >
-          <option value="all">All Status</option>
+          <option value="all">All statuses</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
           <option value="suspended">Suspended</option>
@@ -199,9 +223,9 @@ export const AgentNetworkPage = () => {
         <select
           value={tierFilter}
           onChange={(e) => { setTierFilter(e.target.value); setPage(1); }}
-          style={{ padding: '9px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '0.82rem', color: '#334155', cursor: 'pointer', fontWeight: '600' }}
+          style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', color: '#374151', cursor: 'pointer', fontWeight: '500' }}
         >
-          <option value="all">All Tiers</option>
+          <option value="all">All tiers</option>
           <option value="Platinum">Platinum</option>
           <option value="Gold">Gold</option>
           <option value="Silver">Silver</option>
@@ -211,67 +235,66 @@ export const AgentNetworkPage = () => {
         <select
           value={cityFilter}
           onChange={(e) => { setCityFilter(e.target.value); setPage(1); }}
-          style={{ padding: '9px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '0.82rem', color: '#334155', cursor: 'pointer', fontWeight: '600' }}
+          style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', color: '#374151', cursor: 'pointer', fontWeight: '500' }}
         >
-          <option value="all">All Cities</option>
+          <option value="all">All cities</option>
           {['Mathura', 'Vrindavan', 'Agra', 'Delhi NCR', 'Noida', 'Gurugram', 'Faridabad', 'Aligarh', 'Bharatpur', 'Hathras'].map(c => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
-
-        <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: '600', marginLeft: 'auto' }}>
+        <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500', marginLeft: 'auto' }}>
           Page {pagination.page || page} of {pagination.totalPages || 1} • Showing {agents.length} of {pagination.total}
         </span>
       </div>
 
       {/* Agents Table */}
       <div style={{
-        background: '#ffffff', borderRadius: '16px', overflow: 'hidden',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9',
+        background: '#ffffff', borderRadius: '8px', overflow: 'hidden',
+        border: '1px solid #e5e7eb',
       }}>
         {loading ? (
           <div style={{ padding: '80px 0', textAlign: 'center' }}>
-            <div style={{ width: '38px', height: '38px', border: '3px solid #e2e8f0', borderTopColor: '#17652f', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-            <p style={{ color: '#64748b', fontSize: '0.88rem' }}>Loading agent network...</p>
+            <div style={{ width: '32px', height: '32px', border: '3px solid #e5e7eb', borderTopColor: '#17652f', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+            <p style={{ color: '#6b7280', fontSize: '0.85rem' }}>Loading partners...</p>
           </div>
         ) : agents.length === 0 ? (
           <div style={{ padding: '60px 0', textAlign: 'center' }}>
-            <Users size={40} style={{ color: '#cbd5e1', marginBottom: '12px' }} />
-            <h4 style={{ margin: 0, color: '#334155' }}>No agents found</h4>
-            <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>Try adjusting your search or filters.</p>
+            <Users size={36} style={{ color: '#9ca3af', marginBottom: '12px' }} />
+            <h4 style={{ margin: 0, color: '#111827', fontSize: '1rem', fontWeight: '600' }}>No partners found</h4>
+            <p style={{ color: '#6b7280', fontSize: '0.82rem', marginTop: '4px' }}>Try adjusting your search or filters.</p>
           </div>
         ) : (
           <div className="table-responsive">
             <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
               <thead>
-                <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#64748b', textAlign: 'left' }}>
-                  <th style={{ padding: '13px 16px', fontWeight: '700', cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                <tr style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb', color: '#4b5563', textAlign: 'left' }}>
+                  <th style={{ padding: '12px 16px', fontWeight: '600', cursor: 'pointer' }} onClick={() => handleSort('name')}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      Agent <ArrowUpDown size={11} />
+                      Partner <ArrowUpDown size={11} />
                     </span>
                   </th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700' }}>Agency & Code</th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700' }}>Tier</th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700' }}>City</th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700', cursor: 'pointer' }} onClick={() => handleSort('commissionRate')}>
+                  <th style={{ padding: '12px 16px', fontWeight: '600' }}>Agency and code</th>
+                  <th style={{ padding: '12px 16px', fontWeight: '600' }}>Tier</th>
+                  <th style={{ padding: '12px 16px', fontWeight: '600' }}>City</th>
+                  <th style={{ padding: '12px 16px', fontWeight: '600', cursor: 'pointer' }} onClick={() => handleSort('commissionRate')}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      Comm % <ArrowUpDown size={11} />
+                      Commission <ArrowUpDown size={11} />
                     </span>
                   </th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700', cursor: 'pointer' }} onClick={() => handleSort('walletBalance')}>
+                  <th style={{ padding: '12px 16px', fontWeight: '600', cursor: 'pointer' }} onClick={() => handleSort('walletBalance')}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      Wallet <ArrowUpDown size={11} />
+                      Wallet balance <ArrowUpDown size={11} />
                     </span>
                   </th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700', cursor: 'pointer' }} onClick={() => handleSort('totalEarned')}>
+                  <th style={{ padding: '12px 16px', fontWeight: '600', cursor: 'pointer' }} onClick={() => handleSort('totalEarned')}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      Total Earned <ArrowUpDown size={11} />
+                      Total earned <ArrowUpDown size={11} />
                     </span>
                   </th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700' }}>Leads</th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700' }}>Visits</th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700' }}>Status</th>
-                  <th style={{ padding: '13px 16px', fontWeight: '700', textAlign: 'right' }}>Actions</th>
+                  <th style={{ padding: '12px 16px', fontWeight: '600' }}>Leads</th>
+                  <th style={{ padding: '12px 16px', fontWeight: '600' }}>Visits</th>
+                  <th style={{ padding: '12px 16px', fontWeight: '600' }}>Status</th>
+                  <th style={{ padding: '12px 16px', fontWeight: '600', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -284,47 +307,48 @@ export const AgentNetworkPage = () => {
                     <tr
                       key={agent._id}
                       style={{
-                        borderBottom: '1px solid #f1f5f9',
+                        borderBottom: '1px solid #f3f4f6',
                         cursor: 'pointer',
                         transition: 'background 0.15s',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fafbfd')}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f9fafb')}
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                       onClick={() => setSelectedAgent(selectedAgent?._id === agent._id ? null : agent)}
                     >
-                      <td style={{ padding: '14px 16px' }}>
+                      <td style={{ padding: '12px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           <div style={{
-                            width: '36px', height: '36px', borderRadius: '10px',
-                            background: 'linear-gradient(135deg, #17652f, #1557b0)',
+                            width: '34px', height: '34px', borderRadius: '6px',
+                            background: '#e8f2e5',
+                            border: '1px solid #cde4c9',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: '#fff', fontWeight: '800', fontSize: '0.78rem',
+                            color: '#17652f', fontWeight: '600', fontSize: '0.78rem',
                             flexShrink: 0,
                           }}>
                             {(agent.firstName?.[0] || '').toUpperCase()}{(agent.lastName?.[0] || '').toUpperCase()}
                           </div>
                           <div>
-                            <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.84rem' }}>
+                            <div style={{ fontWeight: '600', color: '#111827', fontSize: '0.84rem' }}>
                               {agent.firstName} {agent.lastName}
                             </div>
-                            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>
                               <Phone size={10} style={{ marginRight: '2px' }} />{agent.mobileNo || '—'}
                             </div>
                           </div>
                         </div>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <div style={{ fontWeight: '600', color: '#334155', fontSize: '0.82rem' }}>{ap.agencyName || '—'}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ fontWeight: '500', color: '#374151', fontSize: '0.82rem' }}>{ap.agencyName || '—'}</div>
+                        <div style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '600' }}>
                           <Hash size={10} style={{ marginRight: '1px' }} />{ap.agentCode || '—'}
                         </div>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
+                      <td style={{ padding: '12px 16px' }}>
                         <span style={{
-                          padding: '3px 10px', borderRadius: '20px',
-                          fontSize: '0.72rem', fontWeight: '800',
+                          padding: '2px 8px', borderRadius: '4px',
+                          fontSize: '0.72rem', fontWeight: '500',
                           backgroundColor: tc.bg, color: tc.color, border: `1px solid ${tc.border}`,
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                         }}>
@@ -332,80 +356,79 @@ export const AgentNetworkPage = () => {
                         </span>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.8rem', color: '#475569', fontWeight: '600' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.8rem', color: '#4b5563', fontWeight: '500' }}>
                           <MapPin size={11} /> {ap.city || '—'}
                         </span>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontWeight: '800', color: '#17652f', fontSize: '0.88rem' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ fontWeight: '600', color: '#17652f', fontSize: '0.85rem' }}>
                           {ap.commissionRate || 2}%
                         </span>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontWeight: '800', color: '#0284c7', fontSize: '0.88rem' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ fontWeight: '600', color: '#111827', fontSize: '0.85rem' }}>
                           ₹{(ap.walletBalance || 0).toLocaleString('en-IN')}
                         </span>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontWeight: '700', color: '#334155', fontSize: '0.84rem' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ fontWeight: '600', color: '#374151', fontSize: '0.84rem' }}>
                           ₹{(ap.totalEarned || 0).toLocaleString('en-IN')}
                         </span>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <div style={{ display: 'flex', gap: '4px', flexDirection: 'column' }}>
-                          <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#334155' }}>{agent.leadStats?.total || 0}</span>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ display: 'flex', gap: '2px', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#111827' }}>{agent.leadStats?.total || 0}</span>
                           {(agent.leadStats?.pending || 0) > 0 && (
-                            <span style={{ fontSize: '0.68rem', color: '#334155', fontWeight: '700' }}>
+                            <span style={{ fontSize: '0.7rem', color: '#b45309', fontWeight: '500' }}>
                               {agent.leadStats.pending} pending
                             </span>
                           )}
                         </div>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
-                        <div style={{ display: 'flex', gap: '4px', flexDirection: 'column' }}>
-                          <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#334155' }}>{agent.visitStats?.total || 0}</span>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ display: 'flex', gap: '2px', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#111827' }}>{agent.visitStats?.total || 0}</span>
                           {(agent.visitStats?.approved || 0) > 0 && (
-                            <span style={{ fontSize: '0.68rem', color: '#17652f', fontWeight: '700' }}>
+                            <span style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '500' }}>
                               {agent.visitStats.approved} approved
                             </span>
                           )}
                         </div>
                       </td>
 
-                      <td style={{ padding: '14px 16px' }}>
+                      <td style={{ padding: '12px 16px' }}>
                         <span style={{
-                          padding: '3px 8px', borderRadius: '8px',
-                          fontSize: '0.72rem', fontWeight: '700',
+                          padding: '2px 8px', borderRadius: '4px',
+                          fontSize: '0.72rem', fontWeight: '600',
                           backgroundColor: sb.bg, color: sb.color,
                         }}>
                           {sb.label}
                         </span>
                       </td>
 
-                      <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: '6px' }}>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/agent-profile/${agent._id}`);
                             }}
-                            title="Open full agent profile with leads, visits & approvals"
+                            title="Open full agent profile with leads, visits, and approvals"
                             style={{
-                              padding: '5px 10px', borderRadius: '8px',
-                              background: 'linear-gradient(135deg, #17652f, #1557b0)',
-                              color: '#fff', border: 'none',
-                              fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer',
+                              padding: '5px 10px', borderRadius: '6px',
+                              background: '#17652f',
+                              color: '#ffffff', border: 'none',
+                              fontSize: '0.74rem', fontWeight: '600', cursor: 'pointer',
                               display: 'inline-flex', alignItems: 'center', gap: '4px',
-                              boxShadow: '0 2px 6px rgba(26,115,232,0.3)',
                             }}
                           >
-                            <ExternalLink size={11} /> Profile
+                            <ExternalLink size={11} /> View profile
                           </button>
                           <button
                             onClick={(e) => {
@@ -413,15 +436,15 @@ export const AgentNetworkPage = () => {
                               setSelectedAgent(selectedAgent?._id === agent._id ? null : agent);
                             }}
                             style={{
-                              padding: '5px 10px', borderRadius: '8px',
-                              backgroundColor: selectedAgent?._id === agent._id ? '#334155' : '#f1f5f9',
-                              color: selectedAgent?._id === agent._id ? '#fff' : '#475569',
-                              border: '1px solid ' + (selectedAgent?._id === agent._id ? '#334155' : '#cbd5e1'),
+                              padding: '5px 10px', borderRadius: '6px',
+                              backgroundColor: selectedAgent?._id === agent._id ? '#111827' : '#ffffff',
+                              color: selectedAgent?._id === agent._id ? '#ffffff' : '#374151',
+                              border: '1px solid ' + (selectedAgent?._id === agent._id ? '#111827' : '#e5e7eb'),
                               fontSize: '0.74rem', fontWeight: '600', cursor: 'pointer',
                               display: 'inline-flex', alignItems: 'center', gap: '4px',
                             }}
                           >
-                            <Eye size={11} /> {selectedAgent?._id === agent._id ? 'Close' : 'Quick'}
+                            <Eye size={11} /> {selectedAgent?._id === agent._id ? 'Close' : 'Quick view'}
                           </button>
                         </div>
                       </td>
@@ -437,19 +460,19 @@ export const AgentNetworkPage = () => {
         {pagination.totalPages > 1 && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            padding: '16px 18px', borderTop: '1px solid #f1f5f9',
+            padding: '14px 18px', borderTop: '1px solid #e5e7eb',
           }}>
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page <= 1}
               style={{
-                padding: '7px 14px', borderRadius: '8px', border: '1px solid #e2e8f0',
-                backgroundColor: page <= 1 ? '#f8fafc' : '#fff', color: page <= 1 ? '#cbd5e1' : '#334155',
-                fontSize: '0.82rem', fontWeight: '600', cursor: page <= 1 ? 'not-allowed' : 'pointer',
+                padding: '6px 12px', borderRadius: '6px', border: '1px solid #e5e7eb',
+                backgroundColor: page <= 1 ? '#f9fafb' : '#ffffff', color: page <= 1 ? '#9ca3af' : '#374151',
+                fontSize: '0.8rem', fontWeight: '500', cursor: page <= 1 ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: '4px',
               }}
             >
-              <ChevronLeft size={14} /> Prev
+              <ChevronLeft size={14} /> Previous
             </button>
 
             {Array.from({ length: Math.min(7, pagination.totalPages) }, (_, i) => {
@@ -468,12 +491,12 @@ export const AgentNetworkPage = () => {
                   key={pg}
                   onClick={() => setPage(pg)}
                   style={{
-                    padding: '7px 12px', borderRadius: '8px',
-                    border: pg === page ? '1.5px solid #17652f' : '1px solid #e2e8f0',
-                    backgroundColor: pg === page ? '#e8f2e5' : '#fff',
-                    color: pg === page ? '#17652f' : '#475569',
-                    fontSize: '0.82rem', fontWeight: pg === page ? '800' : '600',
-                    cursor: 'pointer', minWidth: '36px',
+                    padding: '6px 10px', borderRadius: '6px',
+                    border: pg === page ? '1px solid #17652f' : '1px solid #e5e7eb',
+                    backgroundColor: pg === page ? '#e8f2e5' : '#ffffff',
+                    color: pg === page ? '#17652f' : '#374151',
+                    fontSize: '0.8rem', fontWeight: pg === page ? '600' : '500',
+                    cursor: 'pointer', minWidth: '32px',
                   }}
                 >
                   {pg}
@@ -485,10 +508,10 @@ export const AgentNetworkPage = () => {
               onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
               disabled={page >= pagination.totalPages}
               style={{
-                padding: '7px 14px', borderRadius: '8px', border: '1px solid #e2e8f0',
-                backgroundColor: page >= pagination.totalPages ? '#f8fafc' : '#fff',
-                color: page >= pagination.totalPages ? '#cbd5e1' : '#334155',
-                fontSize: '0.82rem', fontWeight: '600',
+                padding: '6px 12px', borderRadius: '6px', border: '1px solid #e5e7eb',
+                backgroundColor: page >= pagination.totalPages ? '#f9fafb' : '#ffffff',
+                color: page >= pagination.totalPages ? '#9ca3af' : '#374151',
+                fontSize: '0.8rem', fontWeight: '500',
                 cursor: page >= pagination.totalPages ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: '4px',
               }}
@@ -502,37 +525,38 @@ export const AgentNetworkPage = () => {
       {/* Agent Detail Card (Expanded) */}
       {selectedAgent && (
         <div style={{
-          marginTop: '20px', background: '#ffffff', borderRadius: '16px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0',
-          padding: '24px', animation: 'fadeIn 0.3s ease',
+          background: '#ffffff', borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          padding: '20px',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
+            <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
               <div style={{
-                width: '56px', height: '56px', borderRadius: '14px',
-                background: 'linear-gradient(135deg, #17652f, #1557b0)',
+                width: '48px', height: '48px', borderRadius: '8px',
+                background: '#e8f2e5',
+                border: '1px solid #cde4c9',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#fff', fontWeight: '800', fontSize: '1.1rem',
+                color: '#17652f', fontWeight: '600', fontSize: '1rem',
               }}>
                 {(selectedAgent.firstName?.[0] || '').toUpperCase()}{(selectedAgent.lastName?.[0] || '').toUpperCase()}
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#111827' }}>
                   {selectedAgent.firstName} {selectedAgent.lastName}
                 </h3>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '4px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '0.82rem', color: '#17652f', fontWeight: '700' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.78rem', color: '#17652f', fontWeight: '600' }}>
                     {selectedAgent.agentProfile?.agentCode}
                   </span>
-                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>•</span>
-                  <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: '600' }}>
+                  <span style={{ fontSize: '0.74rem', color: '#9ca3af' }}>•</span>
+                  <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '500' }}>
                     {selectedAgent.agentProfile?.agencyName}
                   </span>
                   {selectedAgent.agentProfile?.tier && (() => {
                     const tc = tierColor(selectedAgent.agentProfile.tier);
                     return (
                       <span style={{
-                        padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800',
+                        padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '500',
                         backgroundColor: tc.bg, color: tc.color, border: `1px solid ${tc.border}`,
                       }}>
                          {selectedAgent.agentProfile.tier}
@@ -546,21 +570,20 @@ export const AgentNetworkPage = () => {
               <button
                 onClick={() => navigate(`/agent-profile/${selectedAgent._id}`)}
                 style={{
-                  padding: '8px 16px', borderRadius: '8px', border: 'none',
-                  background: 'linear-gradient(135deg, #17652f, #1557b0)',
-                  color: '#fff', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer',
+                  padding: '7px 14px', borderRadius: '6px', border: 'none',
+                  background: '#17652f',
+                  color: '#ffffff', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: '6px',
-                  boxShadow: '0 3px 10px rgba(26,115,232,0.3)',
                 }}
               >
-                <ExternalLink size={14} /> Open Full Profile & Approvals
+                <ExternalLink size={13} /> Open profile
               </button>
               <button
                 onClick={() => setSelectedAgent(null)}
                 style={{
-                  padding: '6px 14px', borderRadius: '8px', border: '1px solid #e2e8f0',
-                  backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.78rem',
-                  fontWeight: '600', cursor: 'pointer',
+                  padding: '7px 12px', borderRadius: '6px', border: '1px solid #e5e7eb',
+                  backgroundColor: '#ffffff', color: '#4b5563', fontSize: '0.8rem',
+                  fontWeight: '500', cursor: 'pointer',
                 }}
               >
                 Close
@@ -568,40 +591,40 @@ export const AgentNetworkPage = () => {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
             {[
-              { label: 'Commission Rate', value: `${selectedAgent.agentProfile?.commissionRate || 2}%`, icon: DollarSign, color: '#17652f' },
-              { label: 'Wallet Balance', value: `₹${(selectedAgent.agentProfile?.walletBalance || 0).toLocaleString('en-IN')}`, icon: Wallet, color: '#0284c7' },
-              { label: 'Total Earned', value: `₹${(selectedAgent.agentProfile?.totalEarned || 0).toLocaleString('en-IN')}`, icon: TrendingUp, color: '#17652f' },
-              { label: 'Matured Visits', value: selectedAgent.agentProfile?.maturedLeadsCount || 0, icon: CheckCircle2, color: '#334155' },
+              { label: 'Commission rate', value: `${selectedAgent.agentProfile?.commissionRate || 2}%`, icon: DollarSign, color: '#17652f' },
+              { label: 'Wallet balance', value: `₹${(selectedAgent.agentProfile?.walletBalance || 0).toLocaleString('en-IN')}`, icon: Wallet, color: '#17652f' },
+              { label: 'Total earned', value: `₹${(selectedAgent.agentProfile?.totalEarned || 0).toLocaleString('en-IN')}`, icon: TrendingUp, color: '#17652f' },
+              { label: 'Matured visits', value: selectedAgent.agentProfile?.maturedLeadsCount || 0, icon: CheckCircle2, color: '#17652f' },
             ].map((metric, i) => (
               <div key={i} style={{
-                padding: '16px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
+                padding: '14px', borderRadius: '6px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                  <metric.icon size={15} style={{ color: metric.color }} />
-                  <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>{metric.label}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <metric.icon size={14} style={{ color: metric.color }} />
+                  <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>{metric.label}</span>
                 </div>
-                <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>{metric.value}</span>
+                <span style={{ fontSize: '1.15rem', fontWeight: '600', color: '#111827' }}>{metric.value}</span>
               </div>
             ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px' }}>
-            <div style={{ padding: '14px 16px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <h5 style={{ margin: '0 0 8px', fontSize: '0.82rem', fontWeight: '700', color: '#334155' }}>Contact Details</h5>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '0.82rem', color: '#475569' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginTop: '14px' }}>
+            <div style={{ padding: '14px', borderRadius: '6px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb' }}>
+              <h5 style={{ margin: '0 0 8px', fontSize: '0.8rem', fontWeight: '600', color: '#111827' }}>Contact details</h5>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.8rem', color: '#4b5563' }}>
                 <span><Phone size={12} style={{ marginRight: '4px' }} />{selectedAgent.mobileNo || '—'}</span>
                 <span><Mail size={12} style={{ marginRight: '4px' }} />{selectedAgent.email || '—'}</span>
                 <span><MapPin size={12} style={{ marginRight: '4px' }} />{selectedAgent.agentProfile?.city || '—'}</span>
                 <span><Shield size={12} style={{ marginRight: '4px' }} />RERA: {selectedAgent.agentProfile?.reraNumber || '—'}</span>
               </div>
             </div>
-            <div style={{ padding: '14px 16px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
-              <h5 style={{ margin: '0 0 8px', fontSize: '0.82rem', fontWeight: '700', color: '#334155' }}>Bank Details</h5>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '0.82rem', color: '#475569' }}>
+            <div style={{ padding: '14px', borderRadius: '6px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb' }}>
+              <h5 style={{ margin: '0 0 8px', fontSize: '0.8rem', fontWeight: '600', color: '#111827' }}>Bank details</h5>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.8rem', color: '#4b5563' }}>
                 <span><Briefcase size={12} style={{ marginRight: '4px' }} />{selectedAgent.agentProfile?.bankDetails?.bankName || '—'}</span>
-                <span>A/C: {selectedAgent.agentProfile?.bankDetails?.accountNumber || '—'}</span>
+                <span>Account: {selectedAgent.agentProfile?.bankDetails?.accountNumber || '—'}</span>
                 <span>IFSC: {selectedAgent.agentProfile?.bankDetails?.ifscCode || '—'}</span>
                 <span>UPI: {selectedAgent.agentProfile?.bankDetails?.upiId || '—'}</span>
               </div>
@@ -609,19 +632,19 @@ export const AgentNetworkPage = () => {
           </div>
 
           {/* Lead and Visit Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginTop: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px', marginTop: '14px' }}>
             {[
-              { label: 'Total Leads', value: selectedAgent.leadStats?.total || 0, bg: '#e8f2e5', color: '#17652f' },
-              { label: 'Pending Approval', value: selectedAgent.leadStats?.pending || 0, bg: '#f1f5f9', color: '#334155' },
-              { label: 'Total Visits', value: selectedAgent.visitStats?.total || 0, bg: '#e8f2e5', color: '#17652f' },
-              { label: 'Approved Visits', value: selectedAgent.visitStats?.approved || 0, bg: '#e8f2e5', color: '#17652f' },
-              { label: 'Pending Visits', value: selectedAgent.visitStats?.pending || 0, bg: '#f1f5f9', color: '#334155' },
+              { label: 'Total leads', value: selectedAgent.leadStats?.total || 0, bg: '#f9fafb', color: '#111827' },
+              { label: 'Pending approval', value: selectedAgent.leadStats?.pending || 0, bg: '#fef3c7', color: '#92400e' },
+              { label: 'Total visits', value: selectedAgent.visitStats?.total || 0, bg: '#f9fafb', color: '#111827' },
+              { label: 'Approved visits', value: selectedAgent.visitStats?.approved || 0, bg: '#e8f2e5', color: '#17652f' },
+              { label: 'Pending visits', value: selectedAgent.visitStats?.pending || 0, bg: '#fef3c7', color: '#92400e' },
             ].map((s, i) => (
               <div key={i} style={{
-                padding: '12px', borderRadius: '10px', backgroundColor: s.bg, textAlign: 'center',
+                padding: '10px', borderRadius: '6px', backgroundColor: s.bg, border: '1px solid #e5e7eb', textAlign: 'center',
               }}>
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: s.color }}>{s.value}</div>
-                <div style={{ fontSize: '0.72rem', fontWeight: '600', color: s.color, opacity: 0.8 }}>{s.label}</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: '600', color: s.color }}>{s.value}</div>
+                <div style={{ fontSize: '0.72rem', fontWeight: '500', color: s.color }}>{s.label}</div>
               </div>
             ))}
           </div>

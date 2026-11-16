@@ -175,7 +175,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
         {/* STEP 1: AGENT CODE VERIFICATION */}
         <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: '600', color: '#1e293b', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Sparkles size={14} color="#17652f" /> 1. Enter Agent Code *
             </label>
             <span style={{ fontSize: '0.7rem', color: '#64748b' }}>e.g. AGT-101, KV-AGT-001</span>
@@ -231,7 +231,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
           {agentInfo && (
             <div style={{ marginTop: '10px', padding: '10px 12px', background: '#e8f2e5', borderRadius: '6px', border: '1px solid #e8f2e5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontWeight: '800', color: '#17652f', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ fontWeight: '600', color: '#17652f', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <CheckCircle2 size={15} color="#17652f" /> {agentInfo.agentName} ({agentInfo.agentCode})
                 </div>
                 <div style={{ fontSize: '0.74rem', color: '#17652f', marginTop: '2px' }}>
@@ -239,7 +239,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', background: '#e8f2e5', color: '#001a41', borderRadius: '12px', fontWeight: '800' }}>
+                <span style={{ fontSize: '0.7rem', padding: '2px 8px', background: '#e8f2e5', color: '#001a41', borderRadius: '12px', fontWeight: '600' }}>
                   {agentInfo.commissionType === 'percentage' ? `${agentInfo.commissionRate}% Commission Rate` : `₹${agentInfo.commissionRate} Flat Rate`}
                 </span>
               </div>
@@ -255,7 +255,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
 
         {/* STEP 2: VISITING PARTY DETAILS */}
         <div>
-          <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>
+          <label style={{ fontSize: '0.78rem', fontWeight: '600', color: '#1e293b', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>
             2. Customer / Visiting Party Information *
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
@@ -296,7 +296,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
 
         {/* STEP 3: PROPERTY & SITE VISIT DETAILS */}
         <div>
-          <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>
+          <label style={{ fontSize: '0.78rem', fontWeight: '600', color: '#1e293b', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>
             3. Project & Properties Visited *
           </label>
           
@@ -373,7 +373,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
 
         {/* STEP 4: VERIFICATION PROOF (PARTY PHOTO / SELFIE AT SITE) */}
         <div>
-          <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+          <label style={{ fontSize: '0.78rem', fontWeight: '600', color: '#1e293b', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
             4. Site Visit Verification Proof (Selfie / Photo with Party at Site)
           </label>
           <div style={{ border: '1px dashed #94a3b8', borderRadius: '8px', padding: '12px', background: '#f8fafc', textAlign: 'center' }}>
@@ -457,7 +457,7 @@ export const NewSiteVisitModal = ({ isOpen, onClose, onSubmitSuccess }) => {
               background: '#17652f',
               border: 'none',
               borderRadius: '6px',
-              fontWeight: '800',
+              fontWeight: '600',
               color: '#ffffff',
               fontSize: '0.84rem',
               cursor: submitting || !agentInfo ? 'not-allowed' : 'pointer',

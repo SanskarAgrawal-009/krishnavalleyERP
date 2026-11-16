@@ -109,34 +109,48 @@ export const SiteVisitVerificationPage = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
       {/* Header Banner */}
-      <div className="g-card" style={{
-        padding: '24px 28px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '20px'
-      }}>
-        <div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            Agent Site Visit Verification & Approvals Hub
-            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', padding: '3px 10px', borderRadius: '6px', fontWeight: '800' }}>
-              CHANNEL PARTNER ENGINE
-            </span>
-          </div>
-          <div style={{ fontSize: '0.88rem', color: '#4b5563', marginTop: '4px', fontWeight: '500' }}>
-            Verify on-ground agent visits with visiting parties, inspect photo proofs, and automate agent commission credits upon flat booking.
-          </div>
+      <div
+        style={{
+          background: '#ffffff',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          border: '1px solid #e5e7eb',
+          color: '#111827',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
+        <div style={{ maxWidth: '650px' }}>
+          <h1 style={{ margin: '0 0 4px', fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
+            Site visit verification
+          </h1>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#4b5563', lineHeight: 1.5 }}>
+            Verify on-ground agent site visits, review photo proofs, and process commission credits.
+          </p>
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             type="button"
             onClick={fetchSiteVisits}
-            className="btn-secondary"
-            style={{ padding: '9px 16px', fontSize: '0.84rem' }}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '6px',
+              border: '1px solid #e5e7eb',
+              background: '#ffffff',
+              color: '#374151',
+              fontSize: '0.82rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
           >
-            <RefreshCw size={14} className={loading ? 'spin' : ''} />
+            <RefreshCw size={14} className={loading ? 'spin' : ''} style={{ color: '#17652f' }} />
             Refresh
           </button>
 
@@ -147,88 +161,88 @@ export const SiteVisitVerificationPage = () => {
               style={{
                 background: '#17652f',
                 color: '#ffffff',
-                padding: '9px 18px',
+                padding: '8px 16px',
                 borderRadius: '6px',
-                fontSize: '0.84rem',
-                fontWeight: '800',
+                fontSize: '0.82rem',
+                fontWeight: '600',
                 border: 'none',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '6px',
               }}
             >
-              <Plus size={15} /> Log New Agent Site Visit
+              <Plus size={14} /> Log visit
             </button>
           )}
         </div>
       </div>
 
       {/* Top Metrics Ribbon */}
-      <div className="grid-cols-4">
-        <div className="stat-card">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
+        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL VISITS LOGGED</span>
+            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Total visits</span>
             <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <Calendar size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
             {totalVisits}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Channel partner site visits</span>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>Channel partner site visits</span>
         </div>
 
-        <div className="stat-card">
+        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>AWAITING APPROVAL</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
+            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Pending approval</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#fef3c7', color: '#92400e' }}>
               <Clock size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#92400e', marginTop: '4px' }}>
             {pendingVisits}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Pending maker-checker review</span>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>Pending verification review</span>
         </div>
 
-        <div className="stat-card">
+        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>APPROVED VISITS</span>
+            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Approved visits</span>
             <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <ShieldCheck size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
             {approvedVisits}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Eligible for auto-commission</span>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>Verified site visits</span>
         </div>
 
-        <div className="stat-card">
+        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>AUTOMATED COMMISSIONS</span>
+            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600' }}>Commissions credited</span>
             <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
             {formatINR(totalCommissionCredited)}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Credited on booked deals</span>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>Credited on booked deals</span>
         </div>
       </div>
 
       {/* Filter Ribbon */}
-      <div className="g-card" style={{ padding: '12px 16px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px 16px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ flex: '1.2 1 240px', position: 'relative' }}>
           <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
           <input
             type="text"
-            placeholder="Search by Agent Code (e.g. AGT-101), Party Name, Mobile, or Visit Code..."
+            placeholder="Search by agent code, customer name, phone, or visit code..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', paddingLeft: '30px', fontSize: '0.82rem' }}
+            style={{ width: '100%', paddingLeft: '32px', paddingRight: '12px', paddingTop: '8px', paddingBottom: '8px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', boxSizing: 'border-box' }}
           />
         </div>
 
@@ -236,10 +250,10 @@ export const SiteVisitVerificationPage = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ width: '100%', fontSize: '0.82rem' }}
+            style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', color: '#374151' }}
           >
-            <option value="">All Verification Statuses</option>
-            <option value="pending">Pending Review</option>
+            <option value="">All verification statuses</option>
+            <option value="pending">Pending review</option>
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
           </select>
@@ -249,9 +263,9 @@ export const SiteVisitVerificationPage = () => {
           <select
             value={projectFilter}
             onChange={(e) => setProjectFilter(e.target.value)}
-            style={{ width: '100%', fontSize: '0.82rem' }}
+            style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '0.82rem', color: '#374151' }}
           >
-            <option value="">All Projects</option>
+            <option value="">All projects</option>
             {projects.map((p) => (
               <option key={p._id || p.id} value={p._id || p.id}>
                 {p.projectName}
@@ -269,42 +283,42 @@ export const SiteVisitVerificationPage = () => {
               setProjectFilter('');
             }}
             style={{
-              padding: '6px 12px',
-              background: '#f1f5f9',
-              color: '#0f172a',
-              border: '1px solid #e2e8f0',
+              padding: '8px 12px',
+              background: '#ffffff',
+              color: '#374151',
+              border: '1px solid #e5e7eb',
               borderRadius: '6px',
-              fontSize: '0.76rem',
-              fontWeight: '700',
+              fontSize: '0.8rem',
+              fontWeight: '500',
               cursor: 'pointer'
             }}
           >
-            Reset Filters
+            Reset filters
           </button>
         )}
       </div>
 
       {/* Main Table Register */}
-      <div className="g-card" style={{ overflow: 'hidden' }}>
+      <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
         <div className="table-responsive">
-          <table style={{ minWidth: '820px' }}>
+          <table style={{ minWidth: '820px', width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
             <thead>
-              <tr>
-                <th>Visit Code & Date</th>
-                <th>Agent (Code & Agency)</th>
-                <th>Customer / Visiting Party</th>
-                <th>Project & Units Visited</th>
-                <th>Photo Proof</th>
-                <th>Verification Status</th>
-                <th>Booking & Commission Status</th>
-                <th>Action</th>
+              <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb', textAlign: 'left', color: '#4b5563' }}>
+                <th style={{ padding: '12px 14px', fontWeight: '600' }}>Visit code and date</th>
+                <th style={{ padding: '12px 14px', fontWeight: '600' }}>Agent</th>
+                <th style={{ padding: '12px 14px', fontWeight: '600' }}>Customer</th>
+                <th style={{ padding: '12px 14px', fontWeight: '600' }}>Project and units</th>
+                <th style={{ padding: '12px 14px', fontWeight: '600' }}>Photo proof</th>
+                <th style={{ padding: '12px 14px', fontWeight: '600' }}>Verification status</th>
+                <th style={{ padding: '12px 14px', fontWeight: '600' }}>Commission status</th>
+                <th style={{ padding: '12px 14px', fontWeight: '600', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredVisits.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '36px', color: '#64748b', fontWeight: '500' }}>
-                    No site visits found matching your criteria. Click "Log New Agent Site Visit" to register a visit.
+                  <td colSpan={8} style={{ textAlign: 'center', padding: '36px', color: '#6b7280', fontWeight: '500' }}>
+                    No site visits found matching your criteria.
                   </td>
                 </tr>
               ) : (
@@ -315,11 +329,11 @@ export const SiteVisitVerificationPage = () => {
                   const isBooked = visit.bookingStatus === 'booked';
 
                   return (
-                    <tr key={visit._id || visit.id}>
+                    <tr key={visit._id || visit.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
                       {/* 1. Visit Code & Date */}
-                      <td>
+                      <td style={{ padding: '12px 14px' }}>
                         <strong style={{ color: '#17652f' }}>{visit.visitCode}</strong>
-                        <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+                        <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>
                           {new Date(visit.visitDate).toLocaleDateString('en-IN', {
                             day: 'numeric',
                             month: 'short',
@@ -331,118 +345,118 @@ export const SiteVisitVerificationPage = () => {
                       </td>
 
                       {/* 2. Agent Info */}
-                      <td>
+                      <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ padding: '2px 6px', background: '#e8f2e5', color: '#17652f', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '800', fontFamily: 'monospace' }}>
+                          <span style={{ padding: '2px 6px', background: '#e8f2e5', color: '#17652f', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '600', fontFamily: 'monospace' }}>
                             {visit.agentCode}
                           </span>
-                          <strong style={{ color: '#1e293b', fontSize: '0.84rem' }}>{visit.agentName}</strong>
+                          <strong style={{ color: '#111827', fontSize: '0.84rem' }}>{visit.agentName}</strong>
                         </div>
-                        <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '2px' }}>
-                          {visit.agencyName || 'Independent Partner'} • {visit.agentPhone || ''}
+                        <div style={{ fontSize: '0.74rem', color: '#6b7280', marginTop: '2px' }}>
+                          {visit.agencyName || 'Independent partner'} • {visit.agentPhone || ''}
                         </div>
                       </td>
 
                       {/* 3. Visiting Party */}
-                      <td>
-                        <div style={{ fontWeight: '800', color: '#1e293b' }}>
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ fontWeight: '600', color: '#111827' }}>
                           {visit.partyName}
                         </div>
-                        <div style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '700' }}>
+                        <div style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '600' }}>
                           {visit.partyMobile}
                         </div>
                       </td>
 
                       {/* 4. Project & Units */}
-                      <td>
-                        <div style={{ fontWeight: '700', color: '#334155' }}>
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ fontWeight: '600', color: '#374151' }}>
                           {visit.projectId?.projectName || 'Krishna Valley'}
                         </div>
                         {visit.flatIds && visit.flatIds.length > 0 ? (
                           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
                             {visit.flatIds.map((f) => (
-                              <span key={f._id || f} style={{ fontSize: '0.68rem', padding: '1px 5px', background: '#f1f5f9', color: '#334155', borderRadius: '3px', fontWeight: '700' }}>
+                              <span key={f._id || f} style={{ fontSize: '0.68rem', padding: '1px 5px', background: '#f1f5f9', color: '#334155', borderRadius: '3px', fontWeight: '600' }}>
                                 Flat {f.flatNumber || 'Unit'}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>General Site Tour</span>
+                          <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>General site tour</span>
                         )}
                       </td>
 
                       {/* 5. Photo Proof */}
-                      <td>
+                      <td style={{ padding: '12px 14px' }}>
                         {visit.partySelfieUrl ? (
                           <a
                             href={visit.partySelfieUrl}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#17652f', fontSize: '0.74rem', fontWeight: '700' }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#17652f', fontSize: '0.74rem', fontWeight: '600' }}
                           >
                             <img
                               src={visit.partySelfieUrl}
                               alt="Selfie"
-                              style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #cbd5e1' }}
+                              style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #e5e7eb' }}
                             />
-                            <span>View Proof</span>
+                            <span>View proof</span>
                           </a>
                         ) : (
-                          <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontStyle: 'italic' }}>No photo</span>
+                          <span style={{ fontSize: '0.74rem', color: '#9ca3af' }}>No photo</span>
                         )}
                       </td>
 
                       {/* 6. Verification Status */}
-                      <td>
+                      <td style={{ padding: '12px 14px' }}>
                         {isPending && (
-                          <span style={{ padding: '4px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#334155', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            <Clock size={11} /> Pending Review
+                          <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#fef3c7', color: '#92400e', fontWeight: '500', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <Clock size={11} /> Pending review
                           </span>
                         )}
                         {isApproved && (
                           <div>
-                            <span style={{ padding: '4px 8px', borderRadius: '12px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ padding: '3px 8px', borderRadius: '4px', background: '#e8f2e5', color: '#17652f', fontWeight: '600', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                               <CheckCircle2 size={11} /> Approved
                             </span>
                             {visit.verifiedBy && (
-                              <div style={{ fontSize: '0.66rem', color: '#64748b', marginTop: '2px' }}>
+                              <div style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '2px' }}>
                                 by {visit.verifiedBy?.firstName || 'Manager'}
                               </div>
                             )}
                           </div>
                         )}
                         {isRejected && (
-                          <span title={visit.rejectionReason} style={{ padding: '4px 8px', borderRadius: '12px', background: '#f1f5f9', color: '#0f172a', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'help' }}>
+                          <span title={visit.rejectionReason} style={{ padding: '3px 8px', borderRadius: '4px', background: '#fee2e2', color: '#991b1b', fontWeight: '500', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                             <AlertCircle size={11} /> Rejected
                           </span>
                         )}
                       </td>
 
                       {/* 7. Booking & Commission Status */}
-                      <td>
+                      <td style={{ padding: '12px 14px' }}>
                         {isBooked ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                            <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f', fontWeight: '800', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                              <Award size={12} /> Deal Booked
+                            <span style={{ padding: '2px 6px', borderRadius: '4px', background: '#e8f2e5', color: '#17652f', fontWeight: '600', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <Award size={11} /> Deal booked
                             </span>
-                            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#17652f' }}>
-                              {formatINR(visit.commissionAmount)} Credited
+                            <span style={{ fontSize: '0.72rem', fontWeight: '600', color: '#17652f' }}>
+                              {formatINR(visit.commissionAmount)} credited
                             </span>
                           </div>
                         ) : isApproved ? (
-                          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
-                            Eligible for Auto-Credit upon Booking
+                          <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>
+                            Eligible on booking
                           </span>
                         ) : (
-                          <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                            Pending visit approval
+                          <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>
+                            Pending approval
                           </span>
                         )}
                       </td>
 
                       {/* 8. Actions */}
-                      <td>
-                        <div style={{ display: 'flex', gap: '6px' }}>
+                      <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '6px' }}>
                           {isPending && canApprove ? (
                             <button
                               type="button"
@@ -451,37 +465,37 @@ export const SiteVisitVerificationPage = () => {
                                 padding: '5px 12px',
                                 background: '#17652f',
                                 color: '#ffffff',
-                                borderRadius: '5px',
+                                borderRadius: '6px',
                                 fontSize: '0.74rem',
-                                fontWeight: '800',
+                                fontWeight: '600',
                                 border: 'none',
                                 cursor: 'pointer',
-                                display: 'flex',
+                                display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '4px'
                               }}
                             >
-                              <ShieldCheck size={13} /> Review & Approve
+                              <ShieldCheck size={13} /> Review visit
                             </button>
                           ) : (
                             <button
                               type="button"
                               onClick={() => handleOpenVerify(visit)}
                               style={{
-                                padding: '4px 10px',
-                                background: '#f1f5f9',
-                                border: '1px solid #cbd5e1',
-                                borderRadius: '4px',
+                                padding: '5px 10px',
+                                background: '#ffffff',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: '6px',
                                 fontSize: '0.74rem',
-                                fontWeight: '700',
-                                color: '#334155',
+                                fontWeight: '500',
+                                color: '#374151',
                                 cursor: 'pointer',
-                                display: 'flex',
+                                display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '4px'
                               }}
                             >
-                              <Eye size={12} /> Details
+                              <Eye size={12} /> View details
                             </button>
                           )}
                         </div>

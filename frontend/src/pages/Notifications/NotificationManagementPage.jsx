@@ -487,50 +487,34 @@ export const NotificationManagementPage = () => {
       {/* Top Banner & Quick Metrics */}
       <div style={{
         backgroundColor: '#ffffff',
-        borderRadius: '16px',
-        border: '1px solid #e8e6df',
-        padding: '24px 28px',
+        borderRadius: '8px',
+        border: '1px solid #e5e7eb',
+        padding: '20px 24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '20px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+        gap: '16px',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
+            width: '42px',
+            height: '42px',
+            borderRadius: '8px',
             background: '#e8f2e5',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#17652f'
           }}>
-            <Bell size={24} />
+            <Bell size={20} />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-              <span style={{
-                fontSize: '0.74rem',
-                fontWeight: '700',
-                padding: '3px 10px',
-                borderRadius: '6px',
-                background: '#e8f2e5',
-                color: '#17652f',
-                border: '1px solid #cde4c9',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em'
-              }}>
-                MULTI-CHANNEL OPERATIONAL
-              </span>
-            </div>
-            <h1 style={{ margin: 0, fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: '600', color: '#1f2937', letterSpacing: '-0.015em' }}>
-              Notification & Communication Hub
+            <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
+              Notifications and messaging
             </h1>
-            <div style={{ fontSize: '0.88rem', color: '#596372', marginTop: '4px' }}>
-              Configure WhatsApp Business, SMS Gateway, Email SMTP, Web Push, and dynamic multi-channel Reminder Templates.
+            <div style={{ fontSize: '0.85rem', color: '#4b5563', marginTop: '2px' }}>
+              Configure WhatsApp, SMS, email SMTP, calendar sync, and message templates.
             </div>
           </div>
         </div>
@@ -540,11 +524,11 @@ export const NotificationManagementPage = () => {
           <button
             onClick={() => openTestModal('whatsapp')}
             style={{
-              padding: '9px 16px',
-              borderRadius: 'var(--radius-sm)',
-              background: '#f8f9fa',
-              border: '1px solid #dadce0',
-              color: '#111827',
+              padding: '8px 14px',
+              borderRadius: '6px',
+              background: '#ffffff',
+              border: '1px solid #e5e7eb',
+              color: '#374151',
               fontSize: '0.82rem',
               fontWeight: '600',
               display: 'flex',
@@ -553,8 +537,8 @@ export const NotificationManagementPage = () => {
               cursor: 'pointer'
             }}
           >
-            <Zap size={15} color="var(--accent-gold-400)" />
-            Test Dispatcher
+            <Send size={14} style={{ color: '#17652f' }} />
+            Send test message
           </button>
 
           <button
@@ -563,22 +547,21 @@ export const NotificationManagementPage = () => {
               setIsTemplateModalOpen(true);
             }}
             style={{
-              padding: '9px 18px',
-              borderRadius: 'var(--radius-sm)',
-              background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              background: '#17652f',
               border: 'none',
-              color: '#111827',
+              color: '#ffffff',
               fontSize: '0.82rem',
-              fontWeight: '700',
+              fontWeight: '600',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
               cursor: 'pointer',
-              boxShadow: 'var(--shadow-glow)'
             }}
           >
-            <Plus size={16} />
-            New Template
+            <Plus size={14} />
+            New template
           </button>
         </div>
       </div>
@@ -627,7 +610,7 @@ export const NotificationManagementPage = () => {
         {/* SMS Card */}
         <div style={{
           background: '#ffffff',
-          border: config.sms.enabled ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid var(--border-subtle)',
+          border: config.sms.enabled ? '1px solid rgba(23, 101, 47, 0.3)' : '1px solid var(--border-subtle)',
           borderRadius: 'var(--radius-md)',
           padding: '16px 18px',
           display: 'flex',
@@ -635,7 +618,7 @@ export const NotificationManagementPage = () => {
           alignItems: 'center'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4a9e68' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(23, 101, 47, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4a9e68' }}>
               <Smartphone size={20} />
             </div>
             <div>
@@ -650,7 +633,7 @@ export const NotificationManagementPage = () => {
             style={{
               padding: '4px 10px',
               borderRadius: '4px',
-              background: config.sms.enabled ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255,255,255,0.05)',
+              background: config.sms.enabled ? 'rgba(23, 101, 47, 0.2)' : 'rgba(255,255,255,0.05)',
               color: config.sms.enabled ? '#4a9e68' : 'var(--text-muted)',
               fontSize: '0.72rem',
               fontWeight: '700',
@@ -1269,7 +1252,7 @@ export const NotificationManagementPage = () => {
                         </span>
                       )}
                       {tpl.channels?.sms && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(59, 130, 246, 0.12)', color: '#4a9e68', padding: '3px 7px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '700' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(23, 101, 47, 0.12)', color: '#4a9e68', padding: '3px 7px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '700' }}>
                           <Smartphone size={12} /> SMS
                         </span>
                       )}
@@ -1693,7 +1676,7 @@ export const NotificationManagementPage = () => {
               flexDirection: 'column',
               gap: '12px'
             }}>
-              <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#17652f', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#17652f', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <PhoneCall size={16} />
                 Live Telephony &amp; Click-to-Call Diagnostic
               </div>
@@ -1769,14 +1752,13 @@ export const NotificationManagementPage = () => {
                 type="submit"
                 style={{
                   padding: '9px 24px',
-                  background: 'linear-gradient(135deg, #17652f, #17652f)',
+                  background: '#17652f',
                   border: 'none',
                   color: '#ffffff',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
@@ -2073,20 +2055,19 @@ export const NotificationManagementPage = () => {
                 type="submit"
                 style={{
                   padding: '9px 24px',
-                  background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
+                  background: '#17652f',
                   border: 'none',
-                  color: '#111827',
+                  color: '#ffffff',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  boxShadow: 'var(--shadow-glow)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
                 }}
               >
-                <Check size={16} /> Save WhatsApp Settings
+                <Check size={16} /> Save WhatsApp settings
               </button>
             </div>
           </div>
@@ -2110,7 +2091,7 @@ export const NotificationManagementPage = () => {
             {/* Header & Toggle */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4a9e68' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(23, 101, 47, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4a9e68' }}>
                   <Smartphone size={22} />
                 </div>
                 <div>
@@ -2311,7 +2292,7 @@ export const NotificationManagementPage = () => {
                 onClick={() => openTestModal('sms')}
                 style={{
                   padding: '9px 18px',
-                  background: 'rgba(59, 130, 246, 0.15)',
+                  background: 'rgba(23, 101, 47, 0.15)',
                   border: '1px solid #17652f',
                   color: '#4a9e68',
                   borderRadius: 'var(--radius-sm)',
@@ -2330,20 +2311,19 @@ export const NotificationManagementPage = () => {
                 type="submit"
                 style={{
                   padding: '9px 24px',
-                  background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
+                  background: '#17652f',
                   border: 'none',
-                  color: '#111827',
+                  color: '#ffffff',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  boxShadow: 'var(--shadow-glow)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
                 }}
               >
-                <Check size={16} /> Save SMS Settings
+                <Check size={16} /> Save SMS settings
               </button>
             </div>
           </div>
@@ -2989,20 +2969,19 @@ export const NotificationManagementPage = () => {
                 type="submit"
                 style={{
                   padding: '9px 24px',
-                  background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
+                  background: '#17652f',
                   border: 'none',
-                  color: '#111827',
+                  color: '#ffffff',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  boxShadow: 'var(--shadow-glow)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
                 }}
               >
-                <Check size={16} /> Save Email Settings
+                <Check size={16} /> Save email settings
               </button>
             </div>
           </div>
@@ -3179,20 +3158,19 @@ export const NotificationManagementPage = () => {
                 type="submit"
                 style={{
                   padding: '9px 24px',
-                  background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
+                  background: '#17652f',
                   border: 'none',
-                  color: '#111827',
+                  color: '#ffffff',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  boxShadow: 'var(--shadow-glow)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
                 }}
               >
-                <Check size={16} /> Save Push Settings
+                <Check size={16} /> Save push settings
               </button>
             </div>
           </div>
@@ -3226,7 +3204,7 @@ export const NotificationManagementPage = () => {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Calendar size={22} color="#17652f" />
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: '600', color: '#111827', margin: 0 }}>
                     Google Calendar Follow-Up Mapping Gateway
                   </h3>
                   <span style={{
@@ -3326,11 +3304,11 @@ export const NotificationManagementPage = () => {
                 style={{
                   padding: '7px 16px',
                   borderRadius: 'var(--radius-sm)',
-                  background: 'linear-gradient(135deg, #17652f, #4285f4)',
+                  background: '#17652f',
                   border: 'none',
                   color: '#ffffff',
                   fontSize: '0.78rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: (gcalSyncing || !config.googleCalendar?.clientEmail) ? 'not-allowed' : 'pointer',
                   opacity: (gcalSyncing || !config.googleCalendar?.clientEmail) ? 0.6 : 1,
                   display: 'flex',
@@ -3339,7 +3317,7 @@ export const NotificationManagementPage = () => {
                 }}
               >
                 {gcalSyncing ? <RefreshCw size={14} className="spin" /> : <Zap size={14} />}
-                {gcalSyncing ? 'Syncing Pending Follow-ups...' : 'Sync All Pending Follow-Ups Now'}
+                {gcalSyncing ? 'Syncing...' : 'Sync pending follow-ups'}
               </button>
             </div>
 
@@ -3622,20 +3600,19 @@ export const NotificationManagementPage = () => {
                 type="submit"
                 style={{
                   padding: '9px 24px',
-                  background: 'linear-gradient(135deg, #17652f, #4285f4)',
+                  background: '#17652f',
                   border: 'none',
                   color: '#ffffff',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  boxShadow: 'var(--shadow-glow)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
                 }}
               >
-                <Check size={16} /> Save Google Calendar Settings
+                <Check size={16} /> Save Google Calendar settings
               </button>
             </div>
           </div>
@@ -3819,20 +3796,19 @@ export const NotificationManagementPage = () => {
                 type="submit"
                 style={{
                   padding: '9px 24px',
-                  background: 'linear-gradient(135deg, var(--primary-600), var(--primary-700))',
+                  background: '#17652f',
                   border: 'none',
-                  color: '#111827',
+                  color: '#ffffff',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  boxShadow: 'var(--shadow-glow)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
                 }}
               >
-                <Check size={16} /> Save Automation Policies
+                <Check size={16} /> Save automation policies
               </button>
             </div>
           </div>
@@ -3854,14 +3830,14 @@ export const NotificationManagementPage = () => {
                 padding: '7px 16px',
                 borderRadius: 'var(--radius-sm)',
                 border: 'none',
-                background: auditLogType === 'messages' ? 'linear-gradient(135deg, var(--primary-600), var(--primary-700))' : '#f1f5f9',
+                background: auditLogType === 'messages' ? '#17652f' : '#f8f9fa',
                 color: auditLogType === 'messages' ? '#ffffff' : '#475569',
-                fontWeight: '700',
+                fontWeight: '600',
                 fontSize: '0.82rem',
                 cursor: 'pointer'
               }}
             >
-              Message Delivery Logs ({logs.length})
+              Message delivery logs ({logs.length})
             </button>
             <button
               type="button"
@@ -3873,9 +3849,9 @@ export const NotificationManagementPage = () => {
                 padding: '7px 16px',
                 borderRadius: 'var(--radius-sm)',
                 border: 'none',
-                background: auditLogType === 'calls' ? 'linear-gradient(135deg, #17652f, #17652f)' : '#f1f5f9',
+                background: auditLogType === 'calls' ? '#17652f' : '#f8f9fa',
                 color: auditLogType === 'calls' ? '#ffffff' : '#475569',
-                fontWeight: '700',
+                fontWeight: '600',
                 fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
@@ -3892,23 +3868,23 @@ export const NotificationManagementPage = () => {
           <div className="grid-cols-5">
             <div style={{ background: '#ffffff', padding: '14px 16px', borderRadius: 'var(--radius-md)', border: '1px solid #dadce0' }}>
               <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>Total Sent</div>
-              <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#111827', marginTop: '2px' }}>{logCounts.total || 0}</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#111827', marginTop: '2px' }}>{logCounts.total || 0}</div>
             </div>
             <div style={{ background: '#ffffff', padding: '14px 16px', borderRadius: 'var(--radius-md)', border: '1px solid #dadce0' }}>
               <div style={{ fontSize: '0.72rem', color: '#0f172a' }}>WhatsApp</div>
-              <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>{logCounts.whatsapp || 0}</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#0f172a', marginTop: '2px' }}>{logCounts.whatsapp || 0}</div>
             </div>
             <div style={{ background: '#ffffff', padding: '14px 16px', borderRadius: 'var(--radius-md)', border: '1px solid #dadce0' }}>
               <div style={{ fontSize: '0.72rem', color: '#4a9e68' }}>SMS</div>
-              <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#4a9e68', marginTop: '2px' }}>{logCounts.sms || 0}</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#4a9e68', marginTop: '2px' }}>{logCounts.sms || 0}</div>
             </div>
             <div style={{ background: '#ffffff', padding: '14px 16px', borderRadius: 'var(--radius-md)', border: '1px solid #dadce0' }}>
               <div style={{ fontSize: '0.72rem', color: '#cbd5e1' }}>Email</div>
-              <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#cbd5e1', marginTop: '2px' }}>{logCounts.email || 0}</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#cbd5e1', marginTop: '2px' }}>{logCounts.email || 0}</div>
             </div>
             <div style={{ background: '#ffffff', padding: '14px 16px', borderRadius: 'var(--radius-md)', border: '1px solid #dadce0' }}>
               <div style={{ fontSize: '0.72rem', color: '#4a9e68' }}>Push</div>
-              <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#4a9e68', marginTop: '2px' }}>{logCounts.push || 0}</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#4a9e68', marginTop: '2px' }}>{logCounts.push || 0}</div>
             </div>
           </div>
 
@@ -4059,7 +4035,7 @@ export const NotificationManagementPage = () => {
                               fontWeight: '700',
                               background:
                                 log.channel === 'whatsapp' ? 'rgba(37, 211, 102, 0.12)' :
-                                log.channel === 'sms' ? 'rgba(59, 130, 246, 0.12)' :
+                                log.channel === 'sms' ? 'rgba(23, 101, 47, 0.12)' :
                                 log.channel === 'email' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(236, 72, 153, 0.12)',
                               color:
                                 log.channel === 'whatsapp' ? '#0f172a' :
@@ -4089,7 +4065,7 @@ export const NotificationManagementPage = () => {
                               borderRadius: '4px',
                               fontSize: '0.7rem',
                               fontWeight: '700',
-                              background: log.status === 'delivered' ? 'rgba(16, 185, 129, 0.15)' : log.status === 'failed' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                              background: log.status === 'delivered' ? 'rgba(16, 185, 129, 0.15)' : log.status === 'failed' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(23, 101, 47, 0.15)',
                               color: log.status === 'delivered' ? '#17652f' : log.status === 'failed' ? '#0f172a' : '#4a9e68'
                             }}>
                               {log.status.toUpperCase()}
@@ -4295,17 +4271,17 @@ export const NotificationManagementPage = () => {
                 disabled={!jsonPasteContent.trim()}
                 style={{
                   padding: '8px 18px',
-                  background: 'linear-gradient(135deg, #17652f, #4285f4)',
+                  background: '#17652f',
                   border: 'none',
                   color: '#ffffff',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.82rem',
-                  fontWeight: '700',
+                  fontWeight: '600',
                   cursor: !jsonPasteContent.trim() ? 'not-allowed' : 'pointer',
                   opacity: !jsonPasteContent.trim() ? 0.6 : 1
                 }}
               >
-                Auto-Extract &amp; Populate
+                Extract and populate
               </button>
             </div>
           </div>

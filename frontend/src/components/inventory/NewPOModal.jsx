@@ -221,7 +221,7 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
         {/* Line Items Section */}
         <div className="g-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: '600', color: '#111827' }}>
               Order Line Items & Materials ({items.length})
             </h4>
             <button
@@ -353,7 +353,7 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
                   <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: '700', color: '#4b5563', marginBottom: '3px' }}>
                     Line Total
                   </label>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827', paddingTop: '4px' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#111827', paddingTop: '4px' }}>
                     ₹{Math.round(lineTot).toLocaleString('en-IN')}
                   </div>
                 </div>
@@ -382,7 +382,7 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
           </div>
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: '700', textTransform: 'uppercase' }}>TOTAL PO VALUE:</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#17652f' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: '600', color: '#17652f' }}>
               ₹{Math.round(grandTotal).toLocaleString('en-IN')}
             </div>
           </div>
@@ -414,7 +414,7 @@ export const NewPOModal = ({ isOpen, onClose, onSubmit }) => {
               borderRadius: '6px',
               fontWeight: '700',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(26, 115, 232, 0.3)'
+              boxShadow: '0 2px 6px rgba(23, 101, 47, 0.3)'
             }}
           >
             Issue Purchase Order

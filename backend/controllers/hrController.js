@@ -332,7 +332,17 @@ export const createEmployee = async (req, res) => {
       initialSalary
     } = req.body;
 
-    const code = employeeCode || `EMP-${Date.now().toString().slice(-4)}`;
+    let code = employeeCode ? employeeCode.trim().toUpperCase() : '';
+    if (!code) {
+      const empCount = await Employee.countDocuments();
+      let empNum = 101 + empCount;
+      let candidate = `KV-EMP-${empNum}`;
+      while (await Employee.findOne({ employeeCode: candidate })) {
+        empNum++;
+        candidate = `KV-EMP-${empNum}`;
+      }
+      code = candidate;
+    }
     const phoneNum = mobileNo || phone;
 
     if (!phoneNum) {

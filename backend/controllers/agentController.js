@@ -1198,16 +1198,16 @@ export const createAgent = async (req, res) => {
       });
     }
 
-    // Auto-generate agent code if not provided
+    // Auto-generate unique agent code if not provided
     let finalAgentCode = agentProfile.agentCode?.trim()?.toUpperCase();
     if (!finalAgentCode) {
-      const count = await User.countDocuments({
-        $or: [
-          { roleId: agentRoleDoc._id },
-          { 'agentProfile.agentCode': { $exists: true } },
-        ],
-      });
-      finalAgentCode = `AGT-${101 + count}`;
+      let count = (await User.countDocuments({ 'agentProfile.agentCode': { $exists: true } })) + 101;
+      let candidate = `AGT-${count}`;
+      while (await User.findOne({ 'agentProfile.agentCode': candidate })) {
+        count++;
+        candidate = `AGT-${count}`;
+      }
+      finalAgentCode = candidate;
     }
 
     // Default branch
@@ -1227,6 +1227,7 @@ export const createAgent = async (req, res) => {
       email: cleanEmail,
       mobileNo: mobileNo ? mobileNo.trim() : '',
       passwordHash,
+      initialPassword: password.trim(),
       roleId: agentRoleDoc._id,
       branchAccess,
       status,

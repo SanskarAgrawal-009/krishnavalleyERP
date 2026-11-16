@@ -190,7 +190,7 @@ export const FlatDetailModal = ({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: '800', margin: 0, letterSpacing: '-0.02em' }}>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: '600', margin: 0, letterSpacing: '-0.02em' }}>
                   Flat {flat.flatNumber || 'Loading...'}
                 </h3>
                 <span style={{
@@ -247,7 +247,7 @@ export const FlatDetailModal = ({
                 fontWeight: '700',
                 fontSize: '0.8rem',
                 cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(37, 99, 235, 0.3)'
+                boxShadow: '0 2px 4px rgba(23, 101, 47, 0.3)'
               }}
               title="Open full dedicated flat profile page"
             >
@@ -347,7 +347,7 @@ export const FlatDetailModal = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>
                     Physical Architectural Specifications
                   </h4>
                   <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
@@ -411,56 +411,56 @@ export const FlatDetailModal = ({
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>BHK TYPE</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                       {flat.bhkType || '2BHK'}
                     </div>
                   </div>
 
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>CARPET AREA</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                       {flat.carpetArea || 950} Sq.Ft
                     </div>
                   </div>
 
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>SUPER BUILT-UP AREA</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                       {flat.superBuiltUpArea || 1200} Sq.Ft
                     </div>
                   </div>
 
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>FACING ORIENTATION</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                       {flat.facing || 'East Facing'}
                     </div>
                   </div>
 
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>FLOOR LEVEL</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                       {flat.floor === 0 ? 'Ground Floor' : `Floor ${flat.floor || 1}`}
                     </div>
                   </div>
 
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>FURNISHING STATUS</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                       {flat.furnishingStatus || 'Semi-Furnished'}
                     </div>
                   </div>
 
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>BALCONIES &amp; BATHROOMS</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                       {flat.balconiesCount || 2} Balcony / {flat.bathroomsCount || 2} Bath
                     </div>
                   </div>
 
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>PARKING SLOT</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                       {flat.parkingSlot || 'Stilt Covered 01'}
                     </div>
                   </div>
@@ -551,7 +551,7 @@ export const FlatDetailModal = ({
           {activeTab === 'blueprint' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>
                   Floor Plan &amp; Architectural Blueprints
                 </h4>
                 <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
@@ -606,7 +606,7 @@ export const FlatDetailModal = ({
           {activeTab === 'commercial' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <div>
-                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>
                   Commercial Pricing &amp; Rate Card Configuration
                 </h4>
                 <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
@@ -617,7 +617,7 @@ export const FlatDetailModal = ({
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
                 <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>BASE UNIT PRICE</span>
-                  <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#0f172a', marginTop: '4px' }}>
                     {formatINR(flat.basePrice || 4500000)}
                   </div>
                   <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Standard registry base</span>
@@ -625,7 +625,7 @@ export const FlatDetailModal = ({
 
                 <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>RATE PER SQ.FT</span>
-                  <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
                     {formatINR(flat.pricePerSqFt || 4200)}/sqft
                   </div>
                   <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Carpet area calculation</span>
@@ -633,7 +633,7 @@ export const FlatDetailModal = ({
 
                 <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>FLOOR RISE PREMIUM</span>
-                  <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#17652f', marginTop: '4px' }}>
                     ₹{((flat.floor || 1) * 25).toLocaleString('en-IN')}/sqft
                   </div>
                   <span style={{ fontSize: '0.74rem', color: '#64748b' }}>₹25 per floor above Ground</span>
@@ -641,7 +641,7 @@ export const FlatDetailModal = ({
 
                 <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>PLC (LOCATION CHARGE)</span>
-                  <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#334155', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.3rem', fontWeight: '600', color: '#334155', marginTop: '4px' }}>
                     {flat.plcCharges ? formatINR(flat.plcCharges) : 'Standard PLC Included'}
                   </div>
                   <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Park / Corner facing</span>
@@ -654,7 +654,7 @@ export const FlatDetailModal = ({
           {activeTab === 'allocation' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <div>
-                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>
                   Unit Allocation &amp; Cross-Module Status
                 </h4>
                 <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
@@ -676,7 +676,7 @@ export const FlatDetailModal = ({
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <CheckCircle2 size={20} color="#17652f" />
-                      <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
+                      <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#17652f' }}>
                         Unit is Sold &amp; Allotted to Registered Buyer
                       </span>
                     </div>
@@ -688,7 +688,7 @@ export const FlatDetailModal = ({
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                     <div>
                       <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>REGISTERED BUYER</span>
-                      <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                         {owner?.name || 'Registered Client'}
                       </div>
                       <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{owner?.mobileNo || 'Contact on file'}</span>
@@ -696,7 +696,7 @@ export const FlatDetailModal = ({
 
                     <div>
                       <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>AGREED SALE VALUE</span>
-                      <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                         {formatINR(flat.basePrice || 4500000)}
                       </div>
                     </div>
@@ -740,7 +740,7 @@ export const FlatDetailModal = ({
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Sparkles size={20} color="#17652f" />
-                      <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
+                      <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#17652f' }}>
                         Unit Enrolled in 3-Year Guaranteed Rental Program
                       </span>
                     </div>
@@ -752,14 +752,14 @@ export const FlatDetailModal = ({
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                     <div>
                       <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>MONTHLY GUARANTEED RETURN</span>
-                      <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f' }}>
+                      <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#17652f' }}>
                         {formatINR(flat.rentalDetails?.monthlyRent || 25000)}/month
                       </div>
                     </div>
 
                     <div>
                       <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>CONTRACT TENURE</span>
-                      <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                         36 Months Guaranteed
                       </div>
                     </div>
@@ -802,7 +802,7 @@ export const FlatDetailModal = ({
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <CheckCircle2 size={20} color="#17652f" />
-                    <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
+                    <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#17652f' }}>
                       Unit is Vacant &amp; Available for Booking
                     </span>
                   </div>

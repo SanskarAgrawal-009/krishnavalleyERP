@@ -434,7 +434,7 @@ export const TaskforceMemberDashboard = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                boxShadow: '0 4px 12px rgba(23, 101, 47, 0.25)',
               }}
             >
               {hierarchyLevel === 'head' ? (
@@ -448,7 +448,7 @@ export const TaskforceMemberDashboard = ({
 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: '800', color: '#0f172a' }}>
+                <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: '600', color: '#0f172a' }}>
                   {member ? member.name : `${user?.firstName || 'My'} Taskforce Dashboard`}
                 </h1>
                 <span
@@ -459,7 +459,7 @@ export const TaskforceMemberDashboard = ({
                     padding: '2px 8px',
                     borderRadius: '12px',
                     fontSize: '0.72rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     background: badgeInfo.bg,
                     color: badgeInfo.color,
                     border: `1px solid ${badgeInfo.border}`,
@@ -549,7 +549,7 @@ export const TaskforceMemberDashboard = ({
                 fontSize: '0.78rem',
                 fontWeight: '700',
                 cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(37, 99, 235, 0.28)',
+                boxShadow: '0 2px 6px rgba(23, 101, 47, 0.28)',
               }}
             >
               <Camera size={15} />
@@ -606,7 +606,7 @@ export const TaskforceMemberDashboard = ({
                 <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#64748b' }}>{stat.label}</span>
                 <stat.icon size={13} color={stat.color} />
               </div>
-              <span style={{ fontSize: '1.25rem', fontWeight: '800', color: stat.color }}>{stat.val}</span>
+              <span style={{ fontSize: '1.25rem', fontWeight: '600', color: stat.color }}>{stat.val}</span>
             </div>
           ))}
         </div>
@@ -649,7 +649,7 @@ export const TaskforceMemberDashboard = ({
               >
                 <Bell size={15} />
               </div>
-              <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a' }}>
+              <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a' }}>
                 Task Notifications & Directives Alert Center
               </span>
               <span
@@ -657,7 +657,7 @@ export const TaskforceMemberDashboard = ({
                   background: '#fee2e2',
                   color: '#dc2626',
                   fontSize: '0.68rem',
-                  fontWeight: 800,
+                  fontWeight: 600,
                   padding: '2px 8px',
                   borderRadius: '12px',
                 }}
@@ -756,7 +756,7 @@ export const TaskforceMemberDashboard = ({
                     <span
                       style={{
                         fontSize: '0.64rem',
-                        fontWeight: 800,
+                        fontWeight: 600,
                         color: alert.color,
                         display: 'flex',
                         alignItems: 'center',
@@ -766,7 +766,7 @@ export const TaskforceMemberDashboard = ({
                       <IconComponent size={12} />
                       {alert.label}
                     </span>
-                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#1e293b', fontFamily: 'monospace' }}>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#1e293b', fontFamily: 'monospace' }}>
                       {alert.taskCode}
                     </span>
                   </div>
@@ -931,7 +931,7 @@ export const TaskforceMemberDashboard = ({
                   {/* Task Header */}
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                     <div>
-                      <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#17652f', fontFamily: 'monospace' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: '600', color: '#17652f', fontFamily: 'monospace' }}>
                         {t.taskCode}
                       </span>
                       <h3
@@ -939,7 +939,7 @@ export const TaskforceMemberDashboard = ({
                         style={{
                           margin: '2px 0 0',
                           fontSize: '0.88rem',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           color: '#0f172a',
                           cursor: 'pointer',
                           lineHeight: 1.3,
@@ -954,7 +954,7 @@ export const TaskforceMemberDashboard = ({
                         padding: '2px 8px',
                         borderRadius: '6px',
                         fontSize: '0.68rem',
-                        fontWeight: '800',
+                        fontWeight: '600',
                         textTransform: 'uppercase',
                         background:
                           t.status === 'completed'
@@ -980,7 +980,7 @@ export const TaskforceMemberDashboard = ({
                       <span
                         style={{
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           background: '#fee2e2',
                           color: '#dc2626',
                           border: '1px solid #fca5a5',
@@ -998,7 +998,7 @@ export const TaskforceMemberDashboard = ({
                       <span
                         style={{
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           background: '#fefce8',
                           color: '#a16207',
                           border: '1px solid #fef08a',
@@ -1264,7 +1264,7 @@ export const TaskforceMemberDashboard = ({
                         padding: '2px 7px',
                         borderRadius: '5px',
                         fontSize: '0.65rem',
-                        fontWeight: '800',
+                        fontWeight: '600',
                         textTransform: 'uppercase',
                         background: '#f1f5f9',
                         color: '#475569',
@@ -1277,7 +1277,7 @@ export const TaskforceMemberDashboard = ({
                         padding: '1px 6px',
                         borderRadius: '4px',
                         fontSize: '0.65rem',
-                        fontWeight: '800',
+                        fontWeight: '600',
                         background:
                           up.uploaderRole === 'head'
                             ? '#ecfeff'
@@ -1297,7 +1297,7 @@ export const TaskforceMemberDashboard = ({
                   </div>
 
                   <div>
-                    <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '800' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '600' }}>
                       {up.taskCode}
                     </div>
                     <div
@@ -1387,7 +1387,7 @@ export const TaskforceMemberDashboard = ({
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Camera size={18} />
-                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800' }}>Submit Work Evidence / Proof</h3>
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600' }}>Submit Work Evidence / Proof</h3>
               </div>
               <button
                 onClick={() => setIsUploadModalOpen(false)}
@@ -1517,7 +1517,7 @@ export const TaskforceMemberDashboard = ({
               gap: '14px',
             }}
           >
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>
+            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>
               Update Task Progress
             </h3>
 

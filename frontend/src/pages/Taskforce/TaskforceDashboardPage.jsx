@@ -728,15 +728,15 @@ export const TaskforceDashboardPage = () => {
                 }}
               >
                 <i className="fa-solid fa-shield-halved" style={{ color: '#17652f' }}></i>
-                {userRole === 'taskforce_manager' ? 'Command Center' : 'Field Operations'}
+                {userRole === 'taskforce_manager' ? 'Command' : 'Field'}
               </span>
             </div>
 
-            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '28px', fontWeight: 700, margin: '0 0 6px 0', letterSpacing: '-0.02em', color: '#1f2937' }}>
-              Taskforce Operations Dashboard
+            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '28px', fontWeight: 600, margin: '0 0 6px 0', letterSpacing: '-0.02em', color: '#1f2937' }}>
+              Taskforce
             </h1>
             <p style={{ margin: 0, fontSize: '13px', color: '#596372', maxWidth: '650px', lineHeight: 1.5 }}>
-              Dedicated operational workspace for active field directives, site evidence verification, roadblock resolution, and real-time team dispatch.
+              Tasks, site verification, and team workload.
             </p>
           </div>
 
@@ -749,23 +749,22 @@ export const TaskforceDashboardPage = () => {
                   background: '#17652f',
                   color: '#ffffff',
                   border: 'none',
-                  padding: '10px 18px',
-                  borderRadius: '10px',
+                  padding: '9px 16px',
+                  borderRadius: '8px',
                   fontWeight: 600,
                   fontSize: '13px',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
-                  transition: 'all 0.15s ease',
+                  transition: 'background-color 0.15s ease',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = '#125225')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = '#17652f')}
-                title="Directly add and register a new member into the Taskforce Team"
+                title="Add a new member to the taskforce team"
               >
                 <i className="fa-solid fa-user-plus"></i>
-                + Add Team Member
+                Add member
               </button>
             )}
 
@@ -773,11 +772,11 @@ export const TaskforceDashboardPage = () => {
               <button
                 onClick={() => setIsNewTaskModalOpen(true)}
                 style={{
-                  background: '#e8f2e5',
+                  background: '#f0fdf4',
                   color: '#17652f',
-                  border: '1px solid #cde4c9',
-                  padding: '10px 18px',
-                  borderRadius: '10px',
+                  border: '1px solid #bbf7d0',
+                  padding: '9px 16px',
+                  borderRadius: '8px',
                   fontWeight: 600,
                   fontSize: '13px',
                   cursor: 'pointer',
@@ -786,11 +785,11 @@ export const TaskforceDashboardPage = () => {
                   gap: '8px',
                   transition: 'all 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#d9ebdc')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = '#e8f2e5')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#dcfce7')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#f0fdf4')}
               >
                 <i className="fa-solid fa-plus"></i>
-                New Directive / Task
+                New task
               </button>
             )}
 
@@ -803,10 +802,10 @@ export const TaskforceDashboardPage = () => {
               }}
               style={{
                 background: '#ffffff',
-                color: '#1f2937',
-                border: '1px solid #e8e6df',
-                padding: '10px 16px',
-                borderRadius: '10px',
+                color: '#374151',
+                border: '1px solid #d1d5db',
+                padding: '9px 16px',
+                borderRadius: '8px',
                 fontWeight: 600,
                 fontSize: '13px',
                 cursor: 'pointer',
@@ -815,11 +814,11 @@ export const TaskforceDashboardPage = () => {
                 gap: '8px',
                 transition: 'all 0.15s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#faf9f6')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#f9fafb')}
               onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
             >
               <i className="fa-solid fa-camera" style={{ color: '#17652f' }}></i>
-              Upload Proof
+              Upload photo
             </button>
 
             <button
@@ -827,10 +826,10 @@ export const TaskforceDashboardPage = () => {
               disabled={refreshing}
               style={{
                 background: '#ffffff',
-                color: '#596372',
-                border: '1px solid #e8e6df',
-                padding: '10px 14px',
-                borderRadius: '10px',
+                color: '#4b5563',
+                border: '1px solid #d1d5db',
+                padding: '9px 14px',
+                borderRadius: '8px',
                 fontWeight: 600,
                 fontSize: '13px',
                 cursor: 'pointer',
@@ -839,13 +838,13 @@ export const TaskforceDashboardPage = () => {
                 gap: '8px',
                 transition: 'all 0.15s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#faf9f6')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#f9fafb')}
               onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
-              title="Refresh Live Data"
+              title="Refresh data"
             >
               <i className={`fa-solid fa-arrows-rotate ${refreshing ? 'fa-spin' : ''}`} style={{ color: '#17652f' }}></i>
               <span style={{ fontSize: '12px' }}>
-                {refreshing ? 'Syncing...' : 'Sync'}
+                {refreshing ? 'Refreshing...' : 'Refresh'}
               </span>
             </button>
           </div>
@@ -879,14 +878,14 @@ export const TaskforceDashboardPage = () => {
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Active Directives
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>
+              Active tasks
             </span>
-            <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#e8f2e5', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#f0fdf4', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <i className="fa-solid fa-list-check" style={{ fontSize: '15px' }}></i>
             </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '28px', fontWeight: 600, color: '#0f172a', lineHeight: 1.1 }}>
             {kpis.activeCount}
           </div>
           <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
@@ -902,26 +901,26 @@ export const TaskforceDashboardPage = () => {
             borderRadius: '12px',
             padding: '18px 20px',
             border: kpis.mdDirectivesCount > 0 ? '1px solid #fed7aa' : '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
             cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            transition: 'border-color 0.15s ease',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#ea580c'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = kpis.mdDirectivesCount > 0 ? '#fed7aa' : '#e2e8f0'; }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              MD Directives
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>
+              Management tasks
             </span>
             <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#fff7ed', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className="fa-solid fa-fire-flame-curved" style={{ fontSize: '15px' }}></i>
+              <i className="fa-solid fa-crown" style={{ fontSize: '15px' }}></i>
             </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#c2410c', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '28px', fontWeight: 600, color: '#c2410c', lineHeight: 1.1 }}>
             {kpis.mdDirectivesCount}
           </div>
           <div style={{ fontSize: '12px', color: '#9a3412', marginTop: '6px' }}>
-            {kpis.urgentCount} marked urgent
+            {kpis.urgentCount} urgent
           </div>
         </div>
 
@@ -933,26 +932,26 @@ export const TaskforceDashboardPage = () => {
             borderRadius: '12px',
             padding: '18px 20px',
             border: kpis.roadblocksCount > 0 ? '1px solid #fecaca' : '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
             cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            transition: 'border-color 0.15s ease',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#dc2626'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = kpis.roadblocksCount > 0 ? '#fecaca' : '#e2e8f0'; }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: kpis.roadblocksCount > 0 ? '#b91c1c' : '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Roadblocks
+            <span style={{ fontSize: '12px', fontWeight: 600, color: kpis.roadblocksCount > 0 ? '#b91c1c' : '#64748b' }}>
+              Blocked tasks
             </span>
             <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <i className="fa-solid fa-road-barrier" style={{ fontSize: '15px' }}></i>
             </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: kpis.roadblocksCount > 0 ? '#dc2626' : '#0f172a', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '28px', fontWeight: 600, color: kpis.roadblocksCount > 0 ? '#dc2626' : '#0f172a', lineHeight: 1.1 }}>
             {kpis.roadblocksCount}
           </div>
           <div style={{ fontSize: '12px', color: kpis.roadblocksCount > 0 ? '#b91c1c' : '#10b981', marginTop: '6px', fontWeight: 600 }}>
-            {kpis.roadblocksCount > 0 ? 'Attention required' : 'No field blockers'}
+            {kpis.roadblocksCount > 0 ? 'Attention needed' : 'None blocked'}
           </div>
         </div>
 
@@ -964,22 +963,22 @@ export const TaskforceDashboardPage = () => {
             borderRadius: '12px',
             padding: '18px 20px',
             border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
             cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            transition: 'border-color 0.15s ease',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Due Today
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>
+              Due today
             </span>
             <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <i className="fa-solid fa-clock" style={{ fontSize: '15px' }}></i>
             </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '28px', fontWeight: 600, color: '#0f172a', lineHeight: 1.1 }}>
             {kpis.dueTodayCount}
           </div>
           <div style={{ fontSize: '12px', color: kpis.overdueCount > 0 ? '#dc2626' : '#64748b', marginTop: '6px' }}>
@@ -995,26 +994,26 @@ export const TaskforceDashboardPage = () => {
             borderRadius: '12px',
             padding: '18px 20px',
             border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
             cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            transition: 'border-color 0.15s ease',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Site Evidence
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>
+              Photos uploaded
             </span>
             <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <i className="fa-solid fa-camera-retro" style={{ fontSize: '15px' }}></i>
             </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '28px', fontWeight: 600, color: '#0f172a', lineHeight: 1.1 }}>
             {kpis.totalProofs}
           </div>
           <div style={{ fontSize: '12px', color: '#059669', marginTop: '6px' }}>
-            Verified site uploads
+            Verified photos
           </div>
         </div>
 
@@ -1026,22 +1025,22 @@ export const TaskforceDashboardPage = () => {
             borderRadius: '12px',
             padding: '18px 20px',
             border: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
             cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            transition: 'border-color 0.15s ease',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Team Capacity
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>
+              Team capacity
             </span>
             <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#f5f3ff', color: '#17652f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <i className="fa-solid fa-users-gear" style={{ fontSize: '15px' }}></i>
             </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '28px', fontWeight: 600, color: '#0f172a', lineHeight: 1.1 }}>
             {kpis.avgCapacity}%
           </div>
           <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
@@ -1085,31 +1084,31 @@ export const TaskforceDashboardPage = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 0 0 4px rgba(37, 99, 235, 0.08)',
+                  boxShadow: '0 0 0 4px rgba(23, 101, 47, 0.08)',
                 }}
               >
                 <i className="fa-solid fa-bell" style={{ fontSize: '15px' }}></i>
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>
-                    Task Notifications &amp; Directives Alert Center
+                  <span style={{ fontSize: '15px', fontWeight: 600, color: '#0f172a' }}>
+                    Task alerts
                   </span>
                   <span
                     style={{
                       background: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#fee2e2' : '#e0f2fe',
                       color: managerTaskAlerts.some((a) => a.category === 'roadblock') ? '#dc2626' : '#0369a1',
                       fontSize: '11px',
-                      fontWeight: 800,
+                      fontWeight: 600,
                       padding: '2px 8px',
                       borderRadius: '12px',
                     }}
                   >
-                    {managerTaskAlerts.length} Active Notice{managerTaskAlerts.length > 1 ? 's' : ''}
+                    {managerTaskAlerts.length} notice{managerTaskAlerts.length > 1 ? 's' : ''}
                   </span>
                 </div>
                 <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                  Live task-level roadblocks, directives, communication updates &amp; site evidence. Click any card to open task.
+                  Important updates and blocked tasks across your team. Click any card to open the task.
                 </div>
               </div>
             </div>
@@ -1125,7 +1124,7 @@ export const TaskforceDashboardPage = () => {
                     padding: '6px 12px',
                     borderRadius: '8px',
                     fontSize: '12px',
-                    fontWeight: 700,
+                    fontWeight: 600,
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -1133,7 +1132,7 @@ export const TaskforceDashboardPage = () => {
                   }}
                 >
                   <i className="fa-solid fa-triangle-exclamation"></i>
-                  {kpis.roadblocksCount} Roadblock{kpis.roadblocksCount > 1 ? 's' : ''}
+                  {kpis.roadblocksCount} blocked
                 </button>
               )}
               <button
@@ -1164,10 +1163,10 @@ export const TaskforceDashboardPage = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                 {[
                   { id: 'all', label: `All (${managerTaskAlerts.length})`, icon: 'fa-solid fa-layer-group' },
-                  { id: 'roadblock', label: `Roadblocks (${managerTaskAlerts.filter((a) => a.category === 'roadblock').length})`, icon: 'fa-solid fa-triangle-exclamation', color: '#dc2626' },
-                  { id: 'md_directive', label: `MD Notes (${managerTaskAlerts.filter((a) => a.category === 'md_directive').length})`, icon: 'fa-solid fa-crown', color: '#ca8a04' },
+                  { id: 'roadblock', label: `Blocked (${managerTaskAlerts.filter((a) => a.category === 'roadblock').length})`, icon: 'fa-solid fa-triangle-exclamation', color: '#dc2626' },
+                  { id: 'md_directive', label: `Management notes (${managerTaskAlerts.filter((a) => a.category === 'md_directive').length})`, icon: 'fa-solid fa-crown', color: '#ca8a04' },
                   { id: 'comment', label: `Updates (${managerTaskAlerts.filter((a) => a.category === 'comment').length})`, icon: 'fa-solid fa-comments', color: '#0284c7' },
-                  { id: 'proof', label: `Site Evidence (${managerTaskAlerts.filter((a) => a.category === 'proof').length})`, icon: 'fa-solid fa-camera', color: '#17652f' },
+                  { id: 'proof', label: `Photos (${managerTaskAlerts.filter((a) => a.category === 'proof').length})`, icon: 'fa-solid fa-camera', color: '#17652f' },
                   { id: 'followup', label: `Follow-ups (${managerTaskAlerts.filter((a) => a.category === 'followup').length})`, icon: 'fa-solid fa-clock-rotate-left', color: '#d97706' },
                 ].map((pill) => {
                   const count =
@@ -1250,7 +1249,7 @@ export const TaskforceDashboardPage = () => {
                       <span
                         style={{
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           color: alert.color,
                           letterSpacing: '0.04em',
                           display: 'inline-flex',
@@ -1268,7 +1267,7 @@ export const TaskforceDashboardPage = () => {
 
                     {/* Task Title & Code */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 800, color: '#334155', fontFamily: 'monospace' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#334155', fontFamily: 'monospace' }}>
                         {alert.taskCode}
                       </span>
                       {alert.department && (
@@ -1320,14 +1319,14 @@ export const TaskforceDashboardPage = () => {
                       <span
                         style={{
                           fontSize: '11px',
-                          fontWeight: 700,
+                          fontWeight: 600,
                           color: alert.color,
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
                         }}
                       >
-                        Open Task <i className="fa-solid fa-arrow-right"></i>
+                        Open task <i className="fa-solid fa-arrow-right"></i>
                       </span>
                     </div>
                   </div>
@@ -1337,7 +1336,7 @@ export const TaskforceDashboardPage = () => {
               {filteredAlerts.length > 9 && (
                 <div style={{ textAlign: 'center', marginTop: '6px' }}>
                   <span style={{ fontSize: '12px', color: '#64748b' }}>
-                    Showing top 9 of {filteredAlerts.length} notices. Click any directive card below to see full history.
+                    Showing top 9 of {filteredAlerts.length} notices. Click any card below to see full history.
                   </span>
                 </div>
               )}
@@ -1366,11 +1365,11 @@ export const TaskforceDashboardPage = () => {
         {/* View Mode Tabs */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
           {[
-            { id: 'command', label: 'Operational Command', icon: 'fa-solid fa-table-columns' },
-            { id: 'my_directives', label: 'My Directives', icon: 'fa-solid fa-user-check' },
-            { id: 'roadblocks', label: `Roadblocks (${kpis.roadblocksCount})`, icon: 'fa-solid fa-road-barrier', alert: kpis.roadblocksCount > 0 },
-            { id: 'proofs', label: `Site Evidence (${kpis.totalProofs})`, icon: 'fa-solid fa-camera' },
-            { id: 'departments', label: 'Department Health', icon: 'fa-solid fa-sitemap' },
+            { id: 'command', label: 'All tasks', icon: 'fa-solid fa-table-columns' },
+            { id: 'my_directives', label: 'My tasks', icon: 'fa-solid fa-user-check' },
+            { id: 'roadblocks', label: `Blocked (${kpis.roadblocksCount})`, icon: 'fa-solid fa-road-barrier', alert: kpis.roadblocksCount > 0 },
+            { id: 'proofs', label: `Photos (${kpis.totalProofs})`, icon: 'fa-solid fa-camera' },
+            { id: 'departments', label: 'Departments', icon: 'fa-solid fa-sitemap' },
           ].map((tab) => {
             const isActive = activeMode === tab.id;
             return (
@@ -1380,7 +1379,7 @@ export const TaskforceDashboardPage = () => {
                 style={{
                   background: isActive ? '#17652f' : '#ffffff',
                   color: isActive ? '#ffffff' : tab.alert ? '#b91c1c' : '#596372',
-                  border: isActive ? '1px solid #17652f' : '1px solid #e8e6df',
+                  border: isActive ? '1px solid #17652f' : '1px solid #e5e7eb',
                   padding: '8px 14px',
                   borderRadius: '8px',
                   fontSize: '13px',
@@ -1389,7 +1388,7 @@ export const TaskforceDashboardPage = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: isActive ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+                  boxShadow: 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -1410,15 +1409,15 @@ export const TaskforceDashboardPage = () => {
             ></i>
             <input
               type="text"
-              placeholder="Search tasks, flat..."
+              placeholder="e.g. Tower A or painting"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
                 padding: '8px 12px 8px 34px',
                 borderRadius: '8px',
-                border: '1px solid #e8e6df',
-                background: '#faf9f6',
+                border: '1px solid #e5e7eb',
+                background: '#ffffff',
                 fontSize: '13px',
                 outline: 'none',
               }}
@@ -1506,11 +1505,11 @@ export const TaskforceDashboardPage = () => {
           <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div>
-                <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>
-                  Operational Directives Queue
+                <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', margin: '0 0 4px 0' }}>
+                  Task list
                 </h2>
                 <span style={{ fontSize: '12px', color: '#64748b' }}>
-                  Showing {filteredTasks.length} directive{filteredTasks.length === 1 ? '' : 's'} sorted by priority & update time
+                  Showing {filteredTasks.length} task{filteredTasks.length === 1 ? '' : 's'}
                 </span>
               </div>
 
@@ -1531,7 +1530,7 @@ export const TaskforceDashboardPage = () => {
                   }}
                 >
                   <i className="fa-solid fa-columns"></i>
-                  Kanban Board
+                  Board view
                 </button>
               </div>
             </div>
@@ -1540,8 +1539,8 @@ export const TaskforceDashboardPage = () => {
             {filteredTasks.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px 20px', color: '#94a3b8' }}>
                 <i className="fa-solid fa-clipboard-check" style={{ fontSize: '36px', marginBottom: '12px', color: '#cbd5e1' }}></i>
-                <div style={{ fontWeight: 600, color: '#475569' }}>No directives match current filters</div>
-                <div style={{ fontSize: '13px', marginTop: '4px' }}>Try clearing your filters or create a new task.</div>
+                <div style={{ fontWeight: 600, color: '#475569' }}>No tasks match your filters</div>
+                <div style={{ fontSize: '13px', marginTop: '4px' }}>Try changing your filters or create a new task.</div>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1589,21 +1588,21 @@ export const TaskforceDashboardPage = () => {
 
                           {/* Priority Chip */}
                           {task.isMDDirective && (
-                            <span style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px' }}>
-                              <i className="fa-solid fa-fire" style={{ marginRight: '4px' }}></i> MD Directive
+                            <span style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '6px' }}>
+                              <i className="fa-solid fa-crown" style={{ marginRight: '4px' }}></i> Management task
                             </span>
                           )}
 
                           {task.priority === 'urgent' && (
-                            <span style={{ background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px' }}>
+                            <span style={{ background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa', fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '6px' }}>
                               Urgent
                             </span>
                           )}
 
                           {/* Roadblock Badge */}
                           {isBlocked && (
-                            <span style={{ background: '#dc2626', color: '#ffffff', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px' }}>
-                              <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '4px' }}></i> ROADBLOCK
+                            <span style={{ background: '#dc2626', color: '#ffffff', fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '6px' }}>
+                              <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '4px' }}></i> Blocked
                             </span>
                           )}
                         </div>
@@ -1614,10 +1613,9 @@ export const TaskforceDashboardPage = () => {
                             background: task.status === 'completed' ? '#ecfdf5' : task.status === 'in_progress' ? '#e8f2e5' : '#f8fafc',
                             color: task.status === 'completed' ? '#059669' : task.status === 'in_progress' ? '#17652f' : '#64748b',
                             fontSize: '11px',
-                            fontWeight: 700,
+                            fontWeight: 600,
                             padding: '3px 9px',
                             borderRadius: '12px',
-                            textTransform: 'uppercase',
                           }}
                         >
                           {task.status?.replace('_', ' ')}
@@ -1674,7 +1672,7 @@ export const TaskforceDashboardPage = () => {
                             onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setDetailModalInitialTab('chat'); setIsDetailModalOpen(true); }}
                             style={{
                               fontSize: '11px',
-                              fontWeight: 800,
+                              fontWeight: 600,
                               background: '#fefce8',
                               color: '#a16207',
                               border: '1px solid #fef08a',
@@ -1779,10 +1777,10 @@ export const TaskforceDashboardPage = () => {
                               alignItems: 'center',
                               gap: '4px',
                             }}
-                            title="Update Progress"
+                            title="Update progress"
                           >
                             <i className="fa-solid fa-sliders"></i>
-                            Update
+                            Progress
                           </button>
 
                           <button
@@ -1803,10 +1801,10 @@ export const TaskforceDashboardPage = () => {
                               alignItems: 'center',
                               gap: '4px',
                             }}
-                            title="Upload Site Evidence"
+                            title="Upload photo"
                           >
                             <i className="fa-solid fa-camera"></i>
-                            Proof
+                            Photo
                           </button>
 
                           {isBlocked ? (
@@ -1822,7 +1820,7 @@ export const TaskforceDashboardPage = () => {
                                 padding: '6px 10px',
                                 borderRadius: '6px',
                                 fontSize: '11px',
-                                fontWeight: 700,
+                                fontWeight: 600,
                                 cursor: 'pointer',
                               }}
                             >
@@ -1844,7 +1842,7 @@ export const TaskforceDashboardPage = () => {
                                 fontSize: '11px',
                                 cursor: 'pointer',
                               }}
-                              title="Report Roadblock"
+                              title="Report issue"
                             >
                               <i className="fa-solid fa-triangle-exclamation"></i>
                             </button>
@@ -1879,14 +1877,14 @@ export const TaskforceDashboardPage = () => {
             {/* Department Capacity Breakdown */}
             <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                  Department Workload
+                <h2 style={{ fontSize: '15px', fontWeight: 600, color: '#0f172a', margin: 0 }}>
+                  Workload by department
                 </h2>
                 <button
                   onClick={() => handleModeChange('departments')}
-                  style={{ background: 'transparent', border: 'none', color: '#0284c7', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                  style={{ background: 'transparent', border: 'none', color: '#17652f', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                 >
-                  View All
+                  View all
                 </button>
               </div>
 
@@ -1909,7 +1907,7 @@ export const TaskforceDashboardPage = () => {
                         <i className={dept.theme.icon} style={{ color: dept.theme.color, fontSize: '14px' }}></i>
                         <span style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>{dept.name}</span>
                       </div>
-                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569' }}>
                         {dept.active} active / {dept.total} total
                       </span>
                     </div>
@@ -1932,14 +1930,14 @@ export const TaskforceDashboardPage = () => {
             {/* Field Personnel On-Duty Roster */}
             <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                  On-Duty Supervisors & Leads
+                <h2 style={{ fontSize: '15px', fontWeight: 600, color: '#0f172a', margin: 0 }}>
+                  Supervisors on duty
                 </h2>
                 <button
                   onClick={() => navigate('/taskforce-manager?tab=team')}
-                  style={{ background: 'transparent', border: 'none', color: '#0284c7', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                  style={{ background: 'transparent', border: 'none', color: '#17652f', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                 >
-                  Manage Roster
+                  Manage team
                 </button>
               </div>
 
@@ -2012,14 +2010,14 @@ export const TaskforceDashboardPage = () => {
             {kpis.allProofs.length > 0 && (
               <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                    Recent Site Evidence
+                  <h2 style={{ fontSize: '15px', fontWeight: 600, color: '#0f172a', margin: 0 }}>
+                    Recent photos
                   </h2>
                   <button
                     onClick={() => handleModeChange('proofs')}
-                    style={{ background: 'transparent', border: 'none', color: '#0284c7', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                    style={{ background: 'transparent', border: 'none', color: '#17652f', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                   >
-                    All Proofs ({kpis.allProofs.length})
+                    All photos ({kpis.allProofs.length})
                   </button>
                 </div>
 
@@ -2111,19 +2109,19 @@ export const TaskforceDashboardPage = () => {
       {activeMode === 'my_directives' && (
         <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
           <div style={{ marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
-              My Assigned Operations Queue
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#0f172a', margin: '0 0 6px 0' }}>
+              My tasks
             </h2>
             <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
-              Directives and checkpoints allocated directly to you. Update progress directly or submit site verification evidence.
+              Tasks assigned directly to you. Update progress or upload photos as you complete work.
             </p>
           </div>
 
           {filteredTasks.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', color: '#94a3b8' }}>
-              <i className="fa-solid fa-circle-check" style={{ fontSize: '42px', color: '#10b981', marginBottom: '12px' }}></i>
-              <div style={{ fontSize: '16px', fontWeight: 700, color: '#334155' }}>You have no pending directives assigned</div>
-              <div style={{ fontSize: '13px', marginTop: '6px' }}>All tasks are completed or awaiting new taskforce dispatch.</div>
+              <i className="fa-solid fa-circle-check" style={{ fontSize: '42px', color: '#16a34a', marginBottom: '12px' }}></i>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#334155' }}>No tasks assigned to you</div>
+              <div style={{ fontSize: '13px', marginTop: '6px' }}>You have no active tasks right now.</div>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
@@ -2160,7 +2158,7 @@ export const TaskforceDashboardPage = () => {
                         onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setIsDetailModalOpen(true); }}
                         style={{
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           background: '#fee2e2',
                           color: '#dc2626',
                           border: '1px solid #fca5a5',
@@ -2181,7 +2179,7 @@ export const TaskforceDashboardPage = () => {
                         onClick={(e) => { e.stopPropagation(); setSelectedTaskId(task._id); setDetailModalInitialTab('chat'); setIsDetailModalOpen(true); }}
                         style={{
                           fontSize: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           background: '#fefce8',
                           color: '#a16207',
                           border: '1px solid #fef08a',
@@ -2283,20 +2281,20 @@ export const TaskforceDashboardPage = () => {
       {activeMode === 'roadblocks' && (
         <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
           <div style={{ marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#991b1b', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#991b1b', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <i className="fa-solid fa-road-barrier"></i>
-              Roadblock Resolution Command
+              Blocked tasks
             </h2>
             <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
-              Tasks currently halted due to site impediments. Review reported issues, assign mitigation, or clear the roadblock once resolved.
+              Tasks currently waiting for assistance or blocked by an issue. Review reported issues or mark them resolved.
             </p>
           </div>
 
           {kpis.roadblocksList.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', color: '#059669' }}>
-              <i className="fa-solid fa-shield-heart" style={{ fontSize: '48px', marginBottom: '14px' }}></i>
-              <div style={{ fontSize: '16px', fontWeight: 700 }}>Zero Field Roadblocks!</div>
-              <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>All taskforce operations are moving forward smoothly without recorded blockers.</div>
+              <i className="fa-solid fa-circle-check" style={{ fontSize: '48px', marginBottom: '14px' }}></i>
+              <div style={{ fontSize: '16px', fontWeight: 600 }}>No blocked tasks</div>
+              <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>All taskforce operations are moving forward without recorded blockers.</div>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '16px' }}>
@@ -2406,7 +2404,7 @@ export const TaskforceDashboardPage = () => {
                       }}
                     >
                       <i className="fa-solid fa-check"></i>
-                      Mark Roadblock Resolved
+                      Resolve block
                     </button>
 
                     <button
@@ -2421,7 +2419,7 @@ export const TaskforceDashboardPage = () => {
                         cursor: 'pointer',
                       }}
                     >
-                      Inspect Task
+                      View task
                     </button>
                   </div>
                 </div>
@@ -2436,11 +2434,11 @@ export const TaskforceDashboardPage = () => {
         <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
-                Field Proof & Verification Stream
+              <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#0f172a', margin: '0 0 6px 0' }}>
+                Photos and files
               </h2>
               <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
-                Real-time photostream of work proofs uploaded from site by field helpers and supervisors.
+                Photos and completion records uploaded by field teams.
               </p>
             </div>
 
@@ -2452,7 +2450,7 @@ export const TaskforceDashboardPage = () => {
                 setIsQuickProofOpen(true);
               }}
               style={{
-                background: '#0d9488',
+                background: '#17652f',
                 color: '#ffffff',
                 border: 'none',
                 padding: '8px 16px',
@@ -2466,15 +2464,15 @@ export const TaskforceDashboardPage = () => {
               }}
             >
               <i className="fa-solid fa-camera"></i>
-              Upload New Evidence
+              Upload photo
             </button>
           </div>
 
           {kpis.allProofs.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', color: '#94a3b8' }}>
               <i className="fa-solid fa-camera" style={{ fontSize: '42px', color: '#cbd5e1', marginBottom: '12px' }}></i>
-              <div style={{ fontSize: '16px', fontWeight: 700, color: '#334155' }}>No site proofs uploaded yet</div>
-              <div style={{ fontSize: '13px', marginTop: '6px' }}>Upload photos from site to populate the audit gallery.</div>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#334155' }}>No photos uploaded yet</div>
+              <div style={{ fontSize: '13px', marginTop: '6px' }}>Photos uploaded for tasks will appear here.</div>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
@@ -2604,11 +2602,11 @@ export const TaskforceDashboardPage = () => {
       {activeMode === 'departments' && (
         <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
           <div style={{ marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
-              Department Health & Capacity Matrix
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#0f172a', margin: '0 0 6px 0' }}>
+              Department Workload & Capacity
             </h2>
             <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
-              Operational efficiency, workload saturation, and active bottlenecks per department.
+              Task distribution, completion rates, and team capacity by department.
             </p>
           </div>
 
@@ -2686,15 +2684,15 @@ export const TaskforceDashboardPage = () => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center', background: '#ffffff', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div>
-                    <div style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>{dept.total}</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>{dept.total}</div>
                     <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase' }}>Total</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '16px', fontWeight: 800, color: '#0284c7' }}>{dept.active}</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: '#0284c7' }}>{dept.active}</div>
                     <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase' }}>Active</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '16px', fontWeight: 800, color: '#10b981' }}>{dept.completed}</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: '#10b981' }}>{dept.completed}</div>
                     <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase' }}>Done</div>
                   </div>
                 </div>
@@ -2795,7 +2793,7 @@ export const TaskforceDashboardPage = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+              <h3 style={{ fontSize: '17px', fontWeight: 600, color: '#0f172a', margin: 0 }}>
                 Update Operation Progress
               </h3>
               <button
@@ -2888,7 +2886,7 @@ export const TaskforceDashboardPage = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '17px', fontWeight: 600, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <i className="fa-solid fa-camera" style={{ color: '#0d9488' }}></i>
                 Upload Site Proof / Evidence
               </h3>
@@ -3009,7 +3007,7 @@ export const TaskforceDashboardPage = () => {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '17px', fontWeight: 800, color: roadblockModalMode === 'raise' ? '#dc2626' : '#059669', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '17px', fontWeight: 600, color: roadblockModalMode === 'raise' ? '#dc2626' : '#059669', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <i className={roadblockModalMode === 'raise' ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-check-double'}></i>
                 {roadblockModalMode === 'raise' ? 'Report Roadblock / Obstacle' : 'Resolve Field Roadblock'}
               </h3>

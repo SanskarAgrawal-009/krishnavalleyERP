@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { X, UserPlus, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { X, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { rentalService } from '../../services/rentalService.js';
 import { useToast } from '../../context/ToastContext.jsx';
 
+const STEPS = [
+  { id: 1, title: 'New Owner' },
+  { id: 2, title: 'Resale & Terms' }
+];
+
 export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred }) => {
   const toast = useToast();
+  const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState({
@@ -46,18 +52,22 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
 
   const formatINR = (val) => `₹${Number(val || 0).toLocaleString('en-IN')}`;
 
-  const handleSubmit = async (e) => {
+  const handleNext = (e) => {
     e.preventDefault();
     if (!form.newOwnerName.trim() || !form.newOwnerMobile.trim()) {
       toast.showError('New owner name and mobile number are required');
       return;
     }
+    setStep(2);
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setSaving(true);
     try {
       const res = await rentalService.transferOwnership(rental._id, form);
       if (res.success) {
-        toast.showSuccess(res.message || 'Ownership transferred successfully!');
+        toast.showSuccess(res.message || 'Ownership transferred successfully');
         if (onTransferred) onTransferred();
         onClose();
       } else {
@@ -74,8 +84,8 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
     <div style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(15, 23, 42, 0.7)',
-      backdropFilter: 'blur(4px)',
+      background: 'rgba(15, 23, 42, 0.45)',
+      backdropFilter: 'blur(3px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -86,291 +96,386 @@ export const TransferOwnershipModal = ({ isOpen, onClose, rental, onTransferred 
         background: '#ffffff',
         borderRadius: '16px',
         width: '100%',
-        maxWidth: '720px',
-        maxHeight: '92vh',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-        overflow: 'hidden'
+        maxWidth: '560px',
+        position: 'relative',
+        boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.18)',
+        padding: '28px 32px'
       }}>
-        {/* Header */}
-        <div style={{
-          padding: '18px 24px',
-          background: 'linear-gradient(135deg, #17652f, #17652f)',
-          color: '#ffffff',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid #17652f'
-        }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: '800' }}>Resale Transfer &amp; History Archive</span>
-              <span style={{
-                background: '#17652f',
-                color: '#ffffff',
-                fontSize: '0.72rem',
-                fontWeight: '700',
-                padding: '2px 8px',
-                borderRadius: '6px'
-              }}>
-                Flat {rental.flatNumber}
-              </span>
-            </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: '#c7d2fe' }}>
-              Current owner will be archived into <strong>Previous Owners Trail (Table 2)</strong>.
-            </p>
-          </div>
-
-          <button
-            onClick={onClose}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              borderRadius: '8px',
-              color: '#c7d2fe',
-              cursor: 'pointer',
-              padding: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <form onSubmit={handleSubmit} style={{ padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-          
-          {/* ARCHIVE NOTICE BOX */}
-          <div style={{
-            background: '#e8f2e5',
-            border: '1.5px solid #c7d2fe',
-            borderRadius: '12px',
-            padding: '14px 18px',
+        {/* Minimal Close Button */}
+        <button
+          onClick={onClose}
+          type="button"
+          aria-label="Close"
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'transparent',
+            border: 'none',
+            color: '#94a3b8',
+            cursor: 'pointer',
+            padding: '4px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px'
-          }}>
-            <div>
-              <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '800', textTransform: 'uppercase' }}>
-                CURRENT OWNER (TO BE ARCHIVED AS "LAST OWNER")
-              </span>
-              <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1e1b4b', marginTop: '2px' }}>
-                {rental.ownerName || 'Current Owner'} ({rental.ownerMobile})
+            justifyContent: 'center',
+            borderRadius: '6px'
+          }}
+        >
+          <X size={20} />
+        </button>
+
+        {/* Centered Heading */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: '#0f172a' }}>
+            Transfer property ownership
+          </h2>
+          <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+            Flat {rental.flatNumber} • Previous owner will be archived to history
+          </p>
+        </div>
+
+        {/* Stepper Progress */}
+        <div className="form-stepper-header" style={{ marginBottom: '22px' }}>
+          {STEPS.map((s, idx) => (
+            <React.Fragment key={s.id}>
+              <div className={`form-stepper-item ${step === s.id ? 'active' : ''} ${step > s.id ? 'completed' : ''}`}>
+                <div className="form-stepper-circle">
+                  {step > s.id ? '✓' : s.id}
+                </div>
+                <span className="form-stepper-label">{s.title}</span>
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '2px' }}>
-                Total Rent Disbursed: <strong>{formatINR(rental.totalPaid)}</strong> • Contract: {rental.tenureMonths} Months
-              </div>
-            </div>
+              {idx < STEPS.length - 1 && <div className={`form-stepper-line ${step > s.id ? 'completed' : ''}`} />}
+            </React.Fragment>
+          ))}
+        </div>
 
-            <div style={{ background: '#17652f', color: '#ffffff', padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-              <ArrowRight size={20} />
-            </div>
-          </div>
-
-          {/* SECTION: NEW OWNER DETAILS */}
-          <div>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <UserPlus size={16} color="#17652f" /> New Buyer / Transferee Information (Table 1)
-            </h4>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+        {step === 1 && (
+          <form onSubmit={handleNext} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Current Owner Info Card */}
+            <div style={{
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '10px',
+              padding: '12px 16px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  NEW OWNER FULL NAME *
-                </label>
+                <span style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: '600', textTransform: 'uppercase' }}>
+                  Current Owner (To be archived)
+                </span>
+                <strong style={{ display: 'block', color: '#0f172a', fontSize: '0.94rem', marginTop: '2px' }}>
+                  {rental.ownerName || 'Current Owner'} ({rental.ownerMobile || 'No phone'})
+                </strong>
+                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                  Total rent disbursed: {formatINR(rental.totalPaid)}
+                </span>
+              </div>
+              <span className="form-card-badge">Archived Trail</span>
+            </div>
+
+            {/* New Owner Name */}
+            <div className="form-card-box">
+              <div className="form-card-prompt">
+                <span>New owner full name *</span>
+              </div>
+              <div className="form-card-input-row">
                 <input
                   type="text"
                   required
                   placeholder="e.g. Ramesh Chandra Verma"
+                  className="form-card-input"
                   value={form.newOwnerName}
                   onChange={(e) => setForm({ ...form, newOwnerName: e.target.value })}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
+            </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  MOBILE NUMBER *
-                </label>
+            {/* Mobile Number */}
+            <div className="form-card-box">
+              <div className="form-card-prompt">
+                <span>Mobile number *</span>
+              </div>
+              <div className="form-card-input-row">
                 <input
                   type="tel"
                   required
-                  placeholder="+91 98XXXXXXXX"
+                  placeholder="e.g. 9876543210"
+                  className="form-card-input"
                   value={form.newOwnerMobile}
                   onChange={(e) => setForm({ ...form, newOwnerMobile: e.target.value })}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  EMAIL ADDRESS
-                </label>
-                <input
-                  type="email"
-                  placeholder="owner@example.com"
-                  value={form.newOwnerEmail}
-                  onChange={(e) => setForm({ ...form, newOwnerEmail: e.target.value })}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  PAN CARD NUMBER
-                </label>
-                <input
-                  type="text"
-                  placeholder="ABCDE1234F"
-                  value={form.newOwnerPan}
-                  onChange={(e) => setForm({ ...form, newOwnerPan: e.target.value.toUpperCase() })}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
-          </div>
 
-          {/* SECTION: TRANSFER DETAILS & NEW RENTAL TERMS */}
-          <div>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
-              Resale Terms &amp; New Rental Tenure
-            </h4>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  TRANSFER DATE
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={form.transferDate}
-                  onChange={(e) => setForm({ ...form, transferDate: e.target.value, newStartDate: e.target.value })}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box' }}
-                />
+            {/* Email + PAN */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Email address</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="email"
+                    placeholder="e.g. owner@gmail.com"
+                    className="form-card-input"
+                    value={form.newOwnerEmail}
+                    onChange={(e) => setForm({ ...form, newOwnerEmail: e.target.value })}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  NEW REGISTRY DATE
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={form.newRegistryDate}
-                  onChange={(e) => setForm({ ...form, newRegistryDate: e.target.value })}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box' }}
-                />
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>PAN number</span>
+                  <span className="form-card-badge">KYC</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="text"
+                    placeholder="ABCDE1234F"
+                    className="form-card-input"
+                    value={form.newOwnerPan}
+                    onChange={(e) => setForm({ ...form, newOwnerPan: e.target.value.toUpperCase() })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '12px',
+              paddingTop: '16px',
+              borderTop: '1px solid #f1f5f9'
+            }}>
+              <button
+                type="button"
+                onClick={onClose}
+                style={{
+                  padding: '9px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  fontWeight: '600',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                style={{
+                  padding: '9px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#17652f',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Continue
+              </button>
+            </div>
+          </form>
+        )}
+
+        {step === 2 && (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Transfer Date + Registry Date */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Transfer date</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="date"
+                    required
+                    className="form-card-input"
+                    value={form.transferDate}
+                    onChange={(e) => setForm({ ...form, transferDate: e.target.value, newStartDate: e.target.value })}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  RESALE DEAL VALUE (₹)
-                </label>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Registry date</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="date"
+                    required
+                    className="form-card-input"
+                    value={form.newRegistryDate}
+                    onChange={(e) => setForm({ ...form, newRegistryDate: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Resale Value */}
+            <div className="form-card-box">
+              <div className="form-card-prompt">
+                <span>Resale deal value</span>
+                <span className="form-card-badge">Total Property Value</span>
+              </div>
+              <div className="form-card-input-row">
+                <span style={{ color: '#64748b', fontWeight: '600' }}>₹</span>
                 <input
                   type="number"
+                  required
+                  min="0"
+                  className="form-card-input"
                   value={form.transferDealValue}
                   onChange={(e) => setForm({ ...form, transferDealValue: Number(e.target.value) })}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginTop: '12px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  NEW MONTHLY RENT (₹)
+            {/* Monthly Rent + Tenure */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>New monthly rent</span>
+                  <span className="form-card-badge">Monthly</span>
+                </div>
+                <div className="form-card-input-row">
+                  <span style={{ color: '#64748b', fontWeight: '600' }}>₹</span>
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    className="form-card-input"
+                    value={form.newMonthlyRent}
+                    onChange={(e) => setForm({ ...form, newMonthlyRent: Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-card-box">
+                <div className="form-card-prompt">
+                  <span>Tenure (months)</span>
+                  <span className="form-card-badge">Min 36 Mo</span>
+                </div>
+                <div className="form-card-input-row">
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    className="form-card-input"
+                    value={form.newTenureMonths}
+                    onChange={(e) => setForm({ ...form, newTenureMonths: Math.max(1, Number(e.target.value)) })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* TDS Choice Card */}
+            <div className="form-card-box">
+              <div className="form-card-prompt">
+                <span>Apply 10% TDS deduction?</span>
+              </div>
+              <div className="form-card-choices">
+                <label className="form-card-choice" onClick={() => setForm({ ...form, applyTds: true })}>
+                  <input
+                    type="radio"
+                    name="applyTds"
+                    checked={form.applyTds === true}
+                    onChange={() => setForm({ ...form, applyTds: true })}
+                    style={{ accentColor: '#17652f' }}
+                  />
+                  <span>Yes, deduct 10%</span>
                 </label>
-                <input
-                  type="number"
-                  min="0"
-                  required
-                  value={form.newMonthlyRent}
-                  onChange={(e) => setForm({ ...form, newMonthlyRent: Number(e.target.value) })}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                  NEW TENURE (MONTHS, MIN 36)
+                <label className="form-card-choice" onClick={() => setForm({ ...form, applyTds: false })}>
+                  <input
+                    type="radio"
+                    name="applyTds"
+                    checked={form.applyTds === false}
+                    onChange={() => setForm({ ...form, applyTds: false })}
+                    style={{ accentColor: '#17652f' }}
+                  />
+                  <span>No deduction</span>
                 </label>
-                <input
-                  type="number"
-                  min="1"
-                  required
-                  value={form.newTenureMonths}
-                  onChange={(e) => setForm({ ...form, newTenureMonths: Math.max(1, Number(e.target.value)) })}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', outline: 'none', boxSizing: 'border-box' }}
-                />
               </div>
             </div>
-          </div>
 
-          {/* LIVE COMPUTED NEW COMMITMENT STRIP */}
-          <div style={{
-            background: '#f8fafc',
-            border: '1px solid #cbd5e1',
-            borderRadius: '10px',
-            padding: '12px 16px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '0.8rem'
-          }}>
-            <div>
-              <span style={{ color: '#64748b', fontSize: '0.72rem' }}>NEW PAYMENT ENDING DATE:</span>
-              <strong style={{ display: 'block', color: '#0f172a', fontSize: '0.95rem' }}>{computedEndDateStr}</strong>
+            {/* Live Computed strip */}
+            <div style={{
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '10px',
+              padding: '10px 14px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              fontSize: '0.8rem'
+            }}>
+              <div>
+                <span style={{ color: '#64748b', fontSize: '0.72rem', display: 'block' }}>Ending date</span>
+                <strong style={{ color: '#0f172a' }}>{computedEndDateStr}</strong>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ color: '#64748b', fontSize: '0.72rem', display: 'block' }}>Total commitment</span>
+                <strong style={{ color: '#17652f' }}>{formatINR(totalCommitment)}</strong>
+              </div>
             </div>
 
-            <div style={{ textAlign: 'right' }}>
-              <span style={{ color: '#64748b', fontSize: '0.72rem' }}>NEW TOTAL COMMITMENT:</span>
-              <strong style={{ display: 'block', color: '#17652f', fontSize: '0.95rem' }}>{formatINR(totalCommitment)}</strong>
+            {/* Footer */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '12px',
+              paddingTop: '16px',
+              borderTop: '1px solid #f1f5f9'
+            }}>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                disabled={saving}
+                style={{
+                  padding: '9px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  fontWeight: '600',
+                  fontSize: '0.86rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Back
+              </button>
+
+              <button
+                type="submit"
+                disabled={saving}
+                style={{
+                  padding: '9px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#17652f',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '0.86rem',
+                  cursor: saving ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {saving ? 'Transferring...' : 'Execute transfer'}
+              </button>
             </div>
-          </div>
-
-          {/* Modal Footer */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '12px',
-            borderTop: '1px solid #e2e8f0',
-            paddingTop: '16px',
-            marginTop: '8px'
-          }}>
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={saving}
-              style={{ padding: '9px 18px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#475569', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer' }}
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              disabled={saving}
-              style={{
-                padding: '9px 24px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #17652f, #17652f)',
-                color: '#ffffff',
-                fontWeight: '700',
-                fontSize: '0.82rem',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                boxShadow: '0 2px 6px rgba(67, 56, 202, 0.3)'
-              }}
-            >
-              {saving ? 'Transferring...' : 'Execute Resale Transfer'}
-            </button>
-          </div>
-
-        </form>
+          </form>
+        )}
       </div>
     </div>
   );

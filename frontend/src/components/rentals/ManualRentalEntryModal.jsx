@@ -237,7 +237,7 @@ export const ManualRentalEntryModal = ({
     boxSizing: 'border-box', transition: 'border-color 0.2s, box-shadow 0.2s',
     fontFamily: "'Inter', sans-serif", background: '#ffffff',
   };
-  const focusStyle = { borderColor: '#17652f', boxShadow: '0 0 0 3px rgba(59,130,246,0.1)' };
+  const focusStyle = { borderColor: '#17652f', boxShadow: '0 0 0 3px rgba(23, 101, 47,0.1)' };
   const labelStyle = {
     display: 'block', fontSize: '0.72rem', fontWeight: '700', color: '#64748b',
     marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em',
@@ -259,7 +259,7 @@ export const ManualRentalEntryModal = ({
           <Home size={16} color="#fff" />
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Select Flat Unit</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Select Flat Unit</h3>
           <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Choose the flat to enroll into rental register</p>
         </div>
       </div>
@@ -280,7 +280,7 @@ export const ManualRentalEntryModal = ({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.1rem', fontWeight: '800', color: '#17652f' }}>
+                <span style={{ fontSize: '1.1rem', fontWeight: '600', color: '#17652f' }}>
                   Flat {selectedFlat.flatNumber}
                 </span>
                 <span style={{
@@ -361,7 +361,7 @@ export const ManualRentalEntryModal = ({
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.transform = 'translateY(0)'; }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontWeight: '800', fontSize: '0.92rem', color: '#0f172a' }}>{f.flatNumber}</span>
+                      <span style={{ fontWeight: '600', fontSize: '0.92rem', color: '#0f172a' }}>{f.flatNumber}</span>
                       <span style={{
                         padding: '1px 6px', borderRadius: '4px', fontSize: '0.68rem', fontWeight: '700',
                         background: hasRental ? '#e0f2fe' : '#f1f5f9', color: hasRental ? '#0369a1' : '#475569',
@@ -402,7 +402,7 @@ export const ManualRentalEntryModal = ({
           <User size={16} color="#fff" />
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Owner & Registry Details</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Owner & Registry Details</h3>
           <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>
             Owner KYC for Flat {selectedFlat?.flatNumber || '—'}
           </p>
@@ -543,7 +543,7 @@ export const ManualRentalEntryModal = ({
           <DollarSign size={16} color="#fff" />
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Rent Amount & TDS</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Rent Amount & TDS</h3>
           <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Set gross rent and TDS deduction for Flat {selectedFlat?.flatNumber || '—'}</p>
         </div>
       </div>
@@ -554,7 +554,7 @@ export const ManualRentalEntryModal = ({
         <div style={{ position: 'relative' }}>
           <span style={{
             position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
-            fontWeight: '800', color: '#17652f', fontSize: '1rem',
+            fontWeight: '600', color: '#17652f', fontSize: '1rem',
           }}>₹</span>
           <input
             type="number" required min="1000" step="500"
@@ -566,7 +566,7 @@ export const ManualRentalEntryModal = ({
                 setTdsAmount(Math.round(val * (tdsPercentage / 100)));
               }
             }}
-            style={{ ...inputStyle, paddingLeft: '30px', fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}
+            style={{ ...inputStyle, paddingLeft: '30px', fontSize: '1.1rem', fontWeight: '600', color: '#0f172a' }}
             onFocus={applyFocus} onBlur={removeFocus}
           />
         </div>
@@ -666,7 +666,7 @@ export const ManualRentalEntryModal = ({
       }}>
         <span style={{ fontSize: '0.82rem', color: '#17652f', fontWeight: '700' }}>Net Monthly Payout:</span>
         <div style={{ textAlign: 'right' }}>
-          <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#17652f' }}>{formatINR(netAmount)}</span>
+          <span style={{ fontSize: '1.2rem', fontWeight: '600', color: '#17652f' }}>{formatINR(netAmount)}</span>
           <span style={{ fontSize: '0.72rem', color: '#17652f', display: 'block', fontWeight: '600' }}>per month</span>
         </div>
       </div>
@@ -687,7 +687,7 @@ export const ManualRentalEntryModal = ({
           <Calendar size={16} color="#fff" />
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>Contract Period & Review</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Contract Period & Review</h3>
           <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Set dates, tenure, and review before enrollment</p>
         </div>
       </div>
@@ -707,7 +707,7 @@ export const ManualRentalEntryModal = ({
           <input
             type="number" required min="1" max="120"
             value={tenureMonths} onChange={(e) => setTenureMonths(e.target.value)}
-            style={{ ...inputStyle, fontWeight: '800', fontSize: '1rem', textAlign: 'center' }}
+            style={{ ...inputStyle, fontWeight: '600', fontSize: '1rem', textAlign: 'center' }}
             onFocus={applyFocus} onBlur={removeFocus}
           />
         </div>
@@ -753,24 +753,24 @@ export const ManualRentalEntryModal = ({
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
           <TrendingUp size={16} color="#17652f" />
-          <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase' }}>Financial Summary</span>
+          <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#17652f', textTransform: 'uppercase' }}>Financial Summary</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
           <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e8f2e5' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>TOTAL PAYMENT</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f' }}>{formatINR(totalCommitment)}</span>
+            <span style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f' }}>{formatINR(totalCommitment)}</span>
             <span style={{ fontSize: '0.66rem', color: '#17652f', display: 'block', marginTop: '2px' }}>
               {formatINR(grossRent)} × {tenure} mos
             </span>
           </div>
           <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e8f2e5' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>TOTAL PAID</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#17652f' }}>{formatINR(paid)}</span>
+            <span style={{ fontSize: '1.15rem', fontWeight: '600', color: '#17652f' }}>{formatINR(paid)}</span>
             <span style={{ fontSize: '0.66rem', color: '#64748b', display: 'block', marginTop: '2px' }}>Disbursed</span>
           </div>
           <div style={{ background: '#fff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e8f2e5' }}>
             <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>OUTSTANDING</span>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: outstandingBalance > 0 ? '#0f172a' : '#17652f' }}>
+            <span style={{ fontSize: '1.15rem', fontWeight: '600', color: outstandingBalance > 0 ? '#0f172a' : '#17652f' }}>
               {formatINR(outstandingBalance)}
             </span>
             <span style={{ fontSize: '0.66rem', color: '#64748b', display: 'block', marginTop: '2px' }}>Remaining</span>
@@ -780,7 +780,7 @@ export const ManualRentalEntryModal = ({
 
       {/* Summary Table */}
       <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 16px' }}>
-        <h4 style={{ margin: '0 0 10px', fontSize: '0.78rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase' }}>Enrollment Summary</h4>
+        <h4 style={{ margin: '0 0 10px', fontSize: '0.78rem', fontWeight: '600', color: '#334155', textTransform: 'uppercase' }}>Enrollment Summary</h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px', fontSize: '0.82rem' }}>
           {[
             { label: 'Flat', value: `Flat ${selectedFlat?.flatNumber || '—'}` },
@@ -818,88 +818,70 @@ export const ManualRentalEntryModal = ({
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.7)',
-      backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center',
+      position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.45)',
+      backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center',
       justifyContent: 'center', zIndex: 1100, padding: '16px',
     }}>
       <div style={{
-        background: '#ffffff', borderRadius: '20px', width: '100%',
-        maxWidth: '720px', maxHeight: '92vh', display: 'flex',
-        flexDirection: 'column', boxShadow: '0 25px 60px -12px rgba(0,0,0,0.3)',
-        overflow: 'hidden',
+        background: '#ffffff', borderRadius: '16px', width: '100%',
+        maxWidth: '700px', maxHeight: '92vh', display: 'flex',
+        flexDirection: 'column', boxShadow: '0 20px 45px rgba(0,0,0,0.1)',
+        overflow: 'hidden', position: 'relative'
       }}>
-        {/* HEADER */}
+        {/* Minimal Close Button (Top Right) */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '16px', right: '18px',
+            background: 'transparent', border: 'none', borderRadius: '50%',
+            color: '#94a3b8', cursor: 'pointer', padding: '6px', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', zIndex: 10,
+            transition: 'background 0.15s ease, color 0.15s ease'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#334155'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+          aria-label="Close"
+        >
+          <X size={18} />
+        </button>
+
+        {/* HEADER (Centered & Clean) */}
         <div style={{
-          padding: '18px 24px', background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)',
-          color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '24px 32px 12px', textAlign: 'center',
+          backgroundColor: '#ffffff'
         }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Building2 size={20} />
-              <span style={{ fontSize: '1.15rem', fontWeight: '800' }}>Manual Rental Enrollment</span>
-            </div>
-            <p style={{ margin: '3px 0 0', fontSize: '0.76rem', color: '#86c8a0' }}>
-              Step {currentStep} of {STEPS.length} — {STEPS[currentStep - 1].subtitle}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px',
-              color: '#94a3b8', cursor: 'pointer', padding: '8px', display: 'flex',
-              alignItems: 'center', transition: 'background 0.2s',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-          >
-            <X size={18} />
-          </button>
+          <h2 style={{
+            margin: '0 0 4px', fontSize: '1.35rem', fontWeight: '600',
+            color: '#1e293b', letterSpacing: '-0.02em'
+          }}>
+            Manual rental enrollment
+          </h2>
+          <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b' }}>
+            Step {currentStep} of {STEPS.length} — {STEPS[currentStep - 1].subtitle}
+          </p>
         </div>
 
-        {/* STEPPER */}
-        <div style={{
-          display: 'flex', alignItems: 'center', padding: '14px 24px',
-          background: '#f8fafc', borderBottom: '1px solid #e2e8f0',
-        }}>
+        {/* STEPPER (Matching Dashed-Line Reference Design) */}
+        <div className="form-stepper-header">
           {STEPS.map((step, idx) => {
             const isActive = currentStep === step.id;
             const isCompleted = currentStep > step.id;
-            const StepIcon = step.icon;
             return (
               <React.Fragment key={step.id}>
                 <button
-                  type="button" onClick={() => goToStep(step.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 12px', borderRadius: '10px', border: 'none',
-                    cursor: 'pointer', background: isActive ? '#ffffff' : 'transparent',
-                    boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-                    transition: 'all 0.2s ease', flex: isActive ? '1.2' : '1',
-                  }}
+                  type="button"
+                  onClick={() => goToStep(step.id)}
+                  className="form-stepper-item"
                 >
-                  <div style={{
-                    width: '28px', height: '28px', borderRadius: '8px',
-                    background: isCompleted ? 'linear-gradient(135deg, #17652f, #17652f)'
-                      : isActive ? `linear-gradient(135deg, ${step.color}, ${step.color}dd)` : '#e2e8f0',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.3s ease', flexShrink: 0,
-                  }}>
-                    {isCompleted ? <CheckCircle2 size={13} color="#fff" /> : <StepIcon size={13} color={isActive ? '#fff' : '#94a3b8'} />}
+                  <div className={`form-stepper-circle ${isCompleted ? 'completed' : isActive ? 'active' : 'upcoming'}`}>
+                    {isCompleted ? <Check size={12} strokeWidth={3} /> : step.id}
                   </div>
-                  <div style={{ textAlign: 'left', minWidth: 0 }}>
-                    <div style={{
-                      fontSize: '0.7rem', fontWeight: '800',
-                      color: isActive ? '#0f172a' : isCompleted ? '#17652f' : '#94a3b8',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                    }}>{step.title}</div>
-                    {isActive && <div style={{ fontSize: '0.6rem', color: '#64748b', fontWeight: '600' }}>{step.subtitle}</div>}
-                  </div>
+                  <span className={`form-stepper-label ${isActive ? 'active' : ''}`}>
+                    {step.title}
+                  </span>
                 </button>
                 {idx < STEPS.length - 1 && (
-                  <div style={{
-                    width: '20px', height: '2px', flexShrink: 0,
-                    background: isCompleted ? '#17652f' : '#e2e8f0', borderRadius: '1px',
-                  }} />
+                  <div className="form-stepper-line" />
                 )}
               </React.Fragment>
             );
@@ -907,16 +889,16 @@ export const ManualRentalEntryModal = ({
         </div>
 
         {/* CONTENT */}
-        <div style={{ padding: '22px 24px', overflowY: 'auto', flex: 1 }}>
+        <div style={{ padding: '8px 32px 24px', overflowY: 'auto', flex: 1 }}>
           {renderCurrentStep()}
         </div>
 
         {/* ERROR */}
         {errorMsg && (
           <div style={{
-            margin: '0 24px 12px', padding: '10px 14px', background: '#f1f5f9',
-            border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.82rem',
-            color: '#0f172a', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px',
+            margin: '0 32px 12px', padding: '10px 14px', background: '#fef2f2',
+            border: '1px solid #fee2e2', borderRadius: '8px', fontSize: '0.82rem',
+            color: '#991b1b', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px',
           }}>
             <AlertCircle size={16} /> {errorMsg}
           </div>
@@ -925,57 +907,45 @@ export const ManualRentalEntryModal = ({
         {/* FOOTER */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '14px 24px', borderTop: '1px solid #e2e8f0', background: '#ffffff',
+          padding: '16px 32px', borderTop: '1px solid #f1f5f9', background: '#ffffff',
         }}>
           <button
             type="button" onClick={currentStep === 1 ? onClose : goPrev}
             style={{
-              padding: '10px 20px', borderRadius: '10px', border: '1px solid #e2e8f0',
-              background: '#ffffff', color: '#475569', fontSize: '0.84rem', fontWeight: '700',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s',
+              padding: '10px 24px', borderRadius: '8px', border: 'none',
+              background: '#f1f5f9', color: '#475569', fontSize: '0.86rem', fontWeight: '600',
+              cursor: 'pointer', transition: 'background-color 0.15s ease',
             }}
-            onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; }}
+            onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0'; }}
+            onMouseOut={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
           >
-            {currentStep === 1 ? 'Cancel' : <><ArrowLeft size={15} /> Back</>}
+            {currentStep === 1 ? 'Cancel' : 'Back'}
           </button>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {STEPS.map((step) => (
-              <div key={step.id} style={{
-                width: currentStep === step.id ? '24px' : '8px', height: '8px', borderRadius: '4px',
-                background: currentStep >= step.id ? 'linear-gradient(135deg, #17652f, #17652f)' : '#e2e8f0',
-                transition: 'all 0.3s ease',
-              }} />
-            ))}
-          </div>
 
           {currentStep < STEPS.length ? (
             <button
               type="button" onClick={goNext} disabled={!validateStep(currentStep)}
               style={{
-                padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: validateStep(currentStep) ? 'linear-gradient(135deg, #17652f, #17652f)' : '#e2e8f0',
+                padding: '10px 28px', borderRadius: '8px', border: 'none',
+                background: validateStep(currentStep) ? '#17652f' : '#e2e8f0',
                 color: validateStep(currentStep) ? '#ffffff' : '#94a3b8',
-                fontSize: '0.84rem', fontWeight: '800',
+                fontSize: '0.86rem', fontWeight: '600',
                 cursor: validateStep(currentStep) ? 'pointer' : 'not-allowed',
-                display: 'flex', alignItems: 'center', gap: '6px',
-                boxShadow: validateStep(currentStep) ? '0 4px 12px rgba(37,99,235,0.35)' : 'none',
-                transition: 'all 0.2s',
+                transition: 'all 0.15s ease',
               }}
             >
-              Next <ChevronRight size={16} />
+              Continue
             </button>
           ) : (
             <button
               type="button" onClick={handleSubmit} disabled={submitting}
               style={{
-                padding: '10px 24px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg, #17652f, #17652f)',
-                color: '#ffffff', fontSize: '0.84rem', fontWeight: '800',
+                padding: '10px 28px', borderRadius: '8px', border: 'none',
+                background: '#17652f',
+                color: '#ffffff', fontSize: '0.86rem', fontWeight: '600',
                 cursor: submitting ? 'not-allowed' : 'pointer',
-                boxShadow: '0 4px 12px rgba(22,163,74,0.35)',
-                display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s',
+                display: 'flex', alignItems: 'center', gap: '8px',
+                transition: 'all 0.15s ease',
               }}
             >
               <CheckCircle2 size={16} />

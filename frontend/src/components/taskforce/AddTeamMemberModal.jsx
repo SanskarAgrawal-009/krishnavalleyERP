@@ -277,7 +277,7 @@ export const AddTeamMemberModal = ({
               <UserPlus size={20} color="#ffffff" />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: '800' }}>
+              <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: '600' }}>
                 Add Taskforce Team Member
               </h2>
               <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#cbd5e1' }}>
@@ -310,7 +310,7 @@ export const AddTeamMemberModal = ({
 
             {/* Hierarchy Level Selection */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '800', color: '#1e293b', marginBottom: '8px' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#1e293b', marginBottom: '8px' }}>
                 Hierarchy Level &amp; Data Visibility
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
@@ -328,7 +328,7 @@ export const AddTeamMemberModal = ({
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                     <HardHat size={16} color={hierarchyLevel === 'helper' ? '#17652f' : '#64748b'} />
-                    <span style={{ fontSize: '0.84rem', fontWeight: '800', color: hierarchyLevel === 'helper' ? '#17652f' : '#1e293b' }}>
+                    <span style={{ fontSize: '0.84rem', fontWeight: '600', color: hierarchyLevel === 'helper' ? '#17652f' : '#1e293b' }}>
                       Helper
                     </span>
                   </div>
@@ -351,7 +351,7 @@ export const AddTeamMemberModal = ({
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                     <Shield size={16} color={hierarchyLevel === 'supervisor' ? '#17652f' : '#64748b'} />
-                    <span style={{ fontSize: '0.84rem', fontWeight: '800', color: hierarchyLevel === 'supervisor' ? '#17652f' : '#1e293b' }}>
+                    <span style={{ fontSize: '0.84rem', fontWeight: '600', color: hierarchyLevel === 'supervisor' ? '#17652f' : '#1e293b' }}>
                       Supervisor
                     </span>
                   </div>
@@ -374,7 +374,7 @@ export const AddTeamMemberModal = ({
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                     <Briefcase size={16} color={hierarchyLevel === 'head' ? '#0891b2' : '#64748b'} />
-                    <span style={{ fontSize: '0.84rem', fontWeight: '800', color: hierarchyLevel === 'head' ? '#155e75' : '#1e293b' }}>
+                    <span style={{ fontSize: '0.84rem', fontWeight: '600', color: hierarchyLevel === 'head' ? '#155e75' : '#1e293b' }}>
                       Head
                     </span>
                   </div>
@@ -463,7 +463,7 @@ export const AddTeamMemberModal = ({
 
               <div>
                 <div style={{ marginBottom: '6px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '600', color: '#1e293b' }}>
                     Department <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                 </div>
@@ -539,7 +539,7 @@ export const AddTeamMemberModal = ({
             {/* Account Mapping Options */}
             <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <KeyRound size={16} color="#17652f" />
                   Access Control & Governance Credentials
                 </span>

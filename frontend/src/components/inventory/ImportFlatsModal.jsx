@@ -348,7 +348,7 @@ export const ImportFlatsModal = ({
             textAlign: 'center'
           }}>
             <CheckCircle2 size={36} color="#17652f" style={{ margin: '0 auto 8px', display: 'block' }} />
-            <div style={{ fontWeight: '800', fontSize: '1.05rem', color: '#17652f' }}>
+            <div style={{ fontWeight: '600', fontSize: '1.05rem', color: '#17652f' }}>
               Flats Imported Successfully!
             </div>
             <div style={{ fontSize: '0.82rem', color: '#17652f', marginTop: '6px' }}>

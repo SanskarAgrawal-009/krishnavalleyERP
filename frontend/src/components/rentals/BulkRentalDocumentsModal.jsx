@@ -330,7 +330,7 @@ export const BulkRentalDocumentsModal = ({
               <Upload size={20} color="#ffffff" />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: '800', letterSpacing: '-0.01em' }}>
+              <h2 style={{ margin: 0, fontSize: '1.18rem', fontWeight: '600', letterSpacing: '-0.01em' }}>
                 Bulk Document Upload Hub
               </h2>
               <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#cbd5e1' }}>
@@ -391,7 +391,7 @@ export const BulkRentalDocumentsModal = ({
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sparkles size={16} color="#17652f" />
-                <span style={{ fontSize: '0.86rem', fontWeight: '800', color: '#17652f' }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: '600', color: '#17652f' }}>
                   File Naming Template &amp; Automated Renaming Rules
                 </span>
                 <span
@@ -439,7 +439,7 @@ export const BulkRentalDocumentsModal = ({
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <ShieldCheck size={16} color="#17652f" />
-                        <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#17652f' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#17652f' }}>
                           Owner Registry (Sale Deed)
                         </span>
                       </div>
@@ -496,7 +496,7 @@ export const BulkRentalDocumentsModal = ({
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <FileText size={16} color="#17652f" />
-                        <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#17652f' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#17652f' }}>
                           Rent Agreement (Contract)
                         </span>
                       </div>
@@ -649,7 +649,7 @@ export const BulkRentalDocumentsModal = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)'
+                boxShadow: '0 4px 12px rgba(23, 101, 47, 0.25)'
               }}
             >
               <Upload size={22} />
@@ -672,7 +672,7 @@ export const BulkRentalDocumentsModal = ({
               {/* Table Toolbar & Stats */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#0f172a' }}>
+                  <span style={{ fontSize: '0.84rem', fontWeight: '600', color: '#0f172a' }}>
                     Staged Files Queue ({stagedFiles.length})
                   </span>
                   <span
@@ -906,7 +906,7 @@ export const BulkRentalDocumentsModal = ({
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <CheckCircle2 size={18} color="#16a34a" />
-                  <span style={{ fontSize: '0.86rem', fontWeight: '800', color: '#14532d' }}>
+                  <span style={{ fontSize: '0.86rem', fontWeight: '600', color: '#14532d' }}>
                     Upload Batch Completed ({uploadResults.successCount} Success, {uploadResults.errorCount} Errors)
                   </span>
                 </div>
@@ -1043,7 +1043,7 @@ export const BulkRentalDocumentsModal = ({
                   fontSize: '0.82rem',
                   fontWeight: '700',
                   cursor: readyCount > 0 && !uploading ? 'pointer' : 'not-allowed',
-                  boxShadow: readyCount > 0 ? '0 2px 8px rgba(37, 99, 235, 0.3)' : 'none',
+                  boxShadow: readyCount > 0 ? '0 2px 8px rgba(23, 101, 47, 0.3)' : 'none',
                   transition: 'background 0.15s ease'
                 }}
               >

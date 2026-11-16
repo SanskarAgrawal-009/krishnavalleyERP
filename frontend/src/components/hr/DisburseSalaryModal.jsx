@@ -67,7 +67,7 @@ export const DisburseSalaryModal = ({ isOpen, onClose, onDisburse, payrollItem }
           alignItems: 'center'
         }}>
           <div>
-            <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.95rem' }}>
+            <div style={{ fontWeight: '600', color: '#0f172a', fontSize: '0.95rem' }}>
               {payrollItem.employeeName}
             </div>
             <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
@@ -81,7 +81,7 @@ export const DisburseSalaryModal = ({ isOpen, onClose, onDisburse, payrollItem }
             <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', fontWeight: '700' }}>
               Net Payable
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#17652f' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: '600', color: '#17652f' }}>
               {formatINR(payrollItem.netSalary)}
             </div>
           </div>

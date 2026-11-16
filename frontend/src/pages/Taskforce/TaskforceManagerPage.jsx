@@ -99,9 +99,9 @@ export const TaskforceManagerPage = () => {
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
   const tabs = [
-    { key: 'team', label: 'Departments & Hierarchy', icon: Building2, color: '#059669' },
-    { key: 'workforce', label: 'Team & Workload', icon: Users, color: '#17652f' },
-    { key: 'delegation', label: 'Delegation Hub', icon: GitBranch, color: '#1e293b' },
+    { key: 'team', label: 'Departments', icon: Building2, color: '#059669' },
+    { key: 'workforce', label: 'Workload', icon: Users, color: '#17652f' },
+    { key: 'delegation', label: 'Task assignment', icon: GitBranch, color: '#1e293b' },
   ];
 
   useEffect(() => {
@@ -198,8 +198,8 @@ export const TaskforceManagerPage = () => {
   };
 
   const getScoreLabel = (score) => {
-    if (score >= 80) return 'Executive Grade';
-    if (score >= 60) return 'Optimal';
+    if (score >= 80) return 'Optimal';
+    if (score >= 60) return 'Good';
     if (score >= 40) return 'Standard';
     return 'Action Required';
   };
@@ -711,7 +711,7 @@ export const TaskforceManagerPage = () => {
                         <div key={mIdx} style={{ position: 'absolute', left: marker.position, top: 0, bottom: 0, borderLeft: '1px dashed #f1f5f9' }} />
                       ))}
                       {/* Today line */}
-                      <div style={{ position: 'absolute', left: todayPosition, top: 0, bottom: 0, borderLeft: '2px solid rgba(26, 115, 232, 0.35)', zIndex: 3 }} />
+                      <div style={{ position: 'absolute', left: todayPosition, top: 0, bottom: 0, borderLeft: '2px solid rgba(23, 101, 47, 0.35)', zIndex: 3 }} />
 
                       {/* Task bar */}
                       <div
@@ -910,7 +910,7 @@ export const TaskforceManagerPage = () => {
                       backgroundColor: rank === 1 ? '#17652f' : rank === 2 ? '#17652f' : '#0f172a',
                       color: '#ffffff',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '12px', fontWeight: 800,
+                      fontSize: '12px', fontWeight: 600,
                     }}>
                       #{rank}
                     </div>
@@ -939,7 +939,7 @@ export const TaskforceManagerPage = () => {
                         margin: '0 auto',
                       }}
                     >
-                      <span style={{ fontSize: '18px', fontWeight: 800, color: scoreColor }}>{p.productivityScore}</span>
+                      <span style={{ fontSize: '18px', fontWeight: 600, color: scoreColor }}>{p.productivityScore}</span>
                     </div>
                     <div style={{ fontSize: '11px', fontWeight: 700, color: scoreColor, marginTop: '4px' }}>{scoreLabel}</div>
                   </div>
@@ -1018,7 +1018,7 @@ export const TaskforceManagerPage = () => {
                         width: '44px', height: '44px', borderRadius: '50%',
                         border: `3px solid ${color}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '12px', fontWeight: 800, color: color,
+                        fontSize: '12px', fontWeight: 600, color: color,
                       }}
                     >
                       {completionRate}%
@@ -1159,18 +1159,18 @@ export const TaskforceManagerPage = () => {
             {/* Live Notification Badges */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
               {task.roadblockAlert?.hasRoadblock && !task.roadblockAlert?.isResolved && (
-                <span style={{ fontSize: '9px', fontWeight: 700, backgroundColor: '#fee2e2', color: '#dc2626', padding: '1px 5px', borderRadius: '4px' }}>
-                  🚨 Roadblock
+                <span style={{ fontSize: '9px', fontWeight: 600, backgroundColor: '#fee2e2', color: '#dc2626', padding: '1px 5px', borderRadius: '4px' }}>
+                  Blocked
                 </span>
               )}
               {(task.comments?.length || 0) > 0 && (
-                <span style={{ fontSize: '9px', fontWeight: 700, backgroundColor: '#e0f2fe', color: '#0369a1', padding: '1px 5px', borderRadius: '4px' }}>
-                  💬 {task.comments.length}
+                <span style={{ fontSize: '9px', fontWeight: 600, backgroundColor: '#e0f2fe', color: '#0369a1', padding: '1px 5px', borderRadius: '4px' }}>
+                  {task.comments.length} updates
                 </span>
               )}
               {(task.uploads?.length || 0) > 0 && (
-                <span style={{ fontSize: '9px', fontWeight: 700, backgroundColor: '#f5f3ff', color: '#17652f', padding: '1px 5px', borderRadius: '4px' }}>
-                  📸 {task.uploads.length}
+                <span style={{ fontSize: '9px', fontWeight: 600, backgroundColor: '#f5f3ff', color: '#17652f', padding: '1px 5px', borderRadius: '4px' }}>
+                  {task.uploads.length} photos
                 </span>
               )}
             </div>
@@ -1305,10 +1305,10 @@ export const TaskforceManagerPage = () => {
             overflow: 'hidden',
           }}
         >
-          <div style={{ padding: '14px 18px', borderBottom: '1px solid #1e293b', backgroundColor: urgentPending.length > 0 ? '#0f172a' : '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Flame size={16} color={urgentPending.length > 0 ? "#ffffff" : "#0f172a"} />
-            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: urgentPending.length > 0 ? '#ffffff' : '#0f172a' }}>
-              Urgent & Escalated ({urgentPending.length}) | Overdue ({overdueTasks.length})
+          <div style={{ padding: '14px 18px', borderBottom: '1px solid #e2e8f0', backgroundColor: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertTriangle size={16} color="#d97706" />
+            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>
+              Urgent and overdue tasks ({urgentPending.length + overdueTasks.length})
             </h3>
           </div>
           {urgentPending.length === 0 && overdueTasks.length === 0 ? (
@@ -1329,8 +1329,8 @@ export const TaskforceManagerPage = () => {
         >
           <div style={{ padding: '14px 18px', borderBottom: '1px solid #dadce0', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Users size={16} color="#17652f" />
-            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
-              Team Availability Overview
+            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>
+              Team availability
             </h3>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', padding: '14px 18px' }}>
@@ -1384,36 +1384,19 @@ export const TaskforceManagerPage = () => {
           flexWrap: 'wrap',
           gap: '16px',
           backgroundColor: '#ffffff',
-          borderRadius: '14px',
-          border: '1px solid #e8e6df',
+          borderRadius: '12px',
+          border: '1px solid #e5e7eb',
           padding: '20px 24px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
         }}
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', color: '#1f2937', margin: 0, fontSize: '26px', fontWeight: 700 }}>
-              Taskforce Manager
+            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', color: '#1f2937', margin: 0, fontSize: '1.85rem', fontWeight: 600, letterSpacing: '-0.015em' }}>
+              Team management
             </h1>
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                padding: '3px 10px',
-                borderRadius: '12px',
-                backgroundColor: '#e8f2e5',
-                color: '#17652f',
-                border: '1px solid #cde4c9',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-              }}
-            >
-              <Shield size={13} /> Command & Control
-            </span>
           </div>
           <p style={{ fontSize: '13px', color: '#596372', marginTop: '6px', margin: 0 }}>
-            Team workload management, department hierarchy, and task delegation hub.
+            Manage departments, workloads, and task assignments.
           </p>
         </div>
 
@@ -1433,10 +1416,9 @@ export const TaskforceManagerPage = () => {
               color: '#ffffff',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(23, 101, 47, 0.25)',
             }}
           >
-            <Plus size={15} /> Add Team Member
+            <Plus size={15} /> Add member
           </button>
 
           <button
@@ -1514,22 +1496,22 @@ export const TaskforceManagerPage = () => {
             }}
           >
             <option value="all">All Departments</option>
-            <optgroup label="KV- DEPARTMENTS">
-              <option value="hr">👥 Human Resource</option>
-              <option value="it">💻 I.T.</option>
-              <option value="procurement">📦 Procurement</option>
-              <option value="hotel">🏨 Hotel</option>
-              <option value="security">🛡️ Security</option>
-              <option value="accounts">💰 Accounts</option>
-              <option value="crm">🤝 C.R.M.</option>
-              <option value="admin_operations">🏢 Admin / Operations</option>
-              <option value="maintenance">🔧 Maintenance</option>
-              <option value="civil">🏗️ Civil</option>
-              <option value="licensing">📜 Licensing</option>
+            <optgroup label="KV Departments">
+              <option value="hr">Human Resources</option>
+              <option value="it">IT</option>
+              <option value="procurement">Procurement</option>
+              <option value="hotel">Hotel</option>
+              <option value="security">Security</option>
+              <option value="accounts">Accounts</option>
+              <option value="crm">CRM</option>
+              <option value="admin_operations">Admin and Operations</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="civil">Civil</option>
+              <option value="licensing">Licensing</option>
             </optgroup>
-            <optgroup label="ADMINISTRATION">
-              <option value="hotel_restaurant">🏨 HOTEL & RESTAURANT</option>
-              <option value="viramah">🏢 VIRAMAH</option>
+            <optgroup label="Administration">
+              <option value="hotel_restaurant">Hotel and Restaurant</option>
+              <option value="viramah">Viramah</option>
             </optgroup>
           </select>
         </div>

@@ -48,26 +48,77 @@ import {
   Info,
   ExternalLink,
   ChevronRight,
-  TrendingUp
+  TrendingUp,
+  EyeOff,
+  ShoppingBag,
+  Target
 } from 'lucide-react';
 
+const CATEGORY_DEFINITIONS = [
+  { key: 'command', label: 'Executive & Strategy', icon: Target },
+  { key: 'property', label: 'Property & Engineering', icon: Building2 },
+  { key: 'sales', label: 'Sales & Customer CRM', icon: ShoppingBag },
+  { key: 'partners', label: 'Channel Partners', icon: Sparkles },
+  { key: 'workforce', label: 'Workforce & Assets', icon: Briefcase },
+  { key: 'governance', label: 'Administration & Security', icon: ShieldCheck },
+];
+
+const PERM_MODULE_NAV_MAP = {
+  dashboard: { path: '/dashboard', label: 'Executive Dashboard', categoryKey: 'command', categoryLabel: 'Executive & Strategy' },
+  inventory: { path: '/inventory', label: 'Sites & Inventory', categoryKey: 'property', categoryLabel: 'Property & Engineering' },
+  materials: { path: '/materials', label: 'Material & Stores', categoryKey: 'property', categoryLabel: 'Property & Engineering' },
+  maintenance: { path: '/maintenance', label: 'Maintenance & Facility', categoryKey: 'property', categoryLabel: 'Property & Engineering' },
+  crm: { path: '/crm', label: 'CRM & Lead Engine', categoryKey: 'sales', categoryLabel: 'Sales & Customer CRM' },
+  sales: { path: '/sales', label: 'Sales & Allotments', categoryKey: 'sales', categoryLabel: 'Sales & Customer CRM' },
+  customers: { path: '/customers', label: 'Customer Accounts', categoryKey: 'sales', categoryLabel: 'Sales & Customer CRM' },
+  rentals: { path: '/rentals', label: 'Rental Management', categoryKey: 'sales', categoryLabel: 'Sales & Customer CRM' },
+  reports: { path: '/reports', label: 'Reports & Analytics', categoryKey: 'command', categoryLabel: 'Executive & Strategy' },
+  agents: { path: '/agent-portal', label: 'Agent Portal', categoryKey: 'partners', categoryLabel: 'Channel Partners' },
+  agentnetwork: { path: '/agent-network', label: 'Agent Network', categoryKey: 'partners', categoryLabel: 'Channel Partners' },
+  hr: { path: '/hr', label: 'Human Resources', categoryKey: 'workforce', categoryLabel: 'Workforce & Assets' },
+  documents: { path: '/documents', label: 'Document Vault', categoryKey: 'workforce', categoryLabel: 'Workforce & Assets' },
+  notifications: { path: '/notifications', label: 'Notifications & Messaging', categoryKey: 'workforce', categoryLabel: 'Workforce & Assets' },
+  accesscontrol: { path: '/access-control', label: 'User Directory & Roles', categoryKey: 'governance', categoryLabel: 'Administration & Security' },
+  audit: { path: '/audit-logs', label: 'Audit Logs & Activity', categoryKey: 'governance', categoryLabel: 'Administration & Security' },
+  settings: { path: '/settings', label: 'System Settings', categoryKey: 'governance', categoryLabel: 'Administration & Security' },
+  taskforce: { path: '/taskforce', label: 'Taskforce & Allocation', categoryKey: 'command', categoryLabel: 'Executive & Strategy' },
+};
+
+const getNavMappingForModule = (moduleName) => {
+  if (!moduleName) return null;
+  const key = moduleName.toLowerCase().replace(/[^a-z]/g, '');
+  return PERM_MODULE_NAV_MAP[key] || null;
+};
+
 export const UserManagementPage = () => {
-  const { user: currentUser, isSuperAdmin } = useAuth();
+  const { user: currentUser, isSuperAdmin, hasPermission } = useAuth();
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
+  const canViewUsers = isSuperAdmin || hasPermission('users:view') || hasPermission('users:manage');
+  const canManageUsers = isSuperAdmin || hasPermission('users:manage');
+  const canViewRoles = isSuperAdmin || hasPermission('roles:view') || hasPermission('roles:manage');
+  const canManageRoles = isSuperAdmin || hasPermission('roles:manage');
+
   const getTabFromParam = (param) => {
-    if (param === 'roles') return 'roles';
+    if (param === 'roles' || param === 'modules' || param === 'visibility') return 'roles';
     if (param === 'branches') return 'branches';
-    return 'users';
+    if (param === 'users') {
+      if (!canViewUsers && canViewRoles) return 'roles';
+      return 'users';
+    }
+    return (!canViewUsers && canViewRoles) ? 'roles' : 'users';
   };
 
-  const [activeTab, setActiveTab] = useState(getTabFromParam(tabParam));
+  const [activeTab, setActiveTab] = useState(() => getTabFromParam(tabParam));
 
   useEffect(() => {
-    setActiveTab(getTabFromParam(tabParam));
-  }, [tabParam]);
+    const target = getTabFromParam(tabParam);
+    if (target !== activeTab) {
+      setActiveTab(target);
+    }
+  }, [tabParam, canViewUsers, canViewRoles]);
 
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
@@ -95,6 +146,98 @@ export const UserManagementPage = () => {
   const [permSearchTerm, setPermSearchTerm] = useState('');
   const [selectedModuleCategory, setSelectedModuleCategory] = useState('All');
   const [collapsedModules, setCollapsedModules] = useState({});
+
+  // Module Visibility Switchboard States
+  const [moduleVisibility, setModuleVisibility] = useState(() => {
+    try {
+      const saved = localStorage.getItem('kv_module_visibility');
+      if (saved) return JSON.parse(saved);
+    } catch { /* ignore */ }
+    return {
+      taskforce_manager: {
+        property: false,
+        workforce: false,
+        sales: false,
+        partners: false,
+      },
+      taskforce_member: {
+        property: false,
+        workforce: false,
+        sales: false,
+        partners: false,
+      }
+    };
+  });
+  // Inbuilt Navigation Module Visibility Handlers (for Role Matrix)
+  const handleToggleModuleVisibilityForRole = (targetKey, roleCode) => {
+    if (!roleCode) return;
+    const roleKey = roleCode.toLowerCase();
+    setModuleVisibility((prev) => {
+      const currentRoleSettings = { ...(prev[roleKey] || {}) };
+      let currentVal = currentRoleSettings[targetKey];
+      if (currentVal === undefined) {
+        const globalVal = (prev['global'] || {})[targetKey];
+        currentVal = globalVal !== undefined ? globalVal : true;
+      }
+      currentRoleSettings[targetKey] = !currentVal;
+
+      const next = {
+        ...prev,
+        [roleKey]: currentRoleSettings,
+      };
+      try {
+        localStorage.setItem('kv_module_visibility', JSON.stringify(next));
+        window.dispatchEvent(new Event('kv_module_visibility_changed'));
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+
+    showFeedback(`Updated sidebar visibility for "${targetKey}" (${roleCode})`, 'success');
+  };
+
+  const handleApplyTaskforcePresetForRole = (roleCode) => {
+    if (!roleCode) return;
+    const roleKey = roleCode.toLowerCase();
+    setModuleVisibility((prev) => {
+      const next = {
+        ...prev,
+        [roleKey]: {
+          ...(prev[roleKey] || {}),
+          property: false,
+          workforce: false,
+          sales: false,
+          partners: false,
+        },
+      };
+      try {
+        localStorage.setItem('kv_module_visibility', JSON.stringify(next));
+        window.dispatchEvent(new Event('kv_module_visibility_changed'));
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+    showFeedback(`Enforced Taskforce Preset for ${roleCode}: Property & Workforce hidden from sidebar.`, 'success');
+  };
+
+  const handleResetRoleVisibility = (roleCode) => {
+    if (!roleCode) return;
+    const roleKey = roleCode.toLowerCase();
+    setModuleVisibility((prev) => {
+      const next = { ...prev };
+      delete next[roleKey];
+      try {
+        localStorage.setItem('kv_module_visibility', JSON.stringify(next));
+        window.dispatchEvent(new Event('kv_module_visibility_changed'));
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+    showFeedback(`Reset sidebar navigation visibility for ${roleCode} to system defaults.`, 'success');
+  };
 
   // Modals
   const [userModalOpen, setUserModalOpen] = useState(false);
@@ -161,26 +304,44 @@ export const UserManagementPage = () => {
   // High performance O(1) set lookup for role permissions
   const rolePermSet = useMemo(() => {
     if (!selectedRoleForMatrix?.permissions) return new Set();
-    const ids = selectedRoleForMatrix.permissions.map((p) =>
-      typeof p === 'object' && p !== null ? p._id : p
-    );
-    return new Set(ids);
+    const set = new Set();
+    for (const p of selectedRoleForMatrix.permissions) {
+      if (typeof p === 'object' && p !== null) {
+        if (p._id) {
+          set.add(p._id);
+          set.add(String(p._id));
+        }
+        if (p.permissionCode) set.add(p.permissionCode);
+      } else if (p) {
+        set.add(p);
+        set.add(String(p));
+      }
+    }
+    return set;
   }, [selectedRoleForMatrix]);
 
   // Load Data
   const loadData = async () => {
     setLoading(true);
     try {
-      const [usersRes, rolesRes, branchesRes, permsRes] = await Promise.all([
-        authService.getUsers({ limit: 100 }),
-        authService.getRoles(),
-        authService.getBranches(),
-        authService.getPermissions(),
-      ]);
+      const promises = [
+        canViewUsers
+          ? authService.getUsers({ limit: 100 })
+          : Promise.resolve({ success: true, data: [] }),
+        canViewRoles
+          ? authService.getRoles()
+          : Promise.resolve({ success: true, data: [] }),
+        authService.getBranches().catch(() => ({ success: true, data: [] })),
+        authService.getPermissions().catch(() => ({ success: true, data: [], grouped: {} })),
+      ];
 
-      if (usersRes.success) setUsers(usersRes.data || []);
-      if (rolesRes.success) {
-        const fetchedRoles = rolesRes.data || [];
+      const [usersResult, rolesResult, branchesResult, permsResult] = await Promise.allSettled(promises);
+
+      if (usersResult.status === 'fulfilled' && usersResult.value?.success) {
+        setUsers(usersResult.value.data || []);
+      }
+      if (rolesResult.status === 'fulfilled' && rolesResult.value?.success) {
+        const fetchedRoles = rolesResult.value.data || [];
         setRoles(fetchedRoles);
         if (fetchedRoles.length > 0) {
           if (!selectedRoleForMatrix) {
@@ -191,14 +352,15 @@ export const UserManagementPage = () => {
           }
         }
       }
-      if (branchesRes.success) setBranches(branchesRes.data || []);
-      if (permsRes.success) {
-        setPermissions(permsRes.data || []);
-        setPermissionGroups(permsRes.grouped || {});
+      if (branchesResult.status === 'fulfilled' && branchesResult.value?.success) {
+        setBranches(branchesResult.value.data || []);
+      }
+      if (permsResult.status === 'fulfilled' && permsResult.value?.success) {
+        setPermissions(permsResult.value.data || []);
+        setPermissionGroups(permsResult.value.grouped || {});
       }
     } catch (err) {
-      console.error('Failed to load access control data:', err);
-      showFeedback(err.message || 'Failed to load access data', 'error');
+      console.warn('Non-blocking access control load warning:', err);
     } finally {
       setLoading(false);
     }
@@ -891,7 +1053,7 @@ export const UserManagementPage = () => {
       )}
 
       {/* ======================================================== */}
-      {/* HERO / EXECUTIVE HEADER                                  */}
+      {/* EXECUTIVE HEADER                                         */}
       {/* ======================================================== */}
       <div
         style={{
@@ -902,123 +1064,85 @@ export const UserManagementPage = () => {
           flexWrap: 'wrap',
           gap: '16px',
           backgroundColor: '#ffffff',
-          borderRadius: '16px',
-          padding: '24px 28px',
-          border: '1px solid #e8e6df',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          border: '1px solid #e5e7eb',
         }}
       >
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                backgroundColor: '#e8f2e5',
-                color: '#17652f',
-                fontSize: '0.74rem',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                border: '1px solid #cde4c9',
-              }}
-            >
-              <ShieldCheck size={14} />
-              Access Control & Governance
-            </span>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: '4px 8px',
-                borderRadius: '6px',
-                backgroundColor: '#e8f2e5',
-                color: '#17652f',
-                fontSize: '0.72rem',
-                fontWeight: '600',
-              }}
-            >
-              <CheckCircle2 size={12} />
-              Zero-Trust RBAC Active
-            </span>
-          </div>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: '600', color: '#1f2937', letterSpacing: '-0.015em' }}>
-            Identity & Privilege Governance
+          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
+            User accounts
           </h1>
-          <p style={{ margin: 0, fontSize: '0.88rem', color: '#596372', marginTop: '4px' }}>
-            Unified directory for ERP operator accounts, granular module permission policies, and regional multi-site authorizations.
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#4b5563', marginTop: '4px' }}>
+            Manage employee logins, assign role permissions, and configure branch authorizations.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
           <button
             onClick={loadData}
-            title="Reload data from database"
+            title="Reload user data"
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '9px 14px',
-              borderRadius: '9px',
-              border: '1px solid #e8e6df',
+              padding: '8px 14px',
+              borderRadius: '6px',
+              border: '1px solid #e5e7eb',
               backgroundColor: '#ffffff',
-              color: '#1f2937',
-              fontSize: '0.84rem',
+              color: '#374151',
+              fontSize: '0.82rem',
               fontWeight: '600',
               cursor: 'pointer',
-              transition: 'all 0.15s ease',
             }}
           >
-            <RefreshCw size={15} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+            <RefreshCw size={14} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
             <span>Sync</span>
           </button>
 
-          <button
-            onClick={() => handleOpenRoleModal()}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '9px 15px',
-              borderRadius: '9px',
-              border: '1px solid #e8e6df',
-              backgroundColor: '#faf9f6',
-              color: '#1f2937',
-              fontSize: '0.84rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <Shield size={15} style={{ color: '#17652f' }} />
-            <span>Create Custom Role</span>
-          </button>
+          {canManageRoles && (
+            <button
+              onClick={() => handleOpenRoleModal()}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '6px',
+                border: '1px solid #e5e7eb',
+                backgroundColor: '#ffffff',
+                color: '#374151',
+                fontSize: '0.82rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              <Shield size={14} style={{ color: '#17652f' }} />
+              <span>Add role</span>
+            </button>
+          )}
 
-          <button
-            onClick={() => handleOpenUserModal()}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '9px 18px',
-              borderRadius: '9px',
-              border: 'none',
-              backgroundColor: '#17652f',
-              color: '#ffffff',
-              fontSize: '0.86rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(23,101,47,0.2)',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <Plus size={16} />
-            <span>New System User</span>
-          </button>
+          {canManageUsers && (
+            <button
+              onClick={() => handleOpenUserModal()}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: '#17652f',
+                color: '#ffffff',
+                fontSize: '0.82rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              <Plus size={15} />
+              <span>Add user</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -1030,21 +1154,20 @@ export const UserManagementPage = () => {
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '14px',
-            border: '1px solid #e8e6df',
-            padding: '18px 20px',
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            gap: '14px',
           }}
         >
           <div
             style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              backgroundColor: '#e8f2e5',
+              width: '42px',
+              height: '42px',
+              borderRadius: '6px',
+              backgroundColor: '#f0fdf4',
               color: '#17652f',
               display: 'flex',
               alignItems: 'center',
@@ -1052,20 +1175,20 @@ export const UserManagementPage = () => {
               flexShrink: 0,
             }}
           >
-            <Users size={22} />
+            <Users size={20} />
           </div>
           <div>
-            <div style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              System Users
+            <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '600' }}>
+              System users
             </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: '700', color: '#1f2937', lineHeight: 1.2 }}>
+            <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827', lineHeight: 1.2 }}>
               {users.length}{' '}
-              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#17652f' }}>
-                ({users.filter((u) => u.status === 'active').length} Active)
+              <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#16a34a' }}>
+                ({users.filter((u) => u.status === 'active').length} active)
               </span>
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#8c95a4', marginTop: '3px' }}>
-              {users.filter((u) => u.status === 'locked' || u.status === 'suspended').length} restricted accounts
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
+              {users.filter((u) => u.status === 'locked' || u.status === 'suspended').length} restricted
             </div>
           </div>
         </div>
@@ -1074,42 +1197,41 @@ export const UserManagementPage = () => {
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '14px',
-            border: '1px solid #e8e6df',
-            padding: '18px 20px',
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            gap: '14px',
           }}
         >
           <div
             style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              backgroundColor: '#f5f3ec',
-              color: '#2d6a4f',
+              width: '42px',
+              height: '42px',
+              borderRadius: '6px',
+              backgroundColor: '#f0fdf4',
+              color: '#17652f',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
             }}
           >
-            <ShieldCheck size={22} />
+            <ShieldCheck size={20} />
           </div>
           <div>
-            <div style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Configured Roles
+            <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '600' }}>
+              Configured roles
             </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: '700', color: '#1f2937', lineHeight: 1.2 }}>
+            <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827', lineHeight: 1.2 }}>
               {roles.length}{' '}
-              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#2d6a4f' }}>
-                ({roles.filter((r) => r.isSystemRole).length} Built-in)
+              <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#16a34a' }}>
+                ({roles.filter((r) => r.isSystemRole).length} built-in)
               </span>
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#8c95a4', marginTop: '3px' }}>
-              {roles.filter((r) => !r.isSystemRole).length} custom operational roles
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
+              {roles.filter((r) => !r.isSystemRole).length} custom roles
             </div>
           </div>
         </div>
@@ -1118,21 +1240,20 @@ export const UserManagementPage = () => {
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '14px',
-            border: '1px solid #e8e6df',
-            padding: '18px 20px',
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            gap: '14px',
           }}
         >
           <div
             style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              backgroundColor: '#e8f2e5',
+              width: '42px',
+              height: '42px',
+              borderRadius: '6px',
+              backgroundColor: '#f0fdf4',
               color: '#17652f',
               display: 'flex',
               alignItems: 'center',
@@ -1140,18 +1261,18 @@ export const UserManagementPage = () => {
               flexShrink: 0,
             }}
           >
-            <Building2 size={22} />
+            <Building2 size={20} />
           </div>
           <div>
-            <div style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Branch Locations
+            <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '600' }}>
+              Branch locations
             </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: '700', color: '#1f2937', lineHeight: 1.2 }}>
+            <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827', lineHeight: 1.2 }}>
               {branches.length}{' '}
-              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#17652f' }}>Hubs</span>
+              <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#17652f' }}>locations</span>
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#8c95a4', marginTop: '3px' }}>
-              Head Office + regional sites
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
+              Offices and sites
             </div>
           </div>
         </div>
@@ -1160,20 +1281,19 @@ export const UserManagementPage = () => {
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '14px',
-            border: '1px solid #e8e6df',
-            padding: '18px 20px',
+            borderRadius: '8px',
+            border: '1px solid #e5e7eb',
+            padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            gap: '14px',
           }}
         >
           <div
             style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
+              width: '42px',
+              height: '42px',
+              borderRadius: '6px',
               backgroundColor: '#fef3c7',
               color: '#d97706',
               display: 'flex',
@@ -1182,20 +1302,20 @@ export const UserManagementPage = () => {
               flexShrink: 0,
             }}
           >
-            <Sliders size={22} />
+            <Sliders size={20} />
           </div>
           <div>
-            <div style={{ fontSize: '0.78rem', color: '#596372', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Permission Capabilities
+            <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '600' }}>
+              Permission capabilities
             </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: '700', color: '#1f2937', lineHeight: 1.2 }}>
+            <div style={{ fontSize: '1.35rem', fontWeight: '600', color: '#111827', lineHeight: 1.2 }}>
               {permissions.length}{' '}
-              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#d97706' }}>
-                ({Object.keys(permissionGroups).length} Modules)
+              <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#d97706' }}>
+                ({Object.keys(permissionGroups).length} modules)
               </span>
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#8c95a4', marginTop: '3px' }}>
-              Agents, CRM, Sales, Assets & Accounts
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
+              Granular access rules
             </div>
           </div>
         </div>
@@ -1207,110 +1327,111 @@ export const UserManagementPage = () => {
       <div
         style={{
           display: 'flex',
-          backgroundColor: '#f5f3ec',
-          border: '1px solid #e8e6df',
-          padding: '4px',
-          borderRadius: '12px',
-          gap: '6px',
+          backgroundColor: '#f3f4f6',
+          border: '1px solid #e5e7eb',
+          padding: '3px',
+          borderRadius: '8px',
+          gap: '4px',
           width: 'fit-content',
         }}
       >
-        <button
-          onClick={() => handleTabChange('users')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '9px 18px',
-            borderRadius: '9px',
-            border: 'none',
-            backgroundColor: activeTab === 'users' ? '#17652f' : 'transparent',
-            color: activeTab === 'users' ? '#ffffff' : '#596372',
-            fontWeight: activeTab === 'users' ? '700' : '600',
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            boxShadow: activeTab === 'users' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          <Users size={16} style={{ color: activeTab === 'users' ? '#ffffff' : '#8c95a4' }} />
-          <span>User Directory</span>
-          <span
+        {canViewUsers && (
+          <button
+            type="button"
+            onClick={() => handleTabChange('users')}
             style={{
-              fontSize: '0.72rem',
-              padding: '2px 7px',
-              borderRadius: '999px',
-              backgroundColor: activeTab === 'users' ? '#e8f2e5' : '#e8e6df',
-              color: activeTab === 'users' ? '#17652f' : '#596372',
-              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              border: 'none',
+              backgroundColor: activeTab === 'users' ? '#17652f' : 'transparent',
+              color: activeTab === 'users' ? '#ffffff' : '#4b5563',
+              fontWeight: activeTab === 'users' ? '600' : '500',
+              fontSize: '0.84rem',
+              cursor: 'pointer',
             }}
           >
-            {users.length}
-          </span>
-        </button>
+            <Users size={15} style={{ color: activeTab === 'users' ? '#ffffff' : '#6b7280' }} />
+            <span>User directory</span>
+            <span
+              style={{
+                fontSize: '0.72rem',
+                padding: '2px 7px',
+                borderRadius: '999px',
+                backgroundColor: activeTab === 'users' ? '#14532d' : '#e5e7eb',
+                color: activeTab === 'users' ? '#ffffff' : '#374151',
+                fontWeight: '600',
+              }}
+            >
+              {users.length}
+            </span>
+          </button>
+        )}
 
-        <button
-          onClick={() => handleTabChange('roles')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '9px 18px',
-            borderRadius: '9px',
-            border: 'none',
-            backgroundColor: activeTab === 'roles' ? '#17652f' : 'transparent',
-            color: activeTab === 'roles' ? '#ffffff' : '#596372',
-            fontWeight: activeTab === 'roles' ? '700' : '600',
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            boxShadow: activeTab === 'roles' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          <ShieldCheck size={16} style={{ color: activeTab === 'roles' ? '#ffffff' : '#8c95a4' }} />
-          <span>Role Permissions Matrix</span>
-          <span
+        {canViewRoles && (
+          <button
+            type="button"
+            onClick={() => handleTabChange('roles')}
             style={{
-              fontSize: '0.72rem',
-              padding: '2px 7px',
-              borderRadius: '999px',
-              backgroundColor: activeTab === 'roles' ? '#e8f2e5' : '#e8e6df',
-              color: activeTab === 'roles' ? '#17652f' : '#596372',
-              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              border: 'none',
+              backgroundColor: activeTab === 'roles' ? '#17652f' : 'transparent',
+              color: activeTab === 'roles' ? '#ffffff' : '#4b5563',
+              fontWeight: activeTab === 'roles' ? '600' : '500',
+              fontSize: '0.84rem',
+              cursor: 'pointer',
             }}
           >
-            {roles.length}
-          </span>
-        </button>
+            <ShieldCheck size={15} style={{ color: activeTab === 'roles' ? '#ffffff' : '#6b7280' }} />
+            <span>Role permissions matrix</span>
+            <span
+              style={{
+                fontSize: '0.72rem',
+                padding: '2px 7px',
+                borderRadius: '999px',
+                backgroundColor: activeTab === 'roles' ? '#14532d' : '#e5e7eb',
+                color: activeTab === 'roles' ? '#ffffff' : '#374151',
+                fontWeight: '600',
+              }}
+            >
+              {roles.length}
+            </span>
+          </button>
+        )}
 
         <button
+          type="button"
           onClick={() => handleTabChange('branches')}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            padding: '9px 18px',
-            borderRadius: '9px',
+            padding: '8px 16px',
+            borderRadius: '6px',
             border: 'none',
             backgroundColor: activeTab === 'branches' ? '#17652f' : 'transparent',
-            color: activeTab === 'branches' ? '#ffffff' : '#596372',
-            fontWeight: activeTab === 'branches' ? '700' : '600',
-            fontSize: '0.88rem',
+            color: activeTab === 'branches' ? '#ffffff' : '#4b5563',
+            fontWeight: activeTab === 'branches' ? '600' : '500',
+            fontSize: '0.84rem',
             cursor: 'pointer',
-            boxShadow: activeTab === 'branches' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
-            transition: 'all 0.15s ease',
           }}
         >
-          <Building2 size={16} style={{ color: activeTab === 'branches' ? '#ffffff' : '#8c95a4' }} />
-          <span>Branch Locations</span>
+          <Building2 size={15} style={{ color: activeTab === 'branches' ? '#ffffff' : '#6b7280' }} />
+          <span>Branch locations</span>
           <span
             style={{
               fontSize: '0.72rem',
               padding: '2px 7px',
               borderRadius: '999px',
-              backgroundColor: activeTab === 'branches' ? '#e8f2e5' : '#e8e6df',
-              color: activeTab === 'branches' ? '#17652f' : '#596372',
-              fontWeight: '700',
+              backgroundColor: activeTab === 'branches' ? '#14532d' : '#e5e7eb',
+              color: activeTab === 'branches' ? '#ffffff' : '#374151',
+              fontWeight: '600',
             }}
           >
             {branches.length}
@@ -1426,8 +1547,8 @@ export const UserManagementPage = () => {
                     overflow: 'hidden',
                   }}
                 >
-                  <option value="all">All Roles ({roles.length})</option>
-                  <option value="taskforce_only">🛠️ Taskforce Team Only</option>
+                  <option value="all">All roles ({roles.length})</option>
+                  <option value="taskforce_only">Taskforce team only</option>
                   {roles.map((r) => (
                     <option key={r._id} value={r._id}>
                       {r.roleName}
@@ -1700,13 +1821,13 @@ export const UserManagementPage = () => {
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
                   <thead>
-                    <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
-                      <th style={{ padding: '14px 20px' }}>User & Identity</th>
-                      <th style={{ padding: '14px 20px' }}>Role & Privileges</th>
-                      <th style={{ padding: '14px 20px' }}>Primary Branch</th>
-                      <th style={{ padding: '14px 20px' }}>Account Status</th>
-                      <th style={{ padding: '14px 20px' }}>Last Activity</th>
-                      <th style={{ padding: '14px 20px', textAlign: 'right' }}>Management Actions</th>
+                    <tr style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontWeight: '600' }}>
+                      <th style={{ padding: '12px 18px' }}>User</th>
+                      <th style={{ padding: '12px 18px' }}>Role</th>
+                      <th style={{ padding: '12px 18px' }}>Branch</th>
+                      <th style={{ padding: '12px 18px' }}>Status</th>
+                      <th style={{ padding: '12px 18px' }}>Last active</th>
+                      <th style={{ padding: '12px 18px', textAlign: 'right' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1747,7 +1868,7 @@ export const UserManagementPage = () => {
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
-                                  fontWeight: '800',
+                                  fontWeight: '600',
                                   fontSize: '0.88rem',
                                   flexShrink: 0,
                                   border: `1.5px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#cde4c9'}`,
@@ -2190,7 +2311,7 @@ export const UserManagementPage = () => {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              fontWeight: '800',
+                              fontWeight: '600',
                               fontSize: '1rem',
                               border: `2px solid ${isSuper ? '#fde68a' : isAgent ? '#bae6fd' : '#cde4c9'}`,
                             }}
@@ -2303,7 +2424,7 @@ export const UserManagementPage = () => {
                           }}
                         >
                           {(u.isTaskforceMember || u.department) && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#166534', fontWeight: '800', marginBottom: '6px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#166534', fontWeight: '600', marginBottom: '6px' }}>
                               <i className="fa-solid fa-hard-hat" style={{ fontSize: '0.75rem' }} />
                               <span>Taskforce • {u.department || 'Operations'}</span>
                               {u.taskforceHierarchyLevel && (
@@ -2318,7 +2439,7 @@ export const UserManagementPage = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '5px 8px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
                               <div>
                                 <span style={{ color: '#64748b', fontSize: '0.72rem' }}>Pass: </span>
-                                <code style={{ color: '#17652f', fontWeight: '800', fontSize: '0.8rem' }}>{u.initialPassword}</code>
+                                <code style={{ color: '#17652f', fontWeight: '600', fontSize: '0.8rem' }}>{u.initialPassword}</code>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <button
@@ -2498,7 +2619,7 @@ export const UserManagementPage = () => {
           >
             {/* Header & Search */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 System Roles ({roles.length})
               </div>
               <button
@@ -2630,7 +2751,7 @@ export const UserManagementPage = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: '800', color: '#0f172a' }}>
+                      <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: '600', color: '#0f172a' }}>
                         {selectedRoleForMatrix.roleName}
                       </h2>
                       <code style={{ fontSize: '0.78rem', backgroundColor: '#f1f5f9', padding: '3px 8px', borderRadius: '6px', color: '#475569', fontWeight: '600' }}>
@@ -2819,6 +2940,130 @@ export const UserManagementPage = () => {
                     </div>
                   );
                 })()}
+
+                {/* INBUILT MICRO-FEATURE: SIDEBAR MENU VISIBILITY CONTROL */}
+                <div
+                  style={{
+                    padding: '14px 18px',
+                    borderRadius: '12px',
+                    backgroundColor: '#faf9f6',
+                    border: '1px solid #e8e6df',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    marginTop: '6px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Eye size={15} style={{ color: '#17652f' }} />
+                      <span style={{ fontWeight: '700', fontSize: '0.85rem', color: '#1f2937' }}>
+                        Sidebar Menu Visibility ({selectedRoleForMatrix.roleName})
+                      </span>
+                      <span style={{ fontSize: '0.74rem', color: '#596372' }}>
+                        • Click category to toggle navigation menu presence
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyTaskforcePresetForRole(selectedRoleForMatrix.roleCode)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          padding: '4px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #86efac',
+                          backgroundColor: '#e8f2e5',
+                          color: '#17652f',
+                          fontSize: '0.74rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                        }}
+                        title="Enforce Taskforce Preset: Hide Property & Engineering and Workforce & Assets from sidebar"
+                      >
+                        <ShieldCheck size={12} />
+                        <span>Taskforce Preset</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleResetRoleVisibility(selectedRoleForMatrix.roleCode)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid #e8e6df',
+                          backgroundColor: '#ffffff',
+                          color: '#596372',
+                          fontSize: '0.74rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                        }}
+                        title="Reset visibility for this role to system defaults"
+                      >
+                        <RefreshCw size={11} />
+                        <span>Reset</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Category Pills */}
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {CATEGORY_DEFINITIONS.map((cat) => {
+                      const roleKey = (selectedRoleForMatrix.roleCode || '').toLowerCase();
+                      const roleSettings = moduleVisibility[roleKey] || {};
+                      const globalSettings = moduleVisibility['global'] || {};
+                      const isCatVisible = roleSettings[cat.key] !== undefined
+                        ? roleSettings[cat.key] !== false
+                        : (globalSettings[cat.key] !== undefined ? globalSettings[cat.key] !== false : true);
+
+                      const CatIcon = cat.icon || Target;
+
+                      return (
+                        <button
+                          key={cat.key}
+                          type="button"
+                          onClick={() => handleToggleModuleVisibilityForRole(cat.key, selectedRoleForMatrix.roleCode)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '5px 11px',
+                            borderRadius: '8px',
+                            border: isCatVisible ? '1px solid #cde4c9' : '1px solid #cbd5e1',
+                            backgroundColor: isCatVisible ? '#ffffff' : '#f1f5f9',
+                            color: isCatVisible ? '#17652f' : '#64748b',
+                            fontSize: '0.76rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                          }}
+                          title={`Click to ${isCatVisible ? 'HIDE' : 'SHOW'} ${cat.label} category in sidebar for this role`}
+                        >
+                          <CatIcon size={13} style={{ color: isCatVisible ? '#17652f' : '#64748b' }} />
+                          <span>{cat.label}</span>
+                          <span
+                            style={{
+                              fontSize: '0.66rem',
+                              padding: '1px 5px',
+                              borderRadius: '4px',
+                              backgroundColor: isCatVisible ? '#e8f2e5' : '#e2e8f0',
+                              color: isCatVisible ? '#17652f' : '#64748b',
+                              fontWeight: '700',
+                            }}
+                          >
+                            {isCatVisible ? 'Visible' : 'Hidden'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
               {/* Permission Filters Bar (Search & Category Chips) */}
@@ -2921,7 +3166,7 @@ export const UserManagementPage = () => {
                     const isSuper = selectedRoleForMatrix.roleCode === 'super_admin';
                     const activePermsCount = isSuper
                       ? perms.length
-                      : perms.filter((p) => rolePermSet.has(p._id)).length;
+                      : perms.filter((p) => rolePermSet.has(p._id) || rolePermSet.has(String(p._id)) || rolePermSet.has(p.permissionCode)).length;
                     const allActive = activePermsCount === perms.length && perms.length > 0;
                     const isCollapsed = collapsedModules[moduleName];
 
@@ -2969,7 +3214,7 @@ export const UserManagementPage = () => {
                               {getModuleIcon(moduleName)}
                             </div>
                             <div>
-                              <div style={{ fontWeight: '800', fontSize: '0.96rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <div style={{ fontWeight: '600', fontSize: '0.96rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <span>{formatModuleName(moduleName)} Module</span>
                                 {isCollapsed ? (
                                   <ChevronDown size={16} style={{ color: '#94a3b8' }} />
@@ -2983,7 +3228,64 @@ export const UserManagementPage = () => {
                             </div>
                           </div>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            {/* Inbuilt Module Sidebar Visibility Toggle */}
+                            {(() => {
+                              const navMapping = getNavMappingForModule(moduleName);
+                              if (!navMapping) return null;
+                              const roleKey = (selectedRoleForMatrix.roleCode || '').toLowerCase();
+                              const roleSettings = moduleVisibility[roleKey] || {};
+                              const globalSettings = moduleVisibility['global'] || {};
+
+                              const isCatVisible = roleSettings[navMapping.categoryKey] !== undefined
+                                ? roleSettings[navMapping.categoryKey] !== false
+                                : (globalSettings[navMapping.categoryKey] !== undefined ? globalSettings[navMapping.categoryKey] !== false : true);
+
+                              const isModVisible = roleSettings[navMapping.path] !== undefined
+                                ? roleSettings[navMapping.path] !== false
+                                : (globalSettings[navMapping.path] !== undefined ? globalSettings[navMapping.path] !== false : true);
+
+                              const effectiveVisible = isCatVisible && isModVisible;
+
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleModuleVisibilityForRole(navMapping.path, selectedRoleForMatrix.roleCode);
+                                  }}
+                                  title={!isCatVisible
+                                    ? `Category "${navMapping.categoryLabel}" is hidden in sidebar for ${selectedRoleForMatrix.roleName}. Click to toggle module rule.`
+                                    : effectiveVisible
+                                      ? `"${navMapping.label}" is currently VISIBLE in sidebar. Click to hide for ${selectedRoleForMatrix.roleName}.`
+                                      : `"${navMapping.label}" is currently HIDDEN in sidebar. Click to show for ${selectedRoleForMatrix.roleName}.`
+                                  }
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    padding: '5px 10px',
+                                    borderRadius: '6px',
+                                    border: effectiveVisible ? '1px solid #cde4c9' : '1px solid #cbd5e1',
+                                    backgroundColor: effectiveVisible ? '#e8f2e5' : '#f1f5f9',
+                                    color: effectiveVisible ? '#17652f' : '#64748b',
+                                    fontSize: '0.74rem',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s ease',
+                                  }}
+                                >
+                                  {effectiveVisible ? <Eye size={12} /> : <EyeOff size={12} />}
+                                  <span>{effectiveVisible ? 'Sidebar: On' : 'Sidebar: Off'}</span>
+                                  {!isCatVisible && (
+                                    <span style={{ fontSize: '0.62rem', opacity: 0.8, fontWeight: '500' }}>
+                                      (Cat Off)
+                                    </span>
+                                  )}
+                                </button>
+                              );
+                            })()}
+
                             {/* Module Count Pill */}
                             <span
                               style={{
@@ -3068,7 +3370,7 @@ export const UserManagementPage = () => {
                             }}
                           >
                             {perms.map((p) => {
-                              const isChecked = isSuper || rolePermSet.has(p._id);
+                              const isChecked = isSuper || rolePermSet.has(p._id) || rolePermSet.has(String(p._id)) || rolePermSet.has(p.permissionCode);
                               const isSwitchUpdating = matrixUpdatingId === p._id;
 
                               return (
@@ -3088,7 +3390,7 @@ export const UserManagementPage = () => {
                                     transition: 'all 0.15s ease',
                                     userSelect: 'none',
                                     boxShadow: isChecked
-                                      ? '0 2px 8px rgba(37, 99, 235, 0.08)'
+                                      ? '0 2px 8px rgba(23, 101, 47, 0.08)'
                                       : '0 1px 2px rgba(0,0,0,0.02)',
                                     position: 'relative',
                                     opacity: matrixUpdating && !isSwitchUpdating ? 0.8 : 1,
@@ -3322,7 +3624,7 @@ export const UserManagementPage = () => {
                             color: '#17652f',
                             padding: '3px 9px',
                             borderRadius: '999px',
-                            fontWeight: '800',
+                            fontWeight: '600',
                             border: '1px solid #cde4c9',
                             textTransform: 'uppercase',
                             letterSpacing: '0.04em',
@@ -3333,7 +3635,7 @@ export const UserManagementPage = () => {
                       )}
                     </div>
 
-                    <h3 style={{ margin: '0 0 4px', fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>
+                    <h3 style={{ margin: '0 0 4px', fontSize: '1.15rem', fontWeight: '600', color: '#0f172a' }}>
                       {b.branchName}
                     </h3>
                     <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '14px' }}>
@@ -3424,7 +3726,7 @@ export const UserManagementPage = () => {
             {/* Modal Header */}
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '600', color: '#0f172a' }}>
                   {editingUser ? `Edit Account: @${editingUser.username}` : 'Create New System Operator'}
                 </h3>
                 <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>
@@ -3455,7 +3757,7 @@ export const UserManagementPage = () => {
                     }}
                   >
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800', color: '#166534', fontSize: '0.85rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', color: '#166534', fontSize: '0.85rem' }}>
                         <i className="fa-solid fa-hard-hat" /> Taskforce Team Member
                         {editingUser.taskforceHierarchyLevel && (
                           <span style={{ fontSize: '0.72rem', backgroundColor: '#dcfce7', color: '#15803d', padding: '1px 6px', borderRadius: '4px' }}>
@@ -3500,7 +3802,7 @@ export const UserManagementPage = () => {
                 )}
               {/* SECTION 1: Personal Identity */}
               <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
                   1. Identity & Contact Details
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -3624,7 +3926,7 @@ export const UserManagementPage = () => {
 
               {/* SECTION 2: Role & Status */}
               <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
                   2. Role & Account Status
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -3682,7 +3984,7 @@ export const UserManagementPage = () => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <i className="fa-solid fa-hard-hat" style={{ color: '#16a34a' }} />
-                    <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#166534' }}>
+                    <span style={{ fontWeight: '600', fontSize: '0.88rem', color: '#166534' }}>
                       Taskforce Operational Configuration
                     </span>
                   </div>
@@ -3757,7 +4059,7 @@ export const UserManagementPage = () => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Award size={18} style={{ color: '#0284c7' }} />
-                    <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#0369a1' }}>
+                    <span style={{ fontWeight: '600', fontSize: '0.88rem', color: '#0369a1' }}>
                       Channel Partner & Agent Profile Setup
                     </span>
                   </div>
@@ -3848,7 +4150,7 @@ export const UserManagementPage = () => {
 
               {/* SECTION 4: Branch Assignment */}
               <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
                   3. Multi-Branch Site Assignments
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px' }}>
@@ -3997,7 +4299,7 @@ export const UserManagementPage = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <KeyRound size={20} style={{ color: '#17652f' }} />
-                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '600', color: '#0f172a' }}>
                   Reset Password
                 </h3>
               </div>
@@ -4130,7 +4432,7 @@ export const UserManagementPage = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <ShieldCheck size={20} style={{ color: '#17652f' }} />
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '600', color: '#0f172a' }}>
                   {editingRole ? `Edit Role: ${editingRole.roleName}` : 'Create Custom Operational Role'}
                 </h3>
               </div>
@@ -4293,7 +4595,7 @@ export const UserManagementPage = () => {
         .perm-item-card:hover {
           transform: translateY(-2px);
           border-color: #17652f !important;
-          box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12) !important;
+          box-shadow: 0 6px 16px rgba(23, 101, 47, 0.12) !important;
         }
       `}</style>
     </div>

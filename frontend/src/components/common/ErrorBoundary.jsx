@@ -73,7 +73,7 @@ export class ErrorBoundary extends React.Component {
 
             <h2 style={{
               fontSize: '1.4rem',
-              fontWeight: '800',
+              fontWeight: '600',
               color: '#0f172a',
               margin: '0 0 8px'
             }}>
@@ -121,7 +121,7 @@ export class ErrorBoundary extends React.Component {
                   fontSize: '0.88rem',
                   fontWeight: '700',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(26,115,232,0.3)'
+                  boxShadow: '0 2px 8px rgba(23, 101, 47,0.3)'
                 }}
               >
                 <RefreshCw size={16} />

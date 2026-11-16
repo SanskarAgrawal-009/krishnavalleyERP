@@ -2,30 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../common/Modal.jsx';
 import { LoadingButton } from '../common/LoadingButton.jsx';
 import { projectService } from '../../services/projectService.js';
-import { 
-  Building2, 
-  Home, 
-  User, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  CreditCard, 
-  ShieldCheck, 
-  FileText, 
-  Upload, 
-  ExternalLink,
-  PlusCircle,
-  Trash2,
-  Calendar,
-  DollarSign,
-  Key,
-  Repeat
-} from 'lucide-react';
+import { Home } from 'lucide-react';
 
 export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null }) => {
   const [submitting, setSubmitting] = useState(false);
-  // Inventory
-  const [projects, setProjects] = useState([]);
   const [flats, setFlats] = useState([]);
 
   // Base Identity
@@ -42,7 +22,7 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
   });
 
   // Owner KYC & Properties
-  const [ownershipType, setOwnershipType] = useState('individual'); // 'individual' | 'joint' | 'corporate'
+  const [ownershipType, setOwnershipType] = useState('individual');
   const [selectedPropertyIds, setSelectedPropertyIds] = useState([]);
   const [panNumber, setPanNumber] = useState('');
   const [aadhaarNumber, setAadhaarNumber] = useState('');
@@ -62,17 +42,10 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
     contactNo: ''
   });
 
-  // 3-Year Guaranteed Rent-Back Configuration
-  const [optInRentBack, setOptInRentBack] = useState(true);
-  const [guaranteedMonthlyRent, setGuaranteedMonthlyRent] = useState(31000);
-  const [payoutDueDay, setPayoutDueDay] = useState(25);
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
     if (isOpen) {
-      projectService.getProjects().then((res) => {
-        if (res.data) setProjects(res.data);
-      });
       projectService.getFlats().then((res) => {
         if (res.data) setFlats(res.data);
       });
@@ -143,9 +116,6 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
           upiId: ''
         });
         setNominee({ name: '', relation: '', contactNo: '' });
-        setOptInRentBack(true);
-        setGuaranteedMonthlyRent(31000);
-        setPayoutDueDay(25);
         setNotes('');
       }
     }
@@ -231,164 +201,137 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={customer ? `Edit Property Owner: ${customer.name}` : 'Register New Property Owner & Titleholder'}
-      maxWidth="820px"
+      title={customer ? `Edit property owner: ${customer.name}` : 'Register property owner'}
+      maxWidth="720px"
     >
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         
-        {/* Section 1: Basic Identity */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#1e1b4b', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <User size={16} color="#17652f" /> 1. Owner Identity &amp; Contact Details
-          </h4>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                Full Name *
-              </label>
+        {/* Personal Details Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Owner full name *</span>
+            </div>
+            <div className="form-card-input-row">
               <input
                 type="text"
                 required
                 placeholder="e.g. Rajesh Singhal"
+                className="form-card-input"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
               />
             </div>
+          </div>
 
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                Primary Mobile Number *
-              </label>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Mobile number *</span>
+            </div>
+            <div className="form-card-input-row">
               <input
-                type="text"
+                type="tel"
                 required
                 placeholder="e.g. 9876543210"
+                className="form-card-input"
                 value={mobileNo}
                 onChange={(e) => setMobileNo(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                Alternative Phone
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 9811223344"
-                value={alternatePhone}
-                onChange={(e) => setAlternatePhone(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="e.g. rajesh@gmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                PAN Number
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. ABCDE1234F"
-                value={panNumber}
-                onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                Aadhaar Number
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 1234 5678 9012"
-                value={aadhaarNumber}
-                onChange={(e) => setAadhaarNumber(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-          </div>
-
-          {/* Postal Address */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                Street / Residence Address
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Flat 101, Krishna Valley"
-                value={address.street}
-                onChange={(e) => setAddress({ ...address, street: e.target.value })}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                City
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Mathura"
-                value={address.city}
-                onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                State
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Uttar Pradesh"
-                value={address.state}
-                onChange={(e) => setAddress({ ...address, state: e.target.value })}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#334155', display: 'block', marginBottom: '2px' }}>
-                Pincode
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 281001"
-                value={address.pincode}
-                onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
-                style={{ width: '100%', fontSize: '0.82rem', padding: '7px', borderRadius: '5px', border: '1px solid #cbd5e1' }}
               />
             </div>
           </div>
         </div>
 
-        {/* Section 2: Allotted Flat Units */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Home size={16} color="#17652f" /> 2. Allotted Property Units ({selectedPropertyIds.length} Selected)
-            </h4>
-            <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Select all units owned by this titleholder</span>
+        {/* Email & Alternate Phone */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Email address</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="email"
+                placeholder="e.g. rajesh@gmail.com"
+                className="form-card-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
           </div>
 
-          <div style={{ maxHeight: '140px', overflowY: 'auto', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '6px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Alternate phone</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="tel"
+                placeholder="e.g. 9811223344"
+                className="form-card-input"
+                value={alternatePhone}
+                onChange={(e) => setAlternatePhone(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* KYC: PAN & Aadhaar */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>PAN number</span>
+              <span className="form-card-badge">KYC</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                placeholder="e.g. ABCDE1234F"
+                className="form-card-input"
+                value={panNumber}
+                onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+              />
+            </div>
+          </div>
+
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Aadhaar number</span>
+              <span className="form-card-badge">KYC</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                placeholder="e.g. 1234 5678 9012"
+                className="form-card-input"
+                value={aadhaarNumber}
+                onChange={(e) => setAadhaarNumber(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Residence Address */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Street / Residence address</span>
+          </div>
+          <div className="form-card-input-row">
+            <input
+              type="text"
+              placeholder="e.g. Flat 101, Civil Lines, Mathura, UP - 281001"
+              className="form-card-input"
+              value={address.street}
+              onChange={(e) => setAddress({ ...address, street: e.target.value })}
+            />
+          </div>
+        </div>
+
+        {/* Allotted Units */}
+        <div className="form-card-box">
+          <div className="form-card-prompt">
+            <span>Allotted units ({selectedPropertyIds.length} selected)</span>
+            <span className="form-card-badge">Click to toggle</span>
+          </div>
+          <div style={{ maxHeight: '110px', overflowY: 'auto', display: 'flex', flexWrap: 'wrap', gap: '6px', paddingTop: '6px' }}>
             {flats.map((flat) => {
               const isSelected = selectedPropertyIds.includes(flat._id);
               return (
@@ -397,211 +340,165 @@ export const ManualCustomerModal = ({ isOpen, onClose, onSubmit, customer = null
                   key={flat._id}
                   onClick={() => togglePropertySelection(flat._id)}
                   style={{
-                    padding: '6px 10px',
-                    borderRadius: '5px',
-                    fontSize: '0.75rem',
-                    fontWeight: isSelected ? '800' : '600',
-                    border: isSelected ? '1.5px solid #17652f' : '1px solid #e2e8f0',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '0.76rem',
+                    fontWeight: isSelected ? '700' : '500',
+                    border: isSelected ? '1px solid #17652f' : '1px solid #e2e8f0',
                     background: isSelected ? '#e8f2e5' : '#ffffff',
-                    color: isSelected ? '#17652f' : '#334155',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
+                    color: isSelected ? '#17652f' : '#475569',
+                    cursor: 'pointer'
                   }}
                 >
-                  <span>Flat {flat.flatNumber}</span>
-                  {isSelected && <span style={{ color: '#17652f' }}></span>}
+                  Flat {flat.flatNumber} {isSelected ? '✓' : ''}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Section 3: Owner Bank Details (For Rent Payouts & Transfers) */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e8f2e5', background: '#e8f2e5' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#17652f', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <CreditCard size={16} color="#17652f" /> 3. Banking &amp; NEFT Payout Account
-          </h4>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                Bank Name
-              </label>
+        {/* Bank Account for Payouts */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Bank name</span>
+            </div>
+            <div className="form-card-input-row">
               <input
                 type="text"
-                placeholder="e.g. Punjab National Bank"
+                placeholder="e.g. HDFC Bank"
+                className="form-card-input"
                 value={bankDetails.bankName}
                 onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cde4c9' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                Branch
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Civil Lines, Mathura"
-                value={bankDetails.branch}
-                onChange={(e) => setBankDetails({ ...bankDetails, branch: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cde4c9' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                Account Number
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 0983000100182033"
-                value={bankDetails.accountNumber}
-                onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cde4c9' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                IFSC Code
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. PUNB0098300"
-                value={bankDetails.ifscCode}
-                onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value.toUpperCase() })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cde4c9' }}
               />
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                Account Holder Name
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Rajesh Singhal"
-                value={bankDetails.accountHolderName}
-                onChange={(e) => setBankDetails({ ...bankDetails, accountHolderName: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cde4c9' }}
-              />
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Account number</span>
+              <span className="form-card-badge">Payout Account</span>
             </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                UPI ID / VPA (Optional)
-              </label>
+            <div className="form-card-input-row">
               <input
                 type="text"
-                placeholder="e.g. rajesh@upi or 9876543210@paytm"
-                value={bankDetails.upiId || ''}
-                onChange={(e) => setBankDetails({ ...bankDetails, upiId: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cde4c9' }}
+                placeholder="e.g. 0983000100182033"
+                className="form-card-input"
+                value={bankDetails.accountNumber}
+                onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
               />
             </div>
           </div>
         </div>
 
-        {/* Section 4: Nominee Details & Notes */}
-        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#334155', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <ShieldCheck size={16} color="#64748b" /> 4. Nominee &amp; Additional Information
-          </h4>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '10px' }}>
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                Nominee Name
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Anita Singhal"
-                value={nominee.name}
-                onChange={(e) => setNominee({ ...nominee, name: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
-              />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>IFSC code</span>
             </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                Relation
-              </label>
+            <div className="form-card-input-row">
               <input
                 type="text"
-                placeholder="e.g. Spouse / Son"
-                value={nominee.relation}
-                onChange={(e) => setNominee({ ...nominee, relation: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-                Nominee Contact
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 9876500000"
-                value={nominee.contactNo}
-                onChange={(e) => setNominee({ ...nominee, contactNo: e.target.value })}
-                style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                placeholder="e.g. HDFC0001234"
+                className="form-card-input"
+                value={bankDetails.ifscCode}
+                onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value.toUpperCase() })}
               />
             </div>
           </div>
 
-          <div>
-            <label style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '700', display: 'block', marginBottom: '2px' }}>
-              Internal Notes
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Agreement signed in 2023, 36 months assured payout enrolled"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              style={{ width: '100%', fontSize: '0.8rem', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
-            />
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>UPI ID (optional)</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                placeholder="e.g. rajesh@upi"
+                className="form-card-input"
+                value={bankDetails.upiId || ''}
+                onChange={(e) => setBankDetails({ ...bankDetails, upiId: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Nominee & Notes */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Nominee name</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                placeholder="e.g. Anita Singhal"
+                className="form-card-input"
+                value={nominee.name}
+                onChange={(e) => setNominee({ ...nominee, name: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="form-card-box">
+            <div className="form-card-prompt">
+              <span>Internal notes</span>
+            </div>
+            <div className="form-card-input-row">
+              <input
+                type="text"
+                placeholder="e.g. Registry completed 2024"
+                className="form-card-input"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
         {/* Modal Footer */}
         <div style={{
           display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '10px',
-          borderTop: '1px solid #e2e8f0',
-          paddingTop: '12px'
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '10px',
+          paddingTop: '16px',
+          borderTop: '1px solid #f1f5f9'
         }}>
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
             style={{
-              padding: '8px 18px',
-              background: '#f8fafc',
-              border: '1px solid #cbd5e1',
-              borderRadius: '6px',
-              color: '#334155',
-              fontWeight: '700',
-              fontSize: '0.82rem',
-              cursor: submitting ? 'not-allowed' : 'pointer'
+              padding: '9px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#f1f5f9',
+              color: '#475569',
+              fontWeight: '600',
+              fontSize: '0.86rem',
+              cursor: 'pointer'
             }}
           >
             Cancel
           </button>
 
-          <LoadingButton
+          <button
             type="submit"
-            loading={submitting}
-            loadingText={customer ? 'Updating Titleholder...' : 'Saving Owner Profile...'}
-            variant="primary"
+            disabled={submitting}
+            style={{
+              padding: '9px 24px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#17652f',
+              color: '#ffffff',
+              fontWeight: '700',
+              fontSize: '0.86rem',
+              cursor: submitting ? 'not-allowed' : 'pointer'
+            }}
           >
-            {customer ? 'Update Titleholder' : 'Save Owner Profile'}
-          </LoadingButton>
+            {submitting ? 'Saving...' : customer ? 'Update owner profile' : 'Save owner profile'}
+          </button>
         </div>
 
       </form>

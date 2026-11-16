@@ -34,7 +34,7 @@ export const LeadTimelineDrawer = ({
 
   const getModeInfo = (mode) => {
     switch (mode) {
-      case 'call': return { label: 'Phone Call', icon: Phone, color: '#17652f', bg: 'rgba(59, 130, 246, 0.12)' };
+      case 'call': return { label: 'Phone Call', icon: Phone, color: '#17652f', bg: 'rgba(23, 101, 47, 0.12)' };
       case 'whatsapp': return { label: 'WhatsApp', icon: MessageSquare, color: '#17652f', bg: 'rgba(16, 185, 129, 0.12)' };
       case 'site_visit': return { label: 'Site Visit', icon: Compass, color: '#475569', bg: 'rgba(245, 158, 11, 0.12)' };
       case 'meeting': return { label: 'Meeting', icon: Users, color: '#17652f', bg: 'rgba(139, 92, 246, 0.12)' };
@@ -76,7 +76,7 @@ export const LeadTimelineDrawer = ({
           gap: '10px'
         }}>
           <div>
-            <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827' }}>{lead.name}</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: '600', color: '#111827' }}>{lead.name}</div>
             <div style={{ display: 'flex', gap: '14px', fontSize: '0.8rem', color: '#374151', marginTop: '4px', flexWrap: 'wrap' }}>
               <a
                 href={`tel:${lead.mobileNo}`}

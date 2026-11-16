@@ -136,7 +136,7 @@ export const ServiceRequestDetailModal = ({
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#111827' }}>{reqData.title}</span>
+              <span style={{ fontSize: '1.15rem', fontWeight: '600', color: '#111827' }}>{reqData.title}</span>
               <StatusBadge status={reqData.status} />
               <span style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px', background: '#f1f5f9', color: '#0f172a', fontWeight: '700', textTransform: 'uppercase' }}>
                 {reqData.priority || 'medium'} Priority
@@ -152,7 +152,7 @@ export const ServiceRequestDetailModal = ({
 
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: '700' }}>CATEGORY</span>
-            <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#17652f', textTransform: 'capitalize' }}>
+            <div style={{ fontSize: '0.92rem', fontWeight: '600', color: '#17652f', textTransform: 'capitalize' }}>
               {(reqData.category || 'General').replace('_', ' ')}
             </div>
           </div>
@@ -166,7 +166,7 @@ export const ServiceRequestDetailModal = ({
 
         {/* Work Order Update Form */}
         <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
-          <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h4 style={{ fontSize: '0.92rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Wrench size={16} color="#17652f" /> Update Work Order & Technician Assignment
           </h4>
 
@@ -289,7 +289,7 @@ export const ServiceRequestDetailModal = ({
         {/* Photos & Proof Section */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>
+            <h4 style={{ fontSize: '0.88rem', fontWeight: '600', color: '#111827' }}>
               Service Photos & Inspection Proof ({photos.length})
             </h4>
 

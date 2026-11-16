@@ -1260,7 +1260,7 @@ export const TaskDetailModal = ({
                     <ShieldCheck size={20} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span>Transparent Directive & Queries Thread</span>
                       <span
                         style={{
@@ -1270,7 +1270,7 @@ export const TaskDetailModal = ({
                           border: '1px solid #86efac',
                           padding: '1px 6px',
                           borderRadius: '10px',
-                          fontWeight: 800,
+                          fontWeight: 600,
                           letterSpacing: '0.5px',
                         }}
                       >
@@ -1460,7 +1460,7 @@ export const TaskDetailModal = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '11px',
-                            fontWeight: 800,
+                            fontWeight: 600,
                             flexShrink: 0,
                             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                           }}
@@ -1492,7 +1492,7 @@ export const TaskDetailModal = ({
                             <span
                               style={{
                                 fontSize: '9px',
-                                fontWeight: 800,
+                                fontWeight: 600,
                                 padding: '1px 5px',
                                 borderRadius: '4px',
                                 background: roleBadge.bg,
@@ -1549,7 +1549,7 @@ export const TaskDetailModal = ({
                                   alignItems: 'center',
                                   gap: '4px',
                                   fontSize: '10px',
-                                  fontWeight: 800,
+                                  fontWeight: 600,
                                   marginBottom: '5px',
                                   padding: '2px 6px',
                                   borderRadius: '4px',

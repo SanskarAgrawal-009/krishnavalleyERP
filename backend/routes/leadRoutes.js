@@ -78,10 +78,10 @@ router.post('/bulk-delete-by-stage', authenticateToken, authorizePermission('crm
 router.post('/bulk-delete', authenticateToken, authorizePermission('crm:delete', 'crm:manage'), bulkDeleteLeadsAction);
 
 // Lead Core Endpoints
-router.get('/', getLeads);
-router.get('/:id', getLeadById);
-router.post('/', createLead);
-router.put('/:id', updateLead);
+router.get('/', authenticateToken, authorizePermission('crm:view', 'agent:leads', 'sales:view'), getLeads);
+router.get('/:id', authenticateToken, authorizePermission('crm:view', 'agent:leads', 'sales:view'), getLeadById);
+router.post('/', createLead); // Supports public web inquiry ingestion as well as internal CRM creation
+router.put('/:id', authenticateToken, authorizePermission('crm:edit', 'crm:manage', 'sales:edit'), updateLead);
 router.delete('/:id', authenticateToken, authorizePermission('crm:delete', 'crm:manage'), deleteLead);
 
 // Quick Status Update & Follow-Up Scheduling
@@ -96,8 +96,8 @@ router.post('/:id/approve-site-visit', authenticateToken, authorizePermission('c
 router.post('/:id/reject-site-visit', authenticateToken, authorizePermission('crm:manage'), rejectSiteVisitAction);
 
 // Follow-Up Subdocument Endpoints
-router.post('/:id/follow-ups', addFollowUp);
-router.put('/:id/follow-ups/:followUpId', updateFollowUp);
+router.post('/:id/follow-ups', authenticateToken, authorizePermission('crm:create', 'crm:edit'), addFollowUp);
+router.put('/:id/follow-ups/:followUpId', authenticateToken, authorizePermission('crm:edit', 'crm:manage'), updateFollowUp);
 router.delete('/:id/follow-ups/:followUpId', authenticateToken, authorizePermission('crm:edit', 'crm:manage'), deleteFollowUp);
 
 export default router;

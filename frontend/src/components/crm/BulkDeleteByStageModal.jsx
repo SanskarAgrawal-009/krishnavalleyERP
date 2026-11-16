@@ -242,7 +242,7 @@ export const BulkDeleteByStageModal = ({
 
                 <span style={{
                   fontSize: '0.75rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   padding: '2px 8px',
                   borderRadius: '12px',
                   background: count > 0 ? (isSelected ? s.color : '#f1f5f9') : '#f8fafc',
@@ -269,7 +269,7 @@ export const BulkDeleteByStageModal = ({
             <span style={{ fontSize: '0.78rem', color: '#64748b', display: 'block' }}>
               Stages Selected: <strong>{selectedStages.length}</strong>
             </span>
-            <span style={{ fontSize: '0.94rem', fontWeight: '800', color: selectedStages.length > 0 ? '#0f172a' : '#334155' }}>
+            <span style={{ fontSize: '0.94rem', fontWeight: '600', color: selectedStages.length > 0 ? '#0f172a' : '#334155' }}>
               Total Leads to Delete: {totalLeadsToDelete}
             </span>
           </div>
@@ -310,7 +310,7 @@ export const BulkDeleteByStageModal = ({
             padding: '12px 14px'
           }}>
             <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
-              Type <span style={{ color: '#0f172a', fontWeight: '900', letterSpacing: '0.05em' }}>DELETE</span> below to confirm:
+              Type <span style={{ color: '#0f172a', fontWeight: '700', letterSpacing: '0.05em' }}>DELETE</span> below to confirm:
             </label>
             <input
               type="text"
@@ -371,7 +371,7 @@ export const BulkDeleteByStageModal = ({
               color: '#ffffff',
               border: 'none',
               borderRadius: '6px',
-              fontWeight: '800',
+              fontWeight: '600',
               fontSize: '0.82rem',
               cursor: (loading || selectedStages.length === 0 || totalLeadsToDelete === 0 || !isConfirmed)
                 ? 'not-allowed'

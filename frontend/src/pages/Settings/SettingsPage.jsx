@@ -236,45 +236,23 @@ export const SettingsPage = () => {
       <div
         style={{
           background: '#ffffff',
-          borderRadius: '16px',
-          padding: '24px 28px',
-          border: '1px solid #e8e6df',
-          color: '#1f2937',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          border: '1px solid #e5e7eb',
+          color: '#111827',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '20px',
+          gap: '16px',
         }}
       >
         <div style={{ maxWidth: '650px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '4px 12px',
-                borderRadius: '20px',
-                backgroundColor: '#e8f2e5',
-                color: '#17652f',
-                border: '1px solid #cde4c9',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-              }}
-            >
-              <SettingsIcon size={14} />
-              Module 14 • System Governance
-            </span>
-          </div>
-          <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', margin: '0 0 6px', fontSize: '26px', fontWeight: 700, color: '#1f2937', letterSpacing: '-0.02em' }}>
-            System Settings &amp; Administration
+          <h1 style={{ margin: '0 0 4px', fontSize: '1.5rem', fontWeight: '600', color: '#111827' }}>
+            Settings
           </h1>
-          <p style={{ margin: 0, fontSize: '0.88rem', color: '#596372', lineHeight: 1.5 }}>
-            Configure company legal profiles, active financial years, GST/TDS tax matrices, payment gateways, live SMTP &amp; WhatsApp APIs, database backups, and global ERP policies.
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#4b5563', lineHeight: 1.5 }}>
+            Manage company profile, tax rules, payment gateways, notifications, and system preferences.
           </p>
         </div>
 
@@ -282,21 +260,21 @@ export const SettingsPage = () => {
           <button
             onClick={loadSettings}
             style={{
-              padding: '9px 16px',
-              borderRadius: '8px',
+              padding: '8px 14px',
+              borderRadius: '6px',
               backgroundColor: '#ffffff',
-              border: '1px solid #e8e6df',
-              color: '#596372',
+              border: '1px solid #e5e7eb',
+              color: '#374151',
               fontWeight: '600',
-              fontSize: '0.84rem',
+              fontSize: '0.82rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '6px',
             }}
           >
-            <RefreshCw size={15} style={{ color: '#17652f' }} />
-            <span>Reload</span>
+            <RefreshCw size={14} style={{ color: '#17652f' }} />
+            <span>Refresh</span>
           </button>
         </div>
       </div>
@@ -392,7 +370,7 @@ export const SettingsPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <div>
-                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                     Company Profile & Legal Entity
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -417,7 +395,7 @@ export const SettingsPage = () => {
                   }}
                 >
                   <Save size={16} />
-                  <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                  <span>{saving ? 'Saving...' : 'Save changes'}</span>
                 </button>
               </div>
 
@@ -462,7 +440,7 @@ export const SettingsPage = () => {
 
               {/* Statutory Registrations */}
               <div style={{ backgroundColor: '#f8fafc', padding: '18px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                <h4 style={{ margin: '0 0 14px', fontSize: '0.92rem', fontWeight: '800', color: '#1e293b' }}>
+                <h4 style={{ margin: '0 0 14px', fontSize: '0.92rem', fontWeight: '600', color: '#1e293b' }}>
                   Statutory & Tax Compliance Numbers
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
@@ -572,7 +550,7 @@ export const SettingsPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <div>
-                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                     Financial Year & Sequence Numbering
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -597,7 +575,7 @@ export const SettingsPage = () => {
                   }}
                 >
                   <Save size={16} />
-                  <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                  <span>{saving ? 'Saving...' : 'Save changes'}</span>
                 </button>
               </div>
 
@@ -605,7 +583,7 @@ export const SettingsPage = () => {
               <div style={{ backgroundColor: '#e8f2e5', border: '1px solid #e8f2e5', padding: '18px 22px', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                   <div style={{ fontSize: '0.8rem', color: '#17652f', fontWeight: '700', textTransform: 'uppercase' }}>Current Active Accounting Year</div>
-                  <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#001a41', marginTop: '2px' }}>
+                  <div style={{ fontSize: '1.6rem', fontWeight: '600', color: '#001a41', marginTop: '2px' }}>
                     FY {fyForm.activeFY || '2025-2026'}
                   </div>
                   <div style={{ fontSize: '0.82rem', color: '#17652f', marginTop: '4px' }}>
@@ -625,7 +603,7 @@ export const SettingsPage = () => {
 
               {/* Document Numbering Prefixes */}
               <div style={{ backgroundColor: '#f8fafc', padding: '20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                <h4 style={{ margin: '0 0 14px', fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                <h4 style={{ margin: '0 0 14px', fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                   Document Serial Numbering Prefixes
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
@@ -677,7 +655,7 @@ export const SettingsPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <div>
-                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                     Taxes, GST Slabs & TDS Rules
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -702,13 +680,13 @@ export const SettingsPage = () => {
                   }}
                 >
                   <Save size={16} />
-                  <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                  <span>{saving ? 'Saving...' : 'Save changes'}</span>
                 </button>
               </div>
 
               {/* GST Slabs Table */}
               <div>
-                <h4 style={{ margin: '0 0 12px', fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                <h4 style={{ margin: '0 0 12px', fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                   Goods & Services Tax (GST) Slabs
                 </h4>
                 <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
@@ -729,7 +707,7 @@ export const SettingsPage = () => {
                             {slab.label}
                             <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '400', marginTop: '2px' }}>{slab.description}</div>
                           </td>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#17652f' }}>{slab.rate}%</td>
+                          <td style={{ padding: '12px 16px', fontWeight: '600', color: '#17652f' }}>{slab.rate}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.cgst}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.sgst}%</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{slab.igst}%</td>
@@ -742,7 +720,7 @@ export const SettingsPage = () => {
 
               {/* TDS Rules Table */}
               <div>
-                <h4 style={{ margin: '0 0 12px', fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                <h4 style={{ margin: '0 0 12px', fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                   Tax Deducted at Source (TDS) Withholding Matrix
                 </h4>
                 <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
@@ -758,9 +736,9 @@ export const SettingsPage = () => {
                     <tbody>
                       {(taxForm.tdsRules || []).map((rule, idx) => (
                         <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#1e293b' }}>{rule.section}</td>
+                          <td style={{ padding: '12px 16px', fontWeight: '600', color: '#1e293b' }}>{rule.section}</td>
                           <td style={{ padding: '12px 16px', color: '#334155' }}>{rule.label}</td>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#17652f' }}>{rule.rate}%</td>
+                          <td style={{ padding: '12px 16px', fontWeight: '600', color: '#17652f' }}>{rule.rate}%</td>
                           <td style={{ padding: '12px 16px', color: '#64748b' }}>₹{(rule.threshold || 0).toLocaleString('en-IN')}</td>
                         </tr>
                       ))}
@@ -778,7 +756,7 @@ export const SettingsPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <div>
-                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                     Payment Gateway Configurations
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -803,7 +781,7 @@ export const SettingsPage = () => {
                   }}
                 >
                   <Save size={16} />
-                  <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                  <span>{saving ? 'Saving...' : 'Save changes'}</span>
                 </button>
               </div>
 
@@ -839,7 +817,7 @@ export const SettingsPage = () => {
 
               {/* Razorpay Credentials Card */}
               <div style={{ backgroundColor: '#f8fafc', padding: '20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                <h4 style={{ margin: '0 0 14px', fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                <h4 style={{ margin: '0 0 14px', fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                   Razorpay API Credentials
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
@@ -882,7 +860,7 @@ export const SettingsPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <div>
-                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                     Email Server & SMTP Dispatcher
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -927,7 +905,7 @@ export const SettingsPage = () => {
                     }}
                   >
                     <Save size={16} />
-                    <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                    <span>{saving ? 'Saving...' : 'Save changes'}</span>
                   </button>
                 </div>
               </div>
@@ -987,7 +965,7 @@ export const SettingsPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <div>
-                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                     WhatsApp Business Cloud API
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -1032,7 +1010,7 @@ export const SettingsPage = () => {
                     }}
                   >
                     <Save size={16} />
-                    <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                    <span>{saving ? 'Saving...' : 'Save changes'}</span>
                   </button>
                 </div>
               </div>
@@ -1082,7 +1060,7 @@ export const SettingsPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <div>
-                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                     Database Backup & Cloud Snapshots
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -1137,7 +1115,7 @@ export const SettingsPage = () => {
 
               {/* Backup History Table */}
               <div>
-                <h4 style={{ margin: '0 0 12px', fontSize: '0.95rem', fontWeight: '800', color: '#1e293b' }}>
+                <h4 style={{ margin: '0 0 12px', fontSize: '0.95rem', fontWeight: '600', color: '#1e293b' }}>
                   Snapshot Ledger & Recovery History
                 </h4>
                 <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
@@ -1155,7 +1133,7 @@ export const SettingsPage = () => {
                     <tbody>
                       {(backupForm.backupHistory || []).map((bkp, idx) => (
                         <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '12px 16px', fontWeight: '800', color: '#0f172a' }}>{bkp.backupId}</td>
+                          <td style={{ padding: '12px 16px', fontWeight: '600', color: '#0f172a' }}>{bkp.backupId}</td>
                           <td style={{ padding: '12px 16px', color: '#475569' }}>
                             {new Date(bkp.timestamp).toLocaleString('en-IN')}
                           </td>
@@ -1186,7 +1164,7 @@ export const SettingsPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                 <div>
-                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '800', color: '#0f172a' }}>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.3rem', fontWeight: '600', color: '#0f172a' }}>
                     System Preferences & Global ERP Policies
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
@@ -1211,7 +1189,7 @@ export const SettingsPage = () => {
                   }}
                 >
                   <Save size={16} />
-                  <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                  <span>{saving ? 'Saving...' : 'Save changes'}</span>
                 </button>
               </div>
 
@@ -1219,7 +1197,7 @@ export const SettingsPage = () => {
               <div style={{ backgroundColor: '#e8f2e5', border: '1px solid #cde4c9', padding: '20px', borderRadius: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <Clock size={20} style={{ color: '#17652f' }} />
-                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '800', color: '#17652f' }}>
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600', color: '#17652f' }}>
                     Channel Partner Agent Maturity Time Limit Policy
                   </h4>
                 </div>
@@ -1281,12 +1259,12 @@ export const SettingsPage = () => {
 
           {/* ===== DANGER ZONE TAB (Super Admin Only) ===== */}
           {activeTab === 'dangerZone' && isSuperAdmin && (
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '2px solid #17652f', overflow: 'hidden' }}>
-              <div style={{ padding: '24px 28px', background: 'linear-gradient(135deg, #17652f 0%, #1e7a3e 100%)' }}>
-                <h2 style={{ margin: 0, color: '#ffffff', fontWeight: '800', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <AlertTriangle size={24} /> Danger Zone
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #fee2e2', overflow: 'hidden' }}>
+              <div style={{ padding: '20px 24px', backgroundColor: '#fef2f2', borderBottom: '1px solid #fee2e2' }}>
+                <h2 style={{ margin: 0, color: '#991b1b', fontWeight: '600', fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <AlertTriangle size={20} color="#dc2626" /> Danger zone
                 </h2>
-                <p style={{ margin: '6px 0 0', color: '#cbd5e1', fontSize: '0.85rem' }}>
+                <p style={{ margin: '4px 0 0', color: '#7f1d1d', fontSize: '0.82rem' }}>
                   Irreversible destructive operations. Proceed with extreme caution.
                 </p>
               </div>
@@ -1304,7 +1282,7 @@ export const SettingsPage = () => {
                   gap: '20px'
                 }}>
                   <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: '600', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Trash2 size={18} /> Wipe All Customer Data
                     </h3>
                     <p style={{ margin: 0, fontSize: '0.85rem', color: '#0f172a', lineHeight: '1.5' }}>
@@ -1320,7 +1298,7 @@ export const SettingsPage = () => {
                       border: '2px solid #17652f',
                       backgroundColor: '#17652f',
                       color: '#ffffff',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       fontSize: '0.85rem',
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
@@ -1348,7 +1326,7 @@ export const SettingsPage = () => {
       {testEmailModal && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
           <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '24px', maxWidth: '440px', width: '100%' }}>
-            <h3 style={{ margin: '0 0 8px', fontSize: '1.2rem', fontWeight: '800' }}>Send Test Email</h3>
+            <h3 style={{ margin: '0 0 8px', fontSize: '1.2rem', fontWeight: '600' }}>Send Test Email</h3>
             <p style={{ margin: '0 0 16px', fontSize: '0.85rem', color: '#64748b' }}>Verify SMTP delivery by sending a test alert.</p>
             <form onSubmit={handleTestEmail}>
               <input
@@ -1374,7 +1352,7 @@ export const SettingsPage = () => {
       {testWaModal && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
           <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '24px', maxWidth: '440px', width: '100%' }}>
-            <h3 style={{ margin: '0 0 8px', fontSize: '1.2rem', fontWeight: '800' }}>Test WhatsApp Cloud API</h3>
+            <h3 style={{ margin: '0 0 8px', fontSize: '1.2rem', fontWeight: '600' }}>Test WhatsApp Cloud API</h3>
             <p style={{ margin: '0 0 16px', fontSize: '0.85rem', color: '#64748b' }}>Send a test payload to verify Meta API connection.</p>
             <form onSubmit={handleTestWhatsApp}>
               <input
@@ -1405,7 +1383,7 @@ export const SettingsPage = () => {
                 <AlertTriangle size={22} style={{ color: '#0f172a' }} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>Confirm: Wipe All Customers</h3>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '600', color: '#0f172a' }}>Confirm: Wipe All Customers</h3>
                 <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#0f172a' }}>This action is permanent and irreversible</p>
               </div>
             </div>
@@ -1471,7 +1449,7 @@ export const SettingsPage = () => {
                   backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#0f172a' : '#e5e7eb',
                   color: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#ffffff' : '#9ca3af',
                   border: 'none',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   cursor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? 'pointer' : 'not-allowed',
                   opacity: wipeLoading ? 0.7 : 1,
                 }}

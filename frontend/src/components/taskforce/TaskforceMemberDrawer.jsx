@@ -168,7 +168,7 @@ export const TaskforceMemberDrawer = ({
                   style={{
                     margin: 0,
                     fontSize: '1.05rem',
-                    fontWeight: 800,
+                    fontWeight: 600,
                     color: '#0f172a',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -187,7 +187,7 @@ export const TaskforceMemberDrawer = ({
                       padding: '2px 7px',
                       borderRadius: '8px',
                       fontSize: '0.68rem',
-                      fontWeight: 800,
+                      fontWeight: 600,
                       background: badgeInfo.bg,
                       color: badgeInfo.color,
                       border: `1px solid ${badgeInfo.border}`,

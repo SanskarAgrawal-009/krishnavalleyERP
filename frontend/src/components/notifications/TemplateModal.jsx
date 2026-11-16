@@ -539,7 +539,7 @@ export const TemplateModal = ({ isOpen, onClose, onSubmit, template = null }) =>
                   padding: '8px 16px',
                   border: 'none',
                   borderBottom: activeChannelTab === 'sms' ? '2px solid #17652f' : '2px solid transparent',
-                  background: activeChannelTab === 'sms' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                  background: activeChannelTab === 'sms' ? 'rgba(23, 101, 47, 0.1)' : 'transparent',
                   color: activeChannelTab === 'sms' ? '#4a9e68' : 'var(--text-secondary)',
                   fontWeight: '600',
                   fontSize: '0.82rem',

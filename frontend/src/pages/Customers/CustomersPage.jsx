@@ -276,27 +276,24 @@ export const CustomersPage = () => {
       
       {/* Header Banner */}
       <div className="g-card" style={{
-        padding: '24px 28px',
+        padding: '20px 24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '20px',
-        border: '1px solid #e8e6df'
+        gap: '16px',
+        border: '1px solid #e5e7eb'
       }}>
         <div>
-          <div style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", Georgia, serif)', fontSize: '26px', fontWeight: '700', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            Customer & Resident Directory
-            <span style={{ fontSize: '0.74rem', background: '#e8f2e5', color: '#17652f', border: '1px solid #cde4c9', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
-              PROFILES & KYC
-            </span>
-          </div>
-          <div style={{ fontSize: '0.88rem', color: '#596372', marginTop: '4px', fontWeight: '500' }}>
-            Comprehensive directory of property owners, individual tenants, and corporate bulk leases with unified passbooks.
-          </div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', margin: 0 }}>
+            Customers
+          </h1>
+          <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '4px 0 0 0' }}>
+            Directory of property owners, tenants, and passbook records.
+          </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
           {isSuperAdmin && (
             <button
               onClick={() => {
@@ -304,22 +301,21 @@ export const CustomersPage = () => {
                 setIsWipeModalOpen(true);
               }}
               style={{
-                padding: '9px 16px',
+                padding: '8px 14px',
                 fontSize: '0.84rem',
                 backgroundColor: '#ffffff',
                 color: '#b91c1c',
                 border: '1px solid #fecaca',
-                borderRadius: '8px',
-                fontWeight: '600',
+                borderRadius: '6px',
+                fontWeight: '500',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
+                cursor: 'pointer'
               }}
-              title="Wipe all customer records (Super Admin Only)"
+              title="Wipe all customer records (Super Admin only)"
             >
-              <Trash2 size={15} /> Wipe All Customers
+              <Trash2 size={15} /> Wipe all customers
             </button>
           )}
 
@@ -327,8 +323,7 @@ export const CustomersPage = () => {
             <button
               onClick={handleExportCSV}
               className="btn-secondary"
-              style={{ padding: '9px 16px', fontSize: '0.84rem' }}
-              title="Export Customers to CSV Spreadsheet"
+              style={{ padding: '8px 14px', fontSize: '0.84rem' }}
             >
               <Download size={15} /> Export CSV
             </button>
@@ -341,9 +336,9 @@ export const CustomersPage = () => {
                 setIsCreateModalOpen(true);
               }}
               className="btn-primary"
-              style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+              style={{ padding: '8px 16px', fontSize: '0.875rem' }}
             >
-              <UserPlus size={16} /> Register New Customer
+              <UserPlus size={16} /> Add customer
             </button>
           )}
         </div>
@@ -352,16 +347,16 @@ export const CustomersPage = () => {
       {/* Sub-Tab Navigation Header */}
       <div className="g-card no-scrollbar" style={{
         display: 'flex',
-        padding: '6px',
-        gap: '6px',
-        border: '1px solid #e8e6df',
+        padding: '4px',
+        gap: '4px',
+        border: '1px solid #e5e7eb',
         overflowX: 'auto',
         WebkitOverflowScrolling: 'touch',
         whiteSpace: 'nowrap'
       }}>
         {[
-          { id: 'directory', label: `Customer Directory (${customers.length})`, icon: Users },
-          { id: 'passbook', label: `Customer Passbooks & Ledgers (${customers.length})`, icon: FileText }
+          { id: 'directory', label: `Directory (${customers.length})`, icon: Users },
+          { id: 'passbook', label: `Passbooks (${customers.length})`, icon: FileText }
         ].map((tab) => {
           const isSelected = activeCustomerTab === tab.id;
           const IconComp = tab.icon;
@@ -372,11 +367,11 @@ export const CustomersPage = () => {
               onClick={() => handleTabChange(tab.id)}
               style={{
                 flex: '1 1 auto',
-                padding: '10px 18px',
+                padding: '8px 16px',
                 borderRadius: '6px',
                 background: isSelected ? '#17652f' : 'transparent',
-                color: isSelected ? '#ffffff' : '#596372',
-                fontWeight: isSelected ? '700' : '500',
+                color: isSelected ? '#ffffff' : '#6b7280',
+                fontWeight: isSelected ? '600' : '500',
                 fontSize: '0.84rem',
                 border: 'none',
                 cursor: 'pointer',
@@ -385,7 +380,6 @@ export const CustomersPage = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                boxShadow: isSelected ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
                 transition: 'all 0.15s ease'
               }}
             >
@@ -398,7 +392,7 @@ export const CustomersPage = () => {
 
       {/* ================= TAB 1: DIRECTORY ================= */}
       {activeCustomerTab === 'directory' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Top 4 Metrics Ribbon */}
       <div className="grid-cols-4">
         <div
@@ -406,40 +400,39 @@ export const CustomersPage = () => {
           onClick={() => setQuickFilter('all')}
           style={{
             cursor: 'pointer',
-            border: quickFilter === 'all' ? '2px solid #17652f' : '1px solid #e8e6df',
-            background: quickFilter === 'all' ? '#e8f2e5' : '#ffffff',
+            border: quickFilter === 'all' ? '1px solid #17652f' : '1px solid #e5e7eb',
+            background: quickFilter === 'all' ? '#f0fdf4' : '#ffffff',
             transition: 'all 0.15s ease'
           }}
-          title="Click to show all owners"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL PROPERTY OWNERS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Property owners</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
               <Users size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>{totalCount}</div>
-          <span style={{ fontSize: '0.74rem', color: quickFilter === 'all' ? '#17652f' : '#4b5563', fontWeight: '700' }}>
-            {quickFilter === 'all' ? 'Active Filter • All' : 'Click to show all'}
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>{totalCount}</div>
+          <span style={{ fontSize: '0.74rem', color: quickFilter === 'all' ? '#17652f' : '#6b7280', fontWeight: '500' }}>
+            {quickFilter === 'all' ? 'Showing all' : 'Click to show all'}
           </span>
         </div>
 
         <div
           className="stat-card"
           style={{
-            border: '1px solid #dadce0',
+            border: '1px solid #e5e7eb',
             background: '#ffffff'
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>ALLOTTED FLAT UNITS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Allotted units</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
               <Key size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{totalPropertiesCount || totalCount}</div>
-          <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '600' }}>
-            Properties in registry
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>{totalPropertiesCount || totalCount}</div>
+          <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>
+            Units in registry
           </span>
         </div>
 
@@ -448,84 +441,82 @@ export const CustomersPage = () => {
           onClick={() => setQuickFilter(quickFilter === 'rentback' ? 'all' : 'rentback')}
           style={{
             cursor: 'pointer',
-            border: quickFilter === 'rentback' ? '2px solid #17652f' : '1px solid #dadce0',
-            background: quickFilter === 'rentback' ? '#e8f2e5' : '#ffffff',
+            border: quickFilter === 'rentback' ? '1px solid #17652f' : '1px solid #e5e7eb',
+            background: quickFilter === 'rentback' ? '#f0fdf4' : '#ffffff',
             transition: 'all 0.15s ease'
           }}
-          title="Click to filter Rent-Back beneficiaries"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK BENEFICIARIES</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Rent-back units</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
               <Repeat size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>{rentBackOwnerCount || totalCount}</div>
-          <span style={{ fontSize: '0.74rem', color: quickFilter === 'rentback' ? '#17652f' : '#4b5563', fontWeight: '700' }}>
-            {quickFilter === 'rentback' ? 'Active Filter' : 'Receiving 3-yr assured rent'}
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>{rentBackOwnerCount || totalCount}</div>
+          <span style={{ fontSize: '0.74rem', color: quickFilter === 'rentback' ? '#17652f' : '#6b7280', fontWeight: '500' }}>
+            {quickFilter === 'rentback' ? 'Filtered view' : 'Assured return contracts'}
           </span>
         </div>
 
         <div
           className="stat-card"
           style={{
-            border: '1px solid #dadce0',
+            border: '1px solid #e5e7eb',
             background: '#ffffff'
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY DISBURSEMENTS</span>
-            <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Monthly disbursements</span>
+            <div style={{ padding: '6px', borderRadius: '6px', background: '#f9fafb', color: '#4b5563' }}>
               <DollarSign size={16} />
             </div>
           </div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
             {formatINR(totalMonthlyDisbursements || (totalCount * 31000))}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: '600' }}>
-            Company rent commitment
+          <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>
+            Total rent commitment
           </span>
         </div>
       </div>
 
-      {/* Action Bar & Quick Filter Chips Ribbon */}
+      {/* Search and Action Bar */}
       <div className="g-card" style={{
-        padding: '14px 18px',
+        padding: '12px 16px',
         display: 'flex',
-        flexDirection: 'column',
-        gap: '12px'
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '12px',
+        border: '1px solid #e5e7eb'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          {/* Search */}
-          <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '8px', flex: '1 1 280px' }}>
-            <div style={{ position: 'relative', width: '100%' }}>
-              <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#4b5563' }} />
-              <input
-                type="text"
-                placeholder="Search by owner name, mobile, PAN, or flat number..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ width: '100%', paddingLeft: '32px', fontSize: '0.85rem', color: '#111827', fontWeight: '600' }}
-              />
-            </div>
-            <button
-              type="submit"
-              className="btn-secondary"
-              style={{ padding: '0 14px', fontSize: '0.82rem' }}
-            >
-              Search
-            </button>
-          </form>
-
-          {/* Refresh button */}
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '8px', flex: '1 1 280px' }}>
+          <div style={{ position: 'relative', width: '100%' }}>
+            <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
+            <input
+              type="text"
+              placeholder="e.g. Rahul, Flat 101, or 98765"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: '100%', paddingLeft: '32px', fontSize: '0.85rem' }}
+            />
+          </div>
           <button
-            onClick={fetchCustomers}
-            title="Refresh Customers"
-            style={{ padding: '7px 12px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', color: '#111827', cursor: 'pointer' }}
+            type="submit"
+            className="btn-secondary"
+            style={{ padding: '0 14px', fontSize: '0.82rem' }}
           >
-            <RefreshCw size={14} className={loading ? 'spin' : ''} />
+            Search
           </button>
-        </div>
+        </form>
+
+        <button
+          onClick={fetchCustomers}
+          title="Refresh customers"
+          style={{ padding: '7px 12px', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px', color: '#374151', cursor: 'pointer' }}
+        >
+          <RefreshCw size={14} className={loading ? 'spin' : ''} />
+        </button>
       </div>
 
       {/* Customer Data Table / Skeletons / Empty State */}
@@ -534,29 +525,29 @@ export const CustomersPage = () => {
       ) : displayedCustomers.length === 0 ? (
         <EmptyState
           icon={Users}
-          title="No Customer Profiles Match Filter"
-          description={`No registered customer profiles match "${quickFilter}". Reset filters or register a new customer profile.`}
+          title="No customers match filter"
+          description={`No registered customer profiles match "${quickFilter}". Reset filters or add a new customer.`}
           primaryAction={() => setQuickFilter('all')}
-          primaryActionLabel="Reset Quick Filters"
+          primaryActionLabel="Reset filters"
           primaryActionIcon={RefreshCw}
           secondaryAction={() => {
             setEditingCustomer(null);
             setIsCreateModalOpen(true);
           }}
-          secondaryActionLabel="Add Customer"
+          secondaryActionLabel="Add customer"
           secondaryActionIcon={UserPlus}
         />
       ) : (
-        <div className="g-card animate-fade-in" style={{ padding: '0', borderRadius: '12px', overflow: 'hidden', width: '100%', boxSizing: 'border-box' }}>
+        <div className="g-card animate-fade-in" style={{ padding: '0', borderRadius: '8px', overflow: 'hidden', width: '100%', boxSizing: 'border-box', border: '1px solid #e5e7eb' }}>
           <div className="table-responsive">
             <table style={{ width: '100%', minWidth: '880px', borderCollapse: 'collapse', tableLayout: 'fixed', textAlign: 'left' }}>
             <thead>
-              <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #dadce0' }}>
-                <th style={{ padding: '14px 18px', width: '28%' }}>CUSTOMER / ENTITY</th>
-                <th style={{ padding: '14px 16px', width: '18%' }}>CATEGORY</th>
-                <th style={{ padding: '14px 16px', width: '22%' }}>LINKED PROPERTIES</th>
-                <th style={{ padding: '14px 16px', width: '16%' }}>RENT / FINANCIALS</th>
-                <th style={{ padding: '14px 18px', width: '16%', textAlign: 'right' }}>ACTIONS</th>
+              <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                <th style={{ padding: '12px 16px', width: '28%', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Customer</th>
+                <th style={{ padding: '12px 16px', width: '18%', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Category</th>
+                <th style={{ padding: '12px 16px', width: '22%', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Linked properties</th>
+                <th style={{ padding: '12px 16px', width: '16%', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Monthly rent and bank</th>
+                <th style={{ padding: '12px 16px', width: '16%', textAlign: 'right', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -574,28 +565,28 @@ export const CustomersPage = () => {
                   <React.Fragment key={cust._id}>
                     <tr
                       style={{
-                        borderBottom: isExpanded ? 'none' : '1px solid #f1f3f4',
-                        backgroundColor: isExpanded ? '#f4f8fe' : 'transparent',
+                        borderBottom: isExpanded ? 'none' : '1px solid #f3f4f6',
+                        backgroundColor: isExpanded ? '#f9fafb' : 'transparent',
                         cursor: 'pointer',
                         transition: 'background-color 0.15s ease'
                       }}
                       onClick={() => setExpandedCustomerId(isExpanded ? null : cust._id)}
-                      onMouseEnter={(e) => { if (!isExpanded) e.currentTarget.style.backgroundColor = '#f8fafd'; }}
+                      onMouseEnter={(e) => { if (!isExpanded) e.currentTarget.style.backgroundColor = '#f9fafb'; }}
                       onMouseLeave={(e) => { if (!isExpanded) e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       {/* Column 1: Customer Profile */}
-                      <td style={{ padding: '14px 18px', verticalAlign: 'middle', overflow: 'hidden' }}>
+                      <td style={{ padding: '12px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           <div style={{
-                            width: '36px',
-                            height: '36px',
+                            width: '34px',
+                            height: '34px',
                             borderRadius: '50%',
-                            background: isOwner ? '#e8f2e5' : '#e8f2e5',
-                            color: isOwner ? '#17652f' : '#17652f',
+                            background: '#f0fdf4',
+                            color: '#17652f',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontWeight: '800',
+                            fontWeight: '600',
                             fontSize: '0.85rem',
                             flexShrink: 0
                           }}>
@@ -603,27 +594,27 @@ export const CustomersPage = () => {
                           </div>
                           <div style={{ minWidth: 0, flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span style={{ fontWeight: '800', color: '#111827', fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              <span style={{ fontWeight: '600', color: '#111827', fontSize: '0.88rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                 {isCompany && cust.companyDetails?.companyName ? cust.companyDetails.companyName : cust.name}
                               </span>
-                              {isExpanded ? <ChevronUp size={14} color="#17652f" /> : <ChevronDown size={14} color="#727785" />}
+                              {isExpanded ? <ChevronUp size={14} color="#17652f" /> : <ChevronDown size={14} color="#9ca3af" />}
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px', flexWrap: 'wrap' }}>
                               <a
                                 href={`tel:${cust.mobileNo}`}
                                 onClick={(e) => e.stopPropagation()}
-                                title="Click to Call"
+                                title="Click to call"
                                 style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px',
-                                  background: '#e8f2e5',
+                                  background: '#f0fdf4',
                                   color: '#17652f',
-                                  padding: '2px 7px',
+                                  padding: '2px 6px',
                                   borderRadius: '4px',
                                   textDecoration: 'none',
                                   fontSize: '0.74rem',
-                                  fontWeight: '700'
+                                  fontWeight: '500'
                                 }}
                               >
                                 <Phone size={11} /> {cust.mobileNo}
@@ -634,33 +625,33 @@ export const CustomersPage = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                title="WhatsApp Chat"
+                                title="WhatsApp chat"
                                 style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px',
-                                  background: '#e8f2e5',
+                                  background: '#f0fdf4',
                                   color: '#17652f',
-                                  padding: '2px 7px',
+                                  padding: '2px 6px',
                                   borderRadius: '4px',
                                   textDecoration: 'none',
                                   fontSize: '0.74rem',
-                                  fontWeight: '700'
+                                  fontWeight: '500'
                                 }}
                               >
-                                <MessageSquare size={11} /> WA
+                                <MessageSquare size={11} /> WhatsApp
                               </a>
 
                               <button
                                 type="button"
                                 onClick={(e) => handleCopy(cust.mobileNo, e)}
-                                title="Copy Mobile Number"
+                                title="Copy mobile number"
                                 style={{
                                   background: 'transparent',
                                   border: 'none',
                                   padding: '2px',
                                   cursor: 'pointer',
-                                  color: copiedText === cust.mobileNo ? '#17652f' : '#727785',
+                                  color: copiedText === cust.mobileNo ? '#17652f' : '#9ca3af',
                                   display: 'inline-flex',
                                   alignItems: 'center'
                                 }}
@@ -673,42 +664,42 @@ export const CustomersPage = () => {
                       </td>
 
                       {/* Column 2: Status Pill */}
-                      <td style={{ padding: '14px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
+                      <td style={{ padding: '12px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
                         <span style={{
                           fontSize: '0.72rem',
-                          background: '#e8f2e5',
+                          background: '#f0fdf4',
                           color: '#17652f',
                           padding: '3px 8px',
                           borderRadius: '6px',
-                          fontWeight: '800',
-                          border: '1px solid #cde4c9',
+                          fontWeight: '500',
+                          border: '1px solid #bbf7d0',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px'
                         }}>
-                          <Key size={11} /> PROPERTY OWNER
+                          <Key size={11} /> Owner
                         </span>
                       </td>
 
                       {/* Column 3: Linked Properties */}
-                      <td style={{ padding: '14px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
+                      <td style={{ padding: '12px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
                         {units.length > 0 ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', alignItems: 'center' }}>
                               {units.slice(0, 2).map((flat, idx) => {
                                 const fNum = flat.flatNumber || (typeof flat === 'string' ? `Flat ${flat.slice(-3)}` : `Unit ${idx + 1}`);
-                                const flr = flat.floor !== undefined && flat.floor !== null ? (flat.floor === 0 ? 'Ground Flr' : `Flr ${flat.floor}`) : '';
+                                const flr = flat.floor !== undefined && flat.floor !== null ? (flat.floor === 0 ? 'Ground' : `Flr ${flat.floor}`) : '';
                                 return (
                                   <span
                                     key={flat._id || idx}
                                     style={{
                                       fontSize: '0.74rem',
-                                      fontWeight: '700',
+                                      fontWeight: '500',
                                       color: '#17652f',
-                                      background: '#e8f2e5',
-                                      border: '1px solid #e8f2e5',
-                                      padding: '2px 7px',
-                                      borderRadius: '5px',
+                                      background: '#f0fdf4',
+                                      border: '1px solid #bbf7d0',
+                                      padding: '2px 6px',
+                                      borderRadius: '4px',
                                       display: 'inline-flex',
                                       alignItems: 'center',
                                       gap: '4px'
@@ -722,7 +713,7 @@ export const CustomersPage = () => {
                               {units.length > 2 && (
                                 <span style={{
                                   fontSize: '0.7rem',
-                                  fontWeight: '700',
+                                  fontWeight: '500',
                                   color: '#4b5563',
                                   background: '#f3f4f6',
                                   padding: '2px 6px',
@@ -733,71 +724,71 @@ export const CustomersPage = () => {
                                 </span>
                               )}
                             </div>
-                            <span style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '500' }}>
-                              {units.length} {units.length === 1 ? 'Unit Allotted' : 'Units Portfolio'}
+                            <span style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '400' }}>
+                              {units.length} {units.length === 1 ? 'unit allotted' : 'units allotted'}
                             </span>
                           </div>
                         ) : (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <span style={{
                               fontSize: '0.74rem',
-                              fontWeight: '600',
+                              fontWeight: '400',
                               color: '#9ca3af',
                               background: '#f9fafb',
                               border: '1px dashed #d1d5db',
                               padding: '2px 8px',
-                              borderRadius: '5px',
+                              borderRadius: '4px',
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '4px'
                             }}>
                               <Home size={11} color="#9ca3af" />
-                              0 Units Linked
+                              0 units linked
                             </span>
                           </div>
                         )}
                       </td>
 
                       {/* Column 4: Guaranteed Rent-Back & Bank Status */}
-                      <td style={{ padding: '14px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
+                      <td style={{ padding: '12px 16px', verticalAlign: 'middle', overflow: 'hidden' }}>
                         {(() => {
                           const bank = cust.bankDetails || cust.ownerDetails?.bankDetails || {};
                           const totalRent = units.reduce((sum, u) => sum + (Number(u.rentalDetails?.guaranteedMonthlyRent) || 31000), 0);
                           const hasBank = Boolean(bank.accountNumber || bank.bankName);
                           return (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                              <span style={{ fontSize: '0.84rem', color: '#17652f', fontWeight: '800' }}>
+                              <span style={{ fontSize: '0.84rem', color: '#17652f', fontWeight: '600' }}>
                                 {formatINR(totalRent || (units.length * 31000) || 31000)} / mo
                               </span>
                               {hasBank ? (
                                 <span style={{
                                   fontSize: '0.68rem',
                                   color: '#17652f',
-                                  background: '#e8f2e5',
+                                  background: '#f0fdf4',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '4px',
                                   width: 'fit-content',
-                                  fontWeight: '700'
+                                  fontWeight: '500'
                                 }}>
                                   <CreditCard size={10} /> {bank.bankName || 'Bank'}: ••{String(bank.accountNumber || '').slice(-4)}
                                 </span>
                               ) : (
                                 <span style={{
                                   fontSize: '0.68rem',
-                                  color: '#334155',
-                                  background: '#f1f5f9',
+                                  color: '#6b7280',
+                                  background: '#f3f4f6',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '4px',
                                   width: 'fit-content',
-                                  fontWeight: '600'
+                                  fontWeight: '400'
                                 }}>
-                                  No A/C Linked
+                                  No account linked
                                 </span>
                               )}
                             </div>
@@ -806,7 +797,7 @@ export const CustomersPage = () => {
                       </td>
 
                       {/* Column 5: Actions Toolbar */}
-                      <td style={{ padding: '14px 18px', verticalAlign: 'middle', textAlign: 'right', overflow: 'hidden' }}>
+                      <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'right', overflow: 'hidden' }}>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }} onClick={(e) => e.stopPropagation()}>
                           <button
                             type="button"
@@ -814,11 +805,10 @@ export const CustomersPage = () => {
                               setSelectedCustomer(cust);
                               setIsDetailModalOpen(true);
                             }}
-                            title="Open Customer Passbook Ledger"
                             className="btn-primary"
-                            style={{ padding: '5px 9px', fontSize: '0.72rem' }}
+                            style={{ padding: '5px 9px', fontSize: '0.75rem' }}
                           >
-                            Passbook <ArrowRight size={12} />
+                            Passbook
                           </button>
 
                           {canManageCustomer && (
@@ -827,40 +817,40 @@ export const CustomersPage = () => {
                                 setEditingCustomer(cust);
                                 setIsCreateModalOpen(true);
                               }}
-                              title="Edit Profile"
+                              title="Edit customer"
                               style={{
                                 padding: '5px 7px',
-                                background: '#f8f9fa',
-                                border: '1px solid #dadce0',
+                                background: '#ffffff',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '5px',
-                                color: '#414754',
+                                color: '#4b5563',
                                 cursor: 'pointer',
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'
                               }}
                             >
-                              <Edit size={12} />
+                              <Edit size={13} />
                             </button>
                           )}
 
                           {canDeleteCustomer && (
                             <button
                               onClick={() => handleDeleteCustomer(cust)}
-                              title="Delete Customer Profile"
+                              title="Delete customer"
                               style={{
                                 padding: '5px 7px',
-                                background: '#f1f5f9',
-                                border: '1px solid #f1f5f9',
+                                background: '#ffffff',
+                                border: '1px solid #fee2e2',
                                 borderRadius: '5px',
-                                color: '#0f172a',
+                                color: '#dc2626',
                                 cursor: 'pointer',
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'
                               }}
                             >
-                              <Trash2 size={12} />
+                              <Trash2 size={13} />
                             </button>
                           )}
                         </div>
@@ -869,7 +859,7 @@ export const CustomersPage = () => {
 
                     {/* Inline Expanded Detail Drawer */}
                     {isExpanded && (
-                      <tr style={{ background: '#f8fafd', borderBottom: '1px solid #d2e3fc' }}>
+                      <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                         <td colSpan={5} style={{ padding: '16px 20px' }}>
                           {(() => {
                             const bank = cust.bankDetails || cust.ownerDetails?.bankDetails || {};
@@ -881,22 +871,22 @@ export const CustomersPage = () => {
                             return (
                               <div style={{
                                 background: '#ffffff',
-                                border: '1px solid #dadce0',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '8px',
-                                padding: '18px 22px',
+                                padding: '16px 20px',
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                                gap: '20px'
+                                gap: '16px'
                               }}>
                                 {/* Sub-Panel 1: Contact & Address */}
                                 <div>
-                                  <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <User size={13} color="#17652f" /> Basic Information
+                                  <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#111827', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <User size={14} color="#17652f" /> Basic information
                                   </div>
-                                  <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                    <div><strong>Full Name:</strong> {cust.name}</div>
+                                  <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <div><strong>Name:</strong> {cust.name}</div>
                                     <div><strong>Mobile:</strong> {cust.mobileNo}</div>
-                                    {cust.alternateMobileNo && <div><strong>Alt Phone:</strong> {cust.alternateMobileNo}</div>}
+                                    {cust.alternateMobileNo && <div><strong>Alt phone:</strong> {cust.alternateMobileNo}</div>}
                                     {cust.email && <div><strong>Email:</strong> {cust.email}</div>}
                                     <div><strong>Address:</strong> {fullAddr}</div>
                                     <div><strong>Registered:</strong> {new Date(cust.createdAt).toLocaleDateString('en-IN')}</div>
@@ -904,10 +894,10 @@ export const CustomersPage = () => {
                                 </div>
 
                                 {/* Sub-Panel 2: Banking & NEFT Account Details */}
-                                <div style={{ background: '#e8f2e5', padding: '12px 14px', borderRadius: '6px', border: '1px solid #e8f2e5' }}>
+                                <div style={{ background: '#f9fafb', padding: '12px 14px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                    <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#17652f', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                      <CreditCard size={14} color="#17652f" /> Bank Payout Account
+                                    <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      <CreditCard size={14} color="#17652f" /> Bank payout account
                                     </div>
                                     {canManageCustomer && (
                                       <button
@@ -923,38 +913,38 @@ export const CustomersPage = () => {
                                           border: 'none',
                                           padding: '3px 8px',
                                           borderRadius: '4px',
-                                          fontWeight: '700',
+                                          fontWeight: '500',
                                           cursor: 'pointer',
                                           display: 'inline-flex',
                                           alignItems: 'center',
                                           gap: '3px'
                                         }}
-                                        title="Edit Account Details"
+                                        title="Edit account details"
                                       >
-                                        <Edit size={10} /> Edit Account
+                                        <Edit size={10} /> Edit account
                                       </button>
                                     )}
                                   </div>
 
                                   {bank.accountNumber || bank.bankName ? (
-                                    <div style={{ fontSize: '0.8rem', color: '#001a41', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <div style={{ fontSize: '0.8rem', color: '#374151', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                       <div><strong>Bank:</strong> {bank.bankName || 'Not specified'}</div>
                                       <div><strong>Branch:</strong> {bank.branch || 'Main Branch'}</div>
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                        <strong>A/C No:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{bank.accountNumber || '—'}</span>
+                                        <strong>A/C:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '600' }}>{bank.accountNumber || '—'}</span>
                                         {bank.accountNumber && (
                                           <button
                                             type="button"
                                             onClick={(e) => handleCopy(bank.accountNumber, e)}
                                             style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '1px' }}
-                                            title="Copy Account Number"
+                                            title="Copy account number"
                                           >
                                             {copiedText === bank.accountNumber ? <Check size={11} color="#17652f" /> : <Copy size={11} color="#6b7280" />}
                                           </button>
                                         )}
                                       </div>
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                        <strong>IFSC:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{bank.ifscCode || '—'}</span>
+                                        <strong>IFSC:</strong> <span style={{ fontFamily: 'monospace', fontWeight: '600' }}>{bank.ifscCode || '—'}</span>
                                         {bank.ifscCode && (
                                           <button
                                             type="button"
@@ -970,8 +960,8 @@ export const CustomersPage = () => {
                                       {bank.upiId && <div><strong>UPI ID:</strong> {bank.upiId}</div>}
                                     </div>
                                   ) : (
-                                    <div style={{ fontSize: '0.78rem', color: '#0f172a', fontStyle: 'italic', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                      <span>No bank account registered for rental payouts.</span>
+                                    <div style={{ fontSize: '0.78rem', color: '#6b7280', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                      <span>No bank account registered.</span>
                                       {canManageCustomer && (
                                         <button
                                           type="button"
@@ -980,17 +970,18 @@ export const CustomersPage = () => {
                                             setIsCreateModalOpen(true);
                                           }}
                                           style={{
-                                            padding: '5px 10px',
+                                            padding: '4px 8px',
                                             background: '#ffffff',
                                             border: '1px solid #17652f',
                                             color: '#17652f',
                                             borderRadius: '4px',
-                                            fontWeight: '700',
+                                            fontWeight: '500',
                                             cursor: 'pointer',
-                                            width: 'fit-content'
+                                            width: 'fit-content',
+                                            fontSize: '0.74rem'
                                           }}
                                         >
-                                          + Add Bank Details
+                                          + Add bank details
                                         </button>
                                       )}
                                     </div>
@@ -999,42 +990,42 @@ export const CustomersPage = () => {
 
                                 {/* Sub-Panel 3: KYC & Nominee Profile */}
                                 <div>
-                                  <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <ShieldCheck size={13} color="#17652f" /> KYC & Nominee Details
+                                  <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#111827', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <ShieldCheck size={14} color="#17652f" /> KYC and nominee details
                                   </div>
-                                  <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                    <div><strong>PAN:</strong> {pan ? <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#111827' }}>{pan}</span> : 'On File'}</div>
+                                  <div style={{ fontSize: '0.82rem', color: '#4b5563', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <div><strong>PAN:</strong> {pan ? <span style={{ fontFamily: 'monospace', fontWeight: '600', color: '#111827' }}>{pan}</span> : 'On file'}</div>
                                     <div><strong>Aadhaar:</strong> {aadhaar || 'Verified on file'}</div>
                                     {nominee.name && <div><strong>Nominee:</strong> {nominee.name} ({nominee.relation || nominee.relationship || 'Nominee'})</div>}
-                                    {nominee.contactNo && <div><strong>Nominee Phone:</strong> {nominee.contactNo}</div>}
+                                    {nominee.contactNo && <div><strong>Nominee phone:</strong> {nominee.contactNo}</div>}
                                     <div><strong>Ownership:</strong> <span style={{ textTransform: 'capitalize' }}>{cust.ownerDetails?.ownershipType || 'Individual'}</span> ({cust.ownerDetails?.ownershipPercentage || 100}%)</div>
                                   </div>
                                 </div>
 
                                 {/* Sub-Panel 4: Linked Flats & Passbook */}
                                 <div>
-                                  <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <Home size={13} color="#17652f" /> Property Units ({flatsCount})
+                                  <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#111827', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <Home size={14} color="#17652f" /> Property units ({flatsCount})
                                   </div>
                                   {flatsCount === 0 ? (
-                                    <div style={{ fontSize: '0.8rem', color: '#727785', fontStyle: 'italic' }}>
+                                    <div style={{ fontSize: '0.8rem', color: '#9ca3af' }}>
                                       No property units linked.
                                     </div>
                                   ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '130px', overflowY: 'auto', marginBottom: '10px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '130px', overflowY: 'auto', marginBottom: '10px' }}>
                                       {units.map((flat, idx) => {
                                         const fNum = flat.flatNumber || (typeof flat === 'string' ? `Flat ${flat.slice(-3)}` : `Unit ${idx + 1}`);
                                         const flr = flat.floor !== undefined && flat.floor !== null ? (flat.floor === 0 ? 'Ground' : `Flr ${flat.floor}`) : '';
                                         const rent = flat.rentalDetails?.guaranteedMonthlyRent;
                                         return (
-                                          <div key={flat._id || idx} style={{ fontSize: '0.78rem', background: '#f8f9fa', padding: '5px 8px', borderRadius: '4px', border: '1px solid #edeef0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                          <div key={flat._id || idx} style={{ fontSize: '0.78rem', background: '#f9fafb', padding: '4px 8px', borderRadius: '4px', border: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                               <Home size={12} color="#17652f" />
-                                              <span style={{ fontWeight: '700', color: '#111827' }}>Flat {fNum}</span>
+                                              <span style={{ fontWeight: '500', color: '#111827' }}>Flat {fNum}</span>
                                               {flr && <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>({flr})</span>}
                                             </div>
-                                            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '700' }}>
-                                              {rent ? `${formatINR(rent)}/mo` : 'Rent-Back'}
+                                            <span style={{ fontSize: '0.72rem', color: '#17652f', fontWeight: '500' }}>
+                                              {rent ? `${formatINR(rent)}/mo` : 'Rent-back'}
                                             </span>
                                           </div>
                                         );
@@ -1048,9 +1039,9 @@ export const CustomersPage = () => {
                                       setIsDetailModalOpen(true);
                                     }}
                                     className="btn-primary"
-                                    style={{ padding: '7px 12px', fontSize: '0.78rem', width: '100%', justifyContent: 'center' }}
+                                    style={{ padding: '6px 12px', fontSize: '0.78rem', width: '100%', justifyContent: 'center' }}
                                   >
-                                    View Complete Ledger Passbook <ArrowRight size={12} />
+                                    View passbook
                                   </button>
                                 </div>
                               </div>
@@ -1068,21 +1059,21 @@ export const CustomersPage = () => {
 
           {/* Table Summary Footer */}
           <div style={{
-            padding: '12px 18px',
-            backgroundColor: '#f8f9fa',
-            borderTop: '1px solid #dadce0',
+            padding: '12px 16px',
+            backgroundColor: '#f9fafb',
+            borderTop: '1px solid #e5e7eb',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             fontSize: '0.8rem',
-            color: '#414754',
-            fontWeight: '600'
+            color: '#6b7280',
+            fontWeight: '500'
           }}>
             <div>
-              Showing <span style={{ color: '#111827', fontWeight: '700' }}>{displayedCustomers.length}</span> of {totalCount} Property Owners
+              Showing <span style={{ color: '#111827', fontWeight: '600' }}>{displayedCustomers.length}</span> of {totalCount} property owners
             </div>
             <div style={{ display: 'flex', gap: '14px' }}>
-              <span>Registered Owners: <strong style={{ color: '#17652f' }}>{ownerCount}</strong></span>
+              <span>Registered owners: <strong style={{ color: '#17652f' }}>{ownerCount}</strong></span>
             </div>
           </div>
         </div>
@@ -1092,62 +1083,62 @@ export const CustomersPage = () => {
 
       {/* ================= TAB 2: OWNER PASSBOOKS & LEDGERS ================= */}
       {activeCustomerTab === 'passbook' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Top Passbook Financial Metrics */}
           <div className="grid-cols-4">
-            <div className="stat-card">
+            <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL OWNER PASSBOOKS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
+                <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Total passbooks</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
                   <FileText size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827', marginTop: '4px' }}>{customers.length}</div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Active titleholder statements</span>
+              <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>{customers.length}</div>
+              <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Active owner accounts</span>
             </div>
 
-            <div className="stat-card">
+            <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>TOTAL OWNED UNITS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
+                <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Total units</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
                   <Key size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
                 {customers.reduce((acc, c) => acc + (c.ownerDetails?.propertyIds?.length || 1), 0)}
               </div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Registered buyer units</span>
+              <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Registered units</span>
             </div>
 
-            <div className="stat-card">
+            <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>RENT-BACK BENEFICIARIES</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f' }}>
+                <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Rent-back units</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f0fdf4', color: '#17652f' }}>
                   <Repeat size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#17652f', marginTop: '4px' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
                 {customers.length}
               </div>
-              <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '700' }}>Receiving 3-yr assured returns</span>
+              <span style={{ fontSize: '0.74rem', color: '#17652f', fontWeight: '500' }}>Assured return contracts</span>
             </div>
 
-            <div className="stat-card">
+            <div className="stat-card" style={{ border: '1px solid #e5e7eb', background: '#ffffff' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '700' }}>MONTHLY DISBURSEMENTS</span>
-                <div style={{ padding: '6px', borderRadius: '6px', background: '#f8fafc', color: '#475569' }}>
+                <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '500' }}>Monthly disbursements</span>
+                <div style={{ padding: '6px', borderRadius: '6px', background: '#f9fafb', color: '#4b5563' }}>
                   <DollarSign size={16} />
                 </div>
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#475569', marginTop: '4px' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: '600', color: '#111827', marginTop: '4px' }}>
                 {formatINR(customers.length * 31000)}
               </div>
-              <span style={{ fontSize: '0.74rem', color: '#4b5563', fontWeight: '600' }}>Company payout outflow</span>
+              <span style={{ fontSize: '0.74rem', color: '#6b7280', fontWeight: '500' }}>Company rent commitment</span>
             </div>
           </div>
 
           {/* Passbooks Register Table */}
-          <div className="g-card" style={{ overflow: 'hidden' }}>
+          <div className="g-card" style={{ overflow: 'hidden', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
             <div style={{
               padding: '16px 20px',
               borderBottom: '1px solid #e5e7eb',
@@ -1158,40 +1149,40 @@ export const CustomersPage = () => {
               gap: '10px'
             }}>
               <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FileText size={18} color="#17652f" /> Property Owner Passbooks & Financial Statements ({customers.length})
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#111827', margin: 0 }}>
+                  Passbooks ({customers.length})
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#4b5563', marginTop: '2px' }}>
-                  Live financial statements, booking milestone demand balances, 3-year guaranteed return payouts, and NEFT records.
+                <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '2px 0 0 0' }}>
+                  Financial statements, return payouts, and payment records.
                 </p>
               </div>
 
               <button
                 type="button"
                 onClick={fetchCustomers}
-                style={{ padding: '6px 12px', background: '#f3f4f5', border: '1px solid #dadce0', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ padding: '6px 12px', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', color: '#374151' }}
               >
-                <RefreshCw size={13} className={loading ? 'spin' : ''} /> Refresh Ledgers
+                <RefreshCw size={13} className={loading ? 'spin' : ''} /> Refresh
               </button>
             </div>
 
             <div className="table-responsive">
-              <table style={{ minWidth: '840px' }}>
+              <table style={{ minWidth: '840px', width: '100%' }}>
                 <thead>
-                  <tr>
-                    <th>Owner Name & Contact</th>
-                    <th>Linked Property / Unit</th>
-                    <th>Ownership Title</th>
-                    <th>3-Yr Guaranteed Rent</th>
-                    <th>Bank & NEFT Account</th>
-                    <th>KYC Verification</th>
-                    <th>Action</th>
+                  <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Owner</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Property</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Title</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Monthly rent</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>Bank account</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563' }}>KYC status</th>
+                    <th style={{ padding: '12px 16px', fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customers.length === 0 ? (
                     <tr>
-                      <td colSpan="7" style={{ textAlign: 'center', padding: '36px', color: '#4b5563' }}>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '36px', color: '#6b7280' }}>
                         No property owner accounts found.
                       </td>
                     </tr>
@@ -1201,26 +1192,26 @@ export const CustomersPage = () => {
                       const bank = cust.ownerDetails?.bankDetails || {};
 
                       return (
-                        <tr key={cust._id}>
-                          <td>
-                            <div style={{ fontWeight: '700', color: '#111827' }}>{cust.name}</div>
-                            <div style={{ fontSize: '0.72rem', color: '#4b5563' }}>{cust.mobileNo}</div>
+                        <tr key={cust._id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: '600', color: '#111827', fontSize: '0.88rem' }}>{cust.name}</div>
+                            <div style={{ fontSize: '0.74rem', color: '#6b7280' }}>{cust.mobileNo}</div>
                             <div style={{ marginTop: '3px' }}>
                               <span style={{
                                 fontSize: '0.68rem',
-                                padding: '2px 7px',
+                                padding: '2px 6px',
                                 borderRadius: '4px',
-                                fontWeight: '700',
-                                background: '#e8f2e5',
+                                fontWeight: '500',
+                                background: '#f0fdf4',
                                 color: '#17652f',
-                                border: '1px solid #cde4c9'
+                                border: '1px solid #bbf7d0'
                               }}>
-                                Property Owner
+                                Owner
                               </span>
                             </div>
                           </td>
 
-                          <td>
+                          <td style={{ padding: '12px 16px' }}>
                             {units.length > 0 ? (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                                 {units.map((u, idx) => {
@@ -1228,88 +1219,83 @@ export const CustomersPage = () => {
                                   const projName = u?.projectId?.projectName || u?.projectId?.projectCode || 'Krishna Valley';
                                   const flr = u?.floor !== undefined && u?.floor !== null ? u.floor : 1;
                                   return (
-                                    <div key={idx} style={{ fontSize: '0.78rem', fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <div key={idx} style={{ fontSize: '0.78rem', fontWeight: '500', color: '#111827', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                       <Building2 size={12} color="#17652f" />
                                       <span>Flat {flatNo} (Floor {flr})</span>
-                                      <span style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>• {projName}</span>
+                                      <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: '400' }}>• {projName}</span>
                                     </div>
                                   );
                                 })}
                               </div>
                             ) : (
-                              <div style={{ fontSize: '0.78rem', color: '#4b5563', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Building2 size={12} /> Unit Portfolio Attached
+                              <div style={{ fontSize: '0.78rem', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Building2 size={12} /> Unit portfolio attached
                               </div>
                             )}
                           </td>
 
-                          <td>
+                          <td style={{ padding: '12px 16px' }}>
                             <div>
-                              <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#17652f' }}>
-                                100% Freehold Title
+                              <div style={{ fontSize: '0.82rem', fontWeight: '500', color: '#17652f' }}>
+                                Freehold title
                               </div>
-                              <div style={{ fontSize: '0.7rem', color: '#4b5563', fontWeight: '500' }}>
-                                Registry & Mutation Complete
+                              <div style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: '400' }}>
+                                Registered
                               </div>
                             </div>
                           </td>
 
-                          <td>
+                          <td style={{ padding: '12px 16px' }}>
                             <div>
-                              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#17652f' }}>
+                              <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#17652f' }}>
                                 {formatINR(31000)} / mo
                               </div>
-                              <div style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600' }}>
-                                36-Mo Assured Return
+                              <div style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: '400' }}>
+                                Assured return
                               </div>
                             </div>
                           </td>
 
-                          <td>
+                          <td style={{ padding: '12px 16px' }}>
                             {bank.accountNumber ? (
                               <div style={{ fontSize: '0.76rem' }}>
-                                <div style={{ fontWeight: '700', color: '#0f172a' }}>{bank.bankName || 'Bank Account'}</div>
-                                <div style={{ color: '#475569' }}>A/C: ••••{bank.accountNumber.slice(-4)}</div>
-                                <div style={{ color: '#64748b', fontSize: '0.7rem' }}>IFSC: {bank.ifscCode}</div>
+                                <div style={{ fontWeight: '500', color: '#111827' }}>{bank.bankName || 'Bank Account'}</div>
+                                <div style={{ color: '#6b7280' }}>A/C: ••••{bank.accountNumber.slice(-4)}</div>
+                                <div style={{ color: '#9ca3af', fontSize: '0.7rem' }}>IFSC: {bank.ifscCode}</div>
                               </div>
                             ) : (
-                              <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>Bank details on file</span>
+                              <span style={{ fontSize: '0.74rem', color: '#9ca3af' }}>On file</span>
                             )}
                           </td>
 
-                          <td>
+                          <td style={{ padding: '12px 16px' }}>
                             <span style={{
                               fontSize: '0.72rem',
-                              padding: '2px 8px',
+                              padding: '2px 6px',
                               borderRadius: '4px',
-                              background: '#e8f2e5',
+                              background: '#f0fdf4',
                               color: '#17652f',
-                              fontWeight: '700',
-                              border: '1px solid #cde4c9'
+                              fontWeight: '500',
+                              border: '1px solid #bbf7d0'
                             }}>
-                              Verified Titleholder
+                              Verified
                             </span>
                           </td>
 
-                          <td>
+                          <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                             <button
                               type="button"
                               onClick={() => {
                                 setSelectedCustomer(cust);
                                 setIsDetailModalOpen(true);
                               }}
+                              className="btn-primary"
                               style={{
-                                padding: '6px 12px',
-                                background: '#17652f',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '5px',
-                                fontSize: '0.76rem',
-                                fontWeight: '700',
-                                cursor: 'pointer'
+                                padding: '5px 10px',
+                                fontSize: '0.75rem'
                               }}
                             >
-                              Open Statement
+                              Passbook
                             </button>
                           </td>
                         </tr>
@@ -1343,54 +1329,54 @@ export const CustomersPage = () => {
 
       {/* SUPER ADMIN WIPE ALL CUSTOMERS MODAL */}
       {isWipeModalOpen && isSuperAdmin && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '500px', width: '100%', border: '2px solid #0f172a', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '24px', maxWidth: '480px', width: '100%', border: '1px solid #e5e7eb', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <AlertTriangle size={22} style={{ color: '#0f172a' }} />
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <AlertTriangle size={20} style={{ color: '#dc2626' }} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>Danger Zone: Wipe All Customers</h3>
-                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#0f172a' }}>Super Admin Authorization Required</p>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>Wipe all customers</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#6b7280' }}>Super admin authorization required</p>
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#f1f5f9', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', border: '1px solid #e2e8f0' }}>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#0f172a', lineHeight: '1.6' }}>
-                This operation will permanently delete:
+            <div style={{ backgroundColor: '#fef2f2', borderRadius: '8px', padding: '12px 14px', marginBottom: '16px', border: '1px solid #fee2e2' }}>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#991b1b', lineHeight: '1.5' }}>
+                This will permanently delete:
               </p>
-              <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontSize: '0.85rem', color: '#0f172a', lineHeight: '1.8' }}>
-                <li>All customer profiles (Owners and Tenants)</li>
-                <li>All sales lead history and buyer associations</li>
-                <li>All flat ownership & Chain of Title records</li>
+              <ul style={{ margin: '6px 0 0', paddingLeft: '18px', fontSize: '0.85rem', color: '#991b1b', lineHeight: '1.6' }}>
+                <li>All customer profiles (owners and tenants)</li>
+                <li>All sales lead history and buyer records</li>
+                <li>All flat ownership and title records</li>
               </ul>
             </div>
 
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '8px' }}>
-              Type <span style={{ color: '#0f172a', fontFamily: 'monospace', fontSize: '0.9rem' }}>DELETE ALL CUSTOMERS</span> to confirm:
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+              Type <span style={{ color: '#b91c1c', fontFamily: 'monospace', fontWeight: 600 }}>DELETE ALL CUSTOMERS</span> to confirm:
             </label>
             <input
               type="text"
               value={wipeConfirmPhrase}
               onChange={(e) => setWipeConfirmPhrase(e.target.value)}
-              placeholder="Type DELETE ALL CUSTOMERS..."
+              placeholder="DELETE ALL CUSTOMERS"
               style={{
                 width: '100%',
-                padding: '10px 14px',
-                borderRadius: '8px',
-                border: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '2px solid #0f172a' : '1px solid #cbd5e1',
-                fontSize: '0.9rem',
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '1px solid #dc2626' : '1px solid #d1d5db',
+                fontSize: '0.85rem',
                 fontFamily: 'monospace',
-                marginBottom: '20px',
-                backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#f1f5f9' : '#ffffff'
+                marginBottom: '16px'
               }}
             />
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
               <button
                 type="button"
                 onClick={() => { setIsWipeModalOpen(false); setWipeConfirmPhrase(''); }}
-                style={{ padding: '9px 18px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', fontWeight: '600', cursor: 'pointer' }}
+                className="btn-secondary"
+                style={{ padding: '8px 14px', fontSize: '0.84rem' }}
               >
                 Cancel
               </button>
@@ -1412,17 +1398,18 @@ export const CustomersPage = () => {
                   }
                 }}
                 style={{
-                  padding: '9px 22px',
-                  borderRadius: '8px',
-                  backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#0f172a' : '#e5e7eb',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  backgroundColor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#dc2626' : '#f3f4f6',
                   color: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? '#ffffff' : '#9ca3af',
                   border: 'none',
-                  fontWeight: '800',
+                  fontWeight: 500,
+                  fontSize: '0.84rem',
                   cursor: wipeConfirmPhrase === 'DELETE ALL CUSTOMERS' ? 'pointer' : 'not-allowed',
                   opacity: isWiping ? 0.7 : 1,
                 }}
               >
-                {isWiping ? 'Wiping...' : 'Permanently Delete All'}
+                {isWiping ? 'Wiping...' : 'Delete all'}
               </button>
             </div>
           </div>

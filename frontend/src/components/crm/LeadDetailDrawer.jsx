@@ -390,7 +390,7 @@ export const LeadDetailDrawer = ({
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: '1.25rem',
-              fontWeight: '800',
+              fontWeight: '600',
               flexShrink: 0
             }}>
               {lead.name ? lead.name.charAt(0).toUpperCase() : 'P'}
@@ -398,14 +398,14 @@ export const LeadDetailDrawer = ({
 
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#0f172a', margin: 0 }}>
                   {lead.name}
                 </h2>
 
                 {/* Stage Badge */}
                 <span style={{
                   fontSize: '0.72rem',
-                  fontWeight: '800',
+                  fontWeight: '600',
                   padding: '2px 8px',
                   borderRadius: '6px',
                   background: statusStyle.bg,
@@ -418,7 +418,7 @@ export const LeadDetailDrawer = ({
 
                 {/* Meta Ad Tag */}
                 {isMetaLead && (
-                  <span style={{ fontSize: '0.68rem', fontWeight: '800', background: '#e0f2fe', color: '#0284c7', padding: '2px 6px', borderRadius: '4px', border: '1px solid #bae6fd', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: '600', background: '#e0f2fe', color: '#0284c7', padding: '2px 6px', borderRadius: '4px', border: '1px solid #bae6fd', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                     <Globe size={11} /> Meta Ad
                   </span>
                 )}
@@ -446,7 +446,7 @@ export const LeadDetailDrawer = ({
                     background: '#e0f2fe',
                     color: '#0369a1',
                     fontSize: '0.76rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     border: 'none',
                     cursor: 'pointer'
                   }}
@@ -469,7 +469,7 @@ export const LeadDetailDrawer = ({
                     background: '#e8f2e5',
                     color: '#17652f',
                     fontSize: '0.76rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     textDecoration: 'none'
                   }}
                   title="Direct WhatsApp"
@@ -490,7 +490,7 @@ export const LeadDetailDrawer = ({
                     background: '#f8fafc',
                     color: '#334155',
                     fontSize: '0.76rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     border: 'none',
                     cursor: 'pointer'
                   }}
@@ -723,7 +723,7 @@ export const LeadDetailDrawer = ({
             gap: '12px'
           }}>
             <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Sales Assignment & Ownership
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
@@ -737,16 +737,16 @@ export const LeadDetailDrawer = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '0.75rem',
-                  fontWeight: '800'
+                  fontWeight: '600'
                 }}>
                   {assignee?.firstName?.charAt(0) || assignee?.username?.charAt(0) || 'U'}
                 </div>
                 <div>
-                  <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.9rem' }}>
+                  <span style={{ fontWeight: '600', color: '#0f172a', fontSize: '0.9rem' }}>
                     {assignee?.firstName ? `${assignee.firstName} ${assignee.lastName || ''}` : (assignee?.username || 'Unassigned (In Queue)')}
                   </span>
                   {isAssignedToCurrentUser && (
-                    <span style={{ marginLeft: '6px', fontSize: '0.68rem', fontWeight: '800', background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px' }}>
+                    <span style={{ marginLeft: '6px', fontSize: '0.68rem', fontWeight: '600', background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px' }}>
                       Assigned to You
                     </span>
                   )}
@@ -806,11 +806,11 @@ export const LeadDetailDrawer = ({
               boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#0369a1', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Globe size={14} color="#0284c7" />
                   Meta Ads Leadgen Submission
                 </span>
-                <span style={{ background: '#0284c7', color: '#ffffff', fontSize: '0.66rem', padding: '2px 8px', borderRadius: '12px', fontWeight: '800' }}>
+                <span style={{ background: '#0284c7', color: '#ffffff', fontSize: '0.66rem', padding: '2px 8px', borderRadius: '12px', fontWeight: '600' }}>
                   {lead.metaAdDetails?.platform ? lead.metaAdDetails.platform.toUpperCase() : 'FACEBOOK & INSTAGRAM'}
                 </span>
               </div>
@@ -827,7 +827,7 @@ export const LeadDetailDrawer = ({
                 {(lead.metaCustomQuestions || []).map((q, idx) => (
                   <div key={idx} style={{ background: '#ffffff', border: '1px solid #e0f2fe', padding: '8px 12px', borderRadius: '6px' }}>
                     <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600' }}>{q.question}</div>
-                    <div style={{ fontSize: '0.82rem', color: '#0f172a', fontWeight: '800', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.82rem', color: '#0f172a', fontWeight: '600', marginTop: '2px' }}>
                       {q.answer || 'Not answered'}
                     </div>
                   </div>
@@ -848,7 +848,7 @@ export const LeadDetailDrawer = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Calendar size={16} color="#17652f" />
-                <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: '#0f172a', margin: 0 }}>
                   Active Scheduled Follow-Ups & Tasks ({pendingFollowUps.length})
                 </h3>
               </div>
@@ -858,7 +858,7 @@ export const LeadDetailDrawer = ({
                   onClick={() => onScheduleFollowUp && onScheduleFollowUp(lead)}
                   style={{
                     fontSize: '0.74rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     color: '#17652f',
                     background: '#e8f2e5',
                     border: '1px solid #cde4c9',
@@ -897,12 +897,12 @@ export const LeadDetailDrawer = ({
                     color: '#ffffff',
                     border: 'none',
                     fontSize: '0.80rem',
-                    fontWeight: '800',
+                    fontWeight: '600',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    boxShadow: '0 2px 4px rgba(37,99,235,0.2)'
+                    boxShadow: '0 2px 4px rgba(23, 101, 47,0.2)'
                   }}
                 >
                   <Calendar size={14} />
@@ -935,7 +935,7 @@ export const LeadDetailDrawer = ({
                           {isScheduledByHead ? (
                             <span style={{
                               fontSize: '0.72rem',
-                              fontWeight: '800',
+                              fontWeight: '600',
                               background: '#e8f2e5',
                               color: '#17652f',
                               padding: '2px 8px',
@@ -950,7 +950,7 @@ export const LeadDetailDrawer = ({
                           ) : (
                             <span style={{
                               fontSize: '0.72rem',
-                              fontWeight: '800',
+                              fontWeight: '600',
                               background: '#f8fafc',
                               color: '#475569',
                               padding: '2px 8px',
@@ -964,7 +964,7 @@ export const LeadDetailDrawer = ({
                           {/* Mode Pill */}
                           <span style={{
                             fontSize: '0.72rem',
-                            fontWeight: '800',
+                            fontWeight: '600',
                             textTransform: 'uppercase',
                             background: fu.mode === 'site_visit' ? '#f1f5f9' : '#e8f2e5',
                             color: fu.mode === 'site_visit' ? '#334155' : '#17652f',
@@ -978,7 +978,7 @@ export const LeadDetailDrawer = ({
                         {/* Due Date Badge */}
                         <div style={{
                           fontSize: '0.78rem',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           color: '#334155',
                           background: '#f8fafc',
                           border: '1px solid #cbd5e1',
@@ -1097,7 +1097,7 @@ export const LeadDetailDrawer = ({
                                   background: 'linear-gradient(135deg, #17652f 0%, #17652f 100%)',
                                   color: '#ffffff',
                                   fontSize: '0.76rem',
-                                  fontWeight: '800',
+                                  fontWeight: '600',
                                   border: 'none',
                                   cursor: 'pointer',
                                   display: 'inline-flex',
@@ -1137,7 +1137,7 @@ export const LeadDetailDrawer = ({
                             flexDirection: 'column',
                             gap: '10px'
                           }}>
-                            <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ fontSize: '0.78rem', fontWeight: '600', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <CheckCircle2 size={14} color="#17652f" /> Update Follow-Up Status (Team Member)
                             </div>
 
@@ -1156,7 +1156,7 @@ export const LeadDetailDrawer = ({
                                     padding: '5px 10px',
                                     borderRadius: '6px',
                                     fontSize: '0.76rem',
-                                    fontWeight: '800',
+                                    fontWeight: '600',
                                     cursor: 'pointer',
                                     border: fuStatus === opt.id ? `2px solid ${opt.border}` : '1px solid #cbd5e1',
                                     background: fuStatus === opt.id ? opt.bg : '#ffffff',
@@ -1216,7 +1216,7 @@ export const LeadDetailDrawer = ({
                                 style={{
                                   padding: '5px 16px',
                                   fontSize: '0.76rem',
-                                  fontWeight: '800',
+                                  fontWeight: '600',
                                   background: '#17652f',
                                   color: '#ffffff',
                                   border: 'none',
@@ -1246,11 +1246,11 @@ export const LeadDetailDrawer = ({
               border: '2px solid #17652f',
               borderRadius: '10px',
               padding: '16px 18px',
-              boxShadow: '0 4px 12px rgba(37,99,235,0.08)'
+              boxShadow: '0 4px 12px rgba(23, 101, 47,0.08)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <div>
-                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '0.88rem', fontWeight: '600', color: '#17652f', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Plus size={16} color="#17652f" /> Log Completed Follow-Up Interaction
                   </span>
                   <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
@@ -1353,7 +1353,7 @@ export const LeadDetailDrawer = ({
                     style={{
                       padding: '6px 16px',
                       fontSize: '0.78rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       background: '#17652f',
                       color: '#ffffff',
                       border: 'none',
@@ -1375,7 +1375,7 @@ export const LeadDetailDrawer = ({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <Car size={16} color="#17652f" />
-                <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: '#0f172a', margin: 0 }}>
                   Recorded Site Visits ({externalSiteVisits.length})
                 </h3>
               </div>
@@ -1393,10 +1393,10 @@ export const LeadDetailDrawer = ({
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#17652f' }}>
+                        <span style={{ fontSize: '0.84rem', fontWeight: '600', color: '#17652f' }}>
                           Visited: {sv.flatLabel || 'Project Site'}
                         </span>
-                        <span style={{ fontSize: '0.72rem', background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>
+                        <span style={{ fontSize: '0.72rem', background: '#e8f2e5', color: '#17652f', padding: '1px 6px', borderRadius: '4px', fontWeight: '600' }}>
                           Rating: {sv.interestRating}/5 
                         </span>
                       </div>
@@ -1426,7 +1426,7 @@ export const LeadDetailDrawer = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <History size={16} color="#64748b" />
-              <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: '#0f172a', margin: 0 }}>
                 Completed Interaction History ({completedFollowUps.length})
               </h3>
             </div>
@@ -1451,7 +1451,7 @@ export const LeadDetailDrawer = ({
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <span style={{
                           fontSize: '0.7rem',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           textTransform: 'uppercase',
                           background: fu.status === 'completed' ? '#e8f2e5' : '#f1f5f9',
                           color: fu.status === 'completed' ? '#17652f' : '#0f172a',
@@ -1492,7 +1492,7 @@ export const LeadDetailDrawer = ({
             padding: '14px 18px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: '600', color: '#0f172a', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FileText size={14} style={{ color: '#17652f' }} />
                 Lead Overview & Requirements
               </div>
@@ -1549,12 +1549,12 @@ export const LeadDetailDrawer = ({
                       background: '#17652f',
                       color: '#ffffff',
                       fontSize: '0.74rem',
-                      fontWeight: '800',
+                      fontWeight: '600',
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '4px',
-                      boxShadow: '0 2px 4px rgba(26,115,232,0.3)'
+                      boxShadow: '0 2px 4px rgba(23, 101, 47,0.3)'
                     }}
                   >
                     {savingOverview ? 'Saving...' : <><Check size={12} /> Save Details</>}
@@ -1576,52 +1576,52 @@ export const LeadDetailDrawer = ({
                 gap: '10px'
               }}>
                 <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Requirement
                   </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                     {lead.assignedFlat ? `Flat ${lead.assignedFlat.flatNumber}` : displayNA(lead.requirement)}
                   </div>
                 </div>
 
                 <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Budget
                   </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                     {formatBudget(lead.budget)}
                   </div>
                 </div>
 
                 <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Timeline
                   </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                     {formatTimeline(lead.purchaseTimeline)}
                   </div>
                 </div>
 
                 <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     City & Location
                   </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0f172a', marginTop: '3px' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#0f172a', marginTop: '3px' }}>
                     {displayNA(lead.city)}{lead.state ? `, ${lead.state}` : ''}
                   </div>
                 </div>
 
                 <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Lead Source
                   </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: '800', color: '#0284c7', marginTop: '3px' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '600', color: '#0284c7', marginTop: '3px' }}>
                     {displayNA(lead.leadSource?.replace(/_/g, ' ').toUpperCase())}
                   </div>
                 </div>
 
                 <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Email
                   </div>
                   <div style={{ fontSize: '0.84rem', fontWeight: '700', color: '#0f172a', marginTop: '3px', wordBreak: 'break-all' }}>
@@ -1630,7 +1630,7 @@ export const LeadDetailDrawer = ({
                 </div>
 
                 <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Registration Date
                   </div>
                   <div style={{ fontSize: '0.84rem', fontWeight: '700', color: '#0f172a', marginTop: '3px' }}>
@@ -1767,7 +1767,7 @@ export const LeadDetailDrawer = ({
 
             {lead.assignmentHistory && lead.assignmentHistory.length > 0 && (
               <div style={{ marginTop: '12px', borderTop: '1px solid #e2e8f0', paddingTop: '8px' }}>
-                <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase' }}>
                   Assignment History Log ({lead.assignmentHistory.length})
                 </div>
                 <div style={{ maxHeight: '70px', overflowY: 'auto', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '3px' }}>

@@ -191,7 +191,7 @@ export const CredentialsManagerModal = ({
               </div>
 
               <div>
-                <h2 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 2px 0', color: '#0f172a' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 600, margin: '0 0 2px 0', color: '#0f172a' }}>
                   User &amp; Team ID/Pass Manager
                 </h2>
                 <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
@@ -262,33 +262,33 @@ export const CredentialsManagerModal = ({
           >
             <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Total Personnel</span>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.total}</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#0f172a' }}>{stats.total}</div>
             </div>
 
             <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #a7f3d0' }}>
               <span style={{ fontSize: '11px', color: '#047857', fontWeight: 600 }}>Active Logins Linked</span>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#065f46' }}>{stats.linked}</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#065f46' }}>{stats.linked}</div>
             </div>
 
             <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#ecfeff', border: '1px solid #a5f3fc' }}>
               <span style={{ fontSize: '11px', color: '#0e7490', fontWeight: 600 }}>Department Heads</span>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#155e75' }}>{stats.heads}</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#155e75' }}>{stats.heads}</div>
             </div>
 
             <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#e8f2e5', border: '1px solid #c7d2fe' }}>
               <span style={{ fontSize: '11px', color: '#17652f', fontWeight: 600 }}>Site Supervisors</span>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#17652f' }}>{stats.supervisors}</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#17652f' }}>{stats.supervisors}</div>
             </div>
 
             <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#e8f2e5', border: '1px solid #cde4c9' }}>
               <span style={{ fontSize: '11px', color: '#17652f', fontWeight: 600 }}>Field Helpers</span>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#17652f' }}>{stats.helpers}</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#17652f' }}>{stats.helpers}</div>
             </div>
 
             {stats.unlinked > 0 && (
               <div style={{ padding: '8px 12px', borderRadius: '8px', background: '#fffbeb', border: '1px solid #fde68a' }}>
                 <span style={{ fontSize: '11px', color: '#b45309', fontWeight: 600 }}>Pending Account Setup</span>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#92400e' }}>{stats.unlinked}</div>
+                <div style={{ fontSize: '18px', fontWeight: 600, color: '#92400e' }}>{stats.unlinked}</div>
               </div>
             )}
           </div>
@@ -446,7 +446,7 @@ export const CredentialsManagerModal = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontWeight: 800,
+                                fontWeight: 600,
                                 fontSize: '13px',
                                 flexShrink: 0,
                               }}

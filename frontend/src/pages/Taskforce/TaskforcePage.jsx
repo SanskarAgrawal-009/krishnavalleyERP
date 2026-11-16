@@ -201,10 +201,10 @@ export const TaskforcePage = () => {
 
   // Kanban Columns Definition
   const kanbanColumns = [
-    { key: 'pending', title: 'Pending / Allocated', color: '#64748b', bg: '#f8fafc', badge: '#e2e8f0', text: '#334155' },
-    { key: 'in_progress', title: 'In Execution', color: '#17652f', bg: '#e8f2e5', badge: '#cde4c9', text: '#17652f' },
-    { key: 'under_review', title: 'Under MD Review', color: '#ca8a04', bg: '#fefce8', badge: '#fef08a', text: '#854d0e' },
-    { key: 'delayed', title: 'Roadblocks & Blocked', color: '#dc2626', bg: '#fef2f2', badge: '#fca5a5', text: '#991b1b' },
+    { key: 'pending', title: 'Pending', color: '#64748b', bg: '#f8fafc', badge: '#e2e8f0', text: '#334155' },
+    { key: 'in_progress', title: 'In progress', color: '#17652f', bg: '#e8f2e5', badge: '#cde4c9', text: '#17652f' },
+    { key: 'under_review', title: 'Under review', color: '#ca8a04', bg: '#fefce8', badge: '#fef08a', text: '#854d0e' },
+    { key: 'delayed', title: 'Blocked', color: '#dc2626', bg: '#fef2f2', badge: '#fca5a5', text: '#991b1b' },
     { key: 'completed', title: 'Completed', color: '#16a34a', bg: '#f0fdf4', badge: '#bbf7d0', text: '#15803d' },
   ];
 
@@ -596,28 +596,12 @@ export const TaskforcePage = () => {
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1 className="font-headline-md" style={{ color: '#0f172a', margin: 0, fontSize: '24px' }}>
-              Taskforce & Work Allocation
+            <h1 style={{ fontFamily: 'var(--font-serif, "Newsreader", "Lora", serif)', fontSize: '1.85rem', fontWeight: 600, color: '#1f2937', margin: 0, letterSpacing: '-0.015em' }}>
+              Taskforce
             </h1>
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                padding: '3px 10px',
-                borderRadius: '12px',
-                backgroundColor: '#e8f2e5',
-                color: '#17652f',
-                border: '1px solid #cde4c9',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-              }}
-            >
-              <Target size={13} /> Executive Command
-            </span>
           </div>
           <p style={{ fontSize: '13px', color: '#596372', marginTop: '6px', margin: 0 }}>
-            MD Directives, cross-department works, multiple staff allocation, and systematic follow-up management.
+            Cross-department tasks, assignments, and follow-up status.
           </p>
         </div>
 
@@ -654,11 +638,10 @@ export const TaskforcePage = () => {
                 backgroundColor: '#17652f',
                 color: '#ffffff',
                 borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(23, 101, 47, 0.25)',
               }}
             >
               <Plus size={16} />
-              Assign New Work
+              New task
             </button>
           )}
         </div>
@@ -676,11 +659,11 @@ export const TaskforcePage = () => {
             borderRadius: '12px',
             cursor: 'pointer',
             backgroundColor: '#ffffff',
-            border: '1px solid #e8e6df',
+            border: '1px solid #e5e7eb',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#596372' }}>Total Directives</span>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#596372' }}>Total tasks</span>
             <Layers size={18} color="#17652f" />
           </div>
           <div style={{ fontSize: '26px', fontWeight: 700, color: '#1f2937', margin: '4px 0' }}>
@@ -699,18 +682,17 @@ export const TaskforcePage = () => {
             cursor: 'pointer',
             border: filterDueTodayOnly ? '2px solid #b45309' : '1px solid #fef08a',
             backgroundColor: '#fefce8',
-            boxShadow: filterDueTodayOnly ? '0 3px 10px rgba(180, 83, 9, 0.2)' : 'none',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#854d0e' }}>Follow-ups Due Today</span>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#854d0e' }}>Due today</span>
             <Clock size={18} color="#b45309" />
           </div>
           <div style={{ fontSize: '26px', fontWeight: 700, color: '#b45309', margin: '4px 0' }}>
             {stats?.followUpsDueToday || 0}
           </div>
           <div style={{ fontSize: '11px', color: '#854d0e', fontWeight: 600 }}>
-            {filterDueTodayOnly ? 'Active Filter' : 'Click to filter'}
+            {filterDueTodayOnly ? 'Active filter' : 'Click to filter'}
           </div>
         </div>
 
@@ -724,18 +706,17 @@ export const TaskforcePage = () => {
             cursor: 'pointer',
             border: filterMDOnly ? '2px solid #b45309' : '1px solid #fed7aa',
             backgroundColor: '#fffbeb',
-            boxShadow: filterMDOnly ? '0 3px 10px rgba(180, 83, 9, 0.2)' : 'none',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#b45309' }}>MD Directives</span>
-            <Sparkles size={18} color="#b45309" />
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#b45309' }}>Management tasks</span>
+            <Target size={18} color="#b45309" />
           </div>
           <div style={{ fontSize: '26px', fontWeight: 700, color: '#b45309', margin: '4px 0' }}>
             {stats?.mdDirectivesActive || 0}
           </div>
           <div style={{ fontSize: '11px', color: '#b45309', fontWeight: 600 }}>
-            {filterMDOnly ? 'Active Filter' : 'Top executive priority'}
+            {filterMDOnly ? 'Active filter' : 'High priority'}
           </div>
         </div>
 
@@ -746,7 +727,7 @@ export const TaskforcePage = () => {
             padding: '16px',
             borderRadius: '12px',
             backgroundColor: '#ffffff',
-            border: '1px solid #e8e6df',
+            border: '1px solid #e5e7eb',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -858,12 +839,12 @@ export const TaskforcePage = () => {
               gap: '6px',
               backgroundColor: viewMode === 'kanban' ? '#17652f' : 'transparent',
               color: viewMode === 'kanban' ? '#ffffff' : '#596372',
-              boxShadow: viewMode === 'kanban' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+              boxShadow: 'none',
               cursor: 'pointer',
               border: 'none',
             }}
           >
-            <Kanban size={14} /> Kanban Board
+            <Kanban size={14} /> Board
           </button>
 
           <button
@@ -882,12 +863,12 @@ export const TaskforcePage = () => {
               gap: '6px',
               backgroundColor: viewMode === 'radar' ? '#17652f' : 'transparent',
               color: viewMode === 'radar' ? '#ffffff' : '#596372',
-              boxShadow: viewMode === 'radar' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+              boxShadow: 'none',
               cursor: 'pointer',
               border: 'none',
             }}
           >
-            <Target size={14} /> Follow-up Radar ({stats?.followUpsDueToday || 0})
+            <Target size={14} /> Follow-ups ({stats?.followUpsDueToday || 0})
           </button>
 
           <button
@@ -906,12 +887,12 @@ export const TaskforcePage = () => {
               gap: '6px',
               backgroundColor: viewMode === 'list' ? '#17652f' : 'transparent',
               color: viewMode === 'list' ? '#ffffff' : '#596372',
-              boxShadow: viewMode === 'list' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+              boxShadow: 'none',
               cursor: 'pointer',
               border: 'none',
             }}
           >
-            <List size={14} /> List View
+            <List size={14} /> List
           </button>
 
 
@@ -931,12 +912,12 @@ export const TaskforcePage = () => {
               gap: '6px',
               backgroundColor: viewMode === 'team' ? '#17652f' : 'transparent',
               color: viewMode === 'team' ? '#ffffff' : '#596372',
-              boxShadow: viewMode === 'team' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+              boxShadow: 'none',
               cursor: 'pointer',
               border: 'none',
             }}
           >
-            <Users size={14} /> Team Hierarchy
+            <Users size={14} /> Team
           </button>
 
           <button
@@ -955,12 +936,12 @@ export const TaskforcePage = () => {
               gap: '6px',
               backgroundColor: viewMode === 'meetings' ? '#17652f' : 'transparent',
               color: viewMode === 'meetings' ? '#ffffff' : '#596372',
-              boxShadow: viewMode === 'meetings' ? '0 1px 3px rgba(23,101,47,0.2)' : 'none',
+              boxShadow: 'none',
               cursor: 'pointer',
               border: 'none',
             }}
           >
-            <Calendar size={14} /> Meetings &amp; MoM
+            <Calendar size={14} /> Meetings
           </button>
 
           <button
@@ -977,15 +958,15 @@ export const TaskforcePage = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: viewMode === 'reports' ? '#ffffff' : 'transparent',
-              color: viewMode === 'reports' ? '#17652f' : '#64748b',
-              boxShadow: viewMode === 'reports' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              backgroundColor: viewMode === 'reports' ? '#17652f' : 'transparent',
+              color: viewMode === 'reports' ? '#ffffff' : '#64748b',
+              boxShadow: 'none',
               cursor: 'pointer',
               border: 'none',
               whiteSpace: 'nowrap',
             }}
           >
-            <BarChart3 size={14} /> Weekly Reports &amp; Analytics
+            <BarChart3 size={14} /> Weekly reports
           </button>
         </div>
 
@@ -997,7 +978,7 @@ export const TaskforcePage = () => {
             <Search size={14} color="#64748b" style={{ position: 'absolute', left: '10px', top: '11px', pointerEvents: 'none' }} />
             <input
               type="text"
-              placeholder="Search tasks, flats..."
+              placeholder="e.g. Tower A or painting"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -1054,22 +1035,22 @@ export const TaskforcePage = () => {
               }}
             >
               <option value="all">All Departments</option>
-              <optgroup label="KV- DEPARTMENTS">
-                <option value="hr">👥 Human Resource</option>
-                <option value="it">💻 I.T.</option>
-                <option value="procurement">📦 Procurement</option>
-                <option value="hotel">🏨 Hotel</option>
-                <option value="security">🛡️ Security</option>
-                <option value="accounts">💰 Accounts</option>
-                <option value="crm">🤝 C.R.M.</option>
-                <option value="admin_operations">🏢 Admin / Operations</option>
-                <option value="maintenance">🔧 Maintenance</option>
-                <option value="civil">🏗️ Civil</option>
-                <option value="licensing">📜 Licensing</option>
+              <optgroup label="KV Departments">
+                <option value="hr">Human Resources</option>
+                <option value="it">IT</option>
+                <option value="procurement">Procurement</option>
+                <option value="hotel">Hotel</option>
+                <option value="security">Security</option>
+                <option value="accounts">Accounts</option>
+                <option value="crm">CRM</option>
+                <option value="admin_operations">Admin and Operations</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="civil">Civil</option>
+                <option value="licensing">Licensing</option>
               </optgroup>
-              <optgroup label="ADMINISTRATION">
-                <option value="hotel_restaurant">🏨 HOTEL & RESTAURANT</option>
-                <option value="viramah">🏢 VIRAMAH</option>
+              <optgroup label="Administration">
+                <option value="hotel_restaurant">Hotel and Restaurant</option>
+                <option value="viramah">Viramah</option>
               </optgroup>
             </select>
           </div>
@@ -1123,7 +1104,7 @@ export const TaskforcePage = () => {
             }}
           >
             <Users size={13} />
-            My Works
+            My tasks
           </button>
 
           {/* Reset Filters Button (if active) */}
