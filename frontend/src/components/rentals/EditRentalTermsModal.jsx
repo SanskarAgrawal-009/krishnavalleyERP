@@ -20,7 +20,8 @@ import {
   Download,
   Trash2,
   Eye,
-  ChevronRight
+  ChevronRight,
+  Check
 } from 'lucide-react';
 import { rentalService } from '../../services/rentalService.js';
 import { useToast } from '../../context/ToastContext.jsx';

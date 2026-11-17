@@ -19,6 +19,8 @@ import {
   ArrowUpRight,
   ExternalLink,
   ChevronRight,
+  ChevronDown,
+  Layers,
   AlertCircle,
   Sparkles,
   Repeat,
@@ -85,6 +87,9 @@ export const RentalManagementPage = () => {
   const [tenureFilter, setTenureFilter] = useState('all');
   const [sortField, setSortField] = useState('flatNumber');
   const [sortOrder, setSortOrder] = useState('default'); // 'default' | 'asc' | 'desc'
+  const [groupByFloor, setGroupByFloor] = useState(true);
+  const [collapsedFloors, setCollapsedFloors] = useState({});
+  const toggleFloor = (floor) => setCollapsedFloors((prev) => ({ ...prev, [floor]: !prev[floor] }));
 
   // Modals
   const [selectedRentalForEdit, setSelectedRentalForEdit] = useState(null);
@@ -282,6 +287,41 @@ export const RentalManagementPage = () => {
       return sortOrder === 'desc' ? -cmp : cmp;
     });
   }, [activeRentals, sortOrder, sortField]);
+
+  // Floor derivation and grouping
+  const getFloor = (flatNumber) => {
+    const num = parseInt(String(flatNumber || '').replace(/\D/g, ''), 10);
+    return isNaN(num) ? 0 : num < 100 ? 0 : Math.floor(num / 100);
+  };
+  const floorLabel = (floor) => (floor === 0 ? 'Ground Floor' : `Floor ${floor}`);
+
+  const floorGroups = useMemo(() => {
+    const groups = {};
+    sortedActiveRentals.forEach((r) => {
+      const fl = getFloor(r.flatNumber);
+      if (!groups[fl]) groups[fl] = [];
+      groups[fl].push(r);
+    });
+    return Object.entries(groups)
+      .sort(([a], [b]) => Number(a) - Number(b))
+      .map(([floor, rows]) => ({
+        floor: Number(floor),
+        label: floorLabel(Number(floor)),
+        rows,
+        totalGross: rows.reduce((s, r) => s + (Number(r.rentAmount) || 0), 0),
+        totalNet: rows.reduce((s, r) => s + (Number(r.netAmount) || 0), 0),
+        totalOutstanding: rows.reduce((s, r) => s + (Number(r.amountOutstanding) || 0), 0),
+        totalPaid: rows.reduce((s, r) => s + (Number(r.totalPaid) || 0), 0)
+      }));
+  }, [sortedActiveRentals]);
+
+  const toggleAllFloors = (collapse) => {
+    const next = {};
+    floorGroups.forEach((g) => {
+      next[g.floor] = collapse;
+    });
+    setCollapsedFloors(next);
+  };
 
   // Sorted History Records Memo
   const sortedHistoryRecords = useMemo(() => {
@@ -505,6 +545,484 @@ export const RentalManagementPage = () => {
   };
 
   const isFilteredOrSorted = searchQuery !== '' || tenureFilter !== 'all' || sortOrder !== 'default' || sortField !== 'flatNumber';
+
+  // Render Table Head for Active Rentals
+  const renderActiveTableHead = () => (
+    <thead>
+      <tr
+        style={{
+          background: '#f9fafb',
+          borderBottom: '1px solid #e5e7eb',
+          color: '#6b7280',
+          fontSize: '0.78rem',
+          fontWeight: 500
+        }}
+      >
+        {/* Flat No */}
+        <th
+          onClick={() => handleHeaderSort('flatNumber')}
+          style={{ padding: '12px 16px', fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span>Flat</span>
+            <ArrowUpDown size={12} color="#9ca3af" />
+          </div>
+        </th>
+
+        {/* Owner */}
+        <th
+          onClick={() => handleHeaderSort('ownerName')}
+          style={{ padding: '12px 16px', fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span>Owner</span>
+            <ArrowUpDown size={12} color="#9ca3af" />
+          </div>
+        </th>
+
+        {/* Documents & Registry */}
+        <th style={{ padding: '12px 16px', fontWeight: 500 }}>
+          <span>Documents</span>
+        </th>
+
+        {/* Registry Date */}
+        <th
+          onClick={() => handleHeaderSort('registryDate')}
+          style={{ padding: '12px 14px', fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span>Registry date</span>
+            <ArrowUpDown size={12} color="#9ca3af" />
+          </div>
+        </th>
+
+        {/* Rent Amount */}
+        <th
+          onClick={() => handleHeaderSort('rentAmount')}
+          style={{ padding: '12px 14px', fontWeight: 500, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+            <span>Monthly rent</span>
+            <ArrowUpDown size={12} color="#9ca3af" />
+          </div>
+        </th>
+
+        {/* TDS */}
+        <th style={{ padding: '12px 14px', fontWeight: 500 }}>TDS</th>
+
+        {/* Net Amount */}
+        <th
+          onClick={() => handleHeaderSort('netAmount')}
+          style={{ padding: '12px 14px', fontWeight: 500, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+            <span>Net payout</span>
+            <ArrowUpDown size={12} color="#9ca3af" />
+          </div>
+        </th>
+
+        {/* Start Date */}
+        <th
+          onClick={() => handleHeaderSort('startDate')}
+          style={{ padding: '12px 14px', fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span>Start date</span>
+            <ArrowUpDown size={12} color="#9ca3af" />
+          </div>
+        </th>
+
+        {/* End Date */}
+        <th style={{ padding: '12px 14px', fontWeight: 500 }}>End date</th>
+
+        {/* Tenure */}
+        <th style={{ padding: '12px 14px', fontWeight: 500, textAlign: 'center' }}>Tenure</th>
+
+        {/* Total Paid */}
+        <th
+          onClick={() => handleHeaderSort('totalPaid')}
+          style={{ padding: '12px 16px', fontWeight: 500, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+            <span>Total paid</span>
+            <ArrowUpDown size={12} color="#9ca3af" />
+          </div>
+        </th>
+
+        {/* Outstanding */}
+        <th
+          onClick={() => handleHeaderSort('amountOutstanding')}
+          style={{ padding: '12px 16px', fontWeight: 500, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+            <span>Outstanding</span>
+            <ArrowUpDown size={12} color="#9ca3af" />
+          </div>
+        </th>
+
+        {/* Actions */}
+        <th style={{ padding: '12px 16px', fontWeight: 500, textAlign: 'center' }}>Actions</th>
+      </tr>
+    </thead>
+  );
+
+  // Render Table Row for Active Rentals
+  const renderActiveRentalRow = (r, idx) => {
+    const hasRegistryDoc = Boolean(r.registryDocument?.fileUrl);
+    const hasAgreementDoc = Boolean(r.agreementDocument?.fileUrl);
+
+    return (
+      <tr
+        key={r._id || idx}
+        style={{
+          borderBottom: '1px solid #f3f4f6',
+          fontSize: '0.82rem'
+        }}
+      >
+        {/* 1. Flat No */}
+        <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+          <button
+            type="button"
+            onClick={() => navigate(`/inventory/flats/${r._id}`)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              color: '#17652f',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+            title="Open flat profile"
+          >
+            <span>{r.flatNumber}</span>
+            <ExternalLink size={12} />
+          </button>
+          <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginTop: '2px' }}>
+            Floor {r.floor === 0 ? 'G' : renderCellData(r.floor)} • {renderCellData(r.bhkType)}
+          </span>
+        </td>
+
+        {/* 2. Owner Name & Mobile */}
+        <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+          <div style={{ fontWeight: 500, color: '#111827' }}>{renderCellData(r.ownerName)}</div>
+          <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {r.ownerMobile && <Phone size={10} color="#9ca3af" />}
+            <span>{renderCellData(r.ownerMobile)}</span>
+          </div>
+        </td>
+
+        {/* 3. Documents Pill Access */}
+        <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {/* Registry Document Pill */}
+            {hasRegistryDoc ? (
+              <a
+                href={getFileUrl(r.registryDocument.fileUrl)}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View registry document"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '0.7rem',
+                  fontWeight: 500,
+                  background: '#e8f2e5',
+                  color: '#17652f',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  textDecoration: 'none',
+                  width: 'fit-content'
+                }}
+              >
+                <ShieldCheck size={12} />
+                <span>Registry</span>
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSelectedFlatForDocs(r)}
+                title="Upload registry document"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '0.68rem',
+                  fontWeight: 500,
+                  background: '#ffffff',
+                  color: '#6b7280',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  border: '1px dashed #d1d5db',
+                  cursor: 'pointer',
+                  width: 'fit-content'
+                }}
+              >
+                <Plus size={11} />
+                <span>Add registry</span>
+              </button>
+            )}
+
+            {/* Rental Agreement Document Pill */}
+            {hasAgreementDoc ? (
+              <a
+                href={getFileUrl(r.agreementDocument.fileUrl)}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View rental agreement"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '0.7rem',
+                  fontWeight: 500,
+                  background: '#e8f2e5',
+                  color: '#17652f',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  textDecoration: 'none',
+                  width: 'fit-content'
+                }}
+              >
+                <FileText size={12} />
+                <span>Agreement</span>
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSelectedFlatForDocs(r)}
+                title="Upload rental agreement"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '0.68rem',
+                  fontWeight: 500,
+                  background: '#ffffff',
+                  color: '#6b7280',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  border: '1px dashed #d1d5db',
+                  cursor: 'pointer',
+                  width: 'fit-content'
+                }}
+              >
+                <Plus size={11} />
+                <span>Add agreement</span>
+              </button>
+            )}
+          </div>
+        </td>
+
+        {/* 4. Registry Date */}
+        <td style={{ padding: '12px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+          <span style={{ color: '#374151', fontWeight: 500 }}>
+            {formatDate(r.registryDate)}
+          </span>
+        </td>
+
+        {/* 5. Rent Amount */}
+        <td style={{ padding: '12px 14px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 500, color: '#111827' }}>
+          {formatINR(r.rentAmount)}
+          <span style={{ display: 'block', fontSize: '0.68rem', color: '#6b7280' }}>/month</span>
+          {r.effectiveFromMonthYear && (
+            <span style={{
+              display: 'inline-block',
+              fontSize: '0.64rem',
+              color: '#17652f',
+              background: '#e8f2e5',
+              padding: '1px 6px',
+              borderRadius: '4px',
+              marginTop: '2px'
+            }}>
+              From: {r.effectiveFromMonthYear}
+            </span>
+          )}
+        </td>
+
+        {/* 6. TDS Applied */}
+        <td style={{ padding: '12px 14px', verticalAlign: 'middle' }}>
+          {r.applyTds ? (
+            <div>
+              <span style={{
+                background: '#f3f4f6',
+                color: '#374151',
+                fontSize: '0.7rem',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontWeight: 500
+              }}>
+                {r.tdsMode === 'amount'
+                  ? `₹${(r.tdsAmount || 0).toLocaleString('en-IN')}`
+                  : `${r.tdsPercentage}%`}
+              </span>
+              <span style={{ display: 'block', fontSize: '0.7rem', color: '#6b7280', marginTop: '2px' }}>
+                - {formatINR(r.tdsAmount)}
+              </span>
+            </div>
+          ) : (
+            <span style={{ color: '#9ca3af', fontSize: '0.72rem' }}>None</span>
+          )}
+        </td>
+
+        {/* 7. Net Amount */}
+        <td style={{ padding: '12px 14px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 600, color: '#17652f' }}>
+          {formatINR(r.netAmount)}
+          <span style={{ display: 'block', fontSize: '0.68rem', color: '#6b7280' }}>Net /mo</span>
+        </td>
+
+        {/* 8. Starting Date */}
+        <td style={{ padding: '12px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap', color: '#374151', fontWeight: 500 }}>
+          {formatDate(r.startDate)}
+        </td>
+
+        {/* 9. Ending Date */}
+        <td style={{ padding: '12px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+          <span style={{ color: '#17652f', fontWeight: 500 }}>
+            {formatDate(r.endDate)}
+          </span>
+        </td>
+
+        {/* 10. Tenure (Months) */}
+        <td style={{ padding: '12px 14px', verticalAlign: 'middle', textAlign: 'center' }}>
+          <span style={{
+            background: '#f3f4f6',
+            color: '#374151',
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            padding: '3px 8px',
+            borderRadius: '4px'
+          }}>
+            {r.tenureMonths} mos
+          </span>
+        </td>
+
+        {/* 11. Total Paid */}
+        <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 500, color: '#111827' }}>
+          {formatINR(r.totalPaid)}
+          <span style={{ display: 'block', fontSize: '0.68rem', color: '#6b7280' }}>
+            {r.paidMonthsCount} paid
+          </span>
+        </td>
+
+        {/* 12. Amount Outstanding */}
+        <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 500, color: '#111827' }}>
+          {formatINR(r.amountOutstanding)}
+          <span style={{ display: 'block', fontSize: '0.68rem', color: '#6b7280' }}>
+            {r.remainingMonths} left
+          </span>
+        </td>
+
+        {/* 13. Actions */}
+        <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            {/* Edit Terms */}
+            {canEditRental && (
+              <button
+                type="button"
+                onClick={() => setSelectedRentalForEdit(r)}
+                title="Edit terms"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #e5e7eb',
+                  background: '#ffffff',
+                  color: '#111827',
+                  fontSize: '0.74rem',
+                  fontWeight: 500,
+                  cursor: 'pointer'
+                }}
+              >
+                <Edit size={13} />
+                <span>Edit</span>
+              </button>
+            )}
+
+            {/* Flat Documents Hub Modal */}
+            <button
+              type="button"
+              onClick={() => setSelectedFlatForDocs(r)}
+              title={`Documents for flat ${r.flatNumber}`}
+              style={{
+                padding: '5px 8px',
+                borderRadius: '6px',
+                border: '1px solid #e5e7eb',
+                background: '#ffffff',
+                color: '#111827',
+                cursor: 'pointer'
+              }}
+            >
+              <FolderOpen size={14} />
+            </button>
+
+            {/* Record Payout */}
+            {(canEditRental || canManageRentals) && (
+              <button
+                type="button"
+                onClick={() => setSelectedRentalForPayout(r)}
+                title="Record payout"
+                style={{
+                  padding: '5px 8px',
+                  borderRadius: '6px',
+                  border: '1px solid #e5e7eb',
+                  background: '#ffffff',
+                  color: '#17652f',
+                  cursor: 'pointer'
+                }}
+              >
+                <DollarSign size={14} />
+              </button>
+            )}
+
+            {/* Resale Transfer */}
+            {canManageRentals && (
+              <button
+                type="button"
+                onClick={() => setSelectedRentalForTransfer(r)}
+                title="Transfer ownership"
+                style={{
+                  padding: '5px 8px',
+                  borderRadius: '6px',
+                  border: '1px solid #e5e7eb',
+                  background: '#ffffff',
+                  color: '#17652f',
+                  cursor: 'pointer'
+                }}
+              >
+                <Repeat size={14} />
+              </button>
+            )}
+
+            {/* Delete / Unenroll */}
+            {canDeleteRental && (
+              <button
+                type="button"
+                onClick={() => handleDeleteActiveRental(r)}
+                title="Delete rental"
+                style={{
+                  padding: '5px 8px',
+                  borderRadius: '6px',
+                  border: '1px solid #e5e7eb',
+                  background: '#ffffff',
+                  color: '#dc2626',
+                  cursor: 'pointer'
+                }}
+              >
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingBottom: '40px' }}>
@@ -1037,6 +1555,58 @@ export const RentalManagementPage = () => {
               <span>Reset filters</span>
             </button>
           )}
+
+          {/* Active Tab: Floor Grouping Controls */}
+          {activeTab === 'active' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setGroupByFloor((g) => !g)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '7px 12px',
+                  borderRadius: '6px',
+                  border: `1px solid ${groupByFloor ? '#17652f' : '#e5e7eb'}`,
+                  background: groupByFloor ? '#e8f2e5' : '#ffffff',
+                  color: groupByFloor ? '#17652f' : '#374151',
+                  fontSize: '0.82rem',
+                  fontWeight: 500,
+                  cursor: 'pointer'
+                }}
+                title="Toggle floor-wise grouped tables"
+              >
+                <Layers size={14} />
+                <span>{groupByFloor ? 'Grouped by floor' : 'Single table'}</span>
+              </button>
+
+              {groupByFloor && floorGroups.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const allCollapsed = floorGroups.every((g) => collapsedFloors[g.floor]);
+                    toggleAllFloors(!allCollapsed);
+                  }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '7px 11px',
+                    borderRadius: '6px',
+                    border: '1px solid #e5e7eb',
+                    background: '#ffffff',
+                    color: '#4b5563',
+                    fontSize: '0.8rem',
+                    fontWeight: 500,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <span>{floorGroups.every((g) => collapsedFloors[g.floor]) ? 'Expand all' : 'Collapse all'}</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -1044,501 +1614,160 @@ export const RentalManagementPage = () => {
       {/* 4. TABLE 1: ACTIVE RENTAL REGISTER (CURRENT OWNERS) */}
       {/* ========================================================================= */}
       {activeTab === 'active' && (
-        <div style={{
-          background: '#ffffff',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          overflow: 'hidden'
-        }}>
+        <>
           {loadingActive ? (
-            <div style={{ padding: '24px' }}>
+            <div style={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb', padding: '24px' }}>
               <TableSkeleton rows={8} columns={12} />
             </div>
           ) : sortedActiveRentals.length === 0 ? (
-            <EmptyState
-              icon={Building2}
-              title="No active rentals found"
-              description="No flats are currently enrolled in the active rental program matching your filters."
-            />
-          ) : (
-            <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
-                <thead>
-                  <tr style={{
-                    background: '#f9fafb',
-                    borderBottom: '1px solid #e5e7eb',
-                    color: '#6b7280',
-                    fontSize: '0.78rem',
-                    fontWeight: 500
-                  }}>
-                    {/* Flat No */}
-                    <th
-                      onClick={() => handleHeaderSort('flatNumber')}
-                      style={{ padding: '12px 16px', fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}
+            <div style={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+              <EmptyState
+                icon={Building2}
+                title="No active rentals found"
+                description="No flats are currently enrolled in the active rental program matching your filters."
+              />
+            </div>
+          ) : groupByFloor ? (
+            /* Floor-by-Floor Grouped Tables */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {floorGroups.map((group) => {
+                const isCollapsed = Boolean(collapsedFloors[group.floor]);
+                return (
+                  <div
+                    key={group.floor}
+                    style={{
+                      background: '#ffffff',
+                      borderRadius: '8px',
+                      border: '1px solid #e5e7eb',
+                      overflow: 'hidden',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                    }}
+                  >
+                    {/* Floor Header Bar */}
+                    <div
+                      onClick={() => toggleFloor(group.floor)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '12px',
+                        padding: '12px 18px',
+                        background: isCollapsed ? '#fafafa' : '#f8faf9',
+                        borderBottom: isCollapsed ? 'none' : '1px solid #e5e7eb',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'background 0.15s ease'
+                      }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span>Flat</span>
-                        <ArrowUpDown size={12} color="#9ca3af" />
-                      </div>
-                    </th>
-
-                    {/* Owner */}
-                    <th
-                      onClick={() => handleHeaderSort('ownerName')}
-                      style={{ padding: '12px 16px', fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span>Owner</span>
-                        <ArrowUpDown size={12} color="#9ca3af" />
-                      </div>
-                    </th>
-
-                    {/* Documents & Registry */}
-                    <th style={{ padding: '12px 16px', fontWeight: 500 }}>
-                      <span>Documents</span>
-                    </th>
-
-                    {/* Registry Date */}
-                    <th
-                      onClick={() => handleHeaderSort('registryDate')}
-                      style={{ padding: '12px 14px', fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span>Registry date</span>
-                        <ArrowUpDown size={12} color="#9ca3af" />
-                      </div>
-                    </th>
-
-                    {/* Rent Amount */}
-                    <th
-                      onClick={() => handleHeaderSort('rentAmount')}
-                      style={{ padding: '12px 14px', fontWeight: 500, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
-                        <span>Monthly rent</span>
-                        <ArrowUpDown size={12} color="#9ca3af" />
-                      </div>
-                    </th>
-
-                    {/* TDS */}
-                    <th style={{ padding: '12px 14px', fontWeight: 500 }}>TDS</th>
-
-                    {/* Net Amount */}
-                    <th
-                      onClick={() => handleHeaderSort('netAmount')}
-                      style={{ padding: '12px 14px', fontWeight: 500, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
-                        <span>Net payout</span>
-                        <ArrowUpDown size={12} color="#9ca3af" />
-                      </div>
-                    </th>
-
-                    {/* Start Date */}
-                    <th
-                      onClick={() => handleHeaderSort('startDate')}
-                      style={{ padding: '12px 14px', fontWeight: 500, cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span>Start date</span>
-                        <ArrowUpDown size={12} color="#9ca3af" />
-                      </div>
-                    </th>
-
-                    {/* End Date */}
-                    <th style={{ padding: '12px 14px', fontWeight: 500 }}>End date</th>
-
-                    {/* Tenure */}
-                    <th style={{ padding: '12px 14px', fontWeight: 500, textAlign: 'center' }}>Tenure</th>
-
-                    {/* Total Paid */}
-                    <th
-                      onClick={() => handleHeaderSort('totalPaid')}
-                      style={{ padding: '12px 16px', fontWeight: 500, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
-                        <span>Total paid</span>
-                        <ArrowUpDown size={12} color="#9ca3af" />
-                      </div>
-                    </th>
-
-                    {/* Outstanding */}
-                    <th
-                      onClick={() => handleHeaderSort('amountOutstanding')}
-                      style={{ padding: '12px 16px', fontWeight: 500, textAlign: 'right', cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
-                        <span>Outstanding</span>
-                        <ArrowUpDown size={12} color="#9ca3af" />
-                      </div>
-                    </th>
-
-                    {/* Actions */}
-                    <th style={{ padding: '12px 16px', fontWeight: 500, textAlign: 'center' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedActiveRentals.map((r, idx) => {
-                    const hasRegistryDoc = Boolean(r.registryDocument?.fileUrl);
-                    const hasAgreementDoc = Boolean(r.agreementDocument?.fileUrl);
-
-                    return (
-                      <tr
-                        key={r._id || idx}
-                        style={{
-                          borderBottom: '1px solid #f3f4f6',
-                          fontSize: '0.82rem'
-                        }}
-                      >
-                        {/* 1. Flat No */}
-                        <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
-                          <button
-                            type="button"
-                            onClick={() => navigate(`/inventory/flats/${r._id}`)}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              padding: 0,
-                              color: '#17652f',
-                              fontWeight: 600,
-                              fontSize: '0.9rem',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px'
-                            }}
-                            title="Open flat profile"
-                          >
-                            <span>{r.flatNumber}</span>
-                            <ExternalLink size={12} />
-                          </button>
-                          <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginTop: '2px' }}>
-                            Floor {r.floor === 0 ? 'G' : renderCellData(r.floor)} • {renderCellData(r.bhkType)}
-                          </span>
-                        </td>
-
-                        {/* 2. Owner Name & Mobile */}
-                        <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
-                          <div style={{ fontWeight: 500, color: '#111827' }}>{renderCellData(r.ownerName)}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            {r.ownerMobile && <Phone size={10} color="#9ca3af" />}
-                            <span>{renderCellData(r.ownerMobile)}</span>
-                          </div>
-                        </td>
-
-                        {/* 3. Documents Pill Access */}
-                        <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {/* Registry Document Pill */}
-                            {hasRegistryDoc ? (
-                              <a
-                                href={getFileUrl(r.registryDocument.fileUrl)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="View registry document"
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  fontSize: '0.7rem',
-                                  fontWeight: 500,
-                                  background: '#e8f2e5',
-                                  color: '#17652f',
-                                  padding: '2px 8px',
-                                  borderRadius: '4px',
-                                  textDecoration: 'none',
-                                  width: 'fit-content'
-                                }}
-                              >
-                                <ShieldCheck size={12} />
-                                <span>Registry</span>
-                              </a>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => setSelectedFlatForDocs(r)}
-                                title="Upload registry document"
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  fontSize: '0.68rem',
-                                  fontWeight: 500,
-                                  background: '#ffffff',
-                                  color: '#6b7280',
-                                  padding: '2px 8px',
-                                  borderRadius: '4px',
-                                  border: '1px dashed #d1d5db',
-                                  cursor: 'pointer',
-                                  width: 'fit-content'
-                                }}
-                              >
-                                <Plus size={11} />
-                                <span>Add registry</span>
-                              </button>
-                            )}
-
-                            {/* Rental Agreement Document Pill */}
-                            {hasAgreementDoc ? (
-                              <a
-                                href={getFileUrl(r.agreementDocument.fileUrl)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="View rental agreement"
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  fontSize: '0.7rem',
-                                  fontWeight: 500,
-                                  background: '#e8f2e5',
-                                  color: '#17652f',
-                                  padding: '2px 8px',
-                                  borderRadius: '4px',
-                                  textDecoration: 'none',
-                                  width: 'fit-content'
-                                }}
-                              >
-                                <FileText size={12} />
-                                <span>Agreement</span>
-                              </a>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => setSelectedFlatForDocs(r)}
-                                title="Upload rental agreement"
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  fontSize: '0.68rem',
-                                  fontWeight: 500,
-                                  background: '#ffffff',
-                                  color: '#6b7280',
-                                  padding: '2px 8px',
-                                  borderRadius: '4px',
-                                  border: '1px dashed #d1d5db',
-                                  cursor: 'pointer',
-                                  width: 'fit-content'
-                                }}
-                              >
-                                <Plus size={11} />
-                                <span>Add agreement</span>
-                              </button>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* 4. Registry Date */}
-                        <td style={{ padding: '12px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <span style={{ color: '#374151', fontWeight: 500 }}>
-                            {formatDate(r.registryDate)}
-                          </span>
-                        </td>
-
-                        {/* 5. Rent Amount */}
-                        <td style={{ padding: '12px 14px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 500, color: '#111827' }}>
-                          {formatINR(r.rentAmount)}
-                          <span style={{ display: 'block', fontSize: '0.68rem', color: '#6b7280' }}>/month</span>
-                          {r.effectiveFromMonthYear && (
-                            <span style={{
-                              display: 'inline-block',
-                              fontSize: '0.64rem',
-                              color: '#17652f',
-                              background: '#e8f2e5',
-                              padding: '1px 6px',
-                              borderRadius: '4px',
-                              marginTop: '2px'
-                            }}>
-                              From: {r.effectiveFromMonthYear}
+                      {/* Left: Tower & Floor Info */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div
+                          style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '6px',
+                            background: '#e8f2e5',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#17652f'
+                          }}
+                        >
+                          <Building2 size={15} />
+                        </div>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#111827' }}>
+                              Tower A — {group.label}
                             </span>
-                          )}
-                        </td>
-
-                        {/* 6. TDS Applied */}
-                        <td style={{ padding: '12px 14px', verticalAlign: 'middle' }}>
-                          {r.applyTds ? (
-                            <div>
-                              <span style={{
-                                background: '#f3f4f6',
-                                color: '#374151',
-                                fontSize: '0.7rem',
-                                padding: '2px 6px',
-                                borderRadius: '4px',
-                                fontWeight: 500
-                              }}>
-                                {r.tdsMode === 'amount'
-                                  ? `₹${(r.tdsAmount || 0).toLocaleString('en-IN')}`
-                                  : `${r.tdsPercentage}%`}
-                              </span>
-                              <span style={{ display: 'block', fontSize: '0.7rem', color: '#6b7280', marginTop: '2px' }}>
-                                - {formatINR(r.tdsAmount)}
-                              </span>
-                            </div>
-                          ) : (
-                            <span style={{ color: '#9ca3af', fontSize: '0.72rem' }}>None</span>
-                          )}
-                        </td>
-
-                        {/* 7. Net Amount */}
-                        <td style={{ padding: '12px 14px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 600, color: '#17652f' }}>
-                          {formatINR(r.netAmount)}
-                          <span style={{ display: 'block', fontSize: '0.68rem', color: '#6b7280' }}>Net /mo</span>
-                        </td>
-
-                        {/* 8. Starting Date */}
-                        <td style={{ padding: '12px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap', color: '#374151', fontWeight: 500 }}>
-                          {formatDate(r.startDate)}
-                        </td>
-
-                        {/* 9. Ending Date */}
-                        <td style={{ padding: '12px 14px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                          <span style={{ color: '#17652f', fontWeight: 500 }}>
-                            {formatDate(r.endDate)}
-                          </span>
-                        </td>
-
-                        {/* 10. Tenure (Months) */}
-                        <td style={{ padding: '12px 14px', verticalAlign: 'middle', textAlign: 'center' }}>
-                          <span style={{
-                            background: '#f3f4f6',
-                            color: '#374151',
-                            fontSize: '0.75rem',
-                            fontWeight: 500,
-                            padding: '3px 8px',
-                            borderRadius: '4px'
-                          }}>
-                            {r.tenureMonths} mos
-                          </span>
-                        </td>
-
-                        {/* 11. Total Paid */}
-                        <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 500, color: '#111827' }}>
-                          {formatINR(r.totalPaid)}
-                          <span style={{ display: 'block', fontSize: '0.68rem', color: '#6b7280' }}>
-                            {r.paidMonthsCount} paid
-                          </span>
-                        </td>
-
-                        {/* 12. Amount Outstanding */}
-                        <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'right', fontWeight: 500, color: '#111827' }}>
-                          {formatINR(r.amountOutstanding)}
-                          <span style={{ display: 'block', fontSize: '0.68rem', color: '#6b7280' }}>
-                            {r.remainingMonths} left
-                          </span>
-                        </td>
-
-                        {/* 13. Actions */}
-                        <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'center' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                            {/* Edit Terms */}
-                            {canEditRental && (
-                              <button
-                                type="button"
-                                onClick={() => setSelectedRentalForEdit(r)}
-                                title="Edit terms"
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  padding: '5px 10px',
-                                  borderRadius: '6px',
-                                  border: '1px solid #e5e7eb',
-                                  background: '#ffffff',
-                                  color: '#111827',
-                                  fontSize: '0.74rem',
-                                  fontWeight: 500,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <Edit size={13} />
-                                <span>Edit</span>
-                              </button>
-                            )}
-
-                            {/* Flat Documents Hub Modal */}
-                            <button
-                              type="button"
-                              onClick={() => setSelectedFlatForDocs(r)}
-                              title={`Documents for flat ${r.flatNumber}`}
+                            <span
                               style={{
-                                padding: '5px 8px',
-                                borderRadius: '6px',
-                                border: '1px solid #e5e7eb',
-                                background: '#ffffff',
-                                color: '#111827',
-                                cursor: 'pointer'
+                                fontSize: '0.72rem',
+                                fontWeight: 600,
+                                padding: '2px 8px',
+                                borderRadius: '10px',
+                                background: '#e8f2e5',
+                                color: '#17652f'
                               }}
                             >
-                              <FolderOpen size={14} />
-                            </button>
-
-                            {/* Record Payout */}
-                            {(canEditRental || canManageRentals) && (
-                              <button
-                                type="button"
-                                onClick={() => setSelectedRentalForPayout(r)}
-                                title="Record payout"
-                                style={{
-                                  padding: '5px 8px',
-                                  borderRadius: '6px',
-                                  border: '1px solid #e5e7eb',
-                                  background: '#ffffff',
-                                  color: '#17652f',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <DollarSign size={14} />
-                              </button>
-                            )}
-
-                            {/* Resale Transfer */}
-                            {canManageRentals && (
-                              <button
-                                type="button"
-                                onClick={() => setSelectedRentalForTransfer(r)}
-                                title="Transfer ownership"
-                                style={{
-                                  padding: '5px 8px',
-                                  borderRadius: '6px',
-                                  border: '1px solid #e5e7eb',
-                                  background: '#ffffff',
-                                  color: '#17652f',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <Repeat size={14} />
-                              </button>
-                            )}
-
-                            {/* Delete / Unenroll */}
-                            {canDeleteRental && (
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteActiveRental(r)}
-                                title="Delete rental"
-                                style={{
-                                  padding: '5px 8px',
-                                  borderRadius: '6px',
-                                  border: '1px solid #e5e7eb',
-                                  background: '#ffffff',
-                                  color: '#dc2626',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            )}
+                              {group.rows.length} {group.rows.length === 1 ? 'flat' : 'flats'}
+                            </span>
                           </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                      </div>
+
+                      {/* Right: Floor Metrics & Expand Icon */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', fontSize: '0.78rem' }}>
+                          <div>
+                            <span style={{ color: '#6b7280' }}>Monthly Gross: </span>
+                            <strong style={{ color: '#111827' }}>{formatINR(group.totalGross)}</strong>
+                          </div>
+                          <div>
+                            <span style={{ color: '#6b7280' }}>Net Payout: </span>
+                            <strong style={{ color: '#17652f' }}>{formatINR(group.totalNet)}</strong>
+                          </div>
+                          <div>
+                            <span style={{ color: '#6b7280' }}>Outstanding: </span>
+                            <strong style={{ color: '#b45309' }}>{formatINR(group.totalOutstanding)}</strong>
+                          </div>
+                        </div>
+
+                        <div
+                          style={{
+                            width: '26px',
+                            height: '26px',
+                            borderRadius: '4px',
+                            background: '#ffffff',
+                            border: '1px solid #e5e7eb',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#6b7280'
+                          }}
+                        >
+                          {isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Floor Table */}
+                    {!isCollapsed && (
+                      <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
+                          {renderActiveTableHead()}
+                          <tbody>
+                            {group.rows.map((r, idx) => renderActiveRentalRow(r, idx))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* Single Large Table View */
+            <div
+              style={{
+                background: '#ffffff',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb',
+                overflow: 'hidden'
+              }}
+            >
+              <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
+                  {renderActiveTableHead()}
+                  <tbody>
+                    {sortedActiveRentals.map((r, idx) => renderActiveRentalRow(r, idx))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
-        </div>
+        </>
       )}
 
       {/* ========================================================================= */}

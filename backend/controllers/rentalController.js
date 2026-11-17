@@ -1470,17 +1470,18 @@ export const importRentalsFromExcel = async (req, res) => {
       const tenureMonths = Number(row.tenureMonths || row['Tenure (Months)'] || row.tenure || 36) || 36;
       const totalPaid = Number(row.totalPaid || row['Total Paid'] || 0) || 0;
 
-      // Find flat with flexible pattern matching
+      // Find flat with flexible pattern matching, protecting against cross-tower prefix collisions
+      const isTowerB = /^[Bb][\s\-_]|Tower[\s\-_]*B/i.test(flatNumber);
       let flat = await Flat.findOne({
         flatNumber: { $regex: new RegExp(`^${flatNumber.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, '\\$&')}$`, 'i') }
       });
 
-      // Try numeric suffix if tower prefix is missing/different e.g. "001" vs "A-001"
-      if (!flat) {
+      // Try numeric suffix ONLY if it's NOT a Tower B flat (prevents B-001 overwriting A-001)
+      if (!flat && !isTowerB) {
         const numOnly = flatNumber.replace(/\D/g, '');
         if (numOnly) {
           flat = await Flat.findOne({
-            flatNumber: { $regex: new RegExp(`^.*${numOnly}$`, 'i') }
+            flatNumber: { $regex: new RegExp(`^(A[-\\s]*)?${numOnly}$`, 'i') }
           });
         }
       }
@@ -1532,6 +1533,9 @@ export const importRentalsFromExcel = async (req, res) => {
         ownershipType: 'individual'
       };
 
+      const existingRegDoc = flat.rentalDetails?.registryDocument;
+      const existingAgrDoc = flat.rentalDetails?.agreementDocument;
+
       flat.rentalDetails = {
         isRentBackActive: true,
         guaranteedMonthlyRent: rentAmount,
@@ -1547,7 +1551,9 @@ export const importRentalsFromExcel = async (req, res) => {
         total36MonthCommitment: totalCommitment,
         totalDisbursedToOwner: totalPaid,
         remainingPayableToOwner: remaining,
-        ledgerEntries
+        ledgerEntries,
+        ...(existingRegDoc?.fileUrl ? { registryDocument: existingRegDoc } : {}),
+        ...(existingAgrDoc?.fileUrl ? { agreementDocument: existingAgrDoc } : {})
       };
 
       flat.takenForRental = true;
