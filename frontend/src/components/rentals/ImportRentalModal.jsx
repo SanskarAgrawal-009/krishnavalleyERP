@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { Modal } from '../common/Modal.jsx';
 import { LoadingButton } from '../common/LoadingButton.jsx';
@@ -16,8 +16,11 @@ import {
 export const ImportRentalModal = ({
   isOpen,
   onClose,
-  onSuccess
+  onSuccess,
+  initialTower = 'Tower A',
+  availableTowers = ['Tower A', 'Tower B']
 }) => {
+  const [selectedTower, setSelectedTower] = useState(initialTower || 'Tower A');
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [parsedRows, setParsedRows] = useState([]);
@@ -25,6 +28,12 @@ export const ImportRentalModal = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [successResult, setSuccessResult] = useState(null);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (initialTower) {
+      setSelectedTower(initialTower);
+    }
+  }, [initialTower, isOpen]);
 
   if (!isOpen) return null;
 
@@ -254,6 +263,7 @@ export const ImportRentalModal = ({
     setErrorMsg('');
     try {
       const payload = {
+        tower: selectedTower,
         rentals: validRows.map((r) => ({
           flatNo: r.flatNumber,
           ownerName: r.ownerName,
@@ -344,6 +354,51 @@ export const ImportRentalModal = ({
             <Download size={14} /> Download Sample Template (.xlsx)
           </button>
         </div>
+
+        {/* Target Tower Selector */}
+        {!successResult && (
+          <div style={{
+            padding: '12px 16px',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '10px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Building2 size={18} color="#17652f" />
+              <div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' }}>Target Tower Destination</div>
+                <div style={{ fontSize: '0.74rem', color: '#64748b' }}>Select which tower register to import these records into</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {(availableTowers || ['Tower A', 'Tower B']).map((tw) => (
+                <button
+                  key={tw}
+                  type="button"
+                  onClick={() => setSelectedTower(tw)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    border: selectedTower === tw ? '1.5px solid #17652f' : '1px solid #cbd5e1',
+                    background: selectedTower === tw ? '#e8f2e5' : '#ffffff',
+                    color: selectedTower === tw ? '#17652f' : '#334155',
+                    fontWeight: selectedTower === tw ? '700' : '500',
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  {tw}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* File Upload Dropzone */}
         {!successResult && (
@@ -592,7 +647,7 @@ export const ImportRentalModal = ({
               variant="primary"
               style={{ background: '#17652f' }}
             >
-              Import {parsedRows.length} Rentals into Table 1
+              Import {parsedRows.length} Rentals into {selectedTower}
             </LoadingButton>
           </div>
         )}

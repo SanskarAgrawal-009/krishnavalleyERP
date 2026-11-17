@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { hrService } from '../../services/hrService.js';
 import { getFileUrl } from '../../services/api.js';

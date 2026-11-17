@@ -85,11 +85,15 @@ export const RentalManagementPage = () => {
   // Filters & Ordering
   const [searchQuery, setSearchQuery] = useState('');
   const [tenureFilter, setTenureFilter] = useState('all');
+  const [selectedProject, setSelectedProject] = useState('all');
+  const [selectedTower, setSelectedTower] = useState('all');
+  const [projectsList, setProjectsList] = useState([]);
+  const [importTargetTower, setImportTargetTower] = useState('Tower A');
   const [sortField, setSortField] = useState('flatNumber');
   const [sortOrder, setSortOrder] = useState('default'); // 'default' | 'asc' | 'desc'
   const [groupByFloor, setGroupByFloor] = useState(true);
   const [collapsedFloors, setCollapsedFloors] = useState({});
-  const toggleFloor = (floor) => setCollapsedFloors((prev) => ({ ...prev, [floor]: !prev[floor] }));
+  const toggleFloor = (key) => setCollapsedFloors((prev) => ({ ...prev, [key]: !prev[key] }));
 
   // Modals
   const [selectedRentalForEdit, setSelectedRentalForEdit] = useState(null);
@@ -117,6 +121,7 @@ export const RentalManagementPage = () => {
       if (res.success) {
         setActiveRentals(res.data || []);
         if (res.kpis) setKpis(res.kpis);
+        if (res.meta?.projects) setProjectsList(res.meta.projects);
       }
     } catch (err) {
       console.error('Error fetching active rentals:', err);
@@ -238,9 +243,91 @@ export const RentalManagementPage = () => {
     return String(a || '').localeCompare(String(b || ''), undefined, { numeric: true, sensitivity: 'base' });
   };
 
+  // Available Projects (from API meta or derived from activeRentals)
+  const availableProjects = useMemo(() => {
+    if (projectsList && projectsList.length > 0) {
+      return projectsList;
+    }
+    const map = new Map();
+    activeRentals.forEach((r) => {
+      const name = r.projectName || 'Krishna Valley Resorts';
+      if (!map.has(name)) {
+        map.set(name, { _id: r.projectId || name, projectName: name });
+      }
+    });
+    if (map.size === 0) {
+      return [{ _id: 'proj_default', projectName: 'Krishna Valley Resorts' }];
+    }
+    return Array.from(map.values());
+  }, [projectsList, activeRentals]);
+
+  // Available Towers (from selected project or meta or derived)
+  const availableTowers = useMemo(() => {
+    if (selectedProject !== 'all') {
+      const proj = availableProjects.find((p) => p.projectName === selectedProject || p._id === selectedProject);
+      if (proj?.towers && proj.towers.length > 0) {
+        return proj.towers;
+      }
+    }
+    const towersSet = new Set(['Tower A', 'Tower B']);
+    projectsList.forEach((p) => (p.towers || []).forEach((t) => towersSet.add(t)));
+    activeRentals.forEach((r) => {
+      if (r.tower) towersSet.add(r.tower);
+    });
+    return Array.from(towersSet).sort();
+  }, [availableProjects, selectedProject, projectsList, activeRentals]);
+
+  // Filtered Active Rentals (by Project, Tower, Search, and Tenure)
+  const filteredActiveRentals = useMemo(() => {
+    return activeRentals.filter((r) => {
+      // Project filter
+      if (selectedProject !== 'all') {
+        const matchesProj = r.projectName === selectedProject || r.projectId === selectedProject;
+        if (!matchesProj) return false;
+      }
+      // Tower filter
+      if (selectedTower !== 'all') {
+        const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : 'Tower A');
+        if (rTower !== selectedTower) return false;
+      }
+      // Search filter
+      if (searchQuery.trim()) {
+        const term = searchQuery.toLowerCase().trim();
+        const matches =
+          (r.flatNumber && r.flatNumber.toLowerCase().includes(term)) ||
+          (r.ownerName && r.ownerName.toLowerCase().includes(term)) ||
+          (r.ownerMobile && String(r.ownerMobile).toLowerCase().includes(term));
+        if (!matches) return false;
+      }
+      // Tenure filter
+      if (tenureFilter !== 'all') {
+        if (Number(r.tenureMonths) !== Number(tenureFilter)) return false;
+      }
+      return true;
+    });
+  }, [activeRentals, selectedProject, selectedTower, searchQuery, tenureFilter]);
+
+  // Active KPIs (dynamically aggregated for currently active filter)
+  const activeKpis = useMemo(() => {
+    const totalUnits = filteredActiveRentals.length;
+    const totalMonthlyGross = filteredActiveRentals.reduce((sum, item) => sum + (Number(item.rentAmount) || 0), 0);
+    const totalMonthlyNet = filteredActiveRentals.reduce((sum, item) => sum + (Number(item.netAmount) || 0), 0);
+    const totalDisbursed = filteredActiveRentals.reduce((sum, item) => sum + (Number(item.totalPaid) || 0), 0);
+    const totalOutstanding = filteredActiveRentals.reduce((sum, item) => sum + (Number(item.amountOutstanding) || 0), 0);
+    const totalCommitmentAll = filteredActiveRentals.reduce((sum, item) => sum + (Number(item.totalCommitment) || 0), 0);
+    return {
+      totalUnits,
+      totalMonthlyGross,
+      totalMonthlyNet,
+      totalDisbursed,
+      totalOutstanding,
+      totalCommitmentAll
+    };
+  }, [filteredActiveRentals]);
+
   // Sorted Active Rentals Memo
   const sortedActiveRentals = useMemo(() => {
-    const list = [...activeRentals];
+    const list = [...filteredActiveRentals];
     if (sortOrder === 'default') {
       return list.sort((a, b) => naturalCompare(a.flatNumber, b.flatNumber));
     }
@@ -286,7 +373,7 @@ export const RentalManagementPage = () => {
       }
       return sortOrder === 'desc' ? -cmp : cmp;
     });
-  }, [activeRentals, sortOrder, sortField]);
+  }, [filteredActiveRentals, sortOrder, sortField]);
 
   // Floor derivation and grouping
   const getFloor = (flatNumber) => {
@@ -295,9 +382,18 @@ export const RentalManagementPage = () => {
   };
   const floorLabel = (floor) => (floor === 0 ? 'Ground Floor' : `Floor ${floor}`);
 
-  const floorGroups = useMemo(() => {
+  // Displayed Towers: either single selected tower or all available towers
+  const displayedTowers = useMemo(() => {
+    if (selectedTower !== 'all') {
+      return [selectedTower];
+    }
+    return availableTowers;
+  }, [selectedTower, availableTowers]);
+
+  // Group a specific tower's flats by floor
+  const getTowerFloorGroups = (flatsList) => {
     const groups = {};
-    sortedActiveRentals.forEach((r) => {
+    flatsList.forEach((r) => {
       const fl = getFloor(r.flatNumber);
       if (!groups[fl]) groups[fl] = [];
       groups[fl].push(r);
@@ -313,19 +409,49 @@ export const RentalManagementPage = () => {
         totalOutstanding: rows.reduce((s, r) => s + (Number(r.amountOutstanding) || 0), 0),
         totalPaid: rows.reduce((s, r) => s + (Number(r.totalPaid) || 0), 0)
       }));
+  };
+
+  const floorGroups = useMemo(() => {
+    return getTowerFloorGroups(sortedActiveRentals);
   }, [sortedActiveRentals]);
 
   const toggleAllFloors = (collapse) => {
     const next = {};
-    floorGroups.forEach((g) => {
-      next[g.floor] = collapse;
+    displayedTowers.forEach((towerName) => {
+      const towerFlats = sortedActiveRentals.filter((r) => (r.tower || 'Tower A') === towerName);
+      const groups = getTowerFloorGroups(towerFlats);
+      groups.forEach((g) => {
+        next[`${towerName}_${g.floor}`] = collapse;
+      });
     });
     setCollapsedFloors(next);
   };
 
-  // Sorted History Records Memo
+  // Filtered & Sorted History Records Memo
+  const filteredHistoryRecords = useMemo(() => {
+    return historyRecords.filter((h) => {
+      if (selectedProject !== 'all') {
+        const matchesProj = h.projectName === selectedProject || h.projectId === selectedProject;
+        if (!matchesProj) return false;
+      }
+      if (selectedTower !== 'all') {
+        const hTower = h.tower || (/^[Bb][\s\-_]/.test(h.flatNumber) ? 'Tower B' : 'Tower A');
+        if (hTower !== selectedTower) return false;
+      }
+      if (searchQuery.trim()) {
+        const term = searchQuery.toLowerCase().trim();
+        const matches =
+          (h.flatNumber && h.flatNumber.toLowerCase().includes(term)) ||
+          (h.previousOwnerName && h.previousOwnerName.toLowerCase().includes(term)) ||
+          (h.mobileNo && String(h.mobileNo).toLowerCase().includes(term));
+        if (!matches) return false;
+      }
+      return true;
+    });
+  }, [historyRecords, selectedProject, selectedTower, searchQuery]);
+
   const sortedHistoryRecords = useMemo(() => {
-    const list = [...historyRecords];
+    const list = [...filteredHistoryRecords];
     if (sortOrder === 'default') {
       return list.sort((a, b) => naturalCompare(a.flatNumber, b.flatNumber));
     }
@@ -359,7 +485,7 @@ export const RentalManagementPage = () => {
       }
       return sortOrder === 'desc' ? -cmp : cmp;
     });
-  }, [historyRecords, sortOrder, sortField]);
+  }, [filteredHistoryRecords, sortOrder, sortField]);
 
   // Header click sorting
   const handleHeaderSort = (field) => {
@@ -724,23 +850,26 @@ export const RentalManagementPage = () => {
                 href={getFileUrl(r.registryDocument.fileUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                title="View registry document"
+                title={r.registryDocument.fileName ? `Original Registry: ${r.registryDocument.fileName}${r.registryDocument.fileSize ? ` (${(r.registryDocument.fileSize / (1024 * 1024)).toFixed(1)} MB)` : ''} • Click to open` : 'View registry document'}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '5px',
                   fontSize: '0.7rem',
-                  fontWeight: 500,
+                  fontWeight: 600,
                   background: '#e8f2e5',
                   color: '#17652f',
-                  padding: '2px 8px',
-                  borderRadius: '4px',
+                  padding: '3px 8px',
+                  borderRadius: '5px',
                   textDecoration: 'none',
-                  width: 'fit-content'
+                  width: 'fit-content',
+                  border: '1px solid #c2e2be',
+                  transition: 'all 0.15s ease'
                 }}
               >
-                <ShieldCheck size={12} />
+                <ShieldCheck size={12} color="#17652f" />
                 <span>Registry</span>
+                <ExternalLink size={10} color="#17652f" style={{ opacity: 0.7 }} />
               </a>
             ) : (
               <button
@@ -773,23 +902,26 @@ export const RentalManagementPage = () => {
                 href={getFileUrl(r.agreementDocument.fileUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                title="View rental agreement"
+                title={r.agreementDocument.fileName ? `Original Agreement: ${r.agreementDocument.fileName}${r.agreementDocument.fileSize ? ` (${(r.agreementDocument.fileSize / (1024 * 1024)).toFixed(1)} MB)` : ''} • Click to open` : 'View rental agreement'}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '5px',
                   fontSize: '0.7rem',
-                  fontWeight: 500,
-                  background: '#e8f2e5',
-                  color: '#17652f',
-                  padding: '2px 8px',
-                  borderRadius: '4px',
+                  fontWeight: 600,
+                  background: '#e0f2fe',
+                  color: '#0369a1',
+                  padding: '3px 8px',
+                  borderRadius: '5px',
                   textDecoration: 'none',
-                  width: 'fit-content'
+                  width: 'fit-content',
+                  border: '1px solid #bae6fd',
+                  transition: 'all 0.15s ease'
                 }}
               >
-                <FileText size={12} />
+                <FileText size={12} color="#0369a1" />
                 <span>Agreement</span>
+                <ExternalLink size={10} color="#0369a1" style={{ opacity: 0.7 }} />
               </a>
             ) : (
               <button
@@ -1209,7 +1341,7 @@ export const RentalManagementPage = () => {
             </div>
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', margin: '4px 0 2px' }}>
-            {kpis.totalUnits} <span style={{ fontSize: '0.82rem', fontWeight: 400, color: '#6b7280' }}>units</span>
+            {activeKpis.totalUnits} <span style={{ fontSize: '0.82rem', fontWeight: 400, color: '#6b7280' }}>units</span>
           </div>
           <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
             Active rental contracts
@@ -1225,7 +1357,7 @@ export const RentalManagementPage = () => {
             </div>
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', margin: '4px 0 2px' }}>
-            {formatINR(kpis.totalMonthlyGross)}
+            {formatINR(activeKpis.totalMonthlyGross)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
             Total scheduled monthly payout
@@ -1241,7 +1373,7 @@ export const RentalManagementPage = () => {
             </div>
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#17652f', margin: '4px 0 2px' }}>
-            {formatINR(kpis.totalMonthlyNet)}
+            {formatINR(activeKpis.totalMonthlyNet)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
             After TDS deductions
@@ -1257,7 +1389,7 @@ export const RentalManagementPage = () => {
             </div>
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', margin: '4px 0 2px' }}>
-            {formatINR(kpis.totalDisbursed)}
+            {formatINR(activeKpis.totalDisbursed)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
             Cumulative to current owners
@@ -1273,7 +1405,7 @@ export const RentalManagementPage = () => {
             </div>
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#111827', margin: '4px 0 2px' }}>
-            {formatINR(kpis.totalOutstanding)}
+            {formatINR(activeKpis.totalOutstanding)}
           </div>
           <span style={{ fontSize: '0.74rem', color: '#6b7280' }}>
             Remaining contract liability
@@ -1282,32 +1414,218 @@ export const RentalManagementPage = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. TABS & SEARCH/FILTER WORKSPACE */}
+      {/* 3. TABS & SEARCH/FILTER WORKSPACE (EXECUTIVE COMMAND BAR) */}
       {/* ========================================================================= */}
       <div style={{
         background: '#ffffff',
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '12px 16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px'
+        borderRadius: '12px',
+        border: '1px solid #e2e8f0',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.02)',
+        overflow: 'hidden'
       }}>
-        {/* Row 1: Clean Tabs on left + Status Count on right */}
+        {/* TOP LEVEL NAVIGATION & SCOPE SWITCHER BAR */}
         <div style={{
+          padding: '12px 18px',
+          background: 'linear-gradient(180deg, #fafbfc 0%, #f8fafc 100%)',
+          borderBottom: '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '10px'
+          gap: '12px'
         }}>
-          {/* Segmented Tabs */}
+          {/* Left: Project Selector with clean brand badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '7px',
+              padding: '6px 12px',
+              background: '#ffffff',
+              border: '1.5px solid #cbd5e1',
+              borderRadius: '8px',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+            }}>
+              <Building2 size={15} color="#17652f" />
+              <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Project:
+              </span>
+              <select
+                value={selectedProject}
+                onChange={(e) => setSelectedProject(e.target.value)}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  color: '#0f172a',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  paddingRight: '4px'
+                }}
+              >
+                <option value="all">All Projects ({activeRentals.length})</option>
+                {availableProjects.map((p) => {
+                  const count = activeRentals.filter((r) => r.projectId === p._id || r.projectName === p.projectName).length;
+                  return (
+                    <option key={p._id || p.projectName} value={p.projectName}>
+                      {p.projectName} ({count})
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            {/* Campus / Location Tag */}
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              padding: '4px 10px',
+              borderRadius: '6px',
+              background: '#e8f2e5',
+              color: '#17652f',
+              fontSize: '0.72rem',
+              fontWeight: 600
+            }}>
+              <CheckCircle2 size={12} />
+              Vrindavan Master Campus
+            </span>
+          </div>
+
+          {/* Center: The Tower Switcher Segmented Control */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
-            background: '#f3f4f6',
+            background: '#f1f5f9',
             padding: '3px',
-            borderRadius: '6px',
+            borderRadius: '9px',
+            border: '1px solid #e2e8f0',
+            gap: '3px'
+          }}>
+            {/* All Towers */}
+            <button
+              type="button"
+              onClick={() => setSelectedTower('all')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 14px',
+                borderRadius: '7px',
+                border: 'none',
+                background: selectedTower === 'all' ? '#ffffff' : 'transparent',
+                color: selectedTower === 'all' ? '#0f172a' : '#64748b',
+                fontWeight: selectedTower === 'all' ? 700 : 500,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                boxShadow: selectedTower === 'all' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <Layers size={14} color={selectedTower === 'all' ? '#17652f' : '#94a3b8'} />
+              <span>All Towers</span>
+              <span style={{
+                padding: '1px 6px',
+                borderRadius: '10px',
+                background: selectedTower === 'all' ? '#e8f2e5' : '#e2e8f0',
+                color: selectedTower === 'all' ? '#17652f' : '#64748b',
+                fontSize: '0.7rem',
+                fontWeight: 700
+              }}>
+                {filteredActiveRentals.length}
+              </span>
+            </button>
+
+            {/* Tower A */}
+            <button
+              type="button"
+              onClick={() => setSelectedTower('Tower A')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 14px',
+                borderRadius: '7px',
+                border: 'none',
+                background: selectedTower === 'Tower A' ? '#ffffff' : 'transparent',
+                color: selectedTower === 'Tower A' ? '#15803d' : '#64748b',
+                fontWeight: selectedTower === 'Tower A' ? 700 : 500,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                boxShadow: selectedTower === 'Tower A' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <span style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                background: '#22c55e',
+                display: 'inline-block'
+              }} />
+              <span>Tower A</span>
+              <span style={{
+                padding: '1px 6px',
+                borderRadius: '10px',
+                background: selectedTower === 'Tower A' ? '#dcfce7' : '#e2e8f0',
+                color: selectedTower === 'Tower A' ? '#15803d' : '#64748b',
+                fontSize: '0.7rem',
+                fontWeight: 700
+              }}>
+                {filteredActiveRentals.filter((r) => (r.tower || 'Tower A') === 'Tower A').length}
+              </span>
+            </button>
+
+            {/* Tower B */}
+            <button
+              type="button"
+              onClick={() => setSelectedTower('Tower B')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 14px',
+                borderRadius: '7px',
+                border: 'none',
+                background: selectedTower === 'Tower B' ? '#ffffff' : 'transparent',
+                color: selectedTower === 'Tower B' ? '#2563eb' : '#64748b',
+                fontWeight: selectedTower === 'Tower B' ? 700 : 500,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                boxShadow: selectedTower === 'Tower B' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <span style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                background: '#3b82f6',
+                display: 'inline-block'
+              }} />
+              <span>Tower B</span>
+              <span style={{
+                padding: '1px 6px',
+                borderRadius: '10px',
+                background: selectedTower === 'Tower B' ? '#eff6ff' : '#e2e8f0',
+                color: selectedTower === 'Tower B' ? '#2563eb' : '#64748b',
+                fontSize: '0.7rem',
+                fontWeight: 700
+              }}>
+                {filteredActiveRentals.filter((r) => (r.tower || 'Tower A') === 'Tower B').length}
+              </span>
+            </button>
+          </div>
+
+          {/* Right: Active vs Resale History Tabs */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            background: '#f1f5f9',
+            padding: '3px',
+            borderRadius: '9px',
+            border: '1px solid #e2e8f0',
             gap: '3px'
           }}>
             <button
@@ -1316,26 +1634,28 @@ export const RentalManagementPage = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
                 padding: '6px 14px',
-                borderRadius: '4px',
+                borderRadius: '7px',
                 border: 'none',
                 background: activeTab === 'active' ? '#17652f' : 'transparent',
-                color: activeTab === 'active' ? '#ffffff' : '#4b5563',
-                fontWeight: activeTab === 'active' ? 600 : 500,
-                fontSize: '0.82rem',
-                cursor: 'pointer'
+                color: activeTab === 'active' ? '#ffffff' : '#64748b',
+                fontWeight: activeTab === 'active' ? 700 : 500,
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+                boxShadow: activeTab === 'active' ? '0 1px 3px rgba(23,101,47,0.25)' : 'none',
+                transition: 'all 0.15s ease'
               }}
             >
-              <Building2 size={15} />
-              <span>Active rentals</span>
+              <Building2 size={13} />
+              <span>Active Register</span>
               <span style={{
-                fontSize: '0.72rem',
-                fontWeight: 600,
-                padding: '1px 7px',
-                borderRadius: '10px',
-                background: activeTab === 'active' ? '#e8f2e5' : '#e5e7eb',
-                color: activeTab === 'active' ? '#17652f' : '#4b5563'
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                padding: '1px 6px',
+                borderRadius: '8px',
+                background: activeTab === 'active' ? '#e8f2e5' : '#e2e8f0',
+                color: activeTab === 'active' ? '#17652f' : '#64748b'
               }}>
                 {activeRentals.length}
               </span>
@@ -1347,163 +1667,155 @@ export const RentalManagementPage = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
                 padding: '6px 14px',
-                borderRadius: '4px',
+                borderRadius: '7px',
                 border: 'none',
                 background: activeTab === 'history' ? '#17652f' : 'transparent',
-                color: activeTab === 'history' ? '#ffffff' : '#4b5563',
-                fontWeight: activeTab === 'history' ? 600 : 500,
-                fontSize: '0.82rem',
-                cursor: 'pointer'
+                color: activeTab === 'history' ? '#ffffff' : '#64748b',
+                fontWeight: activeTab === 'history' ? 700 : 500,
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+                boxShadow: activeTab === 'history' ? '0 1px 3px rgba(23,101,47,0.25)' : 'none',
+                transition: 'all 0.15s ease'
               }}
             >
-              <History size={15} />
-              <span>Resale history</span>
+              <History size={13} />
+              <span>Resale History</span>
               <span style={{
-                fontSize: '0.72rem',
-                fontWeight: 600,
-                padding: '1px 7px',
-                borderRadius: '10px',
-                background: activeTab === 'history' ? '#e8f2e5' : '#e5e7eb',
-                color: activeTab === 'history' ? '#17652f' : '#4b5563'
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                padding: '1px 6px',
+                borderRadius: '8px',
+                background: activeTab === 'history' ? '#e8f2e5' : '#e2e8f0',
+                color: activeTab === 'history' ? '#17652f' : '#64748b'
               }}>
                 {historyRecords.length}
               </span>
             </button>
           </div>
-
-          {/* Record Count Badge */}
-          <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
-            <strong style={{ color: '#111827' }}>{activeTab === 'active' ? sortedActiveRentals.length : sortedHistoryRecords.length}</strong> flats
-          </div>
         </div>
 
-        {/* Row 2: Spacious Search & Filters */}
+        {/* BOTTOM LEVEL: SEARCH, FILTERS & TABLE CONTROLS */}
         <div style={{
+          padding: '10px 18px',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
+          justifyContent: 'space-between',
           flexWrap: 'wrap',
-          borderTop: '1px solid #f3f4f6',
-          paddingTop: '10px'
+          gap: '10px'
         }}>
-          {/* Search Box */}
-          <form onSubmit={handleSearchSubmit} style={{ position: 'relative', flex: '1 1 260px', minWidth: '220px' }}>
-            <Search size={15} color="#9ca3af" style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-            <input
-              type="text"
-              placeholder={activeTab === 'active' ? 'e.g. Flat 101, Rahul, or 98765' : 'e.g. Flat 101 or past owner'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 30px 8px 34px',
-                borderRadius: '6px',
-                border: '1px solid #e5e7eb',
-                fontSize: '0.84rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-                background: '#ffffff',
-                color: '#111827'
-              }}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
+          {/* Left: Search + Filter Tools (Single Line Cluster) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: '1 1 auto' }}>
+            {/* Compact Search Box */}
+            <form onSubmit={handleSearchSubmit} style={{ position: 'relative', width: '280px', minWidth: '190px', flexShrink: 0 }}>
+              <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+              <input
+                type="text"
+                placeholder={activeTab === 'active' ? 'Search flat, owner, mobile...' : 'Search resale history...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  color: '#9ca3af',
-                  cursor: 'pointer',
-                  padding: '2px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  width: '100%',
+                  padding: '7px 28px 7px 32px',
+                  borderRadius: '7px',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontSize: '0.82rem',
+                  outline: 'none',
+                  color: '#0f172a',
+                  boxSizing: 'border-box'
                 }}
-                title="Clear search"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  style={{
+                    position: 'absolute',
+                    right: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: '#94a3b8',
+                    cursor: 'pointer',
+                    padding: '2px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                  title="Clear search"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </form>
+
+            {/* Tenure Filter */}
+            {activeTab === 'active' && (
+              <select
+                value={tenureFilter}
+                onChange={(e) => setTenureFilter(e.target.value)}
+                style={{
+                  padding: '7px 11px',
+                  borderRadius: '7px',
+                  border: '1px solid #cbd5e1',
+                  background: tenureFilter !== 'all' ? '#e8f2e5' : '#ffffff',
+                  color: tenureFilter !== 'all' ? '#17652f' : '#334155',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  width: '125px',
+                  flexShrink: 0
+                }}
               >
-                <X size={14} />
-              </button>
+                <option value="all">All Tenures</option>
+                <option value="36">36 Months</option>
+                <option value="48">48 Months</option>
+                <option value="60">60 Months</option>
+                <option value="100">100 Months</option>
+              </select>
             )}
-          </form>
 
-          {/* Tenure Filter */}
-          {activeTab === 'active' && (
-            <select
-              value={tenureFilter}
-              onChange={(e) => setTenureFilter(e.target.value)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #e5e7eb',
-                fontSize: '0.82rem',
-                background: tenureFilter !== 'all' ? '#e8f2e5' : '#ffffff',
-                color: tenureFilter !== 'all' ? '#17652f' : '#111827',
-                fontWeight: 500,
-                outline: 'none',
-                cursor: 'pointer',
-                width: '140px',
-                flexShrink: 0
-              }}
-            >
-              <option value="all">All tenures</option>
-              <option value="36">36 months</option>
-              <option value="48">48 months</option>
-              <option value="60">60 months</option>
-              <option value="100">100 months</option>
-            </select>
-          )}
-
-          {/* Sort By Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+            {/* Sort Selector */}
             <select
               value={currentSortKey}
               onChange={handleSortChange}
               style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #e5e7eb',
-                fontSize: '0.82rem',
+                padding: '7px 11px',
+                borderRadius: '7px',
+                border: '1px solid #cbd5e1',
                 background: sortOrder !== 'default' ? '#e8f2e5' : '#ffffff',
-                color: sortOrder !== 'default' ? '#17652f' : '#111827',
-                fontWeight: 500,
-                outline: 'none',
+                color: sortOrder !== 'default' ? '#17652f' : '#334155',
+                fontSize: '0.8rem',
+                fontWeight: 600,
                 cursor: 'pointer',
-                width: '180px'
+                outline: 'none',
+                width: '190px',
+                flexShrink: 0
               }}
-              title="Sort table"
             >
               {activeTab === 'active' ? (
                 <>
-                  <option value="flatNumber_default">Sort: Flat number</option>
-                  <option value="flatNumber_desc">Sort: Flat number (desc)</option>
+                  <option value="flatNumber_default">Sort: Flat No (Natural)</option>
+                  <option value="flatNumber_desc">Sort: Flat No (Desc)</option>
                   <option value="ownerName_asc">Sort: Owner (A to Z)</option>
                   <option value="ownerName_desc">Sort: Owner (Z to A)</option>
-                  <option value="rentAmount_desc">Sort: Gross rent (high to low)</option>
-                  <option value="rentAmount_asc">Sort: Gross rent (low to high)</option>
-                  <option value="netAmount_desc">Sort: Net payout (high to low)</option>
-                  <option value="netAmount_asc">Sort: Net payout (low to high)</option>
-                  <option value="amountOutstanding_desc">Sort: Outstanding (high to low)</option>
-                  <option value="totalPaid_desc">Sort: Total paid (high to low)</option>
-                  <option value="startDate_desc">Sort: Start date (newest)</option>
-                  <option value="registryDate_desc">Sort: Registry date (newest)</option>
-                  <option value="tenureMonths_desc">Sort: Tenure (longest)</option>
+                  <option value="rentAmount_desc">Sort: Gross Rent (High)</option>
+                  <option value="rentAmount_asc">Sort: Gross Rent (Low)</option>
+                  <option value="netAmount_desc">Sort: Net Payout (High)</option>
+                  <option value="amountOutstanding_desc">Sort: Outstanding (High)</option>
+                  <option value="totalPaid_desc">Sort: Total Paid (High)</option>
+                  <option value="startDate_desc">Sort: Start Date (Newest)</option>
+                  <option value="registryDate_desc">Sort: Registry (Newest)</option>
                 </>
               ) : (
                 <>
-                  <option value="flatNumber_default">Sort: Flat number</option>
-                  <option value="flatNumber_desc">Sort: Flat number (desc)</option>
-                  <option value="ownerName_asc">Sort: Past owner (A to Z)</option>
-                  <option value="ownerName_desc">Sort: Past owner (Z to A)</option>
-                  <option value="rentAmount_desc">Sort: Gross rent (high to low)</option>
-                  <option value="totalPaid_desc">Sort: Total paid (high to low)</option>
-                  <option value="startDate_desc">Sort: Transfer date (newest)</option>
+                  <option value="flatNumber_default">Sort: Flat No</option>
+                  <option value="ownerName_asc">Sort: Past Owner (A to Z)</option>
+                  <option value="rentAmount_desc">Sort: Gross Rent (High)</option>
+                  <option value="startDate_desc">Sort: Transfer (Newest)</option>
                 </>
               )}
             </select>
@@ -1516,49 +1828,50 @@ export const RentalManagementPage = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '34px',
-                height: '34px',
-                borderRadius: '6px',
-                border: '1px solid #e5e7eb',
+                width: '32px',
+                height: '32px',
+                borderRadius: '7px',
+                border: '1px solid #cbd5e1',
                 background: '#ffffff',
-                color: '#4b5563',
-                cursor: 'pointer'
-              }}
-              title={sortOrder === 'desc' ? 'Descending' : 'Ascending'}
-            >
-              {sortOrder === 'desc' ? <ArrowDown size={14} style={{ color: '#17652f' }} /> : <ArrowUp size={14} style={{ color: '#17652f' }} />}
-            </button>
-          </div>
-
-          {/* Reset Filters & Sort Button */}
-          {isFilteredOrSorted && (
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '7px 12px',
-                borderRadius: '6px',
-                border: '1px solid #fecaca',
-                background: '#fef2f2',
-                color: '#b91c1c',
-                fontSize: '0.8rem',
-                fontWeight: 500,
+                color: '#475569',
                 cursor: 'pointer',
                 flexShrink: 0
               }}
-              title="Reset all filters and sorting"
+              title={sortOrder === 'desc' ? 'Descending' : 'Ascending'}
             >
-              <RotateCcw size={12} />
-              <span>Reset filters</span>
+              {sortOrder === 'desc' ? <ArrowDown size={13} color="#17652f" /> : <ArrowUp size={13} color="#17652f" />}
             </button>
-          )}
 
-          {/* Active Tab: Floor Grouping Controls */}
+            {/* Reset Filters & Sort Button */}
+            {isFilteredOrSorted && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '6px 10px',
+                  borderRadius: '7px',
+                  border: '1px solid #fecaca',
+                  background: '#fef2f2',
+                  color: '#b91c1c',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  flexShrink: 0
+                }}
+                title="Reset all filters and sorting"
+              >
+                <RotateCcw size={11} />
+                <span>Reset</span>
+              </button>
+            )}
+          </div>
+
+          {/* Right: View Toggles & Accordion Expand */}
           {activeTab === 'active' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
               <button
                 type="button"
                 onClick={() => setGroupByFloor((g) => !g)}
@@ -1566,43 +1879,43 @@ export const RentalManagementPage = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
-                  padding: '7px 12px',
-                  borderRadius: '6px',
-                  border: `1px solid ${groupByFloor ? '#17652f' : '#e5e7eb'}`,
+                  padding: '6px 12px',
+                  borderRadius: '7px',
+                  border: `1.5px solid ${groupByFloor ? '#17652f' : '#cbd5e1'}`,
                   background: groupByFloor ? '#e8f2e5' : '#ffffff',
-                  color: groupByFloor ? '#17652f' : '#374151',
-                  fontSize: '0.82rem',
-                  fontWeight: 500,
-                  cursor: 'pointer'
+                  color: groupByFloor ? '#17652f' : '#475569',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
                 }}
-                title="Toggle floor-wise grouped tables"
               >
-                <Layers size={14} />
-                <span>{groupByFloor ? 'Grouped by floor' : 'Single table'}</span>
+                <Layers size={13} />
+                <span>{groupByFloor ? 'Grouped by Floor' : 'Single Flat List'}</span>
               </button>
 
               {groupByFloor && floorGroups.length > 0 && (
                 <button
                   type="button"
                   onClick={() => {
-                    const allCollapsed = floorGroups.every((g) => collapsedFloors[g.floor]);
+                    const allCollapsed = floorGroups.every((g) => collapsedFloors[`Tower A_${g.floor}`] || collapsedFloors[g.floor]);
                     toggleAllFloors(!allCollapsed);
                   }}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '4px',
-                    padding: '7px 11px',
-                    borderRadius: '6px',
-                    border: '1px solid #e5e7eb',
+                    gap: '5px',
+                    padding: '6px 11px',
+                    borderRadius: '7px',
+                    border: '1px solid #cbd5e1',
                     background: '#ffffff',
-                    color: '#4b5563',
+                    color: '#475569',
                     fontSize: '0.8rem',
-                    fontWeight: 500,
+                    fontWeight: 600,
                     cursor: 'pointer'
                   }}
                 >
-                  <span>{floorGroups.every((g) => collapsedFloors[g.floor]) ? 'Expand all' : 'Collapse all'}</span>
+                  <span>{floorGroups.every((g) => collapsedFloors[`Tower A_${g.floor}`] || collapsedFloors[g.floor]) ? 'Expand All Floors' : 'Collapse All Floors'}</span>
                 </button>
               )}
             </div>
@@ -1619,126 +1932,399 @@ export const RentalManagementPage = () => {
             <div style={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb', padding: '24px' }}>
               <TableSkeleton rows={8} columns={12} />
             </div>
-          ) : sortedActiveRentals.length === 0 ? (
+          ) : sortedActiveRentals.length === 0 && selectedTower !== 'all' ? (
             <div style={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
               <EmptyState
                 icon={Building2}
-                title="No active rentals found"
-                description="No flats are currently enrolled in the active rental program matching your filters."
+                title={`No active rentals found in ${selectedTower}`}
+                description="No flats are currently enrolled in this tower matching your filters."
               />
             </div>
-          ) : groupByFloor ? (
-            /* Floor-by-Floor Grouped Tables */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {floorGroups.map((group) => {
-                const isCollapsed = Boolean(collapsedFloors[group.floor]);
+          ) : (
+            /* Render Separate Tables for Each Tower */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {displayedTowers.map((towerName) => {
+                const towerFlats = sortedActiveRentals.filter((r) => {
+                  const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : 'Tower A');
+                  return rTower === towerName;
+                });
+                const towerUnitCount = towerFlats.length;
+                const towerGross = towerFlats.reduce((s, r) => s + (Number(r.rentAmount) || 0), 0);
+                const towerNet = towerFlats.reduce((s, r) => s + (Number(r.netAmount) || 0), 0);
+                const towerPaid = towerFlats.reduce((s, r) => s + (Number(r.totalPaid) || 0), 0);
+                const towerOutstanding = towerFlats.reduce((s, r) => s + (Number(r.amountOutstanding) || 0), 0);
+                const towerFloorGroups = getTowerFloorGroups(towerFlats);
+
                 return (
                   <div
-                    key={group.floor}
+                    key={towerName}
                     style={{
                       background: '#ffffff',
-                      borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      borderRadius: '12px',
+                      border: '1px solid #e2e8f0',
                       overflow: 'hidden',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                      position: 'relative'
                     }}
                   >
-                    {/* Floor Header Bar */}
+                    {/* Top Aesthetic Accent Ribbon */}
+                    <div style={{
+                      height: '3px',
+                      width: '100%',
+                      background: towerName === 'Tower B'
+                        ? 'linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)'
+                        : 'linear-gradient(90deg, #15803d 0%, #22c55e 50%, #10b981 100%)'
+                    }} />
+
+                    {/* Tower Header Bar */}
                     <div
-                      onClick={() => toggleFloor(group.floor)}
                       style={{
+                        padding: '16px 20px',
+                        background: towerName === 'Tower B' ? 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)' : 'linear-gradient(135deg, #fbfdfb 0%, #f4f8f4 100%)',
+                        borderBottom: '1px solid #e2e8f0',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         flexWrap: 'wrap',
-                        gap: '12px',
-                        padding: '12px 18px',
-                        background: isCollapsed ? '#fafafa' : '#f8faf9',
-                        borderBottom: isCollapsed ? 'none' : '1px solid #e5e7eb',
-                        cursor: 'pointer',
-                        userSelect: 'none',
-                        transition: 'background 0.15s ease'
+                        gap: '14px'
                       }}
                     >
-                      {/* Left: Tower & Floor Info */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      {/* Left: Tower Badge & Info */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div
                           style={{
-                            width: '28px',
-                            height: '28px',
-                            borderRadius: '6px',
-                            background: '#e8f2e5',
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '8px',
+                            background: towerName === 'Tower B' ? '#3b82f6' : '#17652f',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#17652f'
+                            color: '#ffffff',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                           }}
                         >
-                          <Building2 size={15} />
+                          <Building2 size={20} />
                         </div>
                         <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#111827' }}>
-                              Tower A — {group.label}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                            <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 700, color: '#0f172a' }}>
+                              {towerName} — Rental Register
+                            </h3>
+                            <span
+                              style={{
+                                padding: '2px 9px',
+                                borderRadius: '12px',
+                                background: towerUnitCount > 0 ? '#dcfce7' : '#f1f5f9',
+                                color: towerUnitCount > 0 ? '#15803d' : '#64748b',
+                                fontSize: '0.76rem',
+                                fontWeight: 700
+                              }}
+                            >
+                              {towerUnitCount} {towerUnitCount === 1 ? 'Unit' : 'Units'}
                             </span>
                             <span
                               style={{
-                                fontSize: '0.72rem',
-                                fontWeight: 600,
                                 padding: '2px 8px',
-                                borderRadius: '10px',
-                                background: '#e8f2e5',
-                                color: '#17652f'
+                                borderRadius: '6px',
+                                background: '#ffffff',
+                                border: '1px solid #cbd5e1',
+                                color: '#475569',
+                                fontSize: '0.72rem',
+                                fontWeight: 500
                               }}
                             >
-                              {group.rows.length} {group.rows.length === 1 ? 'flat' : 'flats'}
+                              {selectedProject === 'all' ? 'Krishna Valley Resorts' : selectedProject}
                             </span>
                           </div>
+                          <p style={{ margin: '3px 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                            Dedicated ledger, agreements, registry documents & payouts for {towerName}
+                          </p>
                         </div>
                       </div>
 
-                      {/* Right: Floor Metrics & Expand Icon */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', fontSize: '0.78rem' }}>
+                      {/* Right: Metrics & Actions */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#ffffff', padding: '6px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.76rem' }}>
                           <div>
-                            <span style={{ color: '#6b7280' }}>Monthly Gross: </span>
-                            <strong style={{ color: '#111827' }}>{formatINR(group.totalGross)}</strong>
+                            <span style={{ color: '#64748b' }}>Gross: </span>
+                            <strong style={{ color: '#0f172a' }}>{formatINR(towerGross)}</strong>
                           </div>
+                          <div style={{ borderLeft: '1px solid #e2e8f0', height: '14px' }} />
                           <div>
-                            <span style={{ color: '#6b7280' }}>Net Payout: </span>
-                            <strong style={{ color: '#17652f' }}>{formatINR(group.totalNet)}</strong>
+                            <span style={{ color: '#64748b' }}>Net: </span>
+                            <strong style={{ color: '#16a34a' }}>{formatINR(towerNet)}</strong>
                           </div>
+                          <div style={{ borderLeft: '1px solid #e2e8f0', height: '14px' }} />
                           <div>
-                            <span style={{ color: '#6b7280' }}>Outstanding: </span>
-                            <strong style={{ color: '#b45309' }}>{formatINR(group.totalOutstanding)}</strong>
+                            <span style={{ color: '#64748b' }}>Paid: </span>
+                            <strong style={{ color: '#0284c7' }}>{formatINR(towerPaid)}</strong>
+                          </div>
+                          <div style={{ borderLeft: '1px solid #e2e8f0', height: '14px' }} />
+                          <div>
+                            <span style={{ color: '#64748b' }}>Balance: </span>
+                            <strong style={{ color: '#d97706' }}>{formatINR(towerOutstanding)}</strong>
                           </div>
                         </div>
 
-                        <div
-                          style={{
-                            width: '26px',
-                            height: '26px',
-                            borderRadius: '4px',
-                            background: '#ffffff',
-                            border: '1px solid #e5e7eb',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#6b7280'
-                          }}
-                        >
-                          {isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setImportTargetTower(towerName);
+                              setIsImportRentalModalOpen(true);
+                            }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              border: '1px solid #cbd5e1',
+                              background: '#ffffff',
+                              color: '#334155',
+                              fontSize: '0.78rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
+                            }}
+                            title={`Import Excel register specifically into ${towerName}`}
+                          >
+                            <Upload size={13} color="#2563eb" />
+                            <span>Import into {towerName}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setIsManualEntryModalOpen(true)}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              border: 'none',
+                              background: towerName === 'Tower B' ? '#2563eb' : '#17652f',
+                              color: '#ffffff',
+                              fontSize: '0.78rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.06)'
+                            }}
+                            title={`Manually enroll a unit into ${towerName}`}
+                          >
+                            <Plus size={13} />
+                            <span>Add Unit</span>
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    {/* Floor Table */}
-                    {!isCollapsed && (
+                    {/* Tower Table Body */}
+                    {towerUnitCount === 0 ? (
+                      <div style={{
+                        padding: '48px 24px',
+                        textAlign: 'center',
+                        background: 'radial-gradient(ellipse at top, #f8fafc 0%, #ffffff 100%)',
+                        borderTop: '1px solid #f1f5f9'
+                      }}>
+                        <div
+                          style={{
+                            width: '56px',
+                            height: '56px',
+                            borderRadius: '14px',
+                            background: '#eff6ff',
+                            color: '#2563eb',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 16px',
+                            boxShadow: '0 4px 12px rgba(37,99,235,0.12)'
+                          }}
+                        >
+                          <Building2 size={28} />
+                        </div>
+                        <h4 style={{ margin: '0 0 8px', fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>
+                          {towerName} Rental Register Ready for Enrollment
+                        </h4>
+                        <p style={{ margin: '0 auto 20px', maxWidth: '520px', fontSize: '0.84rem', color: '#64748b', lineHeight: 1.6 }}>
+                          Enroll units into <strong>{towerName}</strong> individually or upload the complete Excel register.
+                          All records in {towerName} are completely isolated and guaranteed not to overwrite or affect Tower A.
+                        </p>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setImportTargetTower(towerName);
+                              setIsImportRentalModalOpen(true);
+                            }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '9px 20px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              background: '#2563eb',
+                              color: '#ffffff',
+                              fontSize: '0.84rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 6px rgba(37,99,235,0.25)',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            <Upload size={15} />
+                            <span>Import {towerName} Register (.xlsx)</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsManualEntryModalOpen(true)}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '9px 18px',
+                              borderRadius: '8px',
+                              border: '1.5px solid #cbd5e1',
+                              background: '#ffffff',
+                              color: '#334155',
+                              fontSize: '0.84rem',
+                              fontWeight: 600,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <Plus size={15} />
+                            <span>Add Single Unit</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : groupByFloor ? (
+                      /* Tower Floor-by-Floor Accordions */
+                      <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {towerFloorGroups.map((group) => {
+                          const floorKey = `${towerName}_${group.floor}`;
+                          const isCollapsed = Boolean(collapsedFloors[floorKey]);
+                          return (
+                            <div
+                              key={floorKey}
+                              style={{
+                                background: '#ffffff',
+                                borderRadius: '8px',
+                                border: '1px solid #e5e7eb',
+                                overflow: 'hidden',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                              }}
+                            >
+                              {/* Floor Header Bar */}
+                              <div
+                                onClick={() => toggleFloor(floorKey)}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  flexWrap: 'wrap',
+                                  gap: '12px',
+                                  padding: '11px 16px',
+                                  background: isCollapsed ? '#fafafa' : '#f8faf9',
+                                  borderBottom: isCollapsed ? 'none' : '1px solid #e5e7eb',
+                                  cursor: 'pointer',
+                                  userSelect: 'none',
+                                  transition: 'background 0.15s ease'
+                                }}
+                              >
+                                {/* Left: Tower & Floor Info */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  <div
+                                    style={{
+                                      width: '26px',
+                                      height: '26px',
+                                      borderRadius: '6px',
+                                      background: towerName === 'Tower B' ? '#eff6ff' : '#e8f2e5',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      color: towerName === 'Tower B' ? '#2563eb' : '#17652f'
+                                    }}
+                                  >
+                                    <Building2 size={14} />
+                                  </div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#111827' }}>
+                                      {towerName} — {group.label}
+                                    </span>
+                                    <span
+                                      style={{
+                                        fontSize: '0.72rem',
+                                        fontWeight: 600,
+                                        padding: '2px 8px',
+                                        borderRadius: '10px',
+                                        background: towerName === 'Tower B' ? '#eff6ff' : '#e8f2e5',
+                                        color: towerName === 'Tower B' ? '#1d4ed8' : '#17652f'
+                                      }}
+                                    >
+                                      {group.rows.length} {group.rows.length === 1 ? 'flat' : 'flats'}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Right: Floor Metrics & Expand Icon */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px', fontSize: '0.78rem' }}>
+                                    <div>
+                                      <span style={{ color: '#6b7280' }}>Monthly Gross: </span>
+                                      <strong style={{ color: '#111827' }}>{formatINR(group.totalGross)}</strong>
+                                    </div>
+                                    <div>
+                                      <span style={{ color: '#6b7280' }}>Net Payout: </span>
+                                      <strong style={{ color: '#17652f' }}>{formatINR(group.totalNet)}</strong>
+                                    </div>
+                                    <div>
+                                      <span style={{ color: '#6b7280' }}>Outstanding: </span>
+                                      <strong style={{ color: '#b45309' }}>{formatINR(group.totalOutstanding)}</strong>
+                                    </div>
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      width: '24px',
+                                      height: '24px',
+                                      borderRadius: '4px',
+                                      background: '#ffffff',
+                                      border: '1px solid #e5e7eb',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      color: '#6b7280'
+                                    }}
+                                  >
+                                    {isCollapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Floor Table */}
+                              {!isCollapsed && (
+                                <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+                                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
+                                    {renderActiveTableHead()}
+                                    <tbody>
+                                      {group.rows.map((r, idx) => renderActiveRentalRow(r, idx))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      /* Tower Single Flat Table */
                       <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
                           {renderActiveTableHead()}
                           <tbody>
-                            {group.rows.map((r, idx) => renderActiveRentalRow(r, idx))}
+                            {towerFlats.map((r, idx) => renderActiveRentalRow(r, idx))}
                           </tbody>
                         </table>
                       </div>
@@ -1746,25 +2332,6 @@ export const RentalManagementPage = () => {
                   </div>
                 );
               })}
-            </div>
-          ) : (
-            /* Single Large Table View */
-            <div
-              style={{
-                background: '#ffffff',
-                borderRadius: '8px',
-                border: '1px solid #e5e7eb',
-                overflow: 'hidden'
-              }}
-            >
-              <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
-                  {renderActiveTableHead()}
-                  <tbody>
-                    {sortedActiveRentals.map((r, idx) => renderActiveRentalRow(r, idx))}
-                  </tbody>
-                </table>
-              </div>
             </div>
           )}
         </>
@@ -2043,6 +2610,8 @@ export const RentalManagementPage = () => {
       <ImportRentalModal
         isOpen={isImportRentalModalOpen}
         onClose={() => setIsImportRentalModalOpen(false)}
+        initialTower={importTargetTower || (selectedTower !== 'all' ? selectedTower : 'Tower A')}
+        availableTowers={availableTowers}
         onSuccess={() => {
           fetchActiveRentals();
           fetchPreviousOwnersHistory();

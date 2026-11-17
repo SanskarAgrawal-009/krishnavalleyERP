@@ -69,20 +69,35 @@ function calculateEndDate(startDate, tenureMonths) {
 // ============================================================================
 export const getActiveRentals = async (req, res) => {
   try {
-    const { search, tenure, tower, page = 1, limit = 1000 } = req.query;
+    const { search, tenure, tower, projectId, page = 1, limit = 1000 } = req.query;
 
     // Filter flats enrolled in rental or sold/booked
-    const query = {
-      $or: [
-        { takenForRental: true },
-        { 'rentalDetails.guaranteedMonthlyRent': { $gt: 0 } },
-        { status: { $in: ['sold', 'booked', 'resell', 'possession_renewal', 'buy_back'] } }
-      ]
-    };
+    const conditions = [
+      {
+        $or: [
+          { takenForRental: true },
+          { 'rentalDetails.guaranteedMonthlyRent': { $gt: 0 } },
+          { status: { $in: ['sold', 'booked', 'resell', 'possession_renewal', 'buy_back'] } }
+        ]
+      }
+    ];
 
-    if (tower) {
-      query.flatNumber = new RegExp(`^${tower}`, 'i');
+    if (projectId && projectId !== 'all') {
+      conditions.push({ projectId });
     }
+
+    if (tower && tower !== 'all') {
+      const cleanTower = tower.trim();
+      const towerLetter = cleanTower.replace(/Tower\s*/i, '').trim();
+      conditions.push({
+        $or: [
+          { tower: new RegExp(`^${cleanTower}$`, 'i') },
+          { flatNumber: new RegExp(`^${towerLetter}[\\-_\\s]`, 'i') }
+        ]
+      });
+    }
+
+    const query = conditions.length === 1 ? conditions[0] : { $and: conditions };
 
     const flats = await Flat.find(query)
       .populate('projectId', 'projectName projectCode')
@@ -143,7 +158,9 @@ export const getActiveRentals = async (req, res) => {
         bhkType: flat.bhkType,
         carpetArea: flat.carpetArea,
         status: flat.status,
-        projectName: flat.projectId?.projectName || 'Krishna Valley Heritage',
+        projectName: flat.projectId?.projectName || 'Krishna Valley Resorts',
+        projectId: flat.projectId?._id ? String(flat.projectId._id) : String(flat.projectId || ''),
+        tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : 'Tower A'),
         // Table 1 Specific Columns
         ownerName,
         ownerMobile,
@@ -202,6 +219,15 @@ export const getActiveRentals = async (req, res) => {
     const totalOutstanding = filtered.reduce((sum, item) => sum + item.amountOutstanding, 0);
     const totalCommitmentAll = filtered.reduce((sum, item) => sum + item.totalCommitment, 0);
 
+    // Fetch dynamic projects & towers metadata
+    const allProjects = await Project.find({}, 'projectName projectCode buildings').lean();
+    const projectsList = allProjects.map((p) => ({
+      _id: String(p._id),
+      projectName: p.projectName || 'Krishna Valley Resorts',
+      projectCode: p.projectCode || 'KVH-01',
+      towers: (p.buildings || []).map((b) => b.buildingName).filter(Boolean)
+    }));
+
     return res.json({
       success: true,
       data: filtered,
@@ -212,6 +238,10 @@ export const getActiveRentals = async (req, res) => {
         totalDisbursed,
         totalOutstanding,
         totalCommitmentAll
+      },
+      meta: {
+        projects: projectsList,
+        towers: ['Tower A', 'Tower B']
       }
     });
   } catch (error) {
@@ -288,7 +318,9 @@ export const getPreviousOwnersHistory = async (req, res) => {
           flatId: flat._id,
           flatNumber: flat.flatNumber,
           floor: flat.floor,
-          projectName: flat.projectId?.projectName || 'Krishna Valley Heritage',
+          projectName: flat.projectId?.projectName || 'Krishna Valley Resorts',
+        projectId: flat.projectId?._id ? String(flat.projectId._id) : String(flat.projectId || ''),
+        tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : 'Tower A'),
           // Table 2 Columns
           sequenceLabel,
           sequenceIndex: idx + 1,
@@ -1380,7 +1412,7 @@ export const createManualRentalEntry = async (req, res) => {
 // ============================================================================
 export const importRentalsFromExcel = async (req, res) => {
   try {
-    let { rentals } = req.body;
+    let { rentals, tower = 'Tower A', projectId } = req.body;
 
     // Support both direct Excel file upload and JSON array of parsed rows
     if (req.file && req.file.buffer) {
@@ -1470,25 +1502,65 @@ export const importRentalsFromExcel = async (req, res) => {
       const tenureMonths = Number(row.tenureMonths || row['Tenure (Months)'] || row.tenure || 36) || 36;
       const totalPaid = Number(row.totalPaid || row['Total Paid'] || 0) || 0;
 
-      // Find flat with flexible pattern matching, protecting against cross-tower prefix collisions
-      const isTowerB = /^[Bb][\s\-_]|Tower[\s\-_]*B/i.test(flatNumber);
-      let flat = await Flat.findOne({
-        flatNumber: { $regex: new RegExp(`^${flatNumber.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, '\\$&')}$`, 'i') }
-      });
+      // Determine target tower: explicit selection or inferred from flat number
+      const isTowerB = /^[Bb][\s\-_]|Tower[\s\-_]*B/i.test(flatNumber) || (tower && /Tower\s*B/i.test(tower));
+      const targetTower = isTowerB ? 'Tower B' : (tower || 'Tower A');
 
-      // Try numeric suffix ONLY if it's NOT a Tower B flat (prevents B-001 overwriting A-001)
-      if (!flat && !isTowerB) {
+      let flat = null;
+      if (targetTower === 'Tower B') {
+        flat = await Flat.findOne({
+          $or: [
+            { flatNumber: { $regex: new RegExp(`^${flatNumber.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, '\\$&')}$`, 'i') }, tower: 'Tower B' },
+            { flatNumber: { $regex: new RegExp(`^B[-\\s]*${flatNumber.replace(/\D/g, '')}$`, 'i') } }
+          ]
+        });
+      } else {
+        flat = await Flat.findOne({
+          flatNumber: { $regex: new RegExp(`^${flatNumber.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, '\\$&')}$`, 'i') },
+          tower: { $ne: 'Tower B' }
+        });
+      }
+
+      // Try numeric suffix
+      if (!flat) {
         const numOnly = flatNumber.replace(/\D/g, '');
         if (numOnly) {
-          flat = await Flat.findOne({
-            flatNumber: { $regex: new RegExp(`^(A[-\\s]*)?${numOnly}$`, 'i') }
-          });
+          if (targetTower === 'Tower B') {
+            flat = await Flat.findOne({
+              $or: [
+                { flatNumber: `B-${numOnly}` },
+                { flatNumber: numOnly, tower: 'Tower B' }
+              ]
+            });
+          } else {
+            flat = await Flat.findOne({
+              $or: [
+                { flatNumber: { $regex: new RegExp(`^(A[-\\s]*)?${numOnly}$`, 'i') }, tower: { $ne: 'Tower B' } },
+                { flatNumber: numOnly, tower: 'Tower A' }
+              ]
+            });
+          }
         }
       }
 
+      // If flat does not exist, auto-provision under target tower
       if (!flat) {
-        notFoundFlats.push(flatNumber);
-        continue;
+        const project = await Project.findOne(projectId ? { _id: projectId } : {});
+        const building = (project?.buildings || []).find(b => new RegExp(targetTower, 'i').test(b.buildingName)) || project?.buildings?.[0];
+        const digits = flatNumber.replace(/\D/g, '');
+        const floorNum = digits.length >= 3 ? parseInt(digits.slice(0, -2), 10) : 0;
+        const formattedFlatNumber = targetTower === 'Tower B' && !flatNumber.toUpperCase().startsWith('B-') ? `B-${flatNumber}` : flatNumber;
+
+        flat = new Flat({
+          flatNumber: formattedFlatNumber,
+          tower: targetTower,
+          projectId: project?._id,
+          buildingId: building?._id || new mongoose.Types.ObjectId(),
+          floor: floorNum,
+          bhkType: '1BHK',
+          status: 'sold',
+          takenForRental: true
+        });
       }
 
       // Find or create Customer record for owner
@@ -1556,6 +1628,7 @@ export const importRentalsFromExcel = async (req, res) => {
         ...(existingAgrDoc?.fileUrl ? { agreementDocument: existingAgrDoc } : {})
       };
 
+      flat.tower = targetTower;
       flat.takenForRental = true;
       if (flat.status === 'available') {
         flat.status = 'sold';
@@ -1802,7 +1875,9 @@ export const getCustomerRentalLedgers = async (req, res) => {
         flatNumber: flat.flatNumber,
         floor: flat.floor,
         bhkType: flat.bhkType,
-        projectName: flat.projectId?.projectName || 'Krishna Valley Heritage',
+        projectName: flat.projectId?.projectName || 'Krishna Valley Resorts',
+        projectId: flat.projectId?._id ? String(flat.projectId._id) : String(flat.projectId || ''),
+        tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : 'Tower A'),
         ownerName,
         ownerMobile,
         ownerEmail,
@@ -1945,6 +2020,7 @@ export const autoGeneratePassbookFromRegister = async (req, res) => {
       flat.rentalDetails.remainingPayableToOwner = remainingPayable;
       flat.rentalDetails.ledgerEntries = generatedEntries;
       flat.rentalDetails.isRentBackActive = true;
+      flat.tower = targetTower;
       flat.takenForRental = true;
 
       await flat.save();
@@ -2149,6 +2225,7 @@ export const uploadLedgerExcelAndGenerate = async (req, res) => {
       flat.rentalDetails.totalDisbursedToOwner = totalPaid;
       flat.rentalDetails.remainingPayableToOwner = finalOutstanding;
       flat.rentalDetails.ledgerEntries = generatedEntries;
+      flat.tower = targetTower;
       flat.takenForRental = true;
 
       if (flat.status === 'available') {
