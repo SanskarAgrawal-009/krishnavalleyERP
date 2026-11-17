@@ -59,7 +59,7 @@ router.post('/manual', authorizePermission('rentals:create', 'rentals:manage'), 
 router.post('/import-excel', authorizePermission('rentals:create', 'rentals:manage'), upload.single('excelFile'), importRentalsFromExcel);
 
 // Bulk Upload Registry / Rent Agreement Documents (Multi-file upload with auto-matching)
-router.post('/bulk-upload-documents', authorizePermission('rentals:edit', 'rentals:manage'), upload.array('files', 100), bulkUploadDocuments);
+router.post('/bulk-upload-documents', authorizePermission('rentals:edit', 'rentals:manage'), upload.array('files', 300), bulkUploadDocuments);
 
 // Update rental terms (tenure, rent, dates, TDS)
 router.put('/:flatId/terms', authorizePermission('rentals:edit', 'rentals:manage'), updateRentalTerms);
