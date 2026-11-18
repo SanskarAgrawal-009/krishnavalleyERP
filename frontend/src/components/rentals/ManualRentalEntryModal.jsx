@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const STEPS = [
-  { id: 1, title: 'Select Flat', subtitle: 'Choose Unit', icon: Home, color: '#17652f' },
+  { id: 1, title: 'Select Flat', subtitle: 'Project → Tower → Flat', icon: Home, color: '#17652f' },
   { id: 2, title: 'Owner Details', subtitle: 'KYC & Registry', icon: User, color: '#17652f' },
   { id: 3, title: 'Rent & TDS', subtitle: 'Monthly Pricing', icon: DollarSign, color: '#17652f' },
   { id: 4, title: 'Contract', subtitle: 'Dates & Review', icon: Calendar, color: '#334155' },
@@ -17,14 +17,20 @@ const STEPS = [
 export const ManualRentalEntryModal = ({
   isOpen,
   onClose,
-  onSuccess
+  onSuccess,
+  initialTower
 }) => {
   const [flatsList, setFlatsList] = useState([]);
+  const [projectsList, setProjectsList] = useState([]);
   const [loadingFlats, setLoadingFlats] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
-  // Flat Selection State
+  // Scaffolding State: Project → Tower → Flat
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedTowerId, setSelectedTowerId] = useState(null);
   const [selectedFlat, setSelectedFlat] = useState(null);
+  const [selectedFloor, setSelectedFloor] = useState('all');
+  const [rentalStatusFilter, setRentalStatusFilter] = useState('all');
   const [flatSearchQuery, setFlatSearchQuery] = useState('');
 
   // Form State
@@ -46,20 +52,41 @@ export const ManualRentalEntryModal = ({
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Fetch flats list when modal opens
+  // Fetch projects + flats when modal opens
   useEffect(() => {
     if (isOpen) {
       setLoadingFlats(true);
       setErrorMsg('');
-      projectService.getFlats()
-        .then((res) => {
-          const list = res?.data || (Array.isArray(res) ? res : []);
-          setFlatsList(list);
+
+      Promise.all([
+        projectService.getProjects(),
+        projectService.getFlats()
+      ])
+        .then(([projRes, flatsRes]) => {
+          const projects = projRes?.data || (Array.isArray(projRes) ? projRes : []);
+          const flats = flatsRes?.data || (Array.isArray(flatsRes) ? flatsRes : []);
+          setProjectsList(projects);
+          setFlatsList(flats);
+
+          // Auto-select project if only one exists
+          if (projects.length === 1) {
+            setSelectedProjectId(String(projects[0]._id || projects[0].id));
+            if (initialTower && projects[0].buildings) {
+              const matched = projects[0].buildings.find(b =>
+                (b.buildingName || '').toLowerCase().trim() === initialTower.toLowerCase().trim()
+              );
+              if (matched) setSelectedTowerId(String(matched._id || matched.id));
+            }
+          }
         })
-        .catch((err) => console.error('Error fetching flats for rental selection:', err))
+        .catch((err) => console.error('Error fetching data for rental selection:', err))
         .finally(() => setLoadingFlats(false));
     } else {
       setSelectedFlat(null);
+      setSelectedProjectId(null);
+      setSelectedTowerId(null);
+      setSelectedFloor('all');
+      setRentalStatusFilter('all');
       setFlatSearchQuery('');
       setOwnerName('');
       setOwnerMobile('');
@@ -76,18 +103,91 @@ export const ManualRentalEntryModal = ({
     }
   }, [isOpen]);
 
-  // Filtered flats for selector
+  // Derived: selected project object
+  const selectedProject = useMemo(() => {
+    if (!selectedProjectId) return null;
+    return projectsList.find((p) => String(p._id || p.id) === selectedProjectId) || null;
+  }, [projectsList, selectedProjectId]);
+
+  // Derived: towers (buildings) for selected project
+  const availableTowers = useMemo(() => {
+    if (!selectedProject) return [];
+    return (selectedProject.buildings || []).map((b) => ({
+      _id: String(b._id || b.id),
+      name: b.buildingName || b.name || 'Unknown',
+      code: b.buildingCode || b.code || '',
+      floors: b.numberOfFloors || 0,
+      totalFlats: b.totalFlats || 0,
+    }));
+  }, [selectedProject]);
+
+  // Handle initial tower selection when towers are ready
+  useEffect(() => {
+    if (initialTower && availableTowers.length > 0 && !selectedTowerId) {
+      const match = availableTowers.find(t =>
+        t.name.toLowerCase().trim() === initialTower.toLowerCase().trim()
+      );
+      if (match) setSelectedTowerId(match._id);
+    }
+  }, [initialTower, availableTowers, selectedTowerId]);
+
+  // Derived: selected tower object
+  const selectedTower = useMemo(() => {
+    if (!selectedTowerId) return null;
+    return availableTowers.find((t) => t._id === selectedTowerId) || null;
+  }, [availableTowers, selectedTowerId]);
+
+  // Derived: flats filtered strictly by selected tower's buildingId or tower name
+  const towerFlats = useMemo(() => {
+    if (!selectedTower) return [];
+    const tId = String(selectedTower._id || '');
+    const tName = (selectedTower.name || '').toLowerCase().trim();
+    return flatsList.filter((f) => {
+      const flatBldgId = String(f.buildingId?._id || f.buildingId || '');
+      if (flatBldgId && tId && flatBldgId === tId) return true;
+      const flatTower = (f.tower || f.buildingName || '').toLowerCase().trim();
+      if (flatTower && tName && flatTower === tName) return true;
+      if (tName.includes('tower b') || tName === 'b') {
+        return (f.flatNumber || '').toUpperCase().startsWith('B-');
+      }
+      if (tName.includes('tower a') || tName === 'a') {
+        return !((f.flatNumber || '').toUpperCase().startsWith('B-'));
+      }
+      return false;
+    });
+  }, [flatsList, selectedTower]);
+
+  // Derived: unique floors available in this tower
+  const availableFloors = useMemo(() => {
+    const floorsSet = new Set();
+    towerFlats.forEach(f => {
+      if (f.floor !== undefined && f.floor !== null) {
+        floorsSet.add(Number(f.floor));
+      }
+    });
+    return Array.from(floorsSet).sort((a, b) => a - b);
+  }, [towerFlats]);
+
+  // Derived: search & filter within selected tower
   const filteredFlats = useMemo(() => {
-    if (!flatSearchQuery.trim()) return flatsList;
-    const q = flatSearchQuery.toLowerCase().trim();
-    return flatsList.filter((f) =>
-      (f.flatNumber || '').toLowerCase().includes(q) ||
-      (f.bhkType || '').toLowerCase().includes(q) ||
-      String(f.floor || '').includes(q) ||
-      (f.buildingName || '').toLowerCase().includes(q) ||
-      (f.currentOwner?.name || '').toLowerCase().includes(q)
-    );
-  }, [flatsList, flatSearchQuery]);
+    return towerFlats.filter((f) => {
+      if (selectedFloor !== 'all' && Number(f.floor) !== Number(selectedFloor)) {
+        return false;
+      }
+      const hasRental = Boolean(f.takenForRental || f.rentalDetails?.guaranteedMonthlyRent);
+      if (rentalStatusFilter === 'available' && hasRental) return false;
+      if (rentalStatusFilter === 'rental' && !hasRental) return false;
+      if (flatSearchQuery.trim()) {
+        const q = flatSearchQuery.toLowerCase().trim();
+        const matches = (f.flatNumber || '').toLowerCase().includes(q) ||
+          (f.bhkType || '').toLowerCase().includes(q) ||
+          String(f.floor || '').includes(q) ||
+          (f.currentOwner?.name || '').toLowerCase().includes(q);
+        if (!matches) return false;
+      }
+      return true;
+    });
+  }, [towerFlats, selectedFloor, rentalStatusFilter, flatSearchQuery]);
 
   if (!isOpen) return null;
 
@@ -165,6 +265,9 @@ export const ManualRentalEntryModal = ({
       const payload = {
         flatId: selectedFlat._id || selectedFlat.id,
         flatNumber: selectedFlat.flatNumber,
+        projectId: selectedProjectId || selectedFlat.projectId?._id || selectedFlat.projectId,
+        buildingId: selectedTowerId || selectedFlat.buildingId?._id || selectedFlat.buildingId,
+        tower: selectedTower?.name || selectedFlat.buildingName || selectedFlat.tower,
         ownerName: ownerName.trim(),
         ownerMobile: ownerMobile.trim(),
         ownerEmail: ownerEmail.trim(),
@@ -246,104 +349,431 @@ export const ManualRentalEntryModal = ({
   const removeFocus = (e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; };
 
   // ==========================================
-  // STEP 1: Select Flat
+  // STEP 1: Select Flat (Project → Tower → Flat Scaffolding)
   // ==========================================
-  const renderStep1 = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'stepSlide 0.35s ease' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-        <div style={{
-          width: '32px', height: '32px', borderRadius: '10px',
-          background: 'linear-gradient(135deg, #17652f, #17652f)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <Home size={16} color="#fff" />
-        </div>
-        <div>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Select Flat Unit</h3>
-          <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Choose the flat to enroll into rental register</p>
-        </div>
-      </div>
-
-      {selectedFlat ? (
-        <div style={{
-          background: '#e8f2e5', border: '2px solid #17652f', borderRadius: '12px',
-          padding: '14px 18px', display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', boxShadow: '0 2px 8px rgba(34,197,94,0.15)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+  const renderStep1 = () => {
+    // Stage A: Multi-project selector (if more than 1 project and none selected)
+    if (!selectedProjectId && projectsList.length > 1) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'stepSlide 0.35s ease' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{
-              width: '42px', height: '42px', borderRadius: '10px',
+              width: '32px', height: '32px', borderRadius: '10px',
               background: 'linear-gradient(135deg, #17652f, #17652f)',
-              color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Check size={22} />
+              <Building2 size={16} color="#fff" />
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.1rem', fontWeight: '600', color: '#17652f' }}>
-                  Flat {selectedFlat.flatNumber}
-                </span>
-                <span style={{
-                  padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem',
-                  fontWeight: '700', background: '#e8f2e5', color: '#17652f',
-                }}>{selectedFlat.bhkType || '2BHK'}</span>
-                <span style={{
-                  padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem',
-                  fontWeight: '600', background: '#e2e8f0', color: '#475569',
-                }}>Floor {selectedFlat.floor}</span>
-              </div>
-              <div style={{ fontSize: '0.78rem', color: '#17652f', marginTop: '3px' }}>
-                {selectedFlat.buildingName ? `${selectedFlat.buildingName} • ` : ''}
-                {selectedFlat.carpetArea ? `${selectedFlat.carpetArea} sq.ft` : ''}
-                {selectedFlat.currentOwner?.name ? ` • Owner: ${selectedFlat.currentOwner.name}` : ''}
-              </div>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Step 1: Select Project</h3>
+              <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Choose the project to enroll a rental flat into</p>
             </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => { setSelectedFlat(null); }}
-            style={{
-              padding: '6px 14px', background: '#ffffff', border: '1px solid #cbd5e1',
-              borderRadius: '8px', color: '#475569', fontSize: '0.78rem', fontWeight: '700',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px',
-            }}
-          >
-            <X size={13} /> Change
-          </button>
-        </div>
-      ) : (
-        <div style={{
-          border: '1.5px solid #e2e8f0', borderRadius: '12px',
-          padding: '14px', background: '#f8fafc',
-        }}>
-          {/* Search */}
-          <div style={{ position: 'relative', marginBottom: '12px' }}>
-            <Search size={15} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '11px' }} />
-            <input
-              type="text"
-              placeholder="Search by flat number, floor, BHK, tower..."
-              value={flatSearchQuery}
-              onChange={(e) => setFlatSearchQuery(e.target.value)}
-              style={{ ...inputStyle, paddingLeft: '36px' }}
-              onFocus={applyFocus}
-              onBlur={removeFocus}
-              autoFocus
-            />
           </div>
 
-          {loadingFlats ? (
-            <div style={{ padding: '30px', textAlign: 'center', color: '#64748b', fontSize: '0.84rem' }}>
-              <RefreshCw size={18} style={{ margin: '0 auto 6px', display: 'block', animation: 'spin 0.8s linear infinite' }} />
-              Loading available flats...
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
+            {projectsList.map((p) => {
+              const bldgCount = p.buildings?.length || 0;
+              const totalFlats = (p.buildings || []).reduce((acc, b) => acc + (b.flats?.length || b.totalFlats || 0), 0);
+              return (
+                <div
+                  key={p._id || p.id}
+                  onClick={() => {
+                    setSelectedProjectId(String(p._id || p.id));
+                    setSelectedTowerId(null);
+                    setSelectedFlat(null);
+                  }}
+                  style={{
+                    padding: '16px 18px', borderRadius: '12px', border: '1.5px solid #e2e8f0',
+                    background: '#ffffff', cursor: 'pointer', transition: 'all 0.15s ease',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; e.currentTarget.style.background = '#f0fdf4'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#ffffff'; }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <div style={{ fontWeight: '700', fontSize: '1.02rem', color: '#0f172a' }}>{p.projectName}</div>
+                    <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '6px', background: '#e8f2e5', color: '#17652f', fontWeight: '700' }}>
+                      {p.projectCode || 'ACTIVE'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', gap: '14px' }}>
+                    <span>🏛️ {bldgCount} Towers</span>
+                    <span>🏢 {totalFlats} Total Flats</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // Stage B: Tower selector (if no tower is chosen yet)
+    if (!selectedTowerId) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'stepSlide 0.35s ease' }}>
+          {/* Scaffolding Bar */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: '#f8fafc', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569' }}>
+              <span style={{ fontWeight: '700', color: '#17652f' }}>1. Project:</span>
+              <span style={{ fontWeight: '600', color: '#0f172a' }}>{selectedProject?.projectName || 'Krishna Valley Resorts'}</span>
             </div>
-          ) : filteredFlats.length === 0 ? (
-            <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '0.82rem' }}>
-              No flats match "{flatSearchQuery}". Import flats in Property Inventory first.
-            </div>
-          ) : (
+            {projectsList.length > 1 && (
+              <button
+                type="button"
+                onClick={() => { setSelectedProjectId(null); setSelectedTowerId(null); setSelectedFlat(null); }}
+                style={{ background: 'none', border: 'none', color: '#17652f', fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer' }}
+              >
+                Change Project
+              </button>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0' }}>
             <div style={{
-              maxHeight: '280px', overflowY: 'auto',
-              display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px',
+              width: '32px', height: '32px', borderRadius: '10px',
+              background: 'linear-gradient(135deg, #17652f, #17652f)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Building2 size={16} color="#fff" />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#0f172a' }}>Step 2: Choose Tower / Building</h3>
+              <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>Select the tower to access its exact flat inventory</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
+            {availableTowers.map((tower) => {
+              const countForTower = flatsList.filter(f => {
+                const bId = String(f.buildingId?._id || f.buildingId || '');
+                if (bId && bId === tower._id) return true;
+                const tName = (f.tower || f.buildingName || '').toLowerCase().trim();
+                const myName = (tower.name || '').toLowerCase().trim();
+                if (tName && myName && tName === myName) return true;
+                if (myName.includes('tower b') || myName === 'b') return (f.flatNumber || '').toUpperCase().startsWith('B-');
+                if (myName.includes('tower a') || myName === 'a') return !((f.flatNumber || '').toUpperCase().startsWith('B-'));
+                return false;
+              }).length;
+
+              return (
+                <div
+                  key={tower._id}
+                  onClick={() => {
+                    setSelectedTowerId(tower._id);
+                    setSelectedFlat(null);
+                    setSelectedFloor('all');
+                    setRentalStatusFilter('all');
+                    setFlatSearchQuery('');
+                  }}
+                  style={{
+                    padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #e2e8f0',
+                    background: '#ffffff', cursor: 'pointer', transition: 'all 0.18s ease',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: '8px'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; e.currentTarget.style.background = '#f0fdf4'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 14px rgba(23, 101, 47,0.12)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.04)'; }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Building2 size={20} color="#17652f" />
+                      <span style={{ fontWeight: '700', fontSize: '1.08rem', color: '#0f172a' }}>{tower.name}</span>
+                    </div>
+                    <span style={{
+                      padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem',
+                      fontWeight: '700', background: '#e8f2e5', color: '#17652f'
+                    }}>
+                      {tower.code || 'BUILDING'}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.78rem', color: '#64748b' }}>
+                    <span>🏢 {countForTower > 0 ? countForTower : tower.totalFlats || '—'} Flat Units</span>
+                    <span>📏 {tower.floors ? `${tower.floors} Floors` : 'Multi-floor'}</span>
+                  </div>
+
+                  <div style={{
+                    marginTop: '6px', padding: '6px 10px', background: '#f8fafc',
+                    borderRadius: '8px', fontSize: '0.74rem', color: '#17652f',
+                    fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                  }}>
+                    <span>Select {tower.name} Inventory</span>
+                    <ChevronRight size={14} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // Stage C: Confirmed Selected Flat (Unit is Locked)
+    if (selectedFlat) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'stepSlide 0.35s ease' }}>
+          {/* Breadcrumb path */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem',
+            color: '#64748b', background: '#f8fafc', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e2e8f0'
+          }}>
+            <span style={{ color: '#17652f', fontWeight: '700' }}>Project:</span>
+            <span>{selectedProject?.projectName || 'Krishna Valley Resorts'}</span>
+            <ChevronRight size={12} color="#94a3b8" />
+            <span style={{ color: '#17652f', fontWeight: '700' }}>Tower:</span>
+            <span>{selectedTower?.name || selectedFlat.buildingName || 'Tower'}</span>
+            <ChevronRight size={12} color="#94a3b8" />
+            <span style={{ color: '#17652f', fontWeight: '700' }}>Flat:</span>
+            <span style={{ fontWeight: '700', color: '#0f172a' }}>{selectedFlat.flatNumber}</span>
+          </div>
+
+          <div style={{
+            background: 'linear-gradient(135deg, #e8f2e5, #ffffff)', border: '2px solid #17652f', borderRadius: '14px',
+            padding: '16px 20px', display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', boxShadow: '0 4px 12px rgba(23, 101, 47,0.12)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{
+                width: '46px', height: '46px', borderRadius: '12px',
+                background: 'linear-gradient(135deg, #17652f, #17652f)',
+                color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              }}>
+                <Check size={26} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '700', color: '#17652f' }}>
+                    Flat {selectedFlat.flatNumber}
+                  </span>
+                  <span style={{
+                    padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem',
+                    fontWeight: '700', background: '#e8f2e5', color: '#17652f',
+                  }}>{selectedFlat.bhkType || '2BHK'}</span>
+                  <span style={{
+                    padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem',
+                    fontWeight: '600', background: '#e2e8f0', color: '#475569',
+                  }}>Floor {selectedFlat.floor}</span>
+                  <span style={{
+                    padding: '2px 8px', borderRadius: '6px', fontSize: '0.68rem',
+                    fontWeight: '700', background: '#17652f', color: '#ffffff'
+                  }}>
+                    LOCKED & ASSIGNED
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#334155', marginTop: '4px' }}>
+                  {selectedTower?.name || selectedFlat.buildingName || 'Tower'} • {selectedProject?.projectName || 'Krishna Valley Resorts'}
+                  {selectedFlat.carpetArea ? ` • ${selectedFlat.carpetArea} sq.ft` : ''}
+                  {selectedFlat.currentOwner?.name ? ` • Owner: ${selectedFlat.currentOwner.name}` : ''}
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '3px', fontFamily: 'monospace' }}>
+                  Target Unit ID: {String(selectedFlat._id || selectedFlat.id)}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => { setSelectedFlat(null); }}
+                style={{
+                  padding: '6px 14px', background: '#ffffff', border: '1px solid #cbd5e1',
+                  borderRadius: '8px', color: '#334155', fontSize: '0.78rem', fontWeight: '700',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                }}
+              >
+                <X size={13} /> Change Flat
+              </button>
+              <button
+                type="button"
+                onClick={() => { setSelectedFlat(null); setSelectedTowerId(null); }}
+                style={{
+                  background: 'none', border: 'none', color: '#64748b',
+                  fontSize: '0.7rem', fontWeight: '600', cursor: 'pointer', textDecoration: 'underline'
+                }}
+              >
+                Switch Tower
+              </button>
+            </div>
+          </div>
+
+          <div style={{
+            padding: '10px 14px', background: '#f8fafc', borderRadius: '10px',
+            border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '8px',
+          }}>
+            <ShieldCheck size={16} color="#17652f" />
+            <span style={{ fontSize: '0.78rem', color: '#334155' }}>
+              Rental terms will be <strong>exclusively attached</strong> to Flat <strong>{selectedFlat.flatNumber}</strong> ({selectedTower?.name}). Click <strong>Continue</strong> below to proceed to Owner Details.
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    // Stage D: Tower Flat Inventory Selector (Tower is chosen, choosing flat)
+    const totalCount = towerFlats.length;
+    const activeCount = towerFlats.filter(f => f.takenForRental || f.rentalDetails?.guaranteedMonthlyRent).length;
+    const availCount = totalCount - activeCount;
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'stepSlide 0.35s ease' }}>
+        {/* Scaffolding Breadcrumb Context Bar */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: '#f8fafc', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}>
+            <span style={{ color: '#17652f', fontWeight: '700' }}>Project:</span>
+            <span style={{ color: '#0f172a', fontWeight: '600' }}>{selectedProject?.projectName || 'Krishna Valley Resorts'}</span>
+            <ChevronRight size={13} color="#94a3b8" />
+            <span style={{ color: '#17652f', fontWeight: '700' }}>Tower:</span>
+            <span style={{
+              background: '#e8f2e5', color: '#17652f', padding: '2px 8px', borderRadius: '6px', fontWeight: '700'
+            }}>
+              {selectedTower?.name || 'Selected Tower'}
+            </span>
+            <span style={{ fontSize: '0.72rem', color: '#64748b' }}>({totalCount} Units)</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => { setSelectedTowerId(null); setSelectedFlat(null); }}
+            style={{
+              padding: '4px 10px', background: '#ffffff', border: '1px solid #cbd5e1',
+              borderRadius: '6px', color: '#334155', fontSize: '0.74rem', fontWeight: '700',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
+            }}
+          >
+            <ArrowLeft size={12} /> Switch Tower
+          </button>
+        </div>
+
+        {/* Filter Toolbar: Search, Floor Pills, Status Pills */}
+        <div style={{
+          background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '12px',
+          padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: '10px'
+        }}>
+          {/* Row 1: Search & Status Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', flex: '1 1 200px' }}>
+              <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '10px', top: '10px' }} />
+              <input
+                type="text"
+                placeholder={`Search Flat in ${selectedTower?.name || 'Tower'} (e.g. 101, owner...)...`}
+                value={flatSearchQuery}
+                onChange={(e) => setFlatSearchQuery(e.target.value)}
+                style={{ ...inputStyle, paddingLeft: '32px', paddingRight: '28px', fontSize: '0.82rem', padding: '7px 10px 7px 32px' }}
+                onFocus={applyFocus}
+                onBlur={removeFocus}
+                autoFocus
+              />
+              {flatSearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setFlatSearchQuery('')}
+                  style={{
+                    position: 'absolute', right: '8px', top: '8px', background: 'none',
+                    border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0
+                  }}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* Status Pills */}
+            <div style={{ display: 'flex', gap: '4px', background: '#f1f5f9', padding: '3px', borderRadius: '8px' }}>
+              {[
+                { id: 'all', label: `All (${totalCount})` },
+                { id: 'available', label: `Available (${availCount})` },
+                { id: 'rental', label: `In Rental (${activeCount})` },
+              ].map(st => (
+                <button
+                  key={st.id}
+                  type="button"
+                  onClick={() => setRentalStatusFilter(st.id)}
+                  style={{
+                    padding: '4px 9px', borderRadius: '6px', border: 'none',
+                    fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
+                    background: rentalStatusFilter === st.id ? '#17652f' : 'transparent',
+                    color: rentalStatusFilter === st.id ? '#ffffff' : '#64748b',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  {st.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Row 2: Floor Pills */}
+          {availableFloors.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', flexShrink: 0 }}>
+                Floor:
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedFloor('all')}
+                style={{
+                  padding: '2px 8px', borderRadius: '5px', border: 'none', fontSize: '0.7rem',
+                  fontWeight: '700', cursor: 'pointer', flexShrink: 0,
+                  background: selectedFloor === 'all' ? '#17652f' : '#f1f5f9',
+                  color: selectedFloor === 'all' ? '#ffffff' : '#475569'
+                }}
+              >
+                All
+              </button>
+              {availableFloors.map((flr) => (
+                <button
+                  key={flr}
+                  type="button"
+                  onClick={() => setSelectedFloor(flr)}
+                  style={{
+                    padding: '2px 8px', borderRadius: '5px', border: 'none', fontSize: '0.7rem',
+                    fontWeight: '700', cursor: 'pointer', flexShrink: 0,
+                    background: selectedFloor === flr ? '#17652f' : '#f1f5f9',
+                    color: selectedFloor === flr ? '#ffffff' : '#475569'
+                  }}
+                >
+                  {flr === 0 ? 'G' : `F${flr}`}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Flat Grid Display */}
+        {loadingFlats ? (
+          <div style={{ padding: '30px', textAlign: 'center', color: '#64748b', fontSize: '0.84rem' }}>
+            <RefreshCw size={18} style={{ margin: '0 auto 6px', display: 'block', animation: 'spin 0.8s linear infinite' }} />
+            Loading {selectedTower?.name} flats...
+          </div>
+        ) : filteredFlats.length === 0 ? (
+          <div style={{
+            padding: '30px 20px', textAlign: 'center', color: '#64748b', fontSize: '0.82rem',
+            background: '#f8fafc', borderRadius: '12px', border: '1.5px dashed #cbd5e1'
+          }}>
+            <div>No flats match your filter criteria in {selectedTower?.name}.</div>
+            <button
+              type="button"
+              onClick={() => { setFlatSearchQuery(''); setSelectedFloor('all'); setRentalStatusFilter('all'); }}
+              style={{
+                marginTop: '8px', padding: '4px 12px', background: '#17652f', color: '#fff',
+                border: 'none', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer'
+              }}
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div style={{
+              maxHeight: '260px', overflowY: 'auto', paddingRight: '4px',
+              display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '8px',
             }}>
               {filteredFlats.map((f) => {
                 const hasRental = Boolean(f.takenForRental || f.rentalDetails?.guaranteedMonthlyRent);
@@ -352,41 +782,71 @@ export const ManualRentalEntryModal = ({
                     key={f._id || f.id}
                     onClick={() => handleSelectFlat(f)}
                     style={{
-                      padding: '10px 14px', borderRadius: '10px',
+                      padding: '10px 12px', borderRadius: '10px',
                       border: '1.5px solid #e2e8f0', background: '#ffffff',
                       cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '3px',
                       transition: 'all 0.15s ease',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#17652f'; e.currentTarget.style.background = '#e8f2e5'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#17652f';
+                      e.currentTarget.style.background = '#f0fdf4';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#e2e8f0';
+                      e.currentTarget.style.background = '#ffffff';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontWeight: '600', fontSize: '0.92rem', color: '#0f172a' }}>{f.flatNumber}</span>
+                      <span style={{ fontWeight: '700', fontSize: '0.94rem', color: '#0f172a' }}>{f.flatNumber}</span>
                       <span style={{
-                        padding: '1px 6px', borderRadius: '4px', fontSize: '0.68rem', fontWeight: '700',
-                        background: hasRental ? '#e0f2fe' : '#f1f5f9', color: hasRental ? '#0369a1' : '#475569',
-                      }}>{f.bhkType || '2BHK'}</span>
+                        padding: '1px 6px', borderRadius: '4px', fontSize: '0.66rem', fontWeight: '700',
+                        background: hasRental ? '#e0f2fe' : '#e8f2e5',
+                        color: hasRental ? '#0369a1' : '#17652f',
+                      }}>
+                        {f.bhkType || '2BHK'}
+                      </span>
                     </div>
+
                     <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
                       Floor {f.floor} {f.carpetArea ? `• ${f.carpetArea} sq.ft` : ''}
                     </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '2px' }}>
+                      <span style={{
+                        fontSize: '0.66rem', fontWeight: '700',
+                        color: hasRental ? '#0284c7' : '#17652f'
+                      }}>
+                        {hasRental ? `In Rental` : `Available`}
+                      </span>
+                      {f.rentalDetails?.guaranteedMonthlyRent ? (
+                        <span style={{ fontSize: '0.66rem', fontWeight: '700', color: '#17652f' }}>
+                          ₹{(f.rentalDetails.guaranteedMonthlyRent / 1000).toFixed(0)}k/mo
+                        </span>
+                      ) : null}
+                    </div>
+
                     {f.currentOwner?.name && (
-                      <div style={{ fontSize: '0.7rem', color: '#17652f', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        Owner: {f.currentOwner.name}
+                      <div style={{
+                        fontSize: '0.68rem', color: '#475569', fontWeight: '600',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                      }}>
+                        👤 {f.currentOwner.name}
                       </div>
                     )}
                   </div>
                 );
               })}
             </div>
-          )}
-          <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '8px', textAlign: 'center' }}>
-            {filteredFlats.length} flats available • Click a flat to select
+            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '8px', textAlign: 'center' }}>
+              Showing {filteredFlats.length} of {towerFlats.length} units in {selectedTower?.name} • Click any unit to lock & assign
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   // ==========================================
   // STEP 2: Owner Details

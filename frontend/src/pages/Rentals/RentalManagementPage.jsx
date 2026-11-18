@@ -1207,7 +1207,10 @@ export const RentalManagementPage = () => {
           {/* Import by Excel */}
           {canCreateRental && (
             <button
-              onClick={() => setIsImportRentalModalOpen(true)}
+              onClick={() => {
+                setImportTargetTower(selectedTower !== 'all' ? selectedTower : 'Tower A');
+                setIsImportRentalModalOpen(true);
+              }}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -2599,6 +2602,7 @@ export const RentalManagementPage = () => {
       <ManualRentalEntryModal
         isOpen={isManualEntryModalOpen}
         onClose={() => setIsManualEntryModalOpen(false)}
+        initialTower={selectedTower !== 'all' ? selectedTower : undefined}
         onSuccess={() => {
           fetchActiveRentals();
           fetchPreviousOwnersHistory();

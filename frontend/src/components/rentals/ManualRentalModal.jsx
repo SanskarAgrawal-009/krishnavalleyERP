@@ -81,7 +81,11 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
 
       // Load Projects & Flats
       projectService.getProjects().then((res) => {
-        if (res.data) setProjects(res.data);
+        const pList = res.data || [];
+        setProjects(pList);
+        if (pList.length === 1 && !selectedProjectId) {
+          setSelectedProjectId(String(pList[0]._id || pList[0].id));
+        }
       });
       projectService.getFlats().then((res) => {
         if (res.data) setFlats(res.data);
@@ -328,6 +332,21 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
   const selectedFlatObj = flats.find(f => f._id === selectedFlatId);
   const selectedOwnerObj = fetchedOwnerInfo || owners.find(o => o._id === selectedOwnerId);
 
+  const selectedProjectObj = projects.find(p => String(p._id || p.id) === String(selectedProjectId));
+  const availableTowersInModal = selectedProjectObj?.buildings || [];
+  const selectedTowerObj = availableTowersInModal.find(b => String(b._id || b.id) === String(selectedBuildingId));
+  const towerFlatsInModal = flats.filter(f => {
+    if (!selectedBuildingId) return false;
+    const bId = String(f.buildingId?._id || f.buildingId || '');
+    if (bId === String(selectedBuildingId)) return true;
+    const tName = (f.tower || f.buildingName || '').toLowerCase().trim();
+    const myName = (selectedTowerObj?.buildingName || selectedTowerObj?.name || '').toLowerCase().trim();
+    if (tName && myName && tName === myName) return true;
+    if (myName.includes('tower b') || myName === 'b') return (f.flatNumber || '').toUpperCase().startsWith('B-');
+    if (myName.includes('tower a') || myName === 'a') return !((f.flatNumber || '').toUpperCase().startsWith('B-'));
+    return false;
+  });
+
   return (
     <Modal
       isOpen={isOpen}
@@ -390,10 +409,63 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
           {/* STEP 1: PROPERTY & OWNER */}
           {currentStep === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.2s ease' }}>
+              {/* Project & Tower Scaffolding Selectors */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div className="form-card-box">
                   <div className="form-card-prompt">
-                    <span>Flat unit *</span>
+                    <span>1. Project *</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <select
+                      value={selectedProjectId}
+                      onChange={(e) => {
+                        setSelectedProjectId(e.target.value);
+                        setSelectedBuildingId('');
+                        setSelectedFlatId('');
+                      }}
+                      className="form-card-input"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <option value="">Choose Project</option>
+                      {projects.map((p) => (
+                        <option key={p._id || p.id} value={p._id || p.id}>
+                          {p.projectName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>2. Tower / Building *</span>
+                  </div>
+                  <div className="form-card-input-row">
+                    <select
+                      value={selectedBuildingId}
+                      onChange={(e) => {
+                        setSelectedBuildingId(e.target.value);
+                        setSelectedFlatId('');
+                      }}
+                      className="form-card-input"
+                      disabled={!selectedProjectId && availableTowersInModal.length === 0}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <option value="">{selectedProjectId ? 'Choose Tower' : 'Select Project First'}</option>
+                      {availableTowersInModal.map((b) => (
+                        <option key={b._id || b.id} value={b._id || b.id}>
+                          {b.buildingName || b.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="form-card-box">
+                  <div className="form-card-prompt">
+                    <span>3. Flat unit *</span>
                   </div>
                   <div className="form-card-input-row">
                     <select
@@ -401,12 +473,15 @@ export const ManualRentalModal = ({ isOpen, onClose, onSubmit, contract = null, 
                       value={selectedFlatId}
                       onChange={(e) => handleFlatSelect(e.target.value)}
                       className="form-card-input"
+                      disabled={!selectedBuildingId}
                       style={{ cursor: 'pointer' }}
                     >
-                      <option value="">Choose flat unit</option>
-                      {flats.map((f) => (
+                      <option value="">
+                        {!selectedBuildingId ? 'Select Tower First' : `Choose Flat (${towerFlatsInModal.length} available)`}
+                      </option>
+                      {towerFlatsInModal.map((f) => (
                         <option key={f._id} value={f._id}>
-                          Flat {f.flatNumber} ({f.buildingId?.buildingName || 'Tower A'}) — {f.status?.toUpperCase() || 'AVAILABLE'}
+                          Flat {f.flatNumber} (Floor {f.floor}, {f.bhkType || '2BHK'}) — {f.takenForRental ? 'RENTAL ACTIVE' : (f.status?.toUpperCase() || 'AVAILABLE')}
                         </option>
                       ))}
                     </select>

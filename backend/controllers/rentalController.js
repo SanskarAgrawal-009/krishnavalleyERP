@@ -1265,6 +1265,9 @@ export const createManualRentalEntry = async (req, res) => {
     const {
       flatId,
       flatNumber,
+      projectId,
+      buildingId,
+      tower,
       ownerName,
       ownerMobile,
       ownerEmail,
@@ -1297,13 +1300,28 @@ export const createManualRentalEntry = async (req, res) => {
       flat = await Flat.findById(flatId);
     }
     if (!flat && flatNumber) {
-      flat = await Flat.findOne({
-        flatNumber: { $regex: new RegExp(`^${flatNumber.trim().replace(/[-\\/\\^$*+?.()|[\\]{}]/g, '\\$&')}$`, 'i') }
-      });
+      const flatFilter = {
+        flatNumber: { $regex: new RegExp(`^${flatNumber.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') }
+      };
+      if (buildingId) flatFilter.buildingId = buildingId;
+      if (tower) flatFilter.tower = tower;
+      if (projectId) flatFilter.projectId = projectId;
+      flat = await Flat.findOne(flatFilter);
     }
 
     if (!flat) {
       return res.status(404).json({ success: false, message: `Flat not found for "${flatNumber || flatId}"` });
+    }
+
+    // Ensure strict 1:1 binding to the selected project and building/tower
+    if (buildingId && (!flat.buildingId || flat.buildingId.toString() !== buildingId.toString())) {
+      flat.buildingId = buildingId;
+    }
+    if (tower && (!flat.tower || flat.tower !== tower)) {
+      flat.tower = tower;
+    }
+    if (projectId && (!flat.projectId || flat.projectId.toString() !== projectId.toString())) {
+      flat.projectId = projectId;
     }
 
     // Find or create Owner in Customer collection
@@ -1391,9 +1409,31 @@ export const createManualRentalEntry = async (req, res) => {
     }
 
     await flat.save();
+
+    // Ensure customer profile references this property
+    if (customer && flat._id) {
+      if (!customer.ownerDetails) customer.ownerDetails = {};
+      if (!Array.isArray(customer.ownerDetails.propertyIds)) customer.ownerDetails.propertyIds = [];
+      const hasProp = customer.ownerDetails.propertyIds.some(id => id.toString() === flat._id.toString());
+      if (!hasProp) {
+        customer.ownerDetails.propertyIds.push(flat._id);
+        await customer.save().catch(e => console.warn('Customer property link error:', e.message));
+      }
+    }
+
+    // Ensure building flats array in Project has this flat._id
+    if (flat.projectId && flat.buildingId) {
+      await Project.updateOne(
+        { _id: flat.projectId, "buildings._id": flat.buildingId },
+        { $addToSet: { "buildings.$.flats": flat._id } }
+      ).catch(e => console.warn('Project building flats sync error:', e.message));
+    }
+
     if (apiCache) {
+      apiCache.invalidatePrefix('rentals');
       apiCache.invalidatePrefix('flats');
       apiCache.invalidatePrefix('reports');
+      apiCache.invalidatePrefix('projects');
     }
 
     return res.status(201).json({
@@ -1456,7 +1496,8 @@ export const importRentalsFromExcel = async (req, res) => {
       const ownerEmail = String(row.ownerEmail || row['Owner Email'] || row.email || '').trim();
 
       const rentAmount = Number(row.rentAmount || row['Rent Amount'] || row.rent || 0);
-      if (isNaN(rentAmount) || rentAmount <= 0) {
+      // Fix: allow 0-rent flats to be enrolled for registration; only skip rows with absolutely no flat data
+      if (isNaN(rentAmount) && !flatNumber) {
         errors.push(`Row ${i + 1}: Invalid Rent Amount for Flat ${flatNumber}`);
         continue;
       }
@@ -2020,7 +2061,7 @@ export const autoGeneratePassbookFromRegister = async (req, res) => {
       flat.rentalDetails.remainingPayableToOwner = remainingPayable;
       flat.rentalDetails.ledgerEntries = generatedEntries;
       flat.rentalDetails.isRentBackActive = true;
-      flat.tower = targetTower;
+      flat.tower = flat.tower || 'Tower A'; // Fix: targetTower was undefined here
       flat.takenForRental = true;
 
       await flat.save();

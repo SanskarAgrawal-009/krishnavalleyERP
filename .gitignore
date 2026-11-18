@@ -135,14 +135,60 @@ lerna-debug.log*
 *.seed
 *.pid.lock
 
-# Test & Inspection Scratch Scripts
-check_*.cjs
-inspect_*.cjs
-test_*.cjs
-deep_search_*.cjs
+# ------------------------------------------------------------------------------
+# 6. SCRATCH, INSPECTION, PARSER, IMPORT & TESTING SCRIPTS
+# ------------------------------------------------------------------------------
+*.mjs
+backend/*.mjs
+!backend/*.config.mjs
+
+# Python scratch and virtual environments
+*.py
+backend/*.py
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+ENV/
+
+# Temporary scratch & inspection files
+check_*.*
+inspect_*.*
+test_*.*
+deep_search_*.*
+parse_*.*
+analyze_*.*
+save_*.*
+import_*.*
+convert_*.*
+extract_*.*
+generate_*.*
 scratch/
 temp/
 tmp/
+*.tmp
+*.temp
+
+# Raw input and interim data dumps
+raw_*
+*_raw.*
+*_input.*
+*_sheet*.*
+*dataset*.*
+backend/*.txt
+backend/*sheet*.json
+backend/*dataset*.json
+backend/*raw*.json
+backend/raw_*
+backend/tower_b_*
+
+# Keep essential backend configuration JSONs
+!backend/package.json
+!backend/package-lock.json
+!backend/nodemon.json
 
 # Coverage reports
 coverage/
@@ -155,6 +201,10 @@ coverage/
 skills-lock.json
 .gemini/
 .system_generated/
+.cursor/
+.claude/
+brain/
+scratch/
 
 # ------------------------------------------------------------------------------
 # 8. OPERATING SYSTEM & IDE ARTIFACTS
