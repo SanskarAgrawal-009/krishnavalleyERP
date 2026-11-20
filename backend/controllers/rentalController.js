@@ -100,6 +100,7 @@ export const getActiveRentals = async (req, res) => {
     const query = conditions.length === 1 ? conditions[0] : { $and: conditions };
 
     const flats = await Flat.find(query)
+      .select('flatNumber tower floor bhkType carpetArea status projectId currentOwner rentalDetails salesDetails ownershipHistory')
       .populate('projectId', 'projectName projectCode')
       .populate('currentOwner.customerId', 'name mobileNo email panNumber aadhaarNumber address bankDetails ownerDetails')
       .sort({ flatNumber: 1 })
@@ -266,6 +267,7 @@ export const getPreviousOwnersHistory = async (req, res) => {
     }
 
     const flats = await Flat.find(query)
+      .select('flatNumber tower floor bhkType carpetArea status projectId currentOwner ownershipHistory')
       .populate('projectId', 'projectName')
       .sort({ flatNumber: 1 })
       .lean();
@@ -1849,6 +1851,7 @@ export const getCustomerRentalLedgers = async (req, res) => {
     };
 
     const flats = await Flat.find(query)
+      .select('flatNumber tower floor bhkType carpetArea status projectId currentOwner rentalDetails salesDetails ownershipHistory')
       .populate('projectId', 'projectName projectCode')
       .populate('currentOwner.customerId', 'name mobileNo email panNumber aadhaarNumber address bankDetails ownerDetails')
       .sort({ flatNumber: 1 })

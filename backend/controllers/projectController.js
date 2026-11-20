@@ -111,7 +111,7 @@ const enrichProjectsWithInventoryStats = async (projects) => {
 // Get All Projects
 export const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate('buildings.flats').sort({ createdAt: -1 }).lean();
+    const projects = await Project.find().sort({ createdAt: -1 }).lean();
     const enriched = await enrichProjectsWithInventoryStats(projects);
     return res.json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
@@ -124,7 +124,7 @@ export const getProjects = async (req, res) => {
 export const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findById(id).populate('buildings.flats').lean();
+    const project = await Project.findById(id).lean();
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
     const [enriched] = await enrichProjectsWithInventoryStats([project]);
     return res.json({ success: true, data: enriched });

@@ -522,6 +522,10 @@ const FlatSchema = new mongoose.Schema(
 // =========================================================
 FlatSchema.index({ projectId: 1, buildingId: 1, status: 1 });
 FlatSchema.index({ takenForRental: 1, status: 1 });
+FlatSchema.index({ takenForRental: 1, 'rentalDetails.guaranteedMonthlyRent': 1, status: 1 });
+FlatSchema.index({ tower: 1, floor: 1, flatNumber: 1 });
+FlatSchema.index({ 'ownershipHistory.0': 1 });
+FlatSchema.index({ 'currentOwner.customerId': 1 });
 FlatSchema.index({ currentOwnerId: 1 });
 FlatSchema.index({ floor: 1, flatNumber: 1 });
 

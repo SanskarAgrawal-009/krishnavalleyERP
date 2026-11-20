@@ -46,8 +46,9 @@ export const getFlats = async (req, res) => {
     if (buildingId) filter.buildingId = buildingId;
     if (status) filter.status = status;
 
-    // 2. Indexed Query with .lean() to prevent Mongoose document allocation overhead
+    // 2. Indexed Query with .lean() and lean field projection to prevent Mongoose document allocation overhead
     const flats = await Flat.find(filter)
+      .select('-passbookLedger -paymentSchedule -maintenanceLedger -activityTimeline -documentVault -blueprints')
       .populate('projectId', 'projectName projectCode buildings')
       .sort({ floor: 1, flatNumber: 1 })
       .lean();

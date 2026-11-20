@@ -343,51 +343,49 @@ export const RentalManagementPage = () => {
 
   // Available Towers (synced with tower in selected project and inventory)
   const availableTowers = useMemo(() => {
-    if (selectedProject !== 'all') {
-        const proj = availableProjects.find(
-          (p) => p.projectName === selectedProject || p._id === selectedProject
-        );
-        if (proj) {
-          const towersSet = new Set();
-          (proj.towers || []).forEach((t) => towersSet.add(t));
-          (proj.buildings || []).forEach((b) => {
-            if (b.buildingName) towersSet.add(b.buildingName);
-          });
-          activeRentals.forEach((r) => {
-            const matchesProj = r.projectName === proj.projectName || r.projectId === proj._id;
-            if (matchesProj) {
-              const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
-              towersSet.add(rTower);
-            }
-          });
-          if (towersSet.size > 0) {
-            return Array.from(towersSet).sort();
-          }
-        }
-      }
-      const towersSet = new Set(['Tower A', 'Tower B']);
-      projectsList.forEach((p) => {
+    const towersSet = new Set();
 
-        const towersSet = new Set();
-        availableProjects.forEach((p) => {
-          (p.towers || []).forEach((t) => towersSet.add(t));
-          (p.buildings || []).forEach((b) => {
-            if (b.buildingName) towersSet.add(b.buildingName);
-          });
+    if (selectedProject !== 'all') {
+      const proj = availableProjects.find(
+        (p) => p.projectName === selectedProject || p._id === selectedProject
+      );
+      if (proj) {
+        (proj.towers || []).forEach((t) => towersSet.add(t));
+        (proj.buildings || []).forEach((b) => {
+          if (b.buildingName) towersSet.add(b.buildingName);
         });
         activeRentals.forEach((r) => {
-          if (r.tower) towersSet.add(r.tower);
-          const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
-          towersSet.add(rTower);
+          const matchesProj = r.projectName === proj.projectName || r.projectId === proj._id;
+          if (matchesProj) {
+            const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
+            towersSet.add(rTower);
+          }
         });
-        if (towersSet.size === 0) {
-          towersSet.add('Tower A');
-          towersSet.add('Tower B');
-          towersSet.add('Tower C');
+        if (towersSet.size > 0) {
+          return Array.from(towersSet).sort();
         }
-        return Array.from(towersSet).sort();
-      }, [availableProjects, selectedProject, projectsList, activeRentals]);
-    }, [availableProjects, selectedProject, activeRentals]);
+      }
+    }
+
+    availableProjects.forEach((p) => {
+      (p.towers || []).forEach((t) => towersSet.add(t));
+      (p.buildings || []).forEach((b) => {
+        if (b.buildingName) towersSet.add(b.buildingName);
+      });
+    });
+
+    activeRentals.forEach((r) => {
+      const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
+      towersSet.add(rTower);
+    });
+
+    if (towersSet.size === 0) {
+      towersSet.add('Tower A');
+      towersSet.add('Tower B');
+      towersSet.add('Tower C');
+    }
+    return Array.from(towersSet).sort();
+  }, [availableProjects, selectedProject, activeRentals]);
 
   // Available floors for currently selected tower (or across all towers)
   const availableFloors = useMemo(() => {
@@ -1553,581 +1551,415 @@ export const RentalManagementPage = () => {
           flexWrap: 'wrap',
           gap: '12px'
         }}>
-          {/* Left: Project Selector with clean brand badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '7px',
-              padding: '6px 12px',
-              background: '#ffffff',
-              border: '1.5px solid #cbd5e1',
-              borderRadius: '8px',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-            }}>
-              <Building2 size={15} color="#17652f" />
-              <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Project:
-              </span>
-              <select
-                value={selectedProject}
-                onChange={(e) => {
-                  setSelectedProject(e.target.value);
-                  setSelectedFloor('all');
-                  {/* Left: Project & Tower Custom Droppers (Directly Synced with Property Inventory) */ }
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    {/* 1. CUSTOM PROJECT DROPPER (Synced with Inventory) */}
-                    <div ref={projectDropdownRef} style={{ position: 'relative' }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsProjectDropdownOpen((prev) => !prev);
-                          setIsTowerDropdownOpen(false);
-                        }}
-                        style={{
-                          border: 'none',
-                          background: 'transparent',
-                          fontSize: '0.82rem',
-                          fontWeight: 700,
-                          color: '#0f172a',
-                          outline: 'none',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '7px 13px',
-                          background: '#ffffff',
-                          border: isProjectDropdownOpen ? '1.5px solid #17652f' : '1.5px solid #cbd5e1',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          paddingRight: '4px'
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-                          transition: 'all 0.15s ease'
-                        }}
-                        title="Select Project from Inventory"
-                      >
-                        <option value="all">All Projects ({activeRentals.length})</option>
-                        {availableProjects.map((p) => {
-                          const count = activeRentals.filter((r) => r.projectId === p._id || r.projectName === p.projectName).length;
-                          return (
-                            <option key={p._id || p.projectName} value={p.projectName}>
-                              {p.projectName} ({count})
-                            </option>
-                          );
-                        })}
-                      </select>
-                      <Building2 size={15} color="#17652f" />
-                      <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                        Project:
-                      </span>
-                      <strong style={{ fontSize: '0.82rem', color: '#0f172a' }}>
-                        {selectedProject === 'all' ? 'All Projects' : selectedProject}
-                      </strong>
-                      <span style={{
-                        padding: '1px 6px',
-                        borderRadius: '10px',
-                        background: '#e8f2e5',
-                        color: '#17652f',
-                        fontSize: '0.7rem',
-                        fontWeight: 700
-                      }}>
-                        {selectedProject === 'all'
-                          ? activeRentals.length
-                          : activeRentals.filter((r) => r.projectName === selectedProject || r.projectId === selectedProject).length}
-                      </span>
-                      <ChevronDown
-                        size={14}
-                        color="#64748b"
-                        style={{
-                          transform: isProjectDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.15s ease'
-                        }}
-                      />
-                    </button>
-
-                    {/* Project Dropdown Menu */}
-                    {isProjectDropdownOpen && (
-                      <div style={{
-                        position: 'absolute',
-                        top: 'calc(100% + 6px)',
-                        left: 0,
-                        zIndex: 60,
-                        minWidth: '280px',
-                        background: '#ffffff',
-                        borderRadius: '10px',
-                        border: '1px solid #cbd5e1',
-                        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.06)',
-                        padding: '6px'
-                      }}>
-                        <div style={{ padding: '7px 10px 6px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                            Select Project
-                          </span>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#16a34a', background: '#dcfce7', padding: '1px 6px', borderRadius: '4px' }}>
-                            Inventory Synced
-                          </span>
-                        </div>
-
-                        {/* All Projects Option */}
-                        <div
-                          onClick={() => {
-                            setSelectedProject('all');
-                            setSelectedTower('all');
-                            setSelectedFloor('all');
-                            setIsProjectDropdownOpen(false);
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '8px 10px',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            background: selectedProject === 'all' ? '#e8f2e5' : 'transparent',
-                            color: selectedProject === 'all' ? '#17652f' : '#0f172a',
-                            fontWeight: selectedProject === 'all' ? 700 : 500,
-                            fontSize: '0.82rem',
-                            marginTop: '4px',
-                            transition: 'background 0.12s ease'
-                          }}
-                          onMouseEnter={(e) => { if (selectedProject !== 'all') e.currentTarget.style.background = '#f8fafc'; }}
-                          onMouseLeave={(e) => { if (selectedProject !== 'all') e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Building2 size={14} color={selectedProject === 'all' ? '#17652f' : '#64748b'} />
-                            <span>All Projects</span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{
-                              padding: '1px 6px',
-                              borderRadius: '8px',
-                              background: selectedProject === 'all' ? '#ffffff' : '#f1f5f9',
-                              color: selectedProject === 'all' ? '#17652f' : '#64748b',
-                              fontSize: '0.7rem',
-                              fontWeight: 700
-                            }}>
-                              {activeRentals.length} units
-                            </span>
-                            {selectedProject === 'all' && <Check size={14} color="#17652f" />}
-                          </div>
-                        </div>
-
-                        <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
-
-                        {/* Individual Projects from Inventory */}
-                        {availableProjects.map((p) => {
-                          const isSelected = selectedProject === p.projectName || selectedProject === p._id;
-                          const count = activeRentals.filter((r) => r.projectId === p._id || r.projectName === p.projectName).length;
-                          return (
-                            <div
-                              key={p._id || p.projectName}
-                              onClick={() => {
-                                setSelectedProject(p.projectName);
-                                setSelectedTower('all');
-                                setSelectedFloor('all');
-                                setIsProjectDropdownOpen(false);
-                              }}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: '8px 10px',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                background: isSelected ? '#e8f2e5' : 'transparent',
-                                color: isSelected ? '#17652f' : '#0f172a',
-                                fontWeight: isSelected ? 700 : 500,
-                                fontSize: '0.82rem',
-                                transition: 'background 0.12s ease'
-                              }}
-                              onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#f8fafc'; }}
-                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
-                            >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
-                                <div>
-                                  <div>{p.projectName}</div>
-                                  {p.towers && p.towers.length > 0 && (
-                                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 400 }}>
-                                      {p.towers.join(', ')}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{
-                                  padding: '1px 6px',
-                                  borderRadius: '8px',
-                                  background: isSelected ? '#ffffff' : '#f1f5f9',
-                                  color: isSelected ? '#17652f' : '#64748b',
-                                  fontSize: '0.7rem',
-                                  fontWeight: 700
-                                }}>
-                                  {count} units
-                                </span>
-                                {isSelected && <Check size={14} color="#17652f" />}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 2. CUSTOM TOWER DROPPER (Directly synced with Tower in Project) */ }
-                  <div ref={towerDropdownRef} style={{ position: 'relative' }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsTowerDropdownOpen((prev) => !prev);
-                        setIsProjectDropdownOpen(false);
-                      }}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '7px 14px',
-                        background: '#ffffff',
-                        border: isTowerDropdownOpen ? '1.5px solid #17652f' : '1.5px solid #cbd5e1',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-                        transition: 'all 0.15s ease'
-                      }}
-                      title="Select Tower (Synced with Project in Inventory)"
-                    >
-                      <Layers size={15} color={selectedTower === 'all' ? '#17652f' : getTowerColor(selectedTower).dot} />
-                      <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                        Tower:
-                      </span>
-                      {selectedTower !== 'all' ? (
-                        <>
-                          <span style={{
-                            width: '8px',
-                            height: '8px',
-                            borderRadius: '50%',
-                            background: getTowerColor(selectedTower).dot,
-                            display: 'inline-block'
-                          }} />
-                          <strong style={{ fontSize: '0.82rem', color: '#0f172a' }}>
-                            {selectedTower}
-                          </strong>
-                          <span style={{
-                            padding: '1px 7px',
-                            borderRadius: '10px',
-                            background: getTowerColor(selectedTower).bg,
-                            color: getTowerColor(selectedTower).text,
-                            fontSize: '0.72rem',
-                            fontWeight: 700
-                          }}>
-                            {filteredActiveRentals.filter((r) => {
-                              const rt = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
-                              return rt === selectedTower;
-                            }).length}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <strong style={{ fontSize: '0.82rem', color: '#0f172a' }}>
-                            All Towers
-                          </strong>
-                          <span style={{
-                            padding: '1px 7px',
-                            borderRadius: '10px',
-                            background: '#e8f2e5',
-                            color: '#17652f',
-                            fontSize: '0.72rem',
-                            fontWeight: 700
-                          }}>
-                            {filteredActiveRentals.length}
-                          </span>
-                        </>
-                      )}
-                      <ChevronDown
-                        size={14}
-                        color="#64748b"
-                        style={{
-                          transform: isTowerDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.15s ease'
-                        }}
-                      />
-                    </button>
-
-                    {/* Tower Dropdown Menu */}
-                    {isTowerDropdownOpen && (
-                      <div style={{
-                        position: 'absolute',
-                        top: 'calc(100% + 6px)',
-                        left: 0,
-                        zIndex: 60,
-                        minWidth: '260px',
-                        background: '#ffffff',
-                        borderRadius: '10px',
-                        border: '1px solid #cbd5e1',
-                        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.06)',
-                        padding: '6px'
-                      }}>
-                        <div style={{ padding: '7px 10px 6px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                            Select Tower / Wing
-                          </span>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#64748b' }}>
-                            {availableTowers.length} {availableTowers.length === 1 ? 'Tower' : 'Towers'}
-                          </span>
-                        </div>
-
-                        {/* All Towers Option */}
-                        <div
-                          onClick={() => {
-                            setSelectedTower('all');
-                            setSelectedFloor('all');
-                            setIsTowerDropdownOpen(false);
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '8px 10px',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            background: selectedTower === 'all' ? '#e8f2e5' : 'transparent',
-                            color: selectedTower === 'all' ? '#17652f' : '#0f172a',
-                            fontWeight: selectedTower === 'all' ? 700 : 500,
-                            fontSize: '0.82rem',
-                            marginTop: '4px',
-                            transition: 'background 0.12s ease'
-                          }}
-                          onMouseEnter={(e) => { if (selectedTower !== 'all') e.currentTarget.style.background = '#f8fafc'; }}
-                          onMouseLeave={(e) => { if (selectedTower !== 'all') e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Layers size={14} color={selectedTower === 'all' ? '#17652f' : '#64748b'} />
-                            <span>All Towers</span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{
-                              padding: '1px 6px',
-                              borderRadius: '8px',
-                              background: selectedTower === 'all' ? '#ffffff' : '#f1f5f9',
-                              color: selectedTower === 'all' ? '#17652f' : '#64748b',
-                              fontSize: '0.7rem',
-                              fontWeight: 700
-                            }}>
-                              {filteredActiveRentals.length} units
-                            </span>
-                            {selectedTower === 'all' && <Check size={14} color="#17652f" />}
-                          </div>
-                        </div>
-
-                        <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
-
-                        {/* Individual Towers Synced with Project in Inventory */}
-                        {availableTowers.map((tName) => {
-                          const isSelected = selectedTower === tName;
-                          const colors = getTowerColor(tName);
-                          const count = filteredActiveRentals.filter((r) => {
-                            const rt = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
-                            return rt === tName;
-                          }).length;
-
-                          return (
-                            <div
-                              key={tName}
-                              onClick={() => {
-                                setSelectedTower(tName);
-                                setSelectedFloor('all');
-                                setIsTowerDropdownOpen(false);
-                              }}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: '8px 10px',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                background: isSelected ? colors.bg : 'transparent',
-                                color: isSelected ? colors.text : '#0f172a',
-                                fontWeight: isSelected ? 700 : 500,
-                                fontSize: '0.82rem',
-                                transition: 'background 0.12s ease'
-                              }}
-                              onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#f8fafc'; }}
-                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
-                            >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{
-                                  width: '8px',
-                                  height: '8px',
-                                  borderRadius: '50%',
-                                  background: colors.dot,
-                                  display: 'inline-block'
-                                }} />
-                                <span>{tName}</span>
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{
-                                  padding: '1px 6px',
-                                  borderRadius: '8px',
-                                  background: isSelected ? '#ffffff' : '#f1f5f9',
-                                  color: isSelected ? colors.text : '#64748b',
-                                  fontSize: '0.7rem',
-                                  fontWeight: 700
-                                }}>
-                                  {count} {count === 1 ? 'unit' : 'units'}
-                                </span>
-                                {isSelected && <Check size={14} color={colors.text} />}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Campus / Location Tag */ }
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '4px 10px',
-                    borderRadius: '6px',
-                    background: '#e8f2e5',
-                    color: '#17652f',
-                    padding: '6px 10px',
-                    borderRadius: '7px',
-                    background: '#f1f5f9',
-                    color: '#475569',
-                    fontSize: '0.72rem',
-                    fontWeight: 600
-              fontWeight: 600,
-                    border: '1px solid #e2e8f0'
-                  }}>
-                    <CheckCircle2 size={12} />
-                    Vrindavan Master Campus
-                    <CheckCircle2 size={13} color="#16a34a" />
-                    <span>Inventory Synced</span>
-                  </span>
-          </div>
-
-            {/* Center: The Tower Switcher Segmented Control */}
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              background: '#f1f5f9',
-              padding: '3px',
-              borderRadius: '9px',
-              border: '1px solid #e2e8f0',
-              gap: '3px'
-            }}>
-              {/* All Towers */}
+          {/* Left: Project & Tower Custom Droppers (Directly Synced with Property Inventory) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {/* 1. CUSTOM PROJECT DROPPER (Synced with Inventory) */}
+            <div ref={projectDropdownRef} style={{ position: 'relative' }}>
               <button
                 type="button"
                 onClick={() => {
-                  setSelectedTower('all');
-                  setSelectedFloor('all');
+                  setIsProjectDropdownOpen((prev) => !prev);
+                  setIsTowerDropdownOpen(false);
                 }}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 14px',
-                  borderRadius: '7px',
-                  border: 'none',
-                  background: selectedTower === 'all' ? '#ffffff' : 'transparent',
-                  color: selectedTower === 'all' ? '#0f172a' : '#64748b',
-                  fontWeight: selectedTower === 'all' ? 700 : 500,
-                  fontSize: '0.8rem',
+                  gap: '8px',
+                  padding: '7px 13px',
+                  background: '#ffffff',
+                  border: isProjectDropdownOpen ? '1.5px solid #17652f' : '1.5px solid #cbd5e1',
+                  borderRadius: '8px',
                   cursor: 'pointer',
-                  boxShadow: selectedTower === 'all' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
                   transition: 'all 0.15s ease'
                 }}
+                title="Select Project from Inventory"
               >
-                <Layers size={14} color={selectedTower === 'all' ? '#17652f' : '#94a3b8'} />
-                <span>All Towers</span>
+                <Building2 size={15} color="#17652f" />
+                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Project:
+                </span>
+                <strong style={{ fontSize: '0.82rem', color: '#0f172a' }}>
+                  {selectedProject === 'all' ? 'All Projects' : selectedProject}
+                </strong>
                 <span style={{
                   padding: '1px 6px',
                   borderRadius: '10px',
-                  background: selectedTower === 'all' ? '#e8f2e5' : '#e2e8f0',
-                  color: selectedTower === 'all' ? '#17652f' : '#64748b',
+                  background: '#e8f2e5',
+                  color: '#17652f',
                   fontSize: '0.7rem',
                   fontWeight: 700
                 }}>
-                  {filteredActiveRentals.length}
+                  {selectedProject === 'all'
+                    ? activeRentals.length
+                    : activeRentals.filter((r) => r.projectName === selectedProject || r.projectId === selectedProject).length}
                 </span>
+                <ChevronDown
+                  size={14}
+                  color="#64748b"
+                  style={{
+                    transform: isProjectDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.15s ease'
+                  }}
+                />
               </button>
 
-              {/* Dynamic Tower Tabs (Tower A, Tower B, Tower C, etc.) */}
-              {availableTowers.map((tName) => {
-                const isSelected = selectedTower === tName;
-                let dotColor = '#22c55e';
-                let textColor = '#15803d';
-                let badgeBg = '#dcfce7';
+              {/* Project Dropdown Menu */}
+              {isProjectDropdownOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  left: 0,
+                  zIndex: 60,
+                  minWidth: '280px',
+                  background: '#ffffff',
+                  borderRadius: '10px',
+                  border: '1px solid #cbd5e1',
+                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.06)',
+                  padding: '6px'
+                }}>
+                  <div style={{ padding: '7px 10px 6px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Select Project
+                    </span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#16a34a', background: '#dcfce7', padding: '1px 6px', borderRadius: '4px' }}>
+                      Inventory Synced
+                    </span>
+                  </div>
 
-                if (/Tower\s*B/i.test(tName)) {
-                  dotColor = '#3b82f6';
-                  textColor = '#2563eb';
-                  badgeBg = '#eff6ff';
-                } else if (/Tower\s*C/i.test(tName)) {
-                  dotColor = '#f59e0b';
-                  textColor = '#b45309';
-                  badgeBg = '#fef3c7';
-                } else if (/Tower\s*D/i.test(tName)) {
-                  dotColor = '#8b5cf6';
-                  textColor = '#6d28d9';
-                  badgeBg = '#f5f3ff';
-                }
-
-                const count = filteredActiveRentals.filter((r) => {
-                  const rt = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
-                  return rt === tName;
-                }).length;
-
-                return (
-                  <button
-                    key={tName}
-                    type="button"
+                  {/* All Projects Option */}
+                  <div
                     onClick={() => {
-                      setSelectedTower(tName);
+                      setSelectedProject('all');
+                      setSelectedTower('all');
                       setSelectedFloor('all');
+                      setIsProjectDropdownOpen(false);
                     }}
                     style={{
-                      display: 'inline-flex',
+                      display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      padding: '6px 14px',
-                      borderRadius: '7px',
-                      border: 'none',
-                      background: isSelected ? '#ffffff' : 'transparent',
-                      color: isSelected ? textColor : '#64748b',
-                      fontWeight: isSelected ? 700 : 500,
-                      fontSize: '0.8rem',
+                      justifyContent: 'space-between',
+                      padding: '8px 10px',
+                      borderRadius: '6px',
                       cursor: 'pointer',
-                      boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                      transition: 'all 0.15s ease'
+                      background: selectedProject === 'all' ? '#e8f2e5' : 'transparent',
+                      color: selectedProject === 'all' ? '#17652f' : '#0f172a',
+                      fontWeight: selectedProject === 'all' ? 700 : 500,
+                      fontSize: '0.82rem',
+                      marginTop: '4px',
+                      transition: 'background 0.12s ease'
                     }}
+                    onMouseEnter={(e) => { if (selectedProject !== 'all') e.currentTarget.style.background = '#f8fafc'; }}
+                    onMouseLeave={(e) => { if (selectedProject !== 'all') e.currentTarget.style.background = 'transparent'; }}
                   >
-                    <span style={{
-                      width: '7px',
-                      height: '7px',
-                      borderRadius: '50%',
-                      background: dotColor,
-                      display: 'inline-block'
-                    }} />
-                    <span>{tName}</span>
-                    <span style={{
-                      padding: '1px 6px',
-                      borderRadius: '10px',
-                      background: isSelected ? badgeBg : '#e2e8f0',
-                      color: isSelected ? textColor : '#64748b',
-                      fontSize: '0.7rem',
-                      fontWeight: 700
-                    }}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Building2 size={14} color={selectedProject === 'all' ? '#17652f' : '#64748b'} />
+                      <span>All Projects</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{
+                        padding: '1px 6px',
+                        borderRadius: '8px',
+                        background: selectedProject === 'all' ? '#ffffff' : '#f1f5f9',
+                        color: selectedProject === 'all' ? '#17652f' : '#64748b',
+                        fontSize: '0.7rem',
+                        fontWeight: 700
+                      }}>
+                        {activeRentals.length} units
+                      </span>
+                      {selectedProject === 'all' && <Check size={14} color="#17652f" />}
+                    </div>
+                  </div>
+
+                  <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
+
+                  {/* Individual Projects from Inventory */}
+                  {availableProjects.map((p) => {
+                    const isSelected = selectedProject === p.projectName || selectedProject === p._id;
+                    const count = activeRentals.filter((r) => r.projectId === p._id || r.projectName === p.projectName).length;
+                    return (
+                      <div
+                        key={p._id || p.projectName}
+                        onClick={() => {
+                          setSelectedProject(p.projectName);
+                          setSelectedTower('all');
+                          setSelectedFloor('all');
+                          setIsProjectDropdownOpen(false);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '8px 10px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          background: isSelected ? '#e8f2e5' : 'transparent',
+                          color: isSelected ? '#17652f' : '#0f172a',
+                          fontWeight: isSelected ? 700 : 500,
+                          fontSize: '0.82rem',
+                          transition: 'background 0.12s ease'
+                        }}
+                        onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#f8fafc'; }}
+                        onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+                          <div>
+                            <div>{p.projectName}</div>
+                            {p.towers && p.towers.length > 0 && (
+                              <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 400 }}>
+                                {p.towers.join(', ')}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{
+                            padding: '1px 6px',
+                            borderRadius: '8px',
+                            background: isSelected ? '#ffffff' : '#f1f5f9',
+                            color: isSelected ? '#17652f' : '#64748b',
+                            fontSize: '0.7rem',
+                            fontWeight: 700
+                          }}>
+                            {count} units
+                          </span>
+                          {isSelected && <Check size={14} color="#17652f" />}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
+            {/* 2. CUSTOM TOWER DROPPER (Directly synced with Tower in Project) */}
+            <div ref={towerDropdownRef} style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsTowerDropdownOpen((prev) => !prev);
+                  setIsProjectDropdownOpen(false);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '7px 14px',
+                  background: '#ffffff',
+                  border: isTowerDropdownOpen ? '1.5px solid #17652f' : '1.5px solid #cbd5e1',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                  transition: 'all 0.15s ease'
+                }}
+                title="Select Tower (Synced with Project in Inventory)"
+              >
+                <Layers size={15} color={selectedTower === 'all' ? '#17652f' : getTowerColor(selectedTower).dot} />
+                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Tower:
+                </span>
+                {selectedTower !== 'all' ? (
+                  <>
+                    <span style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      background: getTowerColor(selectedTower).dot,
+                      display: 'inline-block'
+                    }} />
+                    <strong style={{ fontSize: '0.82rem', color: '#0f172a' }}>
+                      {selectedTower}
+                    </strong>
+                    <span style={{
+                      padding: '1px 7px',
+                      borderRadius: '10px',
+                      background: getTowerColor(selectedTower).bg,
+                      color: getTowerColor(selectedTower).text,
+                      fontSize: '0.72rem',
+                      fontWeight: 700
+                    }}>
+                      {filteredActiveRentals.filter((r) => {
+                        const rt = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
+                        return rt === selectedTower;
+                      }).length}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <strong style={{ fontSize: '0.82rem', color: '#0f172a' }}>
+                      All Towers
+                    </strong>
+                    <span style={{
+                      padding: '1px 7px',
+                      borderRadius: '10px',
+                      background: '#e8f2e5',
+                      color: '#17652f',
+                      fontSize: '0.72rem',
+                      fontWeight: 700
+                    }}>
+                      {filteredActiveRentals.length}
+                    </span>
+                  </>
+                )}
+                <ChevronDown
+                  size={14}
+                  color="#64748b"
+                  style={{
+                    transform: isTowerDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.15s ease'
+                  }}
+                />
+              </button>
+
+              {/* Tower Dropdown Menu */}
+              {isTowerDropdownOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  left: 0,
+                  zIndex: 60,
+                  minWidth: '260px',
+                  background: '#ffffff',
+                  borderRadius: '10px',
+                  border: '1px solid #cbd5e1',
+                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.06)',
+                  padding: '6px'
+                }}>
+                  <div style={{ padding: '7px 10px 6px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Select Tower / Wing
+                    </span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#64748b' }}>
+                      {availableTowers.length} {availableTowers.length === 1 ? 'Tower' : 'Towers'}
+                    </span>
+                  </div>
+
+                  {/* All Towers Option */}
+                  <div
+                    onClick={() => {
+                      setSelectedTower('all');
+                      setSelectedFloor('all');
+                      setIsTowerDropdownOpen(false);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 10px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      background: selectedTower === 'all' ? '#e8f2e5' : 'transparent',
+                      color: selectedTower === 'all' ? '#17652f' : '#0f172a',
+                      fontWeight: selectedTower === 'all' ? 700 : 500,
+                      fontSize: '0.82rem',
+                      marginTop: '4px',
+                      transition: 'background 0.12s ease'
+                    }}
+                    onMouseEnter={(e) => { if (selectedTower !== 'all') e.currentTarget.style.background = '#f8fafc'; }}
+                    onMouseLeave={(e) => { if (selectedTower !== 'all') e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Layers size={14} color={selectedTower === 'all' ? '#17652f' : '#64748b'} />
+                      <span>All Towers</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{
+                        padding: '1px 6px',
+                        borderRadius: '8px',
+                        background: selectedTower === 'all' ? '#ffffff' : '#f1f5f9',
+                        color: selectedTower === 'all' ? '#17652f' : '#64748b',
+                        fontSize: '0.7rem',
+                        fontWeight: 700
+                      }}>
+                        {filteredActiveRentals.length} units
+                      </span>
+                      {selectedTower === 'all' && <Check size={14} color="#17652f" />}
+                    </div>
+                  </div>
+
+                  <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
+
+                  {/* Individual Towers Synced with Project in Inventory */}
+                  {availableTowers.map((tName) => {
+                    const isSelected = selectedTower === tName;
+                    const colors = getTowerColor(tName);
+                    const count = filteredActiveRentals.filter((r) => {
+                      const rt = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
+                      return rt === tName;
+                    }).length;
+
+                    return (
+                      <div
+                        key={tName}
+                        onClick={() => {
+                          setSelectedTower(tName);
+                          setSelectedFloor('all');
+                          setIsTowerDropdownOpen(false);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '8px 10px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          background: isSelected ? colors.bg : 'transparent',
+                          color: isSelected ? colors.text : '#0f172a',
+                          fontWeight: isSelected ? 700 : 500,
+                          fontSize: '0.82rem',
+                          transition: 'background 0.12s ease'
+                        }}
+                        onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#f8fafc'; }}
+                        onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            background: colors.dot,
+                            display: 'inline-block'
+                          }} />
+                          <span>{tName}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{
+                            padding: '1px 6px',
+                            borderRadius: '8px',
+                            background: isSelected ? '#ffffff' : '#f1f5f9',
+                            color: isSelected ? colors.text : '#64748b',
+                            fontSize: '0.7rem',
+                            fontWeight: 700
+                          }}>
+                            {count} {count === 1 ? 'unit' : 'units'}
+                          </span>
+                          {isSelected && <Check size={14} color={colors.text} />}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Campus / Location Tag */}
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              padding: '6px 10px',
+              borderRadius: '7px',
+              background: '#f1f5f9',
+              color: '#475569',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              border: '1px solid #e2e8f0'
+            }}>
+              <CheckCircle2 size={13} color="#16a34a" />
+              <span>Inventory Synced</span>
+            </span>
+          </div>
             {/* Right: Active vs Resale History Tabs */}
             <div style={{
               display: 'inline-flex',
