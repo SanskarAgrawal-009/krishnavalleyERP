@@ -1543,34 +1543,37 @@ export const importRentalsFromExcel = async (req, res) => {
       const tenureMonths = Number(row.tenureMonths || row['Tenure (Months)'] || row.tenure || 36) || 36;
       const totalPaid = Number(row.totalPaid || row['Total Paid'] || 0) || 0;
 
-      // Determine target tower: explicit selection or inferred from flat number
-      const isTowerB = /^[Bb][\s\-_]|Tower[\s\-_]*B/i.test(flatNumber) || (tower && /Tower\s*B/i.test(tower));
-      const targetTower = isTowerB ? 'Tower B' : (tower || 'Tower A');
-
-      let flat = null;
-      if (targetTower === 'Tower B') {
-        flat = await Flat.findOne({
-          $or: [
-            { flatNumber: { $regex: new RegExp(`^${flatNumber.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, '\\$&')}$`, 'i') }, tower: 'Tower B' },
-            { flatNumber: { $regex: new RegExp(`^B[-\\s]*${flatNumber.replace(/\D/g, '')}$`, 'i') } }
-          ]
-        });
-      } else {
-        flat = await Flat.findOne({
-          flatNumber: { $regex: new RegExp(`^${flatNumber.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, '\\$&')}$`, 'i') },
-          tower: { $ne: 'Tower B' }
-        });
+      // Determine target tower: explicit selection or inferred from flat number (e.g. C-101 -> Tower C, B-101 -> Tower B)
+      let targetTower = tower || 'Tower A';
+      const prefixMatch = flatNumber.match(/^([A-Za-z])[\s\-_]/);
+      if (prefixMatch) {
+        targetTower = `Tower ${prefixMatch[1].toUpperCase()}`;
+      } else if (tower) {
+        targetTower = tower;
       }
+
+      const towerLetter = targetTower.replace(/Tower\s*/i, '').trim().toUpperCase();
+
+      let flat = await Flat.findOne({
+        $or: [
+          { flatNumber: { $regex: new RegExp(`^${flatNumber.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') }, tower: targetTower },
+          ...(towerLetter && towerLetter !== 'A' ? [
+            { flatNumber: { $regex: new RegExp(`^${towerLetter}[-\\s]*${flatNumber.replace(/\D/g, '')}$`, 'i') } }
+          ] : [
+            { flatNumber: flatNumber.replace(/\D/g, ''), tower: 'Tower A' }
+          ])
+        ]
+      });
 
       // Try numeric suffix
       if (!flat) {
         const numOnly = flatNumber.replace(/\D/g, '');
         if (numOnly) {
-          if (targetTower === 'Tower B') {
+          if (towerLetter && towerLetter !== 'A') {
             flat = await Flat.findOne({
               $or: [
-                { flatNumber: `B-${numOnly}` },
-                { flatNumber: numOnly, tower: 'Tower B' }
+                { flatNumber: `${towerLetter}-${numOnly}` },
+                { flatNumber: numOnly, tower: targetTower }
               ]
             });
           } else {
@@ -1590,7 +1593,9 @@ export const importRentalsFromExcel = async (req, res) => {
         const building = (project?.buildings || []).find(b => new RegExp(targetTower, 'i').test(b.buildingName)) || project?.buildings?.[0];
         const digits = flatNumber.replace(/\D/g, '');
         const floorNum = digits.length >= 3 ? parseInt(digits.slice(0, -2), 10) : 0;
-        const formattedFlatNumber = targetTower === 'Tower B' && !flatNumber.toUpperCase().startsWith('B-') ? `B-${flatNumber}` : flatNumber;
+        const formattedFlatNumber = (towerLetter && towerLetter !== 'A' && !flatNumber.toUpperCase().startsWith(`${towerLetter}-`))
+          ? `${towerLetter}-${flatNumber}`
+          : flatNumber;
 
         flat = new Flat({
           flatNumber: formattedFlatNumber,

@@ -270,7 +270,12 @@ export const RentalManagementPage = () => {
       }
     }
     const towersSet = new Set(['Tower A', 'Tower B']);
-    projectsList.forEach((p) => (p.towers || []).forEach((t) => towersSet.add(t)));
+    projectsList.forEach((p) => {
+      (p.towers || []).forEach((t) => towersSet.add(t));
+      (p.buildings || []).forEach((b) => {
+        if (b.buildingName) towersSet.add(b.buildingName);
+      });
+    });
     activeRentals.forEach((r) => {
       if (r.tower) towersSet.add(r.tower);
     });
@@ -1540,85 +1545,74 @@ export const RentalManagementPage = () => {
               </span>
             </button>
 
-            {/* Tower A */}
-            <button
-              type="button"
-              onClick={() => setSelectedTower('Tower A')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
-                borderRadius: '7px',
-                border: 'none',
-                background: selectedTower === 'Tower A' ? '#ffffff' : 'transparent',
-                color: selectedTower === 'Tower A' ? '#15803d' : '#64748b',
-                fontWeight: selectedTower === 'Tower A' ? 700 : 500,
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                boxShadow: selectedTower === 'Tower A' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <span style={{
-                width: '7px',
-                height: '7px',
-                borderRadius: '50%',
-                background: '#22c55e',
-                display: 'inline-block'
-              }} />
-              <span>Tower A</span>
-              <span style={{
-                padding: '1px 6px',
-                borderRadius: '10px',
-                background: selectedTower === 'Tower A' ? '#dcfce7' : '#e2e8f0',
-                color: selectedTower === 'Tower A' ? '#15803d' : '#64748b',
-                fontSize: '0.7rem',
-                fontWeight: 700
-              }}>
-                {filteredActiveRentals.filter((r) => (r.tower || 'Tower A') === 'Tower A').length}
-              </span>
-            </button>
+            {/* Dynamic Tower Tabs (Tower A, Tower B, Tower C, etc.) */}
+            {availableTowers.map((tName) => {
+              const isSelected = selectedTower === tName;
+              let dotColor = '#22c55e';
+              let textColor = '#15803d';
+              let badgeBg = '#dcfce7';
 
-            {/* Tower B */}
-            <button
-              type="button"
-              onClick={() => setSelectedTower('Tower B')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
-                borderRadius: '7px',
-                border: 'none',
-                background: selectedTower === 'Tower B' ? '#ffffff' : 'transparent',
-                color: selectedTower === 'Tower B' ? '#2563eb' : '#64748b',
-                fontWeight: selectedTower === 'Tower B' ? 700 : 500,
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                boxShadow: selectedTower === 'Tower B' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <span style={{
-                width: '7px',
-                height: '7px',
-                borderRadius: '50%',
-                background: '#3b82f6',
-                display: 'inline-block'
-              }} />
-              <span>Tower B</span>
-              <span style={{
-                padding: '1px 6px',
-                borderRadius: '10px',
-                background: selectedTower === 'Tower B' ? '#eff6ff' : '#e2e8f0',
-                color: selectedTower === 'Tower B' ? '#2563eb' : '#64748b',
-                fontSize: '0.7rem',
-                fontWeight: 700
-              }}>
-                {filteredActiveRentals.filter((r) => (r.tower || 'Tower A') === 'Tower B').length}
-              </span>
-            </button>
+              if (/Tower\s*B/i.test(tName)) {
+                dotColor = '#3b82f6';
+                textColor = '#2563eb';
+                badgeBg = '#eff6ff';
+              } else if (/Tower\s*C/i.test(tName)) {
+                dotColor = '#f59e0b';
+                textColor = '#b45309';
+                badgeBg = '#fef3c7';
+              } else if (/Tower\s*D/i.test(tName)) {
+                dotColor = '#8b5cf6';
+                textColor = '#6d28d9';
+                badgeBg = '#f5f3ff';
+              }
+
+              const count = filteredActiveRentals.filter((r) => {
+                const rt = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
+                return rt === tName;
+              }).length;
+
+              return (
+                <button
+                  key={tName}
+                  type="button"
+                  onClick={() => setSelectedTower(tName)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 14px',
+                    borderRadius: '7px',
+                    border: 'none',
+                    background: isSelected ? '#ffffff' : 'transparent',
+                    color: isSelected ? textColor : '#64748b',
+                    fontWeight: isSelected ? 700 : 500,
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <span style={{
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '50%',
+                    background: dotColor,
+                    display: 'inline-block'
+                  }} />
+                  <span>{tName}</span>
+                  <span style={{
+                    padding: '1px 6px',
+                    borderRadius: '10px',
+                    background: isSelected ? badgeBg : '#e2e8f0',
+                    color: isSelected ? textColor : '#64748b',
+                    fontSize: '0.7rem',
+                    fontWeight: 700
+                  }}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Right: Active vs Resale History Tabs */}
