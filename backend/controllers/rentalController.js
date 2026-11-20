@@ -161,7 +161,7 @@ export const getActiveRentals = async (req, res) => {
         status: flat.status,
         projectName: flat.projectId?.projectName || 'Krishna Valley Resorts',
         projectId: flat.projectId?._id ? String(flat.projectId._id) : String(flat.projectId || ''),
-        tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : 'Tower A'),
+        tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(flat.flatNumber) ? 'Tower C' : 'Tower A'),
         // Table 1 Specific Columns
         ownerName,
         ownerMobile,
@@ -242,7 +242,7 @@ export const getActiveRentals = async (req, res) => {
       },
       meta: {
         projects: projectsList,
-        towers: Array.from(new Set(projectsList.flatMap((p) => p.towers).concat(['Tower A', 'Tower B']))).sort()
+        towers: Array.from(new Set(projectsList.flatMap((p) => p.towers).concat(['Tower A', 'Tower B', 'Tower C']))).sort()
       }
     });
   } catch (error) {
@@ -322,7 +322,7 @@ export const getPreviousOwnersHistory = async (req, res) => {
           floor: flat.floor,
           projectName: flat.projectId?.projectName || 'Krishna Valley Resorts',
           projectId: flat.projectId?._id ? String(flat.projectId._id) : String(flat.projectId || ''),
-          tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : 'Tower A'),
+          tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(flat.flatNumber) ? 'Tower C' : 'Tower A'),
           // Table 2 Columns
           sequenceLabel,
           sequenceIndex: idx + 1,
@@ -1926,7 +1926,7 @@ export const getCustomerRentalLedgers = async (req, res) => {
         bhkType: flat.bhkType,
         projectName: flat.projectId?.projectName || 'Krishna Valley Resorts',
         projectId: flat.projectId?._id ? String(flat.projectId._id) : String(flat.projectId || ''),
-        tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : 'Tower A'),
+        tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(flat.flatNumber) ? 'Tower C' : 'Tower A'),
         ownerName,
         ownerMobile,
         ownerEmail,

@@ -1538,7 +1538,9 @@ export const RentalManagementPage = () => {
         borderRadius: '12px',
         border: '1px solid #e2e8f0',
         boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.02)',
-        overflow: 'hidden'
+        overflow: 'visible',
+        position: 'relative',
+        zIndex: 30
       }}>
         {/* TOP LEVEL NAVIGATION & SCOPE SWITCHER BAR */}
         <div style={{
@@ -1818,12 +1820,14 @@ export const RentalManagementPage = () => {
                   position: 'absolute',
                   top: 'calc(100% + 6px)',
                   left: 0,
-                  zIndex: 60,
+                  zIndex: 100,
                   minWidth: '260px',
+                  maxHeight: '380px',
+                  overflowY: 'auto',
                   background: '#ffffff',
                   borderRadius: '10px',
                   border: '1px solid #cbd5e1',
-                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.06)',
+                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.08)',
                   padding: '6px'
                 }}>
                   <div style={{ padding: '7px 10px 6px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1872,7 +1876,7 @@ export const RentalManagementPage = () => {
                         fontSize: '0.7rem',
                         fontWeight: 700
                       }}>
-                        {filteredActiveRentals.length} units
+                        {activeRentals.filter((r) => selectedProject === 'all' || r.projectName === selectedProject || r.projectId === selectedProject).length} units
                       </span>
                       {selectedTower === 'all' && <Check size={14} color="#17652f" />}
                     </div>
@@ -1882,9 +1886,11 @@ export const RentalManagementPage = () => {
 
                   {/* Individual Towers Synced with Project in Inventory */}
                   {availableTowers.map((tName) => {
+                    if (!tName) return null;
                     const isSelected = selectedTower === tName;
                     const colors = getTowerColor(tName);
-                    const count = filteredActiveRentals.filter((r) => {
+                    const count = activeRentals.filter((r) => {
+                      if (selectedProject !== 'all' && r.projectName !== selectedProject && r.projectId !== selectedProject) return false;
                       const rt = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
                       return rt === tName;
                     }).length;
@@ -2038,32 +2044,34 @@ export const RentalManagementPage = () => {
             </div>
           </div>
 
-          {/* BOTTOM LEVEL: SEARCH, FILTERS & TABLE CONTROLS */}
+          {/* BOTTOM LEVEL: SEARCH, FILTERS & TABLE CONTROLS (COMPACT SINGLE-ROW CLUSTER) */}
           <div style={{
-            padding: '10px 18px',
+            padding: '8px 16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: '10px'
+            gap: '8px',
+            borderTop: '1px solid #f1f5f9',
+            background: '#ffffff'
           }}>
-            {/* Left: Search + Filter Tools (Single Line Cluster) */}
+            {/* Left: Search + Filter Tools (Compact Inline Cluster) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: '1 1 auto' }}>
               {/* Compact Search Box */}
-              <form onSubmit={handleSearchSubmit} style={{ position: 'relative', width: '280px', minWidth: '190px', flexShrink: 0 }}>
-                <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+              <form onSubmit={handleSearchSubmit} style={{ position: 'relative', width: '230px', minWidth: '170px', flexShrink: 0, margin: 0 }}>
+                <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                 <input
                   type="text"
-                  placeholder={activeTab === 'active' ? 'Search flat, owner, mobile...' : 'Search resale history...'}
+                  placeholder={activeTab === 'active' ? 'Search flat, owner...' : 'Search resale history...'}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '7px 28px 7px 32px',
-                    borderRadius: '7px',
+                    padding: '6px 26px 6px 30px',
+                    borderRadius: '6px',
                     border: '1px solid #cbd5e1',
                     background: '#f8fafc',
-                    fontSize: '0.82rem',
+                    fontSize: '0.8rem',
                     outline: 'none',
                     color: '#0f172a',
                     boxSizing: 'border-box'
@@ -2075,7 +2083,7 @@ export const RentalManagementPage = () => {
                     onClick={() => setSearchQuery('')}
                     style={{
                       position: 'absolute',
-                      right: '8px',
+                      right: '7px',
                       top: '50%',
                       transform: 'translateY(-50%)',
                       background: 'none',
@@ -2088,27 +2096,30 @@ export const RentalManagementPage = () => {
                     }}
                     title="Clear search"
                   >
-                    <X size={13} />
+                    <X size={12} />
                   </button>
                 )}
               </form>
 
-              {/* Floor Filter (Cascading with Tower, default: All Floors) */}
+              {/* Floor Filter (Cascading with Tower, default: All Floors, Compact Inline) */}
               {activeTab === 'active' && (
                 <select
                   value={selectedFloor}
                   onChange={(e) => setSelectedFloor(e.target.value)}
                   style={{
-                    padding: '7px 11px',
-                    borderRadius: '7px',
+                    display: 'inline-block',
+                    width: '130px',
+                    minWidth: '115px',
+                    maxWidth: '140px',
+                    padding: '6px 9px',
+                    borderRadius: '6px',
                     border: '1px solid #cbd5e1',
                     background: selectedFloor !== 'all' ? '#e8f2e5' : '#ffffff',
                     color: selectedFloor !== 'all' ? '#17652f' : '#334155',
-                    fontSize: '0.8rem',
+                    fontSize: '0.78rem',
                     fontWeight: 600,
                     cursor: 'pointer',
                     outline: 'none',
-                    minWidth: '130px',
                     flexShrink: 0
                   }}
                   title="Filter flats by floor"
@@ -2122,22 +2133,25 @@ export const RentalManagementPage = () => {
                 </select>
               )}
 
-              {/* Document Filter (Agreement & Registry) */}
+              {/* Document Filter (Agreement & Registry, Compact Inline) */}
               {activeTab === 'active' && (
                 <select
                   value={docStatusFilter}
                   onChange={(e) => setDocStatusFilter(e.target.value)}
                   style={{
-                    padding: '7px 11px',
-                    borderRadius: '7px',
+                    display: 'inline-block',
+                    width: '155px',
+                    minWidth: '140px',
+                    maxWidth: '165px',
+                    padding: '6px 9px',
+                    borderRadius: '6px',
                     border: '1px solid #cbd5e1',
                     background: docStatusFilter !== 'all' ? '#e8f2e5' : '#ffffff',
                     color: docStatusFilter !== 'all' ? '#17652f' : '#334155',
-                    fontSize: '0.8rem',
+                    fontSize: '0.78rem',
                     fontWeight: 600,
                     cursor: 'pointer',
                     outline: 'none',
-                    minWidth: '165px',
                     flexShrink: 0
                   }}
                   title="Filter by Agreement and Registry status"
@@ -2150,22 +2164,25 @@ export const RentalManagementPage = () => {
                 </select>
               )}
 
-              {/* Tenure Filter */}
+              {/* Tenure Filter (Compact Inline) */}
               {activeTab === 'active' && (
                 <select
                   value={tenureFilter}
                   onChange={(e) => setTenureFilter(e.target.value)}
                   style={{
-                    padding: '7px 11px',
-                    borderRadius: '7px',
+                    display: 'inline-block',
+                    width: '115px',
+                    minWidth: '105px',
+                    maxWidth: '125px',
+                    padding: '6px 9px',
+                    borderRadius: '6px',
                     border: '1px solid #cbd5e1',
                     background: tenureFilter !== 'all' ? '#e8f2e5' : '#ffffff',
                     color: tenureFilter !== 'all' ? '#17652f' : '#334155',
-                    fontSize: '0.8rem',
+                    fontSize: '0.78rem',
                     fontWeight: 600,
                     cursor: 'pointer',
                     outline: 'none',
-                    width: '125px',
                     flexShrink: 0
                   }}
                 >
@@ -2177,21 +2194,24 @@ export const RentalManagementPage = () => {
                 </select>
               )}
 
-              {/* Sort Selector */}
+              {/* Sort Selector (Compact Inline) */}
               <select
                 value={currentSortKey}
                 onChange={handleSortChange}
                 style={{
-                  padding: '7px 11px',
-                  borderRadius: '7px',
+                  display: 'inline-block',
+                  width: '175px',
+                  minWidth: '160px',
+                  maxWidth: '190px',
+                  padding: '6px 9px',
+                  borderRadius: '6px',
                   border: '1px solid #cbd5e1',
                   background: sortOrder !== 'default' ? '#e8f2e5' : '#ffffff',
                   color: sortOrder !== 'default' ? '#17652f' : '#334155',
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   fontWeight: 600,
                   cursor: 'pointer',
                   outline: 'none',
-                  width: '190px',
                   flexShrink: 0
                 }}
               >
@@ -2227,9 +2247,9 @@ export const RentalManagementPage = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '7px',
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '6px',
                   border: '1px solid #cbd5e1',
                   background: '#ffffff',
                   color: '#475569',
@@ -2250,12 +2270,12 @@ export const RentalManagementPage = () => {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '4px',
-                    padding: '6px 10px',
-                    borderRadius: '7px',
+                    padding: '5px 8px',
+                    borderRadius: '6px',
                     border: '1px solid #fecaca',
                     background: '#fef2f2',
                     color: '#b91c1c',
-                    fontSize: '0.76rem',
+                    fontSize: '0.74rem',
                     fontWeight: 600,
                     cursor: 'pointer',
                     flexShrink: 0
@@ -2272,13 +2292,14 @@ export const RentalManagementPage = () => {
             {activeTab === 'active' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
                 <span style={{
-                  fontSize: '0.78rem',
+                  fontSize: '0.76rem',
                   color: '#475569',
                   fontWeight: 600,
                   background: '#f8fafc',
-                  padding: '6px 12px',
-                  borderRadius: '7px',
-                  border: '1px solid #e2e8f0'
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #e2e8f0',
+                  whiteSpace: 'nowrap'
                 }}>
                   Showing <strong>{filteredActiveRentals.length}</strong> {filteredActiveRentals.length === 1 ? 'unit' : 'units'}
                 </span>
@@ -2336,6 +2357,8 @@ export const RentalManagementPage = () => {
                         width: '100%',
                         background: towerName === 'Tower B'
                           ? 'linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)'
+                          : towerName === 'Tower C'
+                          ? 'linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%)'
                           : 'linear-gradient(90deg, #15803d 0%, #22c55e 50%, #10b981 100%)'
                       }} />
 
@@ -2343,7 +2366,11 @@ export const RentalManagementPage = () => {
                       <div
                         style={{
                           padding: '16px 20px',
-                          background: towerName === 'Tower B' ? 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)' : 'linear-gradient(135deg, #fbfdfb 0%, #f4f8f4 100%)',
+                          background: towerName === 'Tower B'
+                            ? 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'
+                            : towerName === 'Tower C'
+                            ? 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)'
+                            : 'linear-gradient(135deg, #fbfdfb 0%, #f4f8f4 100%)',
                           borderBottom: '1px solid #e2e8f0',
                           display: 'flex',
                           alignItems: 'center',
@@ -2359,7 +2386,7 @@ export const RentalManagementPage = () => {
                               width: '38px',
                               height: '38px',
                               borderRadius: '8px',
-                              background: towerName === 'Tower B' ? '#3b82f6' : '#17652f',
+                              background: towerName === 'Tower B' ? '#3b82f6' : towerName === 'Tower C' ? '#f59e0b' : '#17652f',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -2467,7 +2494,7 @@ export const RentalManagementPage = () => {
                                 padding: '6px 12px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                background: towerName === 'Tower B' ? '#2563eb' : '#17652f',
+                                background: towerName === 'Tower B' ? '#2563eb' : towerName === 'Tower C' ? '#d97706' : '#17652f',
                                 color: '#ffffff',
                                 fontSize: '0.78rem',
                                 fontWeight: 600,
