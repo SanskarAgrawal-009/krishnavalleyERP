@@ -85,15 +85,14 @@ export const RentalManagementPage = () => {
   // Filters & Ordering
   const [searchQuery, setSearchQuery] = useState('');
   const [tenureFilter, setTenureFilter] = useState('all');
+  const [selectedFloor, setSelectedFloor] = useState('all');
+  const [docStatusFilter, setDocStatusFilter] = useState('all'); // 'all' | 'pending_registry' | 'pending_agreement' | 'pending_both' | 'both_uploaded'
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedTower, setSelectedTower] = useState('all');
   const [projectsList, setProjectsList] = useState([]);
   const [importTargetTower, setImportTargetTower] = useState('Tower A');
   const [sortField, setSortField] = useState('flatNumber');
   const [sortOrder, setSortOrder] = useState('default'); // 'default' | 'asc' | 'desc'
-  const [groupByFloor, setGroupByFloor] = useState(true);
-  const [collapsedFloors, setCollapsedFloors] = useState({});
-  const toggleFloor = (key) => setCollapsedFloors((prev) => ({ ...prev, [key]: !prev[key] }));
 
   // Modals
   const [selectedRentalForEdit, setSelectedRentalForEdit] = useState(null);
@@ -261,6 +260,13 @@ export const RentalManagementPage = () => {
     return Array.from(map.values());
   }, [projectsList, activeRentals]);
 
+  // Floor derivation and labels
+  const getFloor = (flatNumber) => {
+    const num = parseInt(String(flatNumber || '').replace(/\D/g, ''), 10);
+    return isNaN(num) ? 0 : num < 100 ? 0 : Math.floor(num / 100);
+  };
+  const floorLabel = (floor) => (floor === 0 ? 'Ground Floor (G)' : `Floor ${floor}`);
+
   // Available Towers (from selected project or meta or derived)
   const availableTowers = useMemo(() => {
     if (selectedProject !== 'all') {
@@ -282,7 +288,24 @@ export const RentalManagementPage = () => {
     return Array.from(towersSet).sort();
   }, [availableProjects, selectedProject, projectsList, activeRentals]);
 
-  // Filtered Active Rentals (by Project, Tower, Search, and Tenure)
+  // Available floors for currently selected tower (or across all towers)
+  const availableFloors = useMemo(() => {
+    const relevantFlats = activeRentals.filter((r) => {
+      if (selectedTower === 'all') return true;
+      const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
+      return rTower === selectedTower;
+    });
+    const floorsSet = new Set();
+    relevantFlats.forEach((r) => {
+      const fl = r.floor !== undefined && r.floor !== null && !isNaN(Number(r.floor))
+        ? Number(r.floor)
+        : getFloor(r.flatNumber);
+      floorsSet.add(fl);
+    });
+    return Array.from(floorsSet).sort((a, b) => a - b);
+  }, [activeRentals, selectedTower]);
+
+  // Filtered Active Rentals (by Project, Tower, Floor, Document Status, Search, and Tenure)
   const filteredActiveRentals = useMemo(() => {
     return activeRentals.filter((r) => {
       // Project filter
@@ -292,8 +315,29 @@ export const RentalManagementPage = () => {
       }
       // Tower filter
       if (selectedTower !== 'all') {
-        const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : 'Tower A');
+        const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
         if (rTower !== selectedTower) return false;
+      }
+      // Floor filter
+      if (selectedFloor !== 'all') {
+        const fl = r.floor !== undefined && r.floor !== null && !isNaN(Number(r.floor))
+          ? Number(r.floor)
+          : getFloor(r.flatNumber);
+        if (fl !== Number(selectedFloor)) return false;
+      }
+      // Document Status filter (Agreement & Registry)
+      if (docStatusFilter !== 'all') {
+        const hasReg = Boolean(r.registryDocument?.fileUrl);
+        const hasAgr = Boolean(r.agreementDocument?.fileUrl);
+        if (docStatusFilter === 'pending_registry') {
+          if (hasReg) return false;
+        } else if (docStatusFilter === 'pending_agreement') {
+          if (hasAgr) return false;
+        } else if (docStatusFilter === 'pending_both') {
+          if (hasReg || hasAgr) return false;
+        } else if (docStatusFilter === 'both_uploaded') {
+          if (!hasReg || !hasAgr) return false;
+        }
       }
       // Search filter
       if (searchQuery.trim()) {
@@ -310,7 +354,7 @@ export const RentalManagementPage = () => {
       }
       return true;
     });
-  }, [activeRentals, selectedProject, selectedTower, searchQuery, tenureFilter]);
+  }, [activeRentals, selectedProject, selectedTower, selectedFloor, docStatusFilter, searchQuery, tenureFilter]);
 
   // Active KPIs (dynamically aggregated for currently active filter)
   const activeKpis = useMemo(() => {
@@ -380,13 +424,6 @@ export const RentalManagementPage = () => {
     });
   }, [filteredActiveRentals, sortOrder, sortField]);
 
-  // Floor derivation and grouping
-  const getFloor = (flatNumber) => {
-    const num = parseInt(String(flatNumber || '').replace(/\D/g, ''), 10);
-    return isNaN(num) ? 0 : num < 100 ? 0 : Math.floor(num / 100);
-  };
-  const floorLabel = (floor) => (floor === 0 ? 'Ground Floor' : `Floor ${floor}`);
-
   // Displayed Towers: either single selected tower or all available towers
   const displayedTowers = useMemo(() => {
     if (selectedTower !== 'all') {
@@ -394,43 +431,6 @@ export const RentalManagementPage = () => {
     }
     return availableTowers;
   }, [selectedTower, availableTowers]);
-
-  // Group a specific tower's flats by floor
-  const getTowerFloorGroups = (flatsList) => {
-    const groups = {};
-    flatsList.forEach((r) => {
-      const fl = getFloor(r.flatNumber);
-      if (!groups[fl]) groups[fl] = [];
-      groups[fl].push(r);
-    });
-    return Object.entries(groups)
-      .sort(([a], [b]) => Number(a) - Number(b))
-      .map(([floor, rows]) => ({
-        floor: Number(floor),
-        label: floorLabel(Number(floor)),
-        rows,
-        totalGross: rows.reduce((s, r) => s + (Number(r.rentAmount) || 0), 0),
-        totalNet: rows.reduce((s, r) => s + (Number(r.netAmount) || 0), 0),
-        totalOutstanding: rows.reduce((s, r) => s + (Number(r.amountOutstanding) || 0), 0),
-        totalPaid: rows.reduce((s, r) => s + (Number(r.totalPaid) || 0), 0)
-      }));
-  };
-
-  const floorGroups = useMemo(() => {
-    return getTowerFloorGroups(sortedActiveRentals);
-  }, [sortedActiveRentals]);
-
-  const toggleAllFloors = (collapse) => {
-    const next = {};
-    displayedTowers.forEach((towerName) => {
-      const towerFlats = sortedActiveRentals.filter((r) => (r.tower || 'Tower A') === towerName);
-      const groups = getTowerFloorGroups(towerFlats);
-      groups.forEach((g) => {
-        next[`${towerName}_${g.floor}`] = collapse;
-      });
-    });
-    setCollapsedFloors(next);
-  };
 
   // Filtered & Sorted History Records Memo
   const filteredHistoryRecords = useMemo(() => {
@@ -669,13 +669,21 @@ export const RentalManagementPage = () => {
 
   const handleResetFilters = () => {
     setSearchQuery('');
+    setSelectedFloor('all');
+    setDocStatusFilter('all');
     setTenureFilter('all');
     setSortField('flatNumber');
     setSortOrder('default');
     toast.showSuccess('Filters and sorting reset to default');
   };
 
-  const isFilteredOrSorted = searchQuery !== '' || tenureFilter !== 'all' || sortOrder !== 'default' || sortField !== 'flatNumber';
+  const isFilteredOrSorted =
+    searchQuery !== '' ||
+    selectedFloor !== 'all' ||
+    docStatusFilter !== 'all' ||
+    tenureFilter !== 'all' ||
+    sortOrder !== 'default' ||
+    sortField !== 'flatNumber';
 
   // Render Table Head for Active Rentals
   const renderActiveTableHead = () => (
@@ -1460,7 +1468,10 @@ export const RentalManagementPage = () => {
               </span>
               <select
                 value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
+                onChange={(e) => {
+                  setSelectedProject(e.target.value);
+                  setSelectedFloor('all');
+                }}
                 style={{
                   border: 'none',
                   background: 'transparent',
@@ -1514,7 +1525,10 @@ export const RentalManagementPage = () => {
             {/* All Towers */}
             <button
               type="button"
-              onClick={() => setSelectedTower('all')}
+              onClick={() => {
+                setSelectedTower('all');
+                setSelectedFloor('all');
+              }}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1575,7 +1589,10 @@ export const RentalManagementPage = () => {
                 <button
                   key={tName}
                   type="button"
-                  onClick={() => setSelectedTower(tName)}
+                  onClick={() => {
+                    setSelectedTower(tName);
+                    setSelectedFloor('all');
+                  }}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -1748,6 +1765,63 @@ export const RentalManagementPage = () => {
               )}
             </form>
 
+            {/* Floor Filter (Cascading with Tower, default: All Floors) */}
+            {activeTab === 'active' && (
+              <select
+                value={selectedFloor}
+                onChange={(e) => setSelectedFloor(e.target.value)}
+                style={{
+                  padding: '7px 11px',
+                  borderRadius: '7px',
+                  border: '1px solid #cbd5e1',
+                  background: selectedFloor !== 'all' ? '#e8f2e5' : '#ffffff',
+                  color: selectedFloor !== 'all' ? '#17652f' : '#334155',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  minWidth: '130px',
+                  flexShrink: 0
+                }}
+                title="Filter flats by floor"
+              >
+                <option value="all">All Floors</option>
+                {availableFloors.map((fl) => (
+                  <option key={fl} value={fl}>
+                    {floorLabel(fl)}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Document Filter (Agreement & Registry) */}
+            {activeTab === 'active' && (
+              <select
+                value={docStatusFilter}
+                onChange={(e) => setDocStatusFilter(e.target.value)}
+                style={{
+                  padding: '7px 11px',
+                  borderRadius: '7px',
+                  border: '1px solid #cbd5e1',
+                  background: docStatusFilter !== 'all' ? '#e8f2e5' : '#ffffff',
+                  color: docStatusFilter !== 'all' ? '#17652f' : '#334155',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  minWidth: '165px',
+                  flexShrink: 0
+                }}
+                title="Filter by Agreement and Registry status"
+              >
+                <option value="all">All Documents</option>
+                <option value="pending_registry">Pending Registry</option>
+                <option value="pending_agreement">Pending Agreement</option>
+                <option value="pending_both">Pending Both (Reg + Agr)</option>
+                <option value="both_uploaded">Both Uploaded</option>
+              </select>
+            )}
+
             {/* Tenure Filter */}
             {activeTab === 'active' && (
               <select
@@ -1866,55 +1940,20 @@ export const RentalManagementPage = () => {
             )}
           </div>
 
-          {/* Right: View Toggles & Accordion Expand */}
+          {/* Right: Flat Count Pill */}
           {activeTab === 'active' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
-              <button
-                type="button"
-                onClick={() => setGroupByFloor((g) => !g)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 12px',
-                  borderRadius: '7px',
-                  border: `1.5px solid ${groupByFloor ? '#17652f' : '#cbd5e1'}`,
-                  background: groupByFloor ? '#e8f2e5' : '#ffffff',
-                  color: groupByFloor ? '#17652f' : '#475569',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <Layers size={13} />
-                <span>{groupByFloor ? 'Grouped by Floor' : 'Single Flat List'}</span>
-              </button>
-
-              {groupByFloor && floorGroups.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const allCollapsed = floorGroups.every((g) => collapsedFloors[`Tower A_${g.floor}`] || collapsedFloors[g.floor]);
-                    toggleAllFloors(!allCollapsed);
-                  }}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '6px 11px',
-                    borderRadius: '7px',
-                    border: '1px solid #cbd5e1',
-                    background: '#ffffff',
-                    color: '#475569',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    cursor: 'pointer'
-                  }}
-                >
-                  <span>{floorGroups.every((g) => collapsedFloors[`Tower A_${g.floor}`] || collapsedFloors[g.floor]) ? 'Expand All Floors' : 'Collapse All Floors'}</span>
-                </button>
-              )}
+              <span style={{
+                fontSize: '0.78rem',
+                color: '#475569',
+                fontWeight: 600,
+                background: '#f8fafc',
+                padding: '6px 12px',
+                borderRadius: '7px',
+                border: '1px solid #e2e8f0'
+              }}>
+                Showing <strong>{filteredActiveRentals.length}</strong> {filteredActiveRentals.length === 1 ? 'unit' : 'units'}
+              </span>
             </div>
           )}
         </div>
@@ -1942,7 +1981,7 @@ export const RentalManagementPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               {displayedTowers.map((towerName) => {
                 const towerFlats = sortedActiveRentals.filter((r) => {
-                  const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : 'Tower A');
+                  const rTower = r.tower || (/^[Bb][\s\-_]/.test(r.flatNumber) ? 'Tower B' : /^[Cc][\s\-_]/.test(r.flatNumber) ? 'Tower C' : 'Tower A');
                   return rTower === towerName;
                 });
                 const towerUnitCount = towerFlats.length;
@@ -1950,7 +1989,6 @@ export const RentalManagementPage = () => {
                 const towerNet = towerFlats.reduce((s, r) => s + (Number(r.netAmount) || 0), 0);
                 const towerPaid = towerFlats.reduce((s, r) => s + (Number(r.totalPaid) || 0), 0);
                 const towerOutstanding = towerFlats.reduce((s, r) => s + (Number(r.amountOutstanding) || 0), 0);
-                const towerFloorGroups = getTowerFloorGroups(towerFlats);
 
                 return (
                   <div
@@ -2196,127 +2234,8 @@ export const RentalManagementPage = () => {
                           </button>
                         </div>
                       </div>
-                    ) : groupByFloor ? (
-                      /* Tower Floor-by-Floor Accordions */
-                      <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {towerFloorGroups.map((group) => {
-                          const floorKey = `${towerName}_${group.floor}`;
-                          const isCollapsed = Boolean(collapsedFloors[floorKey]);
-                          return (
-                            <div
-                              key={floorKey}
-                              style={{
-                                background: '#ffffff',
-                                borderRadius: '8px',
-                                border: '1px solid #e5e7eb',
-                                overflow: 'hidden',
-                                boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
-                              }}
-                            >
-                              {/* Floor Header Bar */}
-                              <div
-                                onClick={() => toggleFloor(floorKey)}
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  flexWrap: 'wrap',
-                                  gap: '12px',
-                                  padding: '11px 16px',
-                                  background: isCollapsed ? '#fafafa' : '#f8faf9',
-                                  borderBottom: isCollapsed ? 'none' : '1px solid #e5e7eb',
-                                  cursor: 'pointer',
-                                  userSelect: 'none',
-                                  transition: 'background 0.15s ease'
-                                }}
-                              >
-                                {/* Left: Tower & Floor Info */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                  <div
-                                    style={{
-                                      width: '26px',
-                                      height: '26px',
-                                      borderRadius: '6px',
-                                      background: towerName === 'Tower B' ? '#eff6ff' : '#e8f2e5',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      color: towerName === 'Tower B' ? '#2563eb' : '#17652f'
-                                    }}
-                                  >
-                                    <Building2 size={14} />
-                                  </div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#111827' }}>
-                                      {towerName} — {group.label}
-                                    </span>
-                                    <span
-                                      style={{
-                                        fontSize: '0.72rem',
-                                        fontWeight: 600,
-                                        padding: '2px 8px',
-                                        borderRadius: '10px',
-                                        background: towerName === 'Tower B' ? '#eff6ff' : '#e8f2e5',
-                                        color: towerName === 'Tower B' ? '#1d4ed8' : '#17652f'
-                                      }}
-                                    >
-                                      {group.rows.length} {group.rows.length === 1 ? 'flat' : 'flats'}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                {/* Right: Floor Metrics & Expand Icon */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px', fontSize: '0.78rem' }}>
-                                    <div>
-                                      <span style={{ color: '#6b7280' }}>Monthly Gross: </span>
-                                      <strong style={{ color: '#111827' }}>{formatINR(group.totalGross)}</strong>
-                                    </div>
-                                    <div>
-                                      <span style={{ color: '#6b7280' }}>Net Payout: </span>
-                                      <strong style={{ color: '#17652f' }}>{formatINR(group.totalNet)}</strong>
-                                    </div>
-                                    <div>
-                                      <span style={{ color: '#6b7280' }}>Outstanding: </span>
-                                      <strong style={{ color: '#b45309' }}>{formatINR(group.totalOutstanding)}</strong>
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      width: '24px',
-                                      height: '24px',
-                                      borderRadius: '4px',
-                                      background: '#ffffff',
-                                      border: '1px solid #e5e7eb',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      color: '#6b7280'
-                                    }}
-                                  >
-                                    {isCollapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Floor Table */}
-                              {!isCollapsed && (
-                                <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
-                                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
-                                    {renderActiveTableHead()}
-                                    <tbody>
-                                      {group.rows.map((r, idx) => renderActiveRentalRow(r, idx))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
                     ) : (
-                      /* Tower Single Flat Table */
+                      /* Tower Single Flat Table (Direct Table - No Accordion Scaffolding) */
                       <div className="table-responsive" style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1360px' }}>
                           {renderActiveTableHead()}
