@@ -241,7 +241,7 @@ export const getActiveRentals = async (req, res) => {
       },
       meta: {
         projects: projectsList,
-        towers: ['Tower A', 'Tower B']
+        towers: Array.from(new Set(projectsList.flatMap((p) => p.towers).concat(['Tower A', 'Tower B']))).sort()
       }
     });
   } catch (error) {
@@ -297,7 +297,7 @@ export const getPreviousOwnersHistory = async (req, res) => {
         const startDate = parseAnyDate(hist.ownershipStartDate || hist.startDate);
         const endDate = parseAnyDate(hist.ownershipEndDate || hist.transferDate);
         const registryDate = parseAnyDate(hist.registryDate || hist.ownershipStartDate);
-        
+
         let tenureMonths = Number(hist.tenureMonths || hist.paidMonths || 0);
         if (!tenureMonths && startDate && endDate) {
           const s = new Date(startDate);
@@ -319,8 +319,8 @@ export const getPreviousOwnersHistory = async (req, res) => {
           flatNumber: flat.flatNumber,
           floor: flat.floor,
           projectName: flat.projectId?.projectName || 'Krishna Valley Resorts',
-        projectId: flat.projectId?._id ? String(flat.projectId._id) : String(flat.projectId || ''),
-        tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : 'Tower A'),
+          projectId: flat.projectId?._id ? String(flat.projectId._id) : String(flat.projectId || ''),
+          tower: flat.tower || (/^[Bb][\s\-_]/.test(flat.flatNumber) ? 'Tower B' : 'Tower A'),
           // Table 2 Columns
           sequenceLabel,
           sequenceIndex: idx + 1,
@@ -1898,19 +1898,19 @@ export const getCustomerRentalLedgers = async (req, res) => {
       const passbookEntries = (storedEntries.length >= tenureMonths)
         ? storedEntries
         : generatePassbookEntries({
-            flatNumber: flat.flatNumber,
-            startDate,
-            tenureMonths,
-            grossRent,
-            applyTds,
-            tdsMode,
-            tdsPercentage,
-            tdsAmount,
-            netRent,
-            totalPaid,
-            dueDayOfMonth: Number(rental.dueDayOfMonth || 25),
-            existingEntries: storedEntries
-          });
+          flatNumber: flat.flatNumber,
+          startDate,
+          tenureMonths,
+          grossRent,
+          applyTds,
+          tdsMode,
+          tdsPercentage,
+          tdsAmount,
+          netRent,
+          totalPaid,
+          dueDayOfMonth: Number(rental.dueDayOfMonth || 25),
+          existingEntries: storedEntries
+        });
 
       const paidCount = passbookEntries.filter((e) => e.status === 'paid').length;
       const dueCount = passbookEntries.filter((e) => e.status === 'due').length;
@@ -2003,12 +2003,12 @@ export const autoGeneratePassbookFromRegister = async (req, res) => {
     const query = flatId
       ? { _id: flatId }
       : {
-          $or: [
-            { takenForRental: true },
-            { 'rentalDetails.guaranteedMonthlyRent': { $gt: 0 } },
-            { status: { $in: ['sold', 'booked', 'resell', 'possession_renewal', 'buy_back'] } }
-          ]
-        };
+        $or: [
+          { takenForRental: true },
+          { 'rentalDetails.guaranteedMonthlyRent': { $gt: 0 } },
+          { status: { $in: ['sold', 'booked', 'resell', 'possession_renewal', 'buy_back'] } }
+        ]
+      };
 
     const flats = await Flat.find(query);
     let updatedCount = 0;
